@@ -1,0 +1,60 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\yarn\bin\yarn.js init
+
+PATH: 
+  C:\Portables\cmder\bin;C:\Portables\cmder\vendor\conemu-maximus5\ConEmu\Scripts;C:\Portables\cmder\vendor\conemu-maximus5;C:\Portables\cmder\vendor\conemu-maximus5\ConEmu;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Users\desse\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files (x86)\PDFtk\bin\;C:\Program Files\Git\cmd;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\PuTTY\;C:\Users\desse\AppData\Local\Programs\Python\Python38-32;C:\Users\desse\AppData\Local\Programs\Python\Python38-32\Scripts;C:\Users\desse\AppData\Roaming\Python\Python38\Scripts;C:\Program Files (x86)\Yarn\bin\;C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bin;C:\Program Files (x86)\Fuse\;C:\src\flutter\bin;C:\Users\desse\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft VS Code\bin;C:\Users\desse\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\heroku\bin;C:\Users\desse\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\desse\AppData\Roaming\Dashlane\6.1907.0.17833\bin\Firefox_Extension\{442718d9-475e-452a-b3e1-fb1ee16b8e9f}\components;C:\Users\desse\AppData\Roaming\Dashlane\6.1907.0.17833\ucrt;C:\Users\desse\AppData\Roaming\Dashlane\6.1907.0.17833\bin\Qt;C:\Users\desse\AppData\Roaming\Dashlane\6.1907.0.17833\bin\Ssl;C:\Users\desse\AppData\Local\Yarn\bin;C:\Users\desse\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin;C:\Program Files\Git\mingw64;C:\Program Files\Git\usr\bin;C:\Portables\cmder
+
+Yarn version: 
+  1.7.0
+
+Node version: 
+  10.5.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (C:\Users\desse\AppData\Roaming\nvm\v10.5.0\node_modules\yarn\lib\cli.js:131036:13)
+      at Interface.emit (events.js:182:13)
+      at Interface._ttyWrite (readline.js:783:16)
+      at ReadStream.onkeypress (readline.js:168:10)
+      at ReadStream.emit (events.js:182:13)
+      at emitKeys (internal/readline.js:422:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (readline.js:1022:36)
+      at ReadStream.emit (events.js:182:13)
+      at addChunk (_stream_readable.js:283:12)
+
+npm manifest: 
+  {
+    "name": "mnml-api",
+    "version": "1.0.0",
+    "description": "mnml api",
+    "main": "src/index.js",
+    "license": "MIT",
+    "scripts": {
+      "clean-dist": "rm -f -r dist",
+      "gen-js": "tsc -w",
+      "gen-files": "cpx src/**/*.gql dist --watch",
+      "gen": "yarn run clean-dist && npm-run-all --parallel gen-js gen-files",
+      "dev": "link-module-alias && nodemon dist/index",
+      "start": "link-module-alias && node dist/index"
+    },
+    "dependencies": {
+      "faunadb": "^2.11.1"
+    },
+    "devDependencies": {
+      "@types/node": "^13.7.6",
+      "nodemon": "^2.0.2",
+      "ts-node": "^8.6.2",
+      "typescript": "^3.8.3",
+      "yarn-run-all": "^3.1.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

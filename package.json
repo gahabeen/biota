@@ -1,0 +1,22 @@
+{
+  "name": "biota",
+  "version": "1.0.0",
+  "description": "bringing flora to fauna",
+  "main": "src/index.js",
+  "license": "MIT",
+  "scripts": {
+    "clean-dist": "rm -f -r dist",
+    "gen-js": "tsc -w",
+    "gen": "yarn run clean-dist && npm run gen-js"
+  },
+  "dependencies": {
+    "faunadb": "^2.11.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.6",
+    "nodemon": "^2.0.2",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3",
+    "yarn-run-all": "^3.1.1"
+  }
+}
