@@ -1,4 +1,4 @@
-import { ReferenceBuilder, DocumentBase, DocumentActivity } from '~/types'
+import { ReferenceBuilder } from '~/types'
 
 import * as fauna from 'faunadb'
 const q = fauna.query

@@ -7,12 +7,13 @@ interface DB {
   q: any
   client: fauna.Client
   query<T = object>(expr: fauna.Expr, options?: fauna.QueryOptions): Promise<T>
-  scaffold?: PromiseFn<void>
+  fql(fql: fauna.Expr): DBFqlWrapper
+  scaffold?: Fn<void>
 
-  collections?: PromiseFn
-  indexes?: PromiseFn
-  functions?: PromiseFn
-  roles?: PromiseFn
+  collections?: Fn<DBFqlWrapper>
+  indexes?: Fn<DBFqlWrapper>
+  functions?: Fn<DBFqlWrapper>
+  roles?: Fn<DBFqlWrapper>
   create?: DBCreate
   update?: DBUpdate
   upsert?: DBUpsert
@@ -21,64 +22,110 @@ interface DB {
   collection?: Fn<DBCollection>
 }
 
+interface DBFqlWrapper {
+  fql: object
+  query: PromiseFn<any>
+}
+
 interface DBCreate {
-  collection?: PromiseFn
-  indexe?: PromiseFn
-  function?: PromiseFn
-  role?: PromiseFn
+  collection?: Fn<DBFqlWrapper>
+  indexe?: Fn<DBFqlWrapper>
+  function?: Fn<DBFqlWrapper>
+  role?: Fn<DBFqlWrapper>
 }
 
 interface DBUpdate {
-  collection?: PromiseFn
-  indexe?: PromiseFn
-  function?: PromiseFn
-  role?: PromiseFn
+  collection?: Fn<DBFqlWrapper>
+  indexe?: Fn<DBFqlWrapper>
+  function?: Fn<DBFqlWrapper>
+  role?: Fn<DBFqlWrapper>
 }
 
 interface DBUpsert {
-  collection?: PromiseFn
-  indexe?: PromiseFn
-  function?: PromiseFn
-  role?: PromiseFn
+  collection?: Fn<DBFqlWrapper>
+  indexe?: Fn<DBFqlWrapper>
+  function?: Fn<DBFqlWrapper>
+  role?: Fn<DBFqlWrapper>
 }
 
 interface DBReplace {
-  collection?: PromiseFn
-  indexe?: PromiseFn
-  function?: PromiseFn
-  role?: PromiseFn
+  collection?: Fn<DBFqlWrapper>
+  indexe?: Fn<DBFqlWrapper>
+  function?: Fn<DBFqlWrapper>
+  role?: Fn<DBFqlWrapper>
 }
 
 interface DBForget {
-  collection?: PromiseFn
-  indexe?: PromiseFn
-  function?: PromiseFn
-  role?: PromiseFn
+  collection?: Fn<DBFqlWrapper>
+  indexe?: Fn<DBFqlWrapper>
+  function?: Fn<DBFqlWrapper>
+  role?: Fn<DBFqlWrapper>
 }
 
 interface DBCollection {
-  get?: PromiseFn
-  create?: PromiseFn
-  update?: PromiseFn
-  upsert?: PromiseFn
-  delete?: PromiseFn
-  forget?: PromiseFn
-  login?: PromiseFn
-  logout?: PromiseFn
-  credentials?: PromiseFn
-  keys?: PromiseFn
+  get?: Fn<DBFqlWrapper>
+  create?: Fn<DBFqlWrapper>
+  update?: Fn<DBFqlWrapper>
+  upsert?: Fn<DBFqlWrapper>
+  delete?: Fn<DBFqlWrapper>
+  forget?: Fn<DBFqlWrapper>
+  login?: Fn<DBFqlWrapper>
+  logout?: Fn<DBFqlWrapper>
+  changePassword?: Fn<DBFqlWrapper>
+  keys?: Fn<DBFqlWrapper>
   batch?: DBCollectionBatch
-  field?: PromiseFn
-  index?: PromiseFn
+  field?: Fn<DBFqlWrapper>
+  index?: Fn<DBFqlWrapper>
 }
 
 interface DBCollectionBatch {
-  get?: PromiseFn
-  create?: PromiseFn
-  update?: PromiseFn
-  upsert?: PromiseFn
-  delete?: PromiseFn
-  forget?: PromiseFn
+  get?: Fn<DBFqlWrapper>
+  create?: Fn<DBFqlWrapper>
+  update?: Fn<DBFqlWrapper>
+  upsert?: Fn<DBFqlWrapper>
+  delete?: Fn<DBFqlWrapper>
+  forget?: Fn<DBFqlWrapper>
+}
+
+interface FaunaRule {
+  name?: string
+  lambda?: fauna.Expr | Fn<fauna.Expr>
+}
+
+interface FaunaFunction {
+  name?: string
+  body?: fauna.Expr
+  data?: object
+  role?: FaunaRef | string
+}
+
+interface FaunaRole {
+  name: string
+  membership?: FaunaRoleMembership
+  privileges?: FaunaRolePrivilege[]
+  setMembership?: Fn<any>
+  addPrivilege?: Fn<any>
+}
+
+interface FaunaRoleMembership {
+  resource?: fauna.Expr
+  predicate?: fauna.Expr
+}
+
+interface FaunaRolePrivilege {
+  resource?: fauna.Expr
+  actions?: FaunaRolePrivilegeActions
+}
+
+interface FaunaRolePrivilegeActions {
+  create?: fauna.Expr | boolean
+  delete?: fauna.Expr | boolean
+  read?: fauna.Expr | boolean
+  write?: fauna.Expr | boolean
+  history_read?: fauna.Expr | boolean
+  history_write?: fauna.Expr | boolean
+  unrestricted_read?: fauna.Expr | boolean
+  call?: fauna.Expr | boolean
 }
 
 interface ReferenceBuilder {
@@ -111,7 +158,7 @@ type DocumentBase = {
   activity?: DocumentActivity
 }
 
-interface UserRoles {
+interface UserRights {
   roles?: FaunaRef[]
 }
 
