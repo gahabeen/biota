@@ -20,7 +20,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "faunadb": "^2.11.1"
+    "faunadb": "^2.11.1",
+    "npm": "^6.14.2"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",

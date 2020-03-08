@@ -1,229 +1,152 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fauna = require("faunadb");
 const faunadb_1 = require("faunadb");
-const fauna = require("./fauna");
-const m = require("./methods");
-const functions = require("./scaffold/functions");
-const types_1 = require("./types");
-function DB({ secret }) {
-    const client = fauna.client(secret);
-    let db = {
-        q: faunadb_1.query,
-        client,
-        query: (fqlQuery) => {
+const index_1 = require("./lib/api/index");
+class DB {
+    constructor({ secret }) {
+        this.q = faunadb_1.query;
+        // console.log('set up with secret', secret)
+        this.client = new fauna.Client({ secret });
+        this.query = async function query(fqlQuery) {
+            // console.log('query')
             const resolver = (fql) => Object.entries(fql).reduce((resolved, [key, value]) => {
-                if (Array.isArray(value)) {
-                    resolved[key] = value.map(resolver);
-                }
-                else if (typeof value === 'object') {
-                    if (value[Symbol('FQLWrapper')]) {
-                        resolved[key] = value.fql;
+                if (value) {
+                    if (Array.isArray(value)) {
+                        resolved[key] = value.map(resolver);
+                    }
+                    else if (typeof value === 'object') {
+                        let symbols = Object.getOwnPropertySymbols(value).map((a) => a.toString());
+                        let hasFQLWrapper = symbols.includes('Symbol(FQLWrapper)');
+                        let hasDBCollection = symbols.includes('Symbol(DBCollection)');
+                        if (hasFQLWrapper) {
+                            resolved[key] = value.fql;
+                        }
+                        else if (hasDBCollection) {
+                            try {
+                                resolved[key] = value.list().fql;
+                            }
+                            catch (error) {
+                                console.error(error);
+                            }
+                        }
+                        else {
+                            resolved[key] = resolver(value);
+                        }
                     }
                     else {
-                        resolved[key] = resolver(value);
+                        resolved[key] = value;
                     }
                 }
+                else {
+                    resolved[key] = value;
+                }
                 return resolved;
-            }, fql);
-            return client.query.call(client, resolver(fqlQuery));
-        },
-        fql: (fqlQuery) => ({
-            [Symbol('FQLWrapper')]: true,
-            fql: fqlQuery,
-            query: function () {
-                return client.query(this.fql);
-            }
-        })
-    };
-    const scaffold = () => { };
-    const get = {
-        collections() {
-            return db.fql(faunadb_1.query.Paginate(faunadb_1.query.Collections(), {}));
-        },
-        indexes() {
-            return db.fql(faunadb_1.query.Paginate(faunadb_1.query.Indexes(), {}));
-        },
-        functions() {
-            return db.fql(faunadb_1.query.Paginate(faunadb_1.query.Functions(), {}));
-        },
-        roles() {
-            return db.fql(faunadb_1.query.Paginate(faunadb_1.query.Roles(), {}));
-        },
-        keys() {
-            return db.fql(faunadb_1.query.Paginate(faunadb_1.query.Keys()));
-        }
-    };
-    const create = {
-        collection(name, opts) {
-            return db.fql(faunadb_1.query.CreateCollection({
-                name
-            }));
-        },
-        index(name, opts) {
-            return db.fql(faunadb_1.query.CreateIndex({
-                name
-            }));
-        },
-        function(name, opts) {
-            return db.fql(faunadb_1.query.CreateFunction({
-                name
-            }));
-        },
-        role(name, opts) {
-            return db.fql(faunadb_1.query.CreateRole({
-                name
-            }));
-        }
-    };
-    const update = {
-        collection(name, opts) {
-            return db.fql(faunadb_1.query.Update(faunadb_1.query.Collection(name), {}));
-        },
-        index(name, opts) {
-            return db.fql(faunadb_1.query.Update(faunadb_1.query.Index(name), {}));
-        },
-        function(name, opts) {
-            return db.fql(faunadb_1.query.Update(faunadb_1.query.Function(name), {}));
-        },
-        role(name, opts) {
-            return db.fql(faunadb_1.query.Update(faunadb_1.query.Role(name), {}));
-        }
-    };
-    const upsert = {
-        collection(name) {
-            return db.fql(faunadb_1.query.If(faunadb_1.query.Exists(faunadb_1.query.Collection(name)), update.collection(name, {}), create.collection(name, {})));
-        },
-        index(name) {
-            return db.fql(faunadb_1.query.If(faunadb_1.query.Exists(faunadb_1.query.Index(name)), update.index(name, {}), create.index(name, {})));
-        },
-        function(name) {
-            return db.fql(faunadb_1.query.If(faunadb_1.query.Exists(faunadb_1.query.Function(name)), update.function(name, {}), create.function(name, {})));
-        },
-        role(name) {
-            return db.fql(faunadb_1.query.If(faunadb_1.query.Exists(faunadb_1.query.Role(name)), update.role(name, {}), create.role(name, {})));
-        }
-    };
-    const replace = {
-        collection(name, opts) {
-            return db.fql(faunadb_1.query.Replace(faunadb_1.query.Collection(name), {}));
-        },
-        index(name, opts) {
-            return db.fql(faunadb_1.query.Replace(faunadb_1.query.Index(name), {}));
-        },
-        function(name, opts) {
-            return db.fql(faunadb_1.query.Replace(faunadb_1.query.Function(name), {}));
-        },
-        role(name, opts) {
-            return db.fql(faunadb_1.query.Replace(faunadb_1.query.Role(name), {}));
-        }
-    };
-    const forget = {
-        collection(name) {
-            return db.fql(faunadb_1.query.Delete(faunadb_1.query.Collection(name)));
-        },
-        index(name) {
-            return db.fql(faunadb_1.query.Delete(faunadb_1.query.Index(name)));
-        },
-        function(name) {
-            return db.fql(faunadb_1.query.Delete(faunadb_1.query.Function(name)));
-        },
-        role(name) {
-            return db.fql(faunadb_1.query.Delete(faunadb_1.query.Role(name)));
-        }
-    };
-    const collection = (name) => {
-        return {
-            login(password) {
-                return db.fql(faunadb_1.query.Login(faunadb_1.query.Identity(), { password }));
-            },
-            logout(everywhere) {
-                return db.fql(faunadb_1.query.Logout(everywhere));
-            },
-            changePassword(password) {
-                return db.fql(faunadb_1.query.Call(functions.ChangePassword.name, [faunadb_1.query.Identity(), faunadb_1.query.Identity(), password]));
-            },
-            get(id) {
-                return db.fql(faunadb_1.query.Get(faunadb_1.query.Ref(faunadb_1.query.Collection(collection), id)));
-            },
-            create(data, { id, credentials }) {
-                return db.fql(faunadb_1.query.Call(functions.Create.name, [faunadb_1.query.Identity(), m.reference({ collection: name, id }), { data, credentials }]));
-            },
-            update(id, data) {
-                return db.fql(faunadb_1.query.Call(functions.Update.name, [faunadb_1.query.Identity(), m.reference({ collection: name, id }), { data }]));
-            },
-            upsert(id, data) {
-                return db.fql(faunadb_1.query.If(faunadb_1.query.Exists(m.reference({ collection: name, id })), collection(name).update(id, data), collection(name).create(data, { id })));
-            },
-            delete(id) {
-                return db.fql(faunadb_1.query.Update(m.reference({ collection: name, id }), {}));
-            },
-            forget(id) {
-                return db.fql(faunadb_1.query.Delete(m.reference({ collection: name, id })));
-            },
-            batch: {
-            // async get() {},
-            // async create() {},
-            // async update() {},
-            // async upsert() {},
-            // async delete() {},
-            // async forget() {}
-            }
-            // field() {},
-            // index(opts) {}
+            }, {});
+            let resolvedQuery = resolver(fqlQuery);
+            return this.client.query(resolvedQuery);
         };
-    };
-    return {
-        ...db,
-        scaffold,
-        ...get,
-        create,
-        update,
-        upsert,
-        replace,
-        forget,
-        collection
-    };
+        this.fql = function fql(fqlQuery, options) {
+            const { then = (res) => res } = options || {};
+            const self = this;
+            return {
+                [Symbol('FQLWrapper')]: true,
+                then,
+                fql: fqlQuery,
+                query: function () {
+                    return self.client.query(fqlQuery); //.then(then)
+                }
+            };
+        };
+        this.login = async function login(id, password) {
+            try {
+                const loggedin = await this.collection('users')
+                    .login(password, id)
+                    .query();
+                return new DB({ secret: loggedin.secret });
+            }
+            catch (e) {
+                console.error(e);
+            }
+        };
+        function bindThis(self, rootKey) {
+            const resolver = (value) => {
+                let entries = Object.entries(value);
+                for (let [key, entry] of entries) {
+                    if (typeof entry === 'object') {
+                        value[key] = resolver(entry);
+                    }
+                    else if (typeof entry === 'function') {
+                        value[key] = entry.bind(self);
+                    }
+                    else {
+                        value[key] = entry;
+                    }
+                }
+            };
+            resolver(self[rootKey] || {});
+        }
+        this.collection = index_1.collection.bind(this);
+        this.scaffold = index_1.scaffold;
+        bindThis(this, 'scaffold');
+        this.create = index_1.create;
+        bindThis(this, 'create');
+        this.update = index_1.update;
+        bindThis(this, 'update');
+        this.upsert = index_1.upsert;
+        bindThis(this, 'upsert');
+        this.replace = index_1.replace;
+        bindThis(this, 'replace');
+        this.forget = index_1.forget;
+        bindThis(this, 'forget');
+        this.me = index_1.me;
+        bindThis(this, 'me');
+        // this.create = {
+        //   collection: create.collection.bind(this),
+        //   index: create.index.bind(this),
+        //   function: create.function.bind(this),
+        //   role: create.role.bind(this)
+        // }
+        // this.update = {
+        //   collection: update.collection.bind(this),
+        //   index: update.index.bind(this),
+        //   function: update.function.bind(this),
+        //   role: update.role.bind(this)
+        // }
+        // this.upsert = {
+        //   collection: upsert.collection.bind(this),
+        //   index: upsert.index.bind(this),
+        //   function: upsert.function.bind(this),
+        //   role: upsert.role.bind(this)
+        // }
+        // this.replace = {
+        //   collection: replace.collection.bind(this),
+        //   index: replace.index.bind(this),
+        //   function: replace.function.bind(this),
+        //   role: replace.role.bind(this)
+        // }
+        // this.forget = {
+        //   collection: forget.collection.bind(this),
+        //   index: forget.index.bind(this),
+        //   function: forget.function.bind(this),
+        //   role: forget.role.bind(this)
+        // }
+        // this.me = {
+        //   logout: me.logout.bind(this),
+        //   changePassword: me.changePassword.bind(this),
+        //   get: me.get.bind(this),
+        //   update: me.update.bind(this),
+        //   upsert: me.upsert.bind(this),
+        //   delete: me.delete.bind(this),
+        //   forget: me.forget.bind(this)
+        // }
+        this.collections = index_1.get.collections.bind(this);
+        this.indexes = index_1.get.indexes.bind(this);
+        this.functions = index_1.get.functions.bind(this);
+        this.roles = index_1.get.roles.bind(this);
+        this.keys = index_1.get.keys.bind(this);
+        this.credentials = index_1.get.credentials.bind(this);
+    }
 }
 exports.DB = DB;
-const db = types_1.DB({ secret: '123' });
-// init
-db.scaffold();
-// create collection
-// db.create.function('users', {})
-// db.create.index('users', {})
-// db.create.role('users', {})
-// db.create.database('users')
-db.create.collection('users');
-// db.udpate
-// db.delete
-// unique field
-db.collection('users').field({
-    field: 'data.profile.email',
-    unique: true
-});
-// 1-to-1 relationship (one user can have one company and inverse)
-db.collection('users').field({
-    field: 'data.company',
-    relation: db.collection('companies').field({ field: 'ref', one: true }),
-    one: true
-});
-// 1-to-many relationship (one company can have several users and inverse)
-db.collection('users').field({
-    field: 'data.company',
-    relation: db.collection('companies').field({ field: 'ref', one: true }),
-    many: true
-});
-// create
-db.collection('users').create({
-    profile: {
-        email: 'desserprit.gabin@gmail.com'
-    },
-    // company: db.collection("companies").connect(1234)
-    company: db.collection('companies').create({
-        name: 'Super ça'
-    })
-});
-db.collection('users').index({ 'term:data.profile.email': '' });
-db.collection('users').get(123);
-db.collection('users').get({ 'term:data.profile.email': '', size: 3, after: 'cursor' });
 //# sourceMappingURL=index.js.map

@@ -3,66 +3,140 @@ import * as fauna from 'faunadb'
 type Fn<T = object> = (...args: any[]) => T
 type PromiseFn<T = object> = (...args: any[]) => Promise<T>
 
-interface DB {
-  q: any
-  client: fauna.Client
-  query<T = object>(expr: fauna.Expr, options?: fauna.QueryOptions): Promise<T>
-  fql(fql: fauna.Expr): DBFqlWrapper
-  scaffold?: Fn<void>
+// interface DB {
+//   q: any
+//   client: fauna.Client
+//   query<T = object>(expr: fauna.Expr, options?: DBQueryOptions): Promise<T>
+//   fql(fql: fauna.Expr): DBFqlWrapper
+//   login(id: fauna.Expr, password: string): Promise<DB>
+//   scaffold?: Fn<void>
 
-  collections?: Fn<DBFqlWrapper>
-  indexes?: Fn<DBFqlWrapper>
-  functions?: Fn<DBFqlWrapper>
-  roles?: Fn<DBFqlWrapper>
-  create?: DBCreate
-  update?: DBUpdate
-  upsert?: DBUpsert
-  replace?: DBReplace
-  forget?: DBForget
-  collection?: Fn<DBCollection>
+//   collections?: Fn<DBFqlWrapper>
+//   indexes?: Fn<DBFqlWrapper>
+//   functions?: Fn<DBFqlWrapper>
+//   roles?: Fn<DBFqlWrapper>
+//   keys?: Fn<DBFqlWrapper>
+//   credentials?: Fn<DBFqlWrapper>
+
+//   collection?: Fn<DBCollection>
+//   create?: DBCreate
+//   update?: DBUpdate
+//   upsert?: DBUpsert
+//   replace?: DBReplace
+//   forget?: DBForget
+//   me?: DBMe
+// }
+
+interface DBQueryOptions {
+  logged?: boolean
+  secret?: string
 }
 
 interface DBFqlWrapper {
-  fql: object
+  fql?: object
   query: PromiseFn<any>
+  then: PromiseFn<any>
+}
+
+interface DBFqlWrapperOptions {
+  then: PromiseFn<any>
+}
+
+interface DBScaffoldOptions {
+  collections: any[]
+  indexes: any[]
+  roles: any[]
+  functions: any[]
+  documents: any[]
+}
+
+interface FaunaPaginate {
+  ts: fauna.Expr
+  after: fauna.Expr
+  before: fauna.Expr
+  size: number
+  events: boolean
+}
+
+interface DBScaffold {
+  collections?: DBScaffoldCollections
+  indexes?: DBScaffoldIndexes
+  functions?: DBScaffoldFunctions
+  roles?: DBScaffoldRoles
+}
+
+interface DBScaffoldCollections {
+  users?: Fn<DBFqlWrapper>
+  activities?: Fn<DBFqlWrapper>
+}
+
+interface DBScaffoldIndexes {
+  for?: Fn<DBFqlWrapper>
+}
+
+interface DBScaffoldFunctions {
+  for?: Fn<DBFqlWrapper>
+}
+
+interface DBScaffoldRoles {
+  for?: Fn<DBFqlWrapper>
 }
 
 interface DBCreate {
   collection?: Fn<DBFqlWrapper>
-  indexe?: Fn<DBFqlWrapper>
+  index?: Fn<DBFqlWrapper>
   function?: Fn<DBFqlWrapper>
   role?: Fn<DBFqlWrapper>
+  batch?: DBCreateBatch
+}
+
+interface DBCreateBatch {
+  collections?: Fn<DBFqlWrapper>
+  indexes?: Fn<DBFqlWrapper>
+  functions?: Fn<DBFqlWrapper>
+  roles?: Fn<DBFqlWrapper>
 }
 
 interface DBUpdate {
   collection?: Fn<DBFqlWrapper>
-  indexe?: Fn<DBFqlWrapper>
+  index?: Fn<DBFqlWrapper>
   function?: Fn<DBFqlWrapper>
   role?: Fn<DBFqlWrapper>
 }
 
 interface DBUpsert {
   collection?: Fn<DBFqlWrapper>
-  indexe?: Fn<DBFqlWrapper>
+  index?: Fn<DBFqlWrapper>
   function?: Fn<DBFqlWrapper>
   role?: Fn<DBFqlWrapper>
 }
 
 interface DBReplace {
   collection?: Fn<DBFqlWrapper>
-  indexe?: Fn<DBFqlWrapper>
+  index?: Fn<DBFqlWrapper>
   function?: Fn<DBFqlWrapper>
   role?: Fn<DBFqlWrapper>
 }
 
 interface DBForget {
   collection?: Fn<DBFqlWrapper>
-  indexe?: Fn<DBFqlWrapper>
+  index?: Fn<DBFqlWrapper>
   function?: Fn<DBFqlWrapper>
   role?: Fn<DBFqlWrapper>
 }
 
+interface DBMe {
+  logout?: Fn<DBFqlWrapper>
+  get?: Fn<DBFqlWrapper>
+  update?: Fn<DBFqlWrapper>
+  upsert?: Fn<DBFqlWrapper>
+  delete?: Fn<DBFqlWrapper>
+  forget?: Fn<DBFqlWrapper>
+  changePassword?: Fn<DBFqlWrapper>
+}
+
 interface DBCollection {
+  list?: Fn<DBFqlWrapper>
   get?: Fn<DBFqlWrapper>
   create?: Fn<DBFqlWrapper>
   update?: Fn<DBFqlWrapper>
@@ -87,9 +161,55 @@ interface DBCollectionBatch {
   forget?: Fn<DBFqlWrapper>
 }
 
+interface FaunaIndexOptions {
+  name?: string
+  source?: FaunaIndexSource
+  terms?: FaunaIndexTerm[]
+  values?: FaunaIndexValue[]
+  unique?: boolean
+  serialized?: boolean
+  permissions?: object
+  data?: any
+  addTerm?: Fn<FaunaIndexOptions>
+  addValue?: Fn<FaunaIndexOptions>
+  setData?: Fn<FaunaIndexOptions>
+}
+
+interface FaunaIndexSource {
+  collection?: FaunaRef
+  fields?: FaunaIndexSourceFields
+}
+
+interface FaunaIndexSourceFields {
+  [field: string]: fauna.Expr
+}
+
+interface FaunaIndexTerm {
+  field?: string | string[]
+  binding?: string
+  reverse?: boolean
+}
+
+interface FaunaIndexValue {
+  field?: string | string[]
+  binding?: string
+  reverse?: boolean
+}
+
+interface FaunaCollectionOptions {
+  name?: string
+  data?: object
+  history_days?: number
+  ttl_days?: number
+}
+
+type FaunaRuleActionType = 'owner' | 'not_owner' | 'assignee' | 'not_assignee' | 'all' | 'none'
+
+type FaunaRuleLambda = fauna.Expr | Fn<fauna.Expr>
+
 interface FaunaRule {
   name?: string
-  lambda?: fauna.Expr | Fn<fauna.Expr>
+  lambda?: FaunaRuleLambda
 }
 
 interface FaunaFunction {
@@ -128,6 +248,22 @@ interface FaunaRolePrivilegeActions {
   call?: fauna.Expr | boolean
 }
 
+interface FaunaRolePrivilegeDefault {
+  resource?: fauna.Expr
+  actions?: FaunaRolePrivilegeActionsDefault
+}
+
+interface FaunaRolePrivilegeActionsDefault {
+  create?: FaunaRuleActionType
+  delete?: FaunaRuleActionType
+  read?: FaunaRuleActionType
+  write?: FaunaRuleActionType
+  history_read?: FaunaRuleActionType
+  history_write?: FaunaRuleActionType
+  unrestricted_read?: FaunaRuleActionType
+  call?: FaunaRuleActionType
+}
+
 interface ReferenceBuilder {
   collection?: FaunaCollection
   id?: FaunaId
@@ -163,11 +299,10 @@ interface UserRights {
 }
 
 interface DocumentActivity {
-  owned_by?: FaunaRef
-
-  assigned_to?: FaunaRef[]
+  assignees?: FaunaRef[]
   assigned_at?: FaunaTime
 
+  owner?: FaunaRef
   owner_changed_by?: FaunaRef
   owner_changed_at?: FaunaTime
 
