@@ -1,62 +1,28 @@
-import { DBFqlWrapper, DBQueryOptions, PromiseFn, DBFqlWrapperOptions, DBCollection, Fn, DBCreate, DBReplace, DBUpdate, DBUpsert, DBForget, DBMe, DBScaffold } from './types'
+// types
+import { Fauna, DBCollection, Fn, DBCreate, DBReplace, DBUpdate, DBUpsert, DBForget, DBMe, DBScaffold, DBQL } from './types'
+// external
+import delay from 'delay'
 import * as fauna from 'faunadb'
 import { query as q, Expr } from 'faunadb'
-
-import { scaffold, collection, get, create, update, upsert, replace, forget, me } from './lib/api/index'
+// biota
+import * as ql from './lib/ql'
+import * as api from './lib/api'
+import { logger, printer, execute, steps } from '~/logger'
 
 export class DB {
   constructor({ secret }) {
-    // console.log('set up with secret', secret)
     this.client = new fauna.Client({ secret })
+    this.print = printer
+    this.log = logger
+    this.execute = execute
+    this.steps = steps
+    this.delay = delay
 
-    this.query = async function query(fqlQuery?: Expr) {
-      // console.log('query')
-      const resolver = (fql: Expr) =>
-        Object.entries(fql).reduce((resolved, [key, value]) => {
-          if (value) {
-            if (Array.isArray(value)) {
-              resolved[key] = value.map(resolver)
-            } else if (typeof value === 'object') {
-              let symbols = Object.getOwnPropertySymbols(value).map((a) => a.toString())
-              let hasFQLWrapper = symbols.includes('Symbol(FQLWrapper)')
-              let hasDBCollection = symbols.includes('Symbol(DBCollection)')
-              if (hasFQLWrapper) {
-                resolved[key] = value.fql as Expr
-              } else if (hasDBCollection) {
-                try {
-                  resolved[key] = value.list().fql
-                } catch (error) {
-                  console.error(error)
-                }
-              } else {
-                resolved[key] = resolver(value)
-              }
-            } else {
-              resolved[key] = value
-            }
-          } else {
-            resolved[key] = value
-          }
-          return resolved
-        }, {})
-      let resolvedQuery = resolver(fqlQuery)
-      return this.client.query(resolvedQuery)
+    this.query = async function query(fqlQuery?: Expr | Fauna.Expr, description: string = '') {
+      return this.client.query(fqlQuery)
     }
 
-    this.fql = function fql(fqlQuery: Expr, options?: DBFqlWrapperOptions): DBFqlWrapper {
-      const { then = (res: any) => res } = options || {}
-      const self = this
-      return {
-        [Symbol('FQLWrapper')]: true,
-        then,
-        fql: fqlQuery,
-        query: function() {
-          return self.client.query(fqlQuery) //.then(then)
-        }
-      }
-    }
-
-    this.login = async function login(id: fauna.Expr, password: string): Promise<DB> {
+    this.login = async function login(id: Fauna.Expr, password: string): Promise<DB> {
       try {
         const loggedin = await this.collection('users')
           .login(password, id)
@@ -79,78 +45,49 @@ export class DB {
             value[key] = entry
           }
         }
+        return value
       }
       resolver(self[rootKey] || {})
     }
 
-    this.collection = collection.bind(this)
-    this.scaffold = scaffold
+    this.collection = api.collection.bind(this)
+    this.scaffold = api.scaffold
     bindThis(this, 'scaffold')
-    this.create = create
+    this.create = api.create
     bindThis(this, 'create')
-    this.update = update
+    this.update = api.update
     bindThis(this, 'update')
-    this.upsert = upsert
+    this.upsert = api.upsert
     bindThis(this, 'upsert')
-    this.replace = replace
+    this.replace = api.replace
     bindThis(this, 'replace')
-    this.forget = forget
+    this.forget = api.forget
     bindThis(this, 'forget')
-    this.me = me
+    this.me = api.me
     bindThis(this, 'me')
-    // this.create = {
-    //   collection: create.collection.bind(this),
-    //   index: create.index.bind(this),
-    //   function: create.function.bind(this),
-    //   role: create.role.bind(this)
-    // }
-    // this.update = {
-    //   collection: update.collection.bind(this),
-    //   index: update.index.bind(this),
-    //   function: update.function.bind(this),
-    //   role: update.role.bind(this)
-    // }
-    // this.upsert = {
-    //   collection: upsert.collection.bind(this),
-    //   index: upsert.index.bind(this),
-    //   function: upsert.function.bind(this),
-    //   role: upsert.role.bind(this)
-    // }
-    // this.replace = {
-    //   collection: replace.collection.bind(this),
-    //   index: replace.index.bind(this),
-    //   function: replace.function.bind(this),
-    //   role: replace.role.bind(this)
-    // }
-    // this.forget = {
-    //   collection: forget.collection.bind(this),
-    //   index: forget.index.bind(this),
-    //   function: forget.function.bind(this),
-    //   role: forget.role.bind(this)
-    // }
-    // this.me = {
-    //   logout: me.logout.bind(this),
-    //   changePassword: me.changePassword.bind(this),
-    //   get: me.get.bind(this),
-    //   update: me.update.bind(this),
-    //   upsert: me.upsert.bind(this),
-    //   delete: me.delete.bind(this),
-    //   forget: me.forget.bind(this)
-    // }
 
-    this.collections = get.collections.bind(this)
-    this.indexes = get.indexes.bind(this)
-    this.functions = get.functions.bind(this)
-    this.roles = get.roles.bind(this)
-    this.keys = get.keys.bind(this)
-    this.credentials = get.credentials.bind(this)
+    this.get = api.get.get.bind(this)
+    this.collections = api.get.collections.bind(this)
+    this.indexes = api.get.indexes.bind(this)
+    this.functions = api.get.functions.bind(this)
+    this.roles = api.get.roles.bind(this)
+    this.keys = api.get.keys.bind(this)
+    this.tokens = api.get.tokens.bind(this)
+    this.credentials = api.get.credentials.bind(this)
   }
 
   q: any = q
+  ql: DBQL = ql
   client: fauna.Client
 
+  // methods
+  delay
+  steps
+  execute
+  print
+  log
   query
-  fql
+  wrap
   login
 
   collection: Fn<DBCollection>
@@ -163,10 +100,12 @@ export class DB {
   forget: DBForget
   me: DBMe
 
-  collections: Fn<DBFqlWrapper>
-  indexes: Fn<DBFqlWrapper>
-  functions: Fn<DBFqlWrapper>
-  roles: Fn<DBFqlWrapper>
-  keys: Fn<DBFqlWrapper>
-  credentials: Fn<DBFqlWrapper>
+  get: Fn<Fauna.Expr>
+  collections: Fn<Fauna.Expr>
+  indexes: Fn<Fauna.Expr>
+  functions: Fn<Fauna.Expr>
+  roles: Fn<Fauna.Expr>
+  keys: Fn<Fauna.Expr>
+  tokens: Fn<Fauna.Expr>
+  credentials: Fn<Fauna.Expr>
 }

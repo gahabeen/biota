@@ -2,62 +2,42 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fauna = require("faunadb");
 const faunadb_1 = require("faunadb");
+const ql = require("./lib/ql");
 const index_1 = require("./lib/api/index");
+const logger_1 = require("./lib/logger");
+const delay_1 = require("delay");
 class DB {
     constructor({ secret }) {
         this.q = faunadb_1.query;
+        this.ql = ql;
         // console.log('set up with secret', secret)
         this.client = new fauna.Client({ secret });
-        this.query = async function query(fqlQuery) {
-            // console.log('query')
-            const resolver = (fql) => Object.entries(fql).reduce((resolved, [key, value]) => {
-                if (value) {
-                    if (Array.isArray(value)) {
-                        resolved[key] = value.map(resolver);
-                    }
-                    else if (typeof value === 'object') {
-                        let symbols = Object.getOwnPropertySymbols(value).map((a) => a.toString());
-                        let hasFQLWrapper = symbols.includes('Symbol(FQLWrapper)');
-                        let hasDBCollection = symbols.includes('Symbol(DBCollection)');
-                        if (hasFQLWrapper) {
-                            resolved[key] = value.fql;
-                        }
-                        else if (hasDBCollection) {
-                            try {
-                                resolved[key] = value.list().fql;
-                            }
-                            catch (error) {
-                                console.error(error);
-                            }
-                        }
-                        else {
-                            resolved[key] = resolver(value);
-                        }
-                    }
-                    else {
-                        resolved[key] = value;
-                    }
-                }
-                else {
-                    resolved[key] = value;
-                }
-                return resolved;
-            }, {});
-            let resolvedQuery = resolver(fqlQuery);
-            return this.client.query(resolvedQuery);
+        this.print = logger_1.printer;
+        this.log = logger_1.logger;
+        this.execute = logger_1.execute;
+        this.steps = logger_1.steps;
+        this.delay = delay_1.default;
+        this.query = async function query(fqlQuery, description = '') {
+            // this.print.title(`Query`, description)
+            return this.client.query(fqlQuery);
+            // .then((res) => {
+            //   // this.print.success(res)
+            //   // this.print.result(res)
+            //   return res
+            // })
+            // .catch((err) => {
+            //   // this.print.error('Failed', `${description} `)
+            //   // this.print.error(err)
+            //   // this.log.error(description, err)
+            // })
         };
-        this.fql = function fql(fqlQuery, options) {
-            const { then = (res) => res } = options || {};
-            const self = this;
-            return {
-                [Symbol('FQLWrapper')]: true,
-                then,
-                fql: fqlQuery,
-                query: function () {
-                    return self.client.query(fqlQuery); //.then(then)
-                }
-            };
-        };
+        // this.log = async (prom) =>
+        //   prom
+        //     .then((res) => {
+        //       console.log(res)
+        //       return res
+        //     })
+        //     .catch(console.error)
         this.login = async function login(id, password) {
             try {
                 const loggedin = await this.collection('users')
@@ -83,6 +63,7 @@ class DB {
                         value[key] = entry;
                     }
                 }
+                return value;
             };
             resolver(self[rootKey] || {});
         }
@@ -101,50 +82,13 @@ class DB {
         bindThis(this, 'forget');
         this.me = index_1.me;
         bindThis(this, 'me');
-        // this.create = {
-        //   collection: create.collection.bind(this),
-        //   index: create.index.bind(this),
-        //   function: create.function.bind(this),
-        //   role: create.role.bind(this)
-        // }
-        // this.update = {
-        //   collection: update.collection.bind(this),
-        //   index: update.index.bind(this),
-        //   function: update.function.bind(this),
-        //   role: update.role.bind(this)
-        // }
-        // this.upsert = {
-        //   collection: upsert.collection.bind(this),
-        //   index: upsert.index.bind(this),
-        //   function: upsert.function.bind(this),
-        //   role: upsert.role.bind(this)
-        // }
-        // this.replace = {
-        //   collection: replace.collection.bind(this),
-        //   index: replace.index.bind(this),
-        //   function: replace.function.bind(this),
-        //   role: replace.role.bind(this)
-        // }
-        // this.forget = {
-        //   collection: forget.collection.bind(this),
-        //   index: forget.index.bind(this),
-        //   function: forget.function.bind(this),
-        //   role: forget.role.bind(this)
-        // }
-        // this.me = {
-        //   logout: me.logout.bind(this),
-        //   changePassword: me.changePassword.bind(this),
-        //   get: me.get.bind(this),
-        //   update: me.update.bind(this),
-        //   upsert: me.upsert.bind(this),
-        //   delete: me.delete.bind(this),
-        //   forget: me.forget.bind(this)
-        // }
+        this.get = index_1.get.get.bind(this);
         this.collections = index_1.get.collections.bind(this);
         this.indexes = index_1.get.indexes.bind(this);
         this.functions = index_1.get.functions.bind(this);
         this.roles = index_1.get.roles.bind(this);
         this.keys = index_1.get.keys.bind(this);
+        this.tokens = index_1.get.tokens.bind(this);
         this.credentials = index_1.get.credentials.bind(this);
     }
 }

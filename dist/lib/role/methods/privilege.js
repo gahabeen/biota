@@ -18,7 +18,7 @@ function Privilege(privilege) {
             delete: action_1.DeleteAction(actions.delete),
             read: action_1.ReadAction(actions.read),
             write: action_1.WriteAction(actions.write),
-            history_write: action_1.HistoryReadAction(actions.history_read),
+            history_write: action_1.HistoryWriteAction(actions.history_read),
             history_read: action_1.HistoryReadAction(actions.history_read),
             unrestricted_read: action_1.UnrestrictedReadAction(actions.unrestricted_read),
             call: action_1.CallAction(actions.call)

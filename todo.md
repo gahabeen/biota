@@ -1,0 +1,2 @@
+- create tokens() (to auth without password)
+- .protect() rule for fields in a doc  

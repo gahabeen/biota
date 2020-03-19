@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function ReverseIndex(index) {
+function ToReverse(index) {
     let { terms, data } = index || {};
     let [firstTerm = {}, ...otherTerms] = terms || [];
     firstTerm.reverse = true;
@@ -11,5 +11,5 @@ function ReverseIndex(index) {
         data: { ...data, reverse: true }
     };
 }
-exports.ReverseIndex = ReverseIndex;
+exports.ToReverse = ToReverse;
 //# sourceMappingURL=reverse.js.map

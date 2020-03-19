@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 function UDFunction(fn) {
     let { name, body, data, role } = fn || {};
     let self = {
-        name,
+        name: `biota.${name.replace('biota.', '')}`,
         body,
         data,
         role,

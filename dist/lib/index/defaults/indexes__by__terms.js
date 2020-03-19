@@ -2,7 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fauna = require("faunadb");
 const q = fauna.query;
-exports.indexes__by__terms = {
+const index_1 = require("../methods/index");
+exports.indexes__by__terms = index_1.Index({
     name: 'indexes__by__terms',
     source: {
         collection: q.Indexes(),
@@ -20,5 +21,5 @@ exports.indexes__by__terms = {
             field: ['ref']
         }
     ]
-};
+});
 //# sourceMappingURL=indexes__by__terms.js.map

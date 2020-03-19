@@ -1,72 +1,88 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fauna = require("faunadb");
+const q = fauna.query;
 const defaults_1 = require("./../../rule/defaults");
 const rule_1 = require("../../rule/methods/rule");
 function Action(type) {
     switch (type) {
         case 'owner':
-            return defaults_1.isOwner;
+            return defaults_1.is_owner;
         case 'not_owner':
-            return defaults_1.isNotOwner;
+            return defaults_1.is_not_owner;
         case 'assignee':
-            return defaults_1.isAssignee;
+            return defaults_1.is_assignee;
         case 'not_assignee':
-            return defaults_1.isNotAssignee;
+            return defaults_1.is_not_assignee;
         case 'all':
             return defaults_1.all;
         case 'none':
             return defaults_1.none;
         default:
-            return null;
+            return false;
     }
 }
 exports.Action = Action;
-function CreateAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return rule_1.Rules([type.map(Action), defaults_1.isActivityNotChanged, defaults_1.areRightsNotChanged]);
+function processActions(actions) {
+    return rule_1.Rules(actions.map((action) => {
+        if (typeof action === 'string') {
+            return Action(action);
+        }
+        else {
+            return action;
+        }
+    }));
 }
-exports.CreateAction = CreateAction;
-function DeleteAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return type.map(Action);
-}
-exports.DeleteAction = DeleteAction;
-function ReadAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return type.map(Action);
+function ReadAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    return q.Lambda(['ref'], q.Let({ doc: q.Get(q.Var('ref')) }, processActions(actions)));
 }
 exports.ReadAction = ReadAction;
-function WriteAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return rule_1.Rules([type.map(Action), defaults_1.isActivityNotChanged, defaults_1.areRightsNotChanged]);
+function WriteAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    actions = [...actions, defaults_1.is_activity_not_changed, defaults_1.are_rights_not_changed];
+    return q.Lambda(['oldDoc', 'newDoc'], processActions(actions));
 }
 exports.WriteAction = WriteAction;
-function HistoryReadAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return type.map(Action);
+function CreateAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    actions = [...actions, defaults_1.is_activity_not_changed, defaults_1.are_rights_not_changed];
+    return q.Lambda(['doc'], processActions(actions));
+}
+exports.CreateAction = CreateAction;
+function DeleteAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    return q.Lambda(['ref'], q.Let({ doc: q.Get(q.Var('ref')) }, processActions(actions)));
+}
+exports.DeleteAction = DeleteAction;
+function HistoryReadAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    return q.Lambda(['ref'], q.Let({ doc: q.Get(q.Var('ref')) }, processActions(actions)));
 }
 exports.HistoryReadAction = HistoryReadAction;
-function HistoryWriteAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return rule_1.Rules([type.map(Action), defaults_1.isActivityNotChanged, defaults_1.areRightsNotChanged]);
+function HistoryWriteAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    actions = [...actions, defaults_1.is_activity_not_changed, defaults_1.are_rights_not_changed];
+    return q.Lambda(['ref', 'ts', 'action', 'doc'], processActions(actions));
 }
 exports.HistoryWriteAction = HistoryWriteAction;
-function UnrestrictedReadAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return type.map(Action);
+function UnrestrictedReadAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    return false; // UPDATE!
 }
 exports.UnrestrictedReadAction = UnrestrictedReadAction;
-function CallAction(type) {
-    if (!Array.isArray(type))
-        type = [type];
-    return rule_1.Rules([type.map(Action), defaults_1.isFirstArgumentIdentity, defaults_1.isActivityNotChanged, defaults_1.areRightsNotChanged]);
+function CallAction(actions) {
+    if (!Array.isArray(actions))
+        actions = [actions];
+    actions = [...actions, defaults_1.is_first_argument_identity, defaults_1.is_activity_not_changed, defaults_1.are_rights_not_changed];
+    return q.Lambda(['args'], processActions(actions));
 }
 exports.CallAction = CallAction;
 //# sourceMappingURL=action.js.map

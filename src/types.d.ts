@@ -1,167 +1,161 @@
-import * as fauna from 'faunadb'
+import * as Fauna from 'faunadb'
+export { Fauna }
 
-type Fn<T = object> = (...args: any[]) => T
-type PromiseFn<T = object> = (...args: any[]) => Promise<T>
+export type Fn<T = object> = (...args: any[]) => T
+export type PromiseFn<T = object> = (...args: any[]) => Promise<T>
 
-// interface DB {
-//   q: any
-//   client: fauna.Client
-//   query<T = object>(expr: fauna.Expr, options?: DBQueryOptions): Promise<T>
-//   fql(fql: fauna.Expr): DBFqlWrapper
-//   login(id: fauna.Expr, password: string): Promise<DB>
-//   scaffold?: Fn<void>
-
-//   collections?: Fn<DBFqlWrapper>
-//   indexes?: Fn<DBFqlWrapper>
-//   functions?: Fn<DBFqlWrapper>
-//   roles?: Fn<DBFqlWrapper>
-//   keys?: Fn<DBFqlWrapper>
-//   credentials?: Fn<DBFqlWrapper>
-
-//   collection?: Fn<DBCollection>
-//   create?: DBCreate
-//   update?: DBUpdate
-//   upsert?: DBUpsert
-//   replace?: DBReplace
-//   forget?: DBForget
-//   me?: DBMe
-// }
-
-interface DBQueryOptions {
+export interface DBQueryOptions {
   logged?: boolean
   secret?: string
 }
 
-interface DBFqlWrapper {
+export interface DBFqlWrapper {
   fql?: object
-  query: PromiseFn<any>
+  query?: PromiseFn<any>
+  then?: PromiseFn<any>
+}
+
+export interface DBFqlWrapperOptions {
   then: PromiseFn<any>
 }
 
-interface DBFqlWrapperOptions {
-  then: PromiseFn<any>
+export interface DBQL {
+  Batch: Fn<any>
+  Ref: Fn<FaunaRef>
 }
 
-interface DBScaffoldOptions {
-  collections: any[]
-  indexes: any[]
-  roles: any[]
-  functions: any[]
-  documents: any[]
+export interface DBScaffoldOptions {
+  collections?: any[]
+  indexes?: any[]
+  roles?: any[]
+  functions?: any[]
+  documents?: any[]
 }
 
-interface FaunaPaginate {
-  ts: fauna.Expr
-  after: fauna.Expr
-  before: fauna.Expr
+export interface FaunaPaginate {
+  ts: Fauna.Expr
+  after: Fauna.Expr
+  before: Fauna.Expr
   size: number
   events: boolean
 }
 
-interface DBScaffold {
+export interface DBScaffold {
+  collection?: Fn<Fauna.Expr>
   collections?: DBScaffoldCollections
   indexes?: DBScaffoldIndexes
   functions?: DBScaffoldFunctions
   roles?: DBScaffoldRoles
 }
 
-interface DBScaffoldCollections {
-  users?: Fn<DBFqlWrapper>
-  activities?: Fn<DBFqlWrapper>
+export interface DBScaffoldCollections {
+  defaults?: Fn<Fauna.Expr>
+  users?: Fn<Fauna.Expr>
+  activities?: Fn<Fauna.Expr>
 }
 
-interface DBScaffoldIndexes {
-  for?: Fn<DBFqlWrapper>
+export interface DBScaffoldIndexes {
+  defaults?: Fn<Fauna.Expr>
+  for?: Fn<Fauna.Expr>
 }
 
-interface DBScaffoldFunctions {
-  for?: Fn<DBFqlWrapper>
+export interface DBScaffoldFunctions {
+  defaults?: Fn<Fauna.Expr>
+  for?: Fn<Fauna.Expr>
 }
 
-interface DBScaffoldRoles {
-  for?: Fn<DBFqlWrapper>
+export interface DBScaffoldRoles {
+  defaults?: Fn<Fauna.Expr>
+  for?: Fn<Fauna.Expr>
 }
 
-interface DBCreate {
-  collection?: Fn<DBFqlWrapper>
-  index?: Fn<DBFqlWrapper>
-  function?: Fn<DBFqlWrapper>
-  role?: Fn<DBFqlWrapper>
-  batch?: DBCreateBatch
+export interface DBCreate {
+  database?: Fn<Fauna.Expr>
+  collection?: Fn<Fauna.Expr>
+  index?: Fn<Fauna.Expr>
+  function?: Fn<Fauna.Expr>
+  role?: Fn<Fauna.Expr>
+  token?: Fn<Fauna.Expr>
+  key?: Fn<Fauna.Expr>
 }
 
-interface DBCreateBatch {
-  collections?: Fn<DBFqlWrapper>
-  indexes?: Fn<DBFqlWrapper>
-  functions?: Fn<DBFqlWrapper>
-  roles?: Fn<DBFqlWrapper>
+export interface DBUpdate {
+  database?: Fn<Fauna.Expr>
+  collection?: Fn<Fauna.Expr>
+  index?: Fn<Fauna.Expr>
+  function?: Fn<Fauna.Expr>
+  role?: Fn<Fauna.Expr>
+  token?: Fn<Fauna.Expr>
+  key?: Fn<Fauna.Expr>
 }
 
-interface DBUpdate {
-  collection?: Fn<DBFqlWrapper>
-  index?: Fn<DBFqlWrapper>
-  function?: Fn<DBFqlWrapper>
-  role?: Fn<DBFqlWrapper>
+export interface DBUpsert {
+  database?: Fn<Fauna.Expr>
+  collection?: Fn<Fauna.Expr>
+  index?: Fn<Fauna.Expr>
+  function?: Fn<Fauna.Expr>
+  role?: Fn<Fauna.Expr>
+  token?: Fn<Fauna.Expr>
+  key?: Fn<Fauna.Expr>
 }
 
-interface DBUpsert {
-  collection?: Fn<DBFqlWrapper>
-  index?: Fn<DBFqlWrapper>
-  function?: Fn<DBFqlWrapper>
-  role?: Fn<DBFqlWrapper>
+export interface DBReplace {
+  database?: Fn<Fauna.Expr>
+  collection?: Fn<Fauna.Expr>
+  index?: Fn<Fauna.Expr>
+  function?: Fn<Fauna.Expr>
+  role?: Fn<Fauna.Expr>
+  token?: Fn<Fauna.Expr>
+  key?: Fn<Fauna.Expr>
 }
 
-interface DBReplace {
-  collection?: Fn<DBFqlWrapper>
-  index?: Fn<DBFqlWrapper>
-  function?: Fn<DBFqlWrapper>
-  role?: Fn<DBFqlWrapper>
+export interface DBForget {
+  database?: Fn<Fauna.Expr>
+  collection?: Fn<Fauna.Expr>
+  index?: Fn<Fauna.Expr>
+  function?: Fn<Fauna.Expr>
+  role?: Fn<Fauna.Expr>
+  token?: Fn<Fauna.Expr>
+  key?: Fn<Fauna.Expr>
 }
 
-interface DBForget {
-  collection?: Fn<DBFqlWrapper>
-  index?: Fn<DBFqlWrapper>
-  function?: Fn<DBFqlWrapper>
-  role?: Fn<DBFqlWrapper>
+export interface DBMe {
+  logout?: Fn<Fauna.Expr>
+  get?: Fn<Fauna.Expr>
+  update?: Fn<Fauna.Expr>
+  upsert?: Fn<Fauna.Expr>
+  delete?: Fn<Fauna.Expr>
+  forget?: Fn<Fauna.Expr>
+  changePassword?: Fn<Fauna.Expr>
 }
 
-interface DBMe {
-  logout?: Fn<DBFqlWrapper>
-  get?: Fn<DBFqlWrapper>
-  update?: Fn<DBFqlWrapper>
-  upsert?: Fn<DBFqlWrapper>
-  delete?: Fn<DBFqlWrapper>
-  forget?: Fn<DBFqlWrapper>
-  changePassword?: Fn<DBFqlWrapper>
-}
-
-interface DBCollection {
-  list?: Fn<DBFqlWrapper>
-  get?: Fn<DBFqlWrapper>
-  create?: Fn<DBFqlWrapper>
-  update?: Fn<DBFqlWrapper>
-  upsert?: Fn<DBFqlWrapper>
-  delete?: Fn<DBFqlWrapper>
-  forget?: Fn<DBFqlWrapper>
-  login?: Fn<DBFqlWrapper>
-  logout?: Fn<DBFqlWrapper>
-  changePassword?: Fn<DBFqlWrapper>
-  keys?: Fn<DBFqlWrapper>
+export interface DBCollection {
+  list?: Fn<Fauna.Expr>
+  get?: Fn<Fauna.Expr>
+  create?: Fn<Fauna.Expr>
+  update?: Fn<Fauna.Expr>
+  upsert?: Fn<Fauna.Expr>
+  delete?: Fn<Fauna.Expr>
+  forget?: Fn<Fauna.Expr>
+  login?: Fn<Fauna.Expr>
+  logout?: Fn<Fauna.Expr>
+  changePassword?: Fn<Fauna.Expr>
+  keys?: Fn<Fauna.Expr>
   batch?: DBCollectionBatch
-  field?: Fn<DBFqlWrapper>
-  index?: Fn<DBFqlWrapper>
+  field?: Fn<Fauna.Expr>
+  index?: Fn<Fauna.Expr>
 }
 
-interface DBCollectionBatch {
-  get?: Fn<DBFqlWrapper>
-  create?: Fn<DBFqlWrapper>
-  update?: Fn<DBFqlWrapper>
-  upsert?: Fn<DBFqlWrapper>
-  delete?: Fn<DBFqlWrapper>
-  forget?: Fn<DBFqlWrapper>
+export interface DBCollectionBatch {
+  get?: Fn<Fauna.Expr>
+  create?: Fn<Fauna.Expr>
+  update?: Fn<Fauna.Expr>
+  upsert?: Fn<Fauna.Expr>
+  delete?: Fn<Fauna.Expr>
+  forget?: Fn<Fauna.Expr>
 }
 
-interface FaunaIndexOptions {
+export interface FaunaIndexOptions {
   name?: string
   source?: FaunaIndexSource
   terms?: FaunaIndexTerm[]
@@ -173,133 +167,151 @@ interface FaunaIndexOptions {
   addTerm?: Fn<FaunaIndexOptions>
   addValue?: Fn<FaunaIndexOptions>
   setData?: Fn<FaunaIndexOptions>
+  toJSON?: Fn<any>
 }
 
-interface FaunaIndexSource {
+export interface FaunaIndexSource {
   collection?: FaunaRef
   fields?: FaunaIndexSourceFields
 }
 
-interface FaunaIndexSourceFields {
-  [field: string]: fauna.Expr
+export interface FaunaIndexSourceFields {
+  [field: string]: Fauna.Expr
 }
 
-interface FaunaIndexTerm {
+export interface FaunaIndexTerm {
   field?: string | string[]
   binding?: string
   reverse?: boolean
 }
 
-interface FaunaIndexValue {
+export interface FaunaIndexValue {
   field?: string | string[]
   binding?: string
   reverse?: boolean
 }
 
-interface FaunaCollectionOptions {
+export interface FaunaCollectionOptions {
   name?: string
   data?: object
   history_days?: number
   ttl_days?: number
 }
 
-type FaunaRuleActionType = 'owner' | 'not_owner' | 'assignee' | 'not_assignee' | 'all' | 'none'
-
-type FaunaRuleLambda = fauna.Expr | Fn<fauna.Expr>
-
-interface FaunaRule {
+export interface FaunaDatabaseOptions {
   name?: string
-  lambda?: FaunaRuleLambda
+  data?: object
+  api_version?: number
 }
 
-interface FaunaFunction {
+export type FaunaRuleActionexport Type = 'owner' | 'not_owner' | 'assignee' | 'not_assignee' | 'all' | 'none'
+
+export type FaunaRuleLambda = Fauna.Expr | Fn<Fauna.Expr>
+
+export interface FaunaRule {
   name?: string
-  body?: fauna.Expr
+  lambda?: FaunaRuleLambda
+  query?: Fauna.Expr
+}
+
+export interface FaunaFunction {
+  name?: string
+  body?: Fauna.Expr
   data?: object
   role?: FaunaRef | string
 }
 
-interface FaunaRole {
-  name: string
+export interface FaunaRole {
+  name?: string
   membership?: FaunaRoleMembership
   privileges?: FaunaRolePrivilege[]
   setMembership?: Fn<any>
   addPrivilege?: Fn<any>
 }
 
-interface FaunaRoleMembership {
-  resource?: fauna.Expr
-  predicate?: fauna.Expr
+export interface FaunaRoleMembership {
+  resource?: Fauna.Expr
+  predicate?: Fauna.Expr
 }
 
-interface FaunaRolePrivilege {
-  resource?: fauna.Expr
+export interface FaunaRolePrivilege {
+  resource?: Fauna.Expr
   actions?: FaunaRolePrivilegeActions
 }
 
-interface FaunaRolePrivilegeActions {
-  create?: fauna.Expr | boolean
-  delete?: fauna.Expr | boolean
-  read?: fauna.Expr | boolean
-  write?: fauna.Expr | boolean
-  history_read?: fauna.Expr | boolean
-  history_write?: fauna.Expr | boolean
-  unrestricted_read?: fauna.Expr | boolean
-  call?: fauna.Expr | boolean
+export interface FaunaRolePrivilegeActions {
+  create?: Fauna.Expr | boolean
+  delete?: Fauna.Expr | boolean
+  read?: Fauna.Expr | boolean
+  write?: Fauna.Expr | boolean
+  history_read?: Fauna.Expr | boolean
+  history_write?: Fauna.Expr | boolean
+  unrestricted_read?: Fauna.Expr | boolean
+  call?: Fauna.Expr | boolean
 }
 
-interface FaunaRolePrivilegeDefault {
-  resource?: fauna.Expr
+export interface FaunaRolePrivilegeDefault {
+  resource?: Fauna.Expr
   actions?: FaunaRolePrivilegeActionsDefault
 }
 
-interface FaunaRolePrivilegeActionsDefault {
-  create?: FaunaRuleActionType
-  delete?: FaunaRuleActionType
-  read?: FaunaRuleActionType
-  write?: FaunaRuleActionType
-  history_read?: FaunaRuleActionType
-  history_write?: FaunaRuleActionType
-  unrestricted_read?: FaunaRuleActionType
-  call?: FaunaRuleActionType
+export interface FaunaRolePrivilegeActionsDefault {
+  create?: FaunaRuleActionexport Type
+  delete?: FaunaRuleActionexport Type
+  read?: FaunaRuleActionexport Type
+  write?: FaunaRuleActionexport Type
+  history_read?: FaunaRuleActionexport Type
+  history_write?: FaunaRuleActionexport Type
+  unrestricted_read?: FaunaRuleActionexport Type
+  call?: FaunaRuleActionexport Type
 }
 
-interface ReferenceBuilder {
+export interface ReferenceBuilder {
   collection?: FaunaCollection
   id?: FaunaId
   ref?: FaunaRef
 }
 
-type FaunaTime =
+export type FaunaTime =
   | {
       time: number | string
     }
-  | fauna.Expr
+  | Fauna.Expr
 
-type FaunaCollection = string | fauna.Expr
-type FaunaId = string | fauna.Expr
-type FaunaRefCollection = {
+export type FaunaCollection = string | Fauna.Expr
+export type FaunaId = string | Fauna.Expr
+export type FaunaRefCollection = {
   collection: FaunaCollection
 }
 
-type FaunaRef =
+export type FaunaRef =
   | {
       ref: FaunaRefCollection
       id: FaunaId
     }
-  | fauna.Expr
+  | Fauna.Expr
 
-type DocumentBase = {
+export type DocumentBase = {
   [key: string]: any
   activity?: DocumentActivity
 }
 
-interface UserRights {
+export interface UserRights {
   roles?: FaunaRef[]
 }
 
-interface DocumentActivity {
+export type ActionName = 'create' | 'update' | 'replace' | 'delete' | 'forget' | 'credentials' | 'assign' | 'own' | 'import' | 'expire' | 'archive'
+
+export interface Action {
+  document: FaunaRef
+  ts: number
+  user: FaunaRef
+  name: ActionName
+}
+
+export interface DocumentActivity {
   assignees?: FaunaRef[]
+  assigned_by?: FaunaRef
   assigned_at?: FaunaTime
 
   owner?: FaunaRef
