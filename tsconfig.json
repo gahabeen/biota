@@ -12,6 +12,6 @@
       "~/*": ["*"]
     }
   },
-  "include": ["./src/**/*", "old/index copy.ts"],
+  "include": ["./src/**/*", "../types/*.d.ts"],
   "exclude": ["node_modules", "./src/**/*/test.ts"]
 }

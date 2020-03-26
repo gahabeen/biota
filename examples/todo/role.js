@@ -1,10 +1,11 @@
 require('dotenv').config()
-const { DB } = require('./../../')
+const { DB } = require('../../types/db')
 
 async function role() {
   const db = new DB({ secret: process.env.FAUNA_DB_SECRET })
 
   await db.create
+
     .role({
       name: 'test',
       membership: {
