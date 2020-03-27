@@ -3,7 +3,8 @@
 import { query as q } from "faunadb";
 // biota
 
-const merge = (activity, data = q.Var("data")) =>
+// q.Var("data")
+const merge = (activity, data = {}) =>
   q.Merge(data, {
     activity: q.Merge(q.Select("activity", data, {}), activity)
   });

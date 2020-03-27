@@ -5,10 +5,10 @@ import { query as q } from "faunadb";
 // biota
 import { Reference } from "~/factory/api/ql";
 
-export * from "../collection/wrapper"
+export * from "../collection/wrapper";
 
 export function collection(name: string = undefined): DBFactoryCollection {
-  if (name) {
+  if (!name) {
     throw new Error(`biota.collection(name) - valid name is required`);
   }
 
@@ -34,7 +34,7 @@ export function collection(name: string = undefined): DBFactoryCollection {
     get: function collectionGet(id) {
       return q.Get(q.Ref(q.Collection(name), id));
     },
-    create: function collectionCreate(data, { id, password }) {
+    create: function collectionCreate(data, { id, password } = {}) {
       return q.Call("biota.Create", [
         q.Identity(),
         Reference({ collection: name, id }),

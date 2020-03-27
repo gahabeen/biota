@@ -47,4 +47,17 @@ function nameOrOptions(text, options) {
         };
 }
 exports.nameOrOptions = nameOrOptions;
+function splitTextEvery(nb, text) {
+    return `${text}`.match(new RegExp(`.{1,${nb}}`, "g"));
+}
+exports.splitTextEvery = splitTextEvery;
+function splitEvery(nb, items) {
+    let result = [];
+    let index = 0;
+    while (index < items.length) {
+        result.push(items.slice(index, (index += nb)));
+    }
+    return result;
+}
+exports.splitEvery = splitEvery;
 //# sourceMappingURL=index.js.map

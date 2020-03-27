@@ -2,9 +2,9 @@
 import {
   DBFrameworkCollection,
   DBFrameworkCollectionFieldOptions,
-  FaunaIndexOptions
+  FaunaIndexOptions,
+  Fauna
 } from "~/../types/db";
-import { DB } from "~/db";
 // external
 // biota
 import { q } from "~/index";
@@ -12,6 +12,7 @@ import { execute } from "~/tasks";
 import * as helpers from "~/helpers";
 import { IndexName } from "~/factory/api/index";
 import { upsert } from "~/factory/api/upsert";
+import * as collectionFactory from "~/factory/api/collection";
 
 export function collection(collectionName: string): DBFrameworkCollection {
   let self = this;
@@ -108,6 +109,35 @@ export function collection(collectionName: string): DBFrameworkCollection {
 
       return execute(tasks);
     },
-    async search(params) {}
+    async search(params) {},
+    async import(data, options = {}) {
+      let { batchSize = 50, keepId = false } = options;
+      let items = data;
+      if (!Array.isArray(items)) items = [items];
+      let batches = helpers.splitEvery(batchSize, items);
+      let tasks = [];
+      let createQuery: Fauna.Expr;
+      if (!keepId) {
+        createQuery = collectionFactory
+          .collection(collectionName)
+          .create(q.Var("item"));
+      } else {
+        createQuery = collectionFactory
+          .collection(collectionName)
+          .upsert(
+            q.Select("id", q.Var("item"), null),
+            q.Select("data", q.Var("item"), null)
+          );
+      }
+      for (let [index, batch] of Object.entries(batches)) {
+        tasks.push({
+          name: `Importing batch n°${index + 1} on ${batches.length}`,
+          task() {
+            return self.query(q.Map(batch, q.Lambda("item", createQuery)));
+          }
+        });
+      }
+      return execute(tasks);
+    }
   };
 }

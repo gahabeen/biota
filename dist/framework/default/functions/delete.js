@@ -10,6 +10,6 @@ const logData_1 = require("~/framework/helpers/logData");
 exports.Delete = udfunction_1.UDFunction({
     name: "Delete",
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["user", "ref", "at"], wrapActionToLog_1.WrapActionToLog("delete", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.delete() })))),
-    role: faunadb_1.query.Role("AdminForUser")
+    role: faunadb_1.query.Role("AugmentedUser")
 });
 //# sourceMappingURL=delete.js.map

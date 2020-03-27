@@ -4,7 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // external
 const faunadb_1 = require("faunadb");
 // biota
-const merge = (activity, data = faunadb_1.query.Var("data")) => faunadb_1.query.Merge(data, {
+// q.Var("data")
+const merge = (activity, data = {}) => faunadb_1.query.Merge(data, {
     activity: faunadb_1.query.Merge(faunadb_1.query.Select("activity", data, {}), activity)
 });
 exports.logData = {

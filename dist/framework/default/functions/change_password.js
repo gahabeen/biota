@@ -15,6 +15,6 @@ exports.ChangePassword = udfunction_1.UDFunction({
             password: faunadb_1.query.Var("password")
         }
     })))),
-    role: faunadb_1.query.Role("AdminForUser")
+    role: faunadb_1.query.Role("AugmentedUser")
 });
 //# sourceMappingURL=change_password.js.map

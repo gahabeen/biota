@@ -102,6 +102,7 @@ export interface DBFactoryGet {
 }
 
 export interface DBFactoryCreate {
+  // document?: (data: object, options?: FaunaDocumentOptions) => Fauna.Expr;
   database?: ValueOptionsFn<FaunaDatabaseOptions>;
   collection?: ValueOptionsFn<FaunaCollectionOptions>;
   index?: ValueOptionsFn<FaunaIndexOptions>;
@@ -216,6 +217,15 @@ export interface DBFrameworkCollection {
   ) => any;
   search: (params: DBFrameworkCollectionSearchParams) => any;
   scaffold: () => any;
+  import: (
+    data: any | any[],
+    options?: DBFrameworkCollectionImportOptions
+  ) => Promise<any>;
+}
+
+export interface DBFrameworkCollectionImportOptions {
+  batchSize?: number;
+  keepId?: boolean;
 }
 
 export interface DBFrameworkCollectionFieldOptions {
@@ -281,6 +291,15 @@ export interface FaunaDatabaseOptions {
   data?: object;
   api_version?: number;
 }
+
+// export interface FaunaDocumentOptions {
+//   data?: object;
+//   credentials?: FaunaDocumentOptionsCredentials;
+// }
+
+// export interface FaunaDocumentOptionsCredentials {
+//   password?: string;
+// }
 
 export type FaunaRuleAction =
   | "owner"

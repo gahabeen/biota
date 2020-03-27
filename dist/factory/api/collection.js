@@ -9,7 +9,7 @@ const faunadb_1 = require("faunadb");
 const ql_1 = require("~/factory/api/ql");
 __export(require("../collection/wrapper"));
 function collection(name = undefined) {
-    if (name) {
+    if (!name) {
         throw new Error(`biota.collection(name) - valid name is required`);
     }
     return {
@@ -34,7 +34,7 @@ function collection(name = undefined) {
         get: function collectionGet(id) {
             return faunadb_1.query.Get(faunadb_1.query.Ref(faunadb_1.query.Collection(name), id));
         },
-        create: function collectionCreate(data, { id, password }) {
+        create: function collectionCreate(data, { id, password } = {}) {
             return faunadb_1.query.Call("biota.Create", [
                 faunadb_1.query.Identity(),
                 ql_1.Reference({ collection: name, id }),

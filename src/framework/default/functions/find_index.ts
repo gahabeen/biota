@@ -49,5 +49,5 @@ export const FindIndex = UDFunction({
       )
     )
   ),
-  role: q.Role("AdminForUser")
+  role: q.Role("AugmentedUser")
 });

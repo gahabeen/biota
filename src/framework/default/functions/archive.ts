@@ -17,5 +17,5 @@ export const Archive = UDFunction({
       )
     )
   ),
-  role: q.Role("AdminForUser")
+  role: q.Role("AugmentedUser")
 });

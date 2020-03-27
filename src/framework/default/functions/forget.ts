@@ -13,5 +13,5 @@ export const Forget = UDFunction({
       WrapActionToLog("forget", q.Delete(q.Var("ref")))
     )
   ),
-  role: q.Role("AdminForUser")
+  role: q.Role("AugmentedUser")
 });

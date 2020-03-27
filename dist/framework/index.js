@@ -7,7 +7,7 @@ __export(require("./api/collection"));
 __export(require("./api/login"));
 __export(require("./api/paginate"));
 __export(require("./api/query"));
-// export * from "./api/foundation"
+__export(require("./api/foundation"));
 // export * from "./api/graphql"
 // export * from "./api/import"
 // export * from "./api/relation"

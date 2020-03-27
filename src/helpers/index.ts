@@ -42,3 +42,16 @@ export function nameOrOptions(text: string | object, options: object) {
         ...options
       };
 }
+
+export function splitTextEvery(nb: number, text: string) {
+  return `${text}`.match(new RegExp(`.{1,${nb}}`, "g"));
+}
+
+export function splitEvery(nb: number, items: any[]) {
+  let result = [];
+  let index = 0;
+  while (index < items.length) {
+    result.push(items.slice(index, (index += nb)));
+  }
+  return result;
+}

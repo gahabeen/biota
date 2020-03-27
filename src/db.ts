@@ -57,6 +57,8 @@ export class DB {
     this.login = framework.login.bind(this);
     this.execute = execute.bind(this);
 
+    this.foundation = framework.foundation.bind(this);
+
     this.collection = framework.collection.bind(this);
     bindThis(this, "collection");
     // this.create = framework.create.bind(this)

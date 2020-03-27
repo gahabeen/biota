@@ -16,6 +16,6 @@ export const Import = UDFunction({
         q.Update(q.Var("ref"), { data: logData.import() })
       )
     )
-  ),
-  role: q.Role("AdminForUser")
+  )
+  // role: q.Role("AugmentedUser")
 });

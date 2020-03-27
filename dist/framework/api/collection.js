@@ -7,6 +7,7 @@ const tasks_1 = require("~/tasks");
 const helpers = require("~/helpers");
 const index_2 = require("~/factory/api/index");
 const upsert_1 = require("~/factory/api/upsert");
+const collectionFactory = require("~/factory/api/collection");
 function collection(collectionName) {
     let self = this;
     async function fieldMethod(field) {
@@ -88,7 +89,35 @@ function collection(collectionName) {
             ];
             return tasks_1.execute(tasks);
         },
-        async search(params) { }
+        async search(params) { },
+        async import(data, options = {}) {
+            let { batchSize = 50, keepId = false } = options;
+            let items = data;
+            if (!Array.isArray(items))
+                items = [items];
+            let batches = helpers.splitEvery(batchSize, items);
+            let tasks = [];
+            let createQuery;
+            if (!keepId) {
+                createQuery = collectionFactory
+                    .collection(collectionName)
+                    .create(index_1.q.Var("item"));
+            }
+            else {
+                createQuery = collectionFactory
+                    .collection(collectionName)
+                    .upsert(index_1.q.Select("id", index_1.q.Var("item"), null), index_1.q.Select("data", index_1.q.Var("item"), null));
+            }
+            for (let [index, batch] of Object.entries(batches)) {
+                tasks.push({
+                    name: `Importing batch n°${index + 1} on ${batches.length}`,
+                    task() {
+                        return self.query(index_1.q.Map(batch, index_1.q.Lambda("item", createQuery)));
+                    }
+                });
+            }
+            return tasks_1.execute(tasks);
+        }
     };
 }
 exports.collection = collection;
