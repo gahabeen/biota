@@ -16,6 +16,5 @@ export const Archive = UDFunction({
         q.Update(q.Var("ref"), { data: logData.archive() })
       )
     )
-  ),
-  role: q.Role("augmented_user")
+  )
 });

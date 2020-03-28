@@ -12,22 +12,31 @@ function CustomPrivilege(privilege) {
     };
 }
 exports.CustomPrivilege = CustomPrivilege;
+function QueryWrapper(expr) {
+    if (typeof expr === "boolean") {
+        return expr;
+    }
+    else {
+        return faunadb_1.query.Query(expr);
+    }
+}
 function Privilege(privilege) {
     let { resource, actions = {} } = privilege || {};
     let processedActions = {
-        create: faunadb_1.query.Query(action_1.CreateAction(actions.create)),
-        delete: faunadb_1.query.Query(action_1.DeleteAction(actions.delete)),
-        read: faunadb_1.query.Query(action_1.ReadAction(actions.read)),
-        write: faunadb_1.query.Query(action_1.WriteAction(actions.write)),
-        history_write: faunadb_1.query.Query(action_1.HistoryWriteAction(actions.history_read)),
-        history_read: faunadb_1.query.Query(action_1.HistoryReadAction(actions.history_read)),
-        unrestricted_read: faunadb_1.query.Query(action_1.UnrestrictedReadAction(actions.unrestricted_read)),
-        call: faunadb_1.query.Query(action_1.CallAction(actions.call))
+        create: QueryWrapper(action_1.CreateAction(actions.create)),
+        delete: QueryWrapper(action_1.DeleteAction(actions.delete)),
+        read: QueryWrapper(action_1.ReadAction(actions.read)),
+        write: QueryWrapper(action_1.WriteAction(actions.write)),
+        history_write: QueryWrapper(action_1.HistoryWriteAction(actions.history_read)),
+        history_read: QueryWrapper(action_1.HistoryReadAction(actions.history_read)),
+        unrestricted_read: QueryWrapper(action_1.UnrestrictedReadAction(actions.unrestricted_read)),
+        call: QueryWrapper(action_1.CallAction(actions.call))
     };
     let filteredActions = {};
     for (let action in actions) {
         filteredActions[action] = processedActions[action];
     }
+    // console.log("filteredActions", resource, filteredActions);
     let result = {
         resource,
         actions: filteredActions

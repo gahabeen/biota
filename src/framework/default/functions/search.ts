@@ -19,7 +19,7 @@ export const Search = UDFunction({
   name: "Search",
   body: q.Query(
     q.Lambda(
-      ["resource", "search_terms"],
+      ["resource", "search_terms", "pagination"],
       q.Let(
         {
           searchTerms: q.ToArray(q.Var("search_terms")),
@@ -32,7 +32,8 @@ export const Search = UDFunction({
                   q.Var("resource"),
                   [q.Concat(["term:", pathString(q.Var("field"))])]
                 ]),
-                q.Var("value")
+                q.Var("value"),
+                q.Var("field")
               ]
             )
           )
@@ -42,18 +43,23 @@ export const Search = UDFunction({
             q.Map(
               q.Var("termIndexes"),
               q.Lambda(
-                ["index", "value"],
+                ["index", "value", "field"],
                 q.If(
                   q.IsIndex(q.Var("index")),
                   q.Match(q.Var("index"), q.Var("value")),
-                  q.Abort("Couldn't find a matching index")
+                  q.Abort(
+                    q.Concat([
+                      "Couldn't find a matching index for the field",
+                      q.Var("field")
+                    ])
+                  )
                 )
               )
             )
-          )
+          ),
+          q.Var("pagination")
         )
       )
     )
   )
-  // role: q.Role("augmented_user")
 });

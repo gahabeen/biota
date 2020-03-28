@@ -45,6 +45,6 @@ export const FindIndex = UDFunction({
         q.Select(0, q.Var("filteredIndexes"), null)
       )
     )
-  )
-  // role: q.Role("augmented_user")
+  ),
+  role: q.Role("system")
 });

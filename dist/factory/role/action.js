@@ -6,8 +6,11 @@ const q = fauna.query;
 // biota
 const rule_1 = require("~/factory/api/rule");
 const rules_1 = require("~/framework/api/default/rules");
+const wrapDoc_1 = require("~/framework/helpers/wrapDoc");
 function Action(type) {
     switch (type) {
+        case "self":
+            return rules_1.is_self;
         case "owner":
             return rules_1.is_owner;
         case "not_owner":
@@ -49,7 +52,7 @@ function ReadAction(actions) {
     actions = processActions(actions);
     if (typeof actions === "boolean")
         return actions;
-    return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions)));
+    return q.Lambda("ref", wrapDoc_1.wrapDoc("ref", prepareRules(actions)));
 }
 exports.ReadAction = ReadAction;
 function WriteAction(actions) {
@@ -103,7 +106,7 @@ function UnrestrictedReadAction(actions) {
     actions = processActions(actions);
     if (typeof actions === "boolean")
         return actions;
-    return false; // UPDATE!
+    return prepareRules(actions);
 }
 exports.UnrestrictedReadAction = UnrestrictedReadAction;
 function CallAction(actions) {

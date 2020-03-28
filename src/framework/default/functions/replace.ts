@@ -20,5 +20,5 @@ export const Replace = UDFunction({
       )
     )
   ),
-  role: q.Role("augmented_user")
+
 });

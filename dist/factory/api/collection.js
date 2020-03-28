@@ -16,8 +16,8 @@ function collection(name = undefined) {
         list: function collectionList() {
             return faunadb_1.query.Paginate(faunadb_1.query.Documents(faunadb_1.query.Collection(name)));
         },
-        login: function collectionLogin(password, id) {
-            return faunadb_1.query.Login(ql_1.Reference(id ? { collection: name, id } : faunadb_1.query.Identity()), {
+        login: function collectionLogin(id, password) {
+            return faunadb_1.query.Login(ql_1.Reference({ collection: name, id }), {
                 password
             });
         },

@@ -10,6 +10,5 @@ const logData_1 = require("~/framework/helpers/logData");
 exports.Create = udfunction_1.UDFunction({
     name: "Create",
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "collectionRef", "data"], wrapActionToLog_1.WrapActionToLog("create", faunadb_1.query.Create(faunadb_1.query.Var("collectionRef"), { data: logData_1.logData.create() })))),
-    role: faunadb_1.query.Role("augmented_user")
 });
 //# sourceMappingURL=create.js.map

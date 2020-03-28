@@ -17,5 +17,5 @@ export const UpdateActivities = UDFunction({
       )
     )
   ),
-  role: q.Role("augmented_user")
+
 });

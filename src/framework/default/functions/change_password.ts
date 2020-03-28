@@ -22,5 +22,5 @@ export const ChangePassword = UDFunction({
       )
     )
   ),
-  role: q.Role("augmented_user")
+
 });

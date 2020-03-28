@@ -4,15 +4,21 @@ import {
   DBFrameworkCollectionFieldOptions,
   FaunaIndexOptions,
   Fauna,
-  FaunaCollectionOptions
+  FaunaCollectionOptions,
+  DBFrameworkCollectionSearchParams,
+  FaunaPaginateOptions,
+  FaunaPaginateResponse
 } from "~/../types/db";
 // external
+import * as qs from "querystring";
 // biota
 import { q } from "~/index";
 import { execute } from "~/tasks";
 import * as helpers from "~/helpers";
 import { BiotaIndexName } from "~/factory/api/index";
+import { BiotaUDFunctionName } from "~/factory/api/udfunction";
 import { upsert } from "~/factory/api/upsert";
+import { update } from "~/factory/api/update";
 import * as collectionFactory from "~/factory/api/collection";
 
 export function collection(
@@ -112,49 +118,87 @@ export function collection(
     return execute(tasks);
   };
 
-  methods.searchable = async function searchable(field) {
-    if (typeof field === "string") {
-      return methods.field({ field, searchable: true });
-    } else {
-      return methods.field({
-        ...(field as DBFrameworkCollectionFieldOptions),
-        searchable: true
-      });
-    }
+  methods.searchable = async function searchable(field, options = {}) {
+    let { role } = options;
+    let tasks = [];
+
+    tasks.push({
+      name: `Adding searchable field ${field} on ${collectionDefinition.name}`,
+      task() {
+        let config = {
+          ...(field as DBFrameworkCollectionFieldOptions),
+          searchable: true
+        };
+        if (typeof field === "string") {
+          config = { field, searchable: true };
+        }
+        return methods.field(config).then(async (res: any) => {
+          let { ref, name } = res[0] || {};
+          if (name && role) {
+            await execute([
+              {
+                name: `Adding privilege (read) for index ${name} on ${role}`,
+                task() {
+                  return self.query(
+                    update.role(role, {
+                      privileges: [
+                        {
+                          resource: ref,
+                          actions: {
+                            read: true,
+                            history_read: true
+                          }
+                        }
+                      ]
+                    })
+                  );
+                },
+                fullError: true
+              }
+            ]);
+          }
+          return res;
+        });
+      }
+    });
+
+    return execute(tasks);
   };
 
   methods.scaffold = async function scaffold() {
     let activitySearchableFields = [
-      "access.roles",
-      "access.owner",
-      "access.assignees",
-      "activity.assigned_by",
-      "activity.assigned_at",
-      "activity.owner_changed_by",
-      "activity.owner_changed_at",
-      "activity.credentials_changed_by",
-      "activity.credentials_changed_at",
-      "activity.imported_by",
-      "activity.imported_at",
-      "activity.created_by",
-      "activity.created_at",
-      "activity.updated_by",
-      "activity.updated_at",
-      "activity.replaced_by",
-      "activity.replaced_at",
-      "activity.expired_by",
-      "activity.expired_at",
-      "activity.deleted_by",
-      "activity.deleted_at",
-      "activity.archived_by",
-      "activity.archived_at",
-      "activity.hidden_by",
-      "activity.hidden_at"
+      "~ref",
+      "~ts"
+      // "access.roles",
+      // "access.owner",
+      // "access.assignees",
+      // "activity.assigned_by",
+      // "activity.assigned_at",
+      // "activity.owner_changed_by",
+      // "activity.owner_changed_at",
+      // "activity.credentials_changed_by",
+      // "activity.credentials_changed_at",
+      // "activity.imported_by",
+      // "activity.imported_at",
+      // "activity.created_by",
+      // "activity.created_at",
+      // "activity.updated_by",
+      // "activity.updated_at",
+      // "activity.replaced_by",
+      // "activity.replaced_at",
+      // "activity.expired_by",
+      // "activity.expired_at",
+      // "activity.deleted_by",
+      // "activity.deleted_at",
+      // "activity.archived_by",
+      // "activity.archived_at",
+      // "activity.hidden_by",
+      // "activity.hidden_at"
     ];
 
     let tasks = [
       {
-        name: `Upserting collection: ${collectionDefinition.name}`,
+        name: `Upserting collection (${collectionDefinition.name})`,
         async task() {
           return self.query(upsert.collection(collectionDefinition));
         }
@@ -163,9 +207,9 @@ export function collection(
 
     for (let searchableField of activitySearchableFields) {
       tasks.push({
-        name: `Upserting searchable field: ${searchableField}`,
+        name: `Upserting searchable field (${searchableField}) on (${collectionDefinition.name})`,
         async task() {
-          return methods.searchable(searchableField);
+          return methods.searchable(searchableField, { role: "user" });
         }
       });
     }
@@ -201,6 +245,33 @@ export function collection(
       });
     }
     return execute(tasks);
+  };
+
+  methods.search = function* search(
+    searchTerms: DBFrameworkCollectionSearchParams,
+    paginateOptions: FaunaPaginateOptions = {}
+  ) {
+    let firstRequest = true;
+    let after: any;
+    while (after || firstRequest) {
+      if (firstRequest) firstRequest = false;
+      yield self
+        .query(
+          q.Call(BiotaUDFunctionName("Search"), [
+            q.Collection(collectionDefinition.name),
+            searchTerms,
+            { after, ...paginateOptions }
+          ])
+        )
+        .then((res: FaunaPaginateResponse) => {
+          if (res.after) {
+            after = res.after;
+          } else {
+            after = undefined;
+          }
+          return res;
+        });
+    }
   };
 
   return methods;

@@ -9,7 +9,6 @@ const wrapActionToLog_1 = require("~/framework/helpers/wrapActionToLog");
 const logData_1 = require("~/framework/helpers/logData");
 exports.Archive = udfunction_1.UDFunction({
     name: "Archive",
-    body: faunadb_1.query.Query(faunadb_1.query.Lambda(["user", "ref", "at"], wrapActionToLog_1.WrapActionToLog("archive", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.archive() })))),
-    role: faunadb_1.query.Role("augmented_user")
+    body: faunadb_1.query.Query(faunadb_1.query.Lambda(["user", "ref", "at"], wrapActionToLog_1.WrapActionToLog("archive", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.archive() }))))
 });
 //# sourceMappingURL=archive.js.map

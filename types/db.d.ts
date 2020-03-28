@@ -206,14 +206,15 @@ export interface DBFactoryCollectionBatch {
   forget?: Fn<Fauna.Expr>;
 }
 
-export interface DBFrameworkCollectionSearchParams {
-  [path: string]: any;
+export interface DBFrameworkCollectionSearchableOptions {
+  role?: string;
 }
 
 export interface DBFrameworkCollection {
   field: (field: string | string[] | DBFrameworkCollectionFieldOptions) => any;
   searchable: (
-    field: string | string[] | DBFrameworkCollectionFieldOptions
+    field: string | string[] | DBFrameworkCollectionFieldOptions,
+    options?: DBFrameworkCollectionSearchableOptions
   ) => any;
   search: (params: DBFrameworkCollectionSearchParams) => any;
   scaffold: () => any;
@@ -238,6 +239,10 @@ export interface DBFrameworkCollectionFieldOptions {
   serialized?: boolean;
   permissions?: object;
   data?: any;
+}
+
+export interface DBFrameworkCollectionSearchParams {
+  [path: string]: any;
 }
 
 export interface DBFrameworkFoundation {}
@@ -303,6 +308,7 @@ export interface FaunaDatabaseOptions {
 // }
 
 export type FaunaRuleAction =
+  | "self"
   | "owner"
   | "not_owner"
   | "assignee"

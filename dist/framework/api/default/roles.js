@@ -4,6 +4,5 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("~/framework/default/roles/user"));
-__export(require("~/framework/default/roles/augmented_user"));
-// export * from "~/framework/default/roles/advanced";
+__export(require("~/framework/default/roles/system"));
 //# sourceMappingURL=roles.js.map

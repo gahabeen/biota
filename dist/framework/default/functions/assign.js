@@ -10,6 +10,5 @@ const logData_1 = require("~/framework/helpers/logData");
 exports.Assign = udfunction_1.UDFunction({
     name: "Assign",
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["user", "ref", "data"], wrapActionToLog_1.WrapActionToLog("assign", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.assign() })))),
-    role: faunadb_1.query.Role("augmented_user")
 });
 //# sourceMappingURL=assign.js.map

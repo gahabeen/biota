@@ -17,41 +17,26 @@ export const user: FaunaRoleOptions = Role({
     predicate: q.Query(q.Lambda("ref", wrapDoc("ref", has_role("user"))))
   },
   privileges: [
-    // collections
-    CustomPrivilege({
-      resource: q.Collection("users"),
-      actions: {
-        // create: q.Query(very_safe_query),
-        delete: false,
-        read: q.Query(q.Lambda("ref", wrapDoc("ref", is_document_available))),
-        // write: q.Query(very_safe_query),
-        history_read: false,
-        history_write: false,
-        unrestricted_read: false
-      }
-    }),
-    // indexes
+    /**
+     * Indexes
+     */
 
-    // functions
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Match")), actions: { call: "all" } }),
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Owner")), actions: { call: "all" } }),
-    // Privilege({
-    //   resource: q.Function(BiotaUDFunctionName("ChangePassword")),
-    //   actions: { call: "all" }
-    // }),
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Assign")), actions: { call: "all" } }),
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Import")), actions: { call: "all" } }),
+    /**
+     * Collections
+     */
+
     Privilege({
-      resource: q.Function(BiotaUDFunctionName("Create")),
-      actions: { call: "all" }
+      resource: q.Collection("users"),
+      actions: { read: "self" }
     }),
+
+    /**
+     * Functions
+     */
+
     Privilege({
-      resource: q.Function(BiotaUDFunctionName("Update")),
+      resource: q.Function(BiotaUDFunctionName("Search")),
       actions: { call: "all" }
     })
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Replace")), actions: { call: "all" } }),
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Expire")), actions: { call: "all" } }),
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Delete")), actions: { call: "all" } }),
-    // Privilege({ resource: q.Function(BiotaUDFunctionName("Archive")), actions: { call: "all" } })
   ]
 });

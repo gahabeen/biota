@@ -16,8 +16,8 @@ export function collection(name: string = undefined): DBFactoryCollection {
     list: function collectionList() {
       return q.Paginate(q.Documents(q.Collection(name)));
     },
-    login: function collectionLogin(password, id) {
-      return q.Login(Reference(id ? { collection: name, id } : q.Identity()), {
+    login: function collectionLogin(id, password) {
+      return q.Login(Reference({ collection: name, id }), {
         password
       });
     },

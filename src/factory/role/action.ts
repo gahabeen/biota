@@ -6,6 +6,7 @@ const q = fauna.query;
 // biota
 import { Rules } from "~/factory/api/rule";
 import {
+  is_self,
   is_owner,
   is_not_owner,
   is_assignee,
@@ -16,9 +17,12 @@ import {
   // are_rights_not_changed,
   is_first_argument_identity
 } from "~/framework/api/default/rules";
+import { wrapDoc } from "~/framework/helpers/wrapDoc";
 
 export function Action(type: FaunaRuleAction): FaunaRuleLambda {
   switch (type) {
+    case "self":
+      return is_self;
     case "owner":
       return is_owner;
     case "not_owner":
@@ -67,10 +71,7 @@ export function ReadAction(
 ): FaunaRuleLambda {
   actions = processActions(actions);
   if (typeof actions === "boolean") return actions;
-  return q.Lambda(
-    ["ref"],
-    q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions))
-  );
+  return q.Lambda("ref", wrapDoc("ref", prepareRules(actions)));
 }
 
 export function WriteAction(
@@ -136,7 +137,7 @@ export function UnrestrictedReadAction(
 ): FaunaRuleLambda {
   actions = processActions(actions);
   if (typeof actions === "boolean") return actions;
-  return false; // UPDATE!
+  return prepareRules(actions);
 }
 
 export function CallAction(

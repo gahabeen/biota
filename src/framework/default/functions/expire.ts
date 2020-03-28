@@ -17,5 +17,5 @@ export const Expire = UDFunction({
       )
     )
   ),
-  role: q.Role("augmented_user")
+
 });

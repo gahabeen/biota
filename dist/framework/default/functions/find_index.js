@@ -16,7 +16,7 @@ exports.FindIndex = udfunction_1.UDFunction({
         ])))))),
         termsCount: faunadb_1.query.Count(faunadb_1.query.Var("terms_fields")),
         filteredIndexes: faunadb_1.query.Filter(faunadb_1.query.Var("indexes"), faunadb_1.query.Lambda(["index"], faunadb_1.query.Equals(faunadb_1.query.Var("termsCount"), faunadb_1.query.Count(faunadb_1.query.Select("terms", faunadb_1.query.Get(faunadb_1.query.Var("index")), Infinity)))))
-    }, faunadb_1.query.Select(0, faunadb_1.query.Var("filteredIndexes"), null))))
-    // role: q.Role("augmented_user")
+    }, faunadb_1.query.Select(0, faunadb_1.query.Var("filteredIndexes"), null)))),
+    role: faunadb_1.query.Role("system")
 });
 //# sourceMappingURL=find_index.js.map

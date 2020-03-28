@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// external
 // biota
 const index_1 = require("~/index");
 const tasks_1 = require("~/tasks");
 const helpers = require("~/helpers");
 const index_2 = require("~/factory/api/index");
+const udfunction_1 = require("~/factory/api/udfunction");
 const upsert_1 = require("~/factory/api/upsert");
+const update_1 = require("~/factory/api/update");
 const collectionFactory = require("~/factory/api/collection");
 function collection(collectionNameOrOptions) {
     let self = this;
@@ -88,48 +89,81 @@ function collection(collectionNameOrOptions) {
         ];
         return tasks_1.execute(tasks);
     };
-    methods.searchable = async function searchable(field) {
-        if (typeof field === "string") {
-            return methods.field({ field, searchable: true });
-        }
-        else {
-            return methods.field({
-                ...field,
-                searchable: true
-            });
-        }
+    methods.searchable = async function searchable(field, options = {}) {
+        let { role } = options;
+        let tasks = [];
+        tasks.push({
+            name: `Adding searchable field ${field} on ${collectionDefinition.name}`,
+            task() {
+                let config = {
+                    ...field,
+                    searchable: true
+                };
+                if (typeof field === "string") {
+                    config = { field, searchable: true };
+                }
+                return methods.field(config).then(async (res) => {
+                    let { ref, name } = res[0] || {};
+                    if (name && role) {
+                        await tasks_1.execute([
+                            {
+                                name: `Adding privilege (read) for index ${name} on ${role}`,
+                                task() {
+                                    return self.query(update_1.update.role(role, {
+                                        privileges: [
+                                            {
+                                                resource: ref,
+                                                actions: {
+                                                    read: true,
+                                                    history_read: true
+                                                }
+                                            }
+                                        ]
+                                    }));
+                                },
+                                fullError: true
+                            }
+                        ]);
+                    }
+                    return res;
+                });
+            }
+        });
+        return tasks_1.execute(tasks);
     };
     methods.scaffold = async function scaffold() {
         let activitySearchableFields = [
-            "access.roles",
-            "access.owner",
-            "access.assignees",
-            "activity.assigned_by",
-            "activity.assigned_at",
-            "activity.owner_changed_by",
-            "activity.owner_changed_at",
-            "activity.credentials_changed_by",
-            "activity.credentials_changed_at",
-            "activity.imported_by",
-            "activity.imported_at",
-            "activity.created_by",
-            "activity.created_at",
-            "activity.updated_by",
-            "activity.updated_at",
-            "activity.replaced_by",
-            "activity.replaced_at",
-            "activity.expired_by",
-            "activity.expired_at",
-            "activity.deleted_by",
-            "activity.deleted_at",
-            "activity.archived_by",
-            "activity.archived_at",
-            "activity.hidden_by",
-            "activity.hidden_at"
+            "~ref",
+            "~ts"
+            // "access.roles",
+            // "access.owner",
+            // "access.assignees",
+            // "activity.assigned_by",
+            // "activity.assigned_at",
+            // "activity.owner_changed_by",
+            // "activity.owner_changed_at",
+            // "activity.credentials_changed_by",
+            // "activity.credentials_changed_at",
+            // "activity.imported_by",
+            // "activity.imported_at",
+            // "activity.created_by",
+            // "activity.created_at",
+            // "activity.updated_by",
+            // "activity.updated_at",
+            // "activity.replaced_by",
+            // "activity.replaced_at",
+            // "activity.expired_by",
+            // "activity.expired_at",
+            // "activity.deleted_by",
+            // "activity.deleted_at",
+            // "activity.archived_by",
+            // "activity.archived_at",
+            // "activity.hidden_by",
+            // "activity.hidden_at"
         ];
         let tasks = [
             {
-                name: `Upserting collection: ${collectionDefinition.name}`,
+                name: `Upserting collection (${collectionDefinition.name})`,
                 async task() {
                     return self.query(upsert_1.upsert.collection(collectionDefinition));
                 }
@@ -137,9 +171,9 @@ function collection(collectionNameOrOptions) {
         ];
         for (let searchableField of activitySearchableFields) {
             tasks.push({
-                name: `Upserting searchable field: ${searchableField}`,
+                name: `Upserting searchable field (${searchableField}) on (${collectionDefinition.name})`,
                 async task() {
-                    return methods.searchable(searchableField);
+                    return methods.searchable(searchableField, { role: "user" });
                 }
             });
         }
@@ -172,6 +206,29 @@ function collection(collectionNameOrOptions) {
             });
         }
         return tasks_1.execute(tasks);
+    };
+    methods.search = function* search(searchTerms, paginateOptions = {}) {
+        let firstRequest = true;
+        let after;
+        while (after || firstRequest) {
+            if (firstRequest)
+                firstRequest = false;
+            yield self
+                .query(index_1.q.Call(udfunction_1.BiotaUDFunctionName("Search"), [
+                index_1.q.Collection(collectionDefinition.name),
+                searchTerms,
+                { after, ...paginateOptions }
+            ]))
+                .then((res) => {
+                if (res.after) {
+                    after = res.after;
+                }
+                else {
+                    after = undefined;
+                }
+                return res;
+            });
+        }
     };
     return methods;
 }
