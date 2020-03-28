@@ -10,12 +10,12 @@ export const Update = UDFunction({
   name: "Update",
   body: q.Query(
     q.Lambda(
-      ["user", "ref", "data"],
+      ["userRef", "ref", "data"],
       WrapActionToLog(
         "update",
         q.Update(q.Var("ref"), { data: logData.update() })
       )
     )
   ),
-  role: q.Role("AugmentedUser")
+  role: q.Role("augmented_user")
 });

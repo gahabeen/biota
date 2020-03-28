@@ -25,7 +25,17 @@ function Action(type) {
     }
 }
 exports.Action = Action;
-function processActions(actions) {
+function processActions(actions, defaultActions = []) {
+    if (!actions && defaultActions.length === 0)
+        return false;
+    if (!Array.isArray(actions)) {
+        return [actions, ...defaultActions];
+    }
+    else {
+        return [...actions, ...defaultActions];
+    }
+}
+function prepareRules(actions) {
     return rule_1.Rules(actions.map(action => {
         if (typeof action === "string") {
             return Action(action);
@@ -36,72 +46,75 @@ function processActions(actions) {
     }));
 }
 function ReadAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
-    return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, processActions(actions)));
+    actions = processActions(actions);
+    if (typeof actions === "boolean")
+        return actions;
+    return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions)));
 }
 exports.ReadAction = ReadAction;
 function WriteAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
-    actions = [
-        ...actions,
-        rules_1.is_activity_not_changed,
-        rules_1.are_rights_not_changed
-    ];
-    return q.Lambda(["oldDoc", "newDoc"], processActions(actions));
+    actions = processActions(actions, [
+    // is_activity_not_changed,
+    // are_rights_not_changed
+    ]);
+    if (typeof actions === "boolean")
+        return actions;
+    return q.Lambda(["oldDoc", "newDoc"], prepareRules(actions));
 }
 exports.WriteAction = WriteAction;
 function CreateAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
-    actions = [
-        ...actions,
-        rules_1.is_activity_not_changed,
-        rules_1.are_rights_not_changed
-    ];
-    return q.Lambda(["doc"], processActions(actions));
+    if (actions) {
+        actions = processActions(actions, [
+        // is_activity_not_changed,
+        // are_rights_not_changed
+        ]);
+        if (typeof actions === "boolean")
+            return actions;
+        return q.Lambda(["doc"], prepareRules(actions));
+    }
+    return false;
 }
 exports.CreateAction = CreateAction;
 function DeleteAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
-    return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, processActions(actions)));
+    actions = processActions(actions);
+    if (typeof actions === "boolean")
+        return actions;
+    return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions)));
 }
 exports.DeleteAction = DeleteAction;
 function HistoryReadAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
-    return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, processActions(actions)));
+    actions = processActions(actions);
+    if (typeof actions === "boolean")
+        return actions;
+    return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions)));
 }
 exports.HistoryReadAction = HistoryReadAction;
 function HistoryWriteAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
-    actions = [
-        ...actions,
-        rules_1.is_activity_not_changed,
-        rules_1.are_rights_not_changed
-    ];
-    return q.Lambda(["ref", "ts", "action", "doc"], processActions(actions));
+    actions = processActions(actions, [
+    // is_activity_not_changed,
+    // are_rights_not_changed
+    ]);
+    if (typeof actions === "boolean")
+        return actions;
+    return q.Lambda(["ref", "ts", "action", "doc"], prepareRules(actions));
 }
 exports.HistoryWriteAction = HistoryWriteAction;
 function UnrestrictedReadAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
+    actions = processActions(actions);
+    if (typeof actions === "boolean")
+        return actions;
     return false; // UPDATE!
 }
 exports.UnrestrictedReadAction = UnrestrictedReadAction;
 function CallAction(actions) {
-    if (!Array.isArray(actions))
-        actions = [actions];
-    actions = [
-        ...actions,
-        rules_1.is_first_argument_identity,
-        rules_1.is_activity_not_changed,
-        rules_1.are_rights_not_changed
-    ];
-    return q.Lambda(["args"], processActions(actions));
+    actions = processActions(actions, [
+    // is_first_argument_identity
+    // is_activity_not_changed,
+    // are_rights_not_changed
+    ]);
+    if (typeof actions === "boolean")
+        return actions;
+    return q.Lambda("args", prepareRules(actions));
 }
 exports.CallAction = CallAction;
 //# sourceMappingURL=action.js.map

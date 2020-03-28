@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function IndexName(name) {
+function BiotaIndexName(name) {
     return `biota.${name.replace('biota.', '')}`;
 }
-exports.IndexName = IndexName;
+exports.BiotaIndexName = BiotaIndexName;
 function Index(index) {
     let { name, source = {}, terms = [], values = [], unique = false, serialized = false, permissions = {}, data = {} } = index || {};
     let self = {
-        name: IndexName(name),
+        name: BiotaIndexName(name),
         source,
         terms,
         values,

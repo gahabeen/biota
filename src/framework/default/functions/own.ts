@@ -14,5 +14,5 @@ export const Own = UDFunction({
       WrapActionToLog("own", q.Update(q.Var("ref"), { data: logData.own() }))
     )
   ),
-  role: q.Role("AugmentedUser")
+  role: q.Role("augmented_user")
 });

@@ -17,5 +17,5 @@ export const Assign = UDFunction({
       )
     )
   ),
-  role: q.Role("AugmentedUser")
+  role: q.Role("augmented_user")
 });

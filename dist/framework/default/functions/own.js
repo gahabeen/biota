@@ -10,6 +10,6 @@ const logData_1 = require("~/framework/helpers/logData");
 exports.Own = udfunction_1.UDFunction({
     name: "Own",
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["user", "ref", "data"], wrapActionToLog_1.WrapActionToLog("own", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.own() })))),
-    role: faunadb_1.query.Role("AugmentedUser")
+    role: faunadb_1.query.Role("augmented_user")
 });
 //# sourceMappingURL=own.js.map

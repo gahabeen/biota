@@ -17,5 +17,5 @@ export const Import = UDFunction({
       )
     )
   )
-  // role: q.Role("AugmentedUser")
+  // role: q.Role("augmented_user")
 });

@@ -233,6 +233,7 @@ export interface DBFrameworkCollectionFieldOptions {
   binding?: Fauna.Expr;
   autocomplete?: boolean;
   searchable?: boolean;
+  reverse?: boolean;
   unique?: boolean;
   serialized?: boolean;
   permissions?: object;
@@ -371,14 +372,14 @@ export interface FaunaRolePrivilegeDefault {
 }
 
 export interface FaunaRolePrivilegeActionsDefault {
-  create?: FaunaRuleAction;
-  delete?: FaunaRuleAction;
-  read?: FaunaRuleAction;
-  write?: FaunaRuleAction;
-  history_read?: FaunaRuleAction;
-  history_write?: FaunaRuleAction;
-  unrestricted_read?: FaunaRuleAction;
-  call?: FaunaRuleAction;
+  create?: Fauna.Expr | FaunaRuleAction;
+  delete?: Fauna.Expr | FaunaRuleAction;
+  read?: Fauna.Expr | FaunaRuleAction;
+  write?: Fauna.Expr | FaunaRuleAction;
+  history_read?: Fauna.Expr | FaunaRuleAction;
+  history_write?: Fauna.Expr | FaunaRuleAction;
+  unrestricted_read?: Fauna.Expr | FaunaRuleAction;
+  call?: Fauna.Expr | FaunaRuleAction;
 }
 
 export interface ReferenceBuilder {
@@ -438,6 +439,7 @@ export interface Action {
 export interface DocumentAccess {
   owner?: FaunaRef;
   assignees?: FaunaRef[];
+  roles?: String[];
 }
 
 export interface DocumentActivity {

@@ -1,14 +1,14 @@
 import { FaunaIndexOptions } from '~/../types/db'
 
 
-export function IndexName(name: string) {
+export function BiotaIndexName(name: string) {
   return `biota.${name.replace('biota.', '')}`
 }
 
 export function Index(index: FaunaIndexOptions): FaunaIndexOptions {
   let { name, source = {}, terms = [], values = [], unique = false, serialized = false, permissions = {}, data = {} } = index || {}
   let self = {
-    name: IndexName(name),
+    name: BiotaIndexName(name),
     source,
     terms,
     values,

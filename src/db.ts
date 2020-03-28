@@ -7,7 +7,8 @@ import {
   DBFrameworkRelation,
   DBFrameworkDefault,
   DBFrameworkGraphQL,
-  DBFrameworkImport
+  DBFrameworkImport,
+  FaunaCollectionOptions
 } from "~/../types/db";
 import { Task } from "~/../types/task";
 // external
@@ -43,7 +44,7 @@ export class DB {
   ql: DBFactoryQL;
   client: Fauna.Client;
 
-  collection: DBFrameworkCollection;
+  collection: (collectionName: string | FaunaCollectionOptions) => DBFrameworkCollection;
   default: DBFrameworkDefault;
   foundation: DBFrameworkFoundation;
   graphql: DBFrameworkGraphQL;

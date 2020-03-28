@@ -1,10 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
+function BiotaUDFunctionName(name) {
+    return `biota.${name.replace("biota.", "")}`;
+}
+exports.BiotaUDFunctionName = BiotaUDFunctionName;
 function UDFunction(fn) {
     let { name = "", body, data, role } = fn || {};
     let self = {
-        name: `biota.${name.replace("biota.", "")}`,
+        name: BiotaUDFunctionName(name),
         body,
         data,
         role

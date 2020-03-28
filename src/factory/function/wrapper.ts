@@ -2,10 +2,14 @@
 import { FaunaFunctionOptions, FaunaRef, Fauna } from "~/../types/db";
 // external
 
+export function BiotaUDFunctionName(name: string) {
+  return `biota.${name.replace("biota.", "")}`;
+}
+
 export function UDFunction(fn: FaunaFunctionOptions): FaunaFunctionOptions {
   let { name = "", body, data, role } = fn || {};
   let self = {
-    name: `biota.${name.replace("biota.", "")}`,
+    name: BiotaUDFunctionName(name),
     body,
     data,
     role

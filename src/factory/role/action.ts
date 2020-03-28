@@ -12,8 +12,8 @@ import {
   is_not_assignee,
   all,
   none,
-  is_activity_not_changed,
-  are_rights_not_changed,
+  // is_activity_not_changed,
+  // are_rights_not_changed,
   is_first_argument_identity
 } from "~/framework/api/default/rules";
 
@@ -37,6 +37,18 @@ export function Action(type: FaunaRuleAction): FaunaRuleLambda {
 }
 
 function processActions(
+  actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[],
+  defaultActions: FaunaRuleAction[] = []
+) {
+  if (!actions && defaultActions.length === 0) return false;
+  if (!Array.isArray(actions)) {
+    return [actions, ...defaultActions];
+  } else {
+    return [...actions, ...defaultActions];
+  }
+}
+
+function prepareRules(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
   return Rules(
@@ -53,85 +65,88 @@ function processActions(
 export function ReadAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
+  actions = processActions(actions);
+  if (typeof actions === "boolean") return actions;
   return q.Lambda(
     ["ref"],
-    q.Let({ doc: q.Get(q.Var("ref")) }, processActions(actions))
+    q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions))
   );
 }
 
 export function WriteAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
-  actions = [
-    ...(actions as []),
-    is_activity_not_changed,
-    are_rights_not_changed
-  ];
-  return q.Lambda(["oldDoc", "newDoc"], processActions(actions));
+  actions = processActions(actions, [
+    // is_activity_not_changed,
+    // are_rights_not_changed
+  ]);
+  if (typeof actions === "boolean") return actions;
+  return q.Lambda(["oldDoc", "newDoc"], prepareRules(actions));
 }
 
 export function CreateAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
-  actions = [
-    ...(actions as []),
-    is_activity_not_changed,
-    are_rights_not_changed
-  ];
-  return q.Lambda(["doc"], processActions(actions));
+  if (actions) {
+    actions = processActions(actions, [
+      // is_activity_not_changed,
+      // are_rights_not_changed
+    ]);
+    if (typeof actions === "boolean") return actions;
+    return q.Lambda(["doc"], prepareRules(actions));
+  }
+  return false;
 }
 
 export function DeleteAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
+  actions = processActions(actions);
+  if (typeof actions === "boolean") return actions;
   return q.Lambda(
     ["ref"],
-    q.Let({ doc: q.Get(q.Var("ref")) }, processActions(actions))
+    q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions))
   );
 }
 
 export function HistoryReadAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
+  actions = processActions(actions);
+  if (typeof actions === "boolean") return actions;
   return q.Lambda(
     ["ref"],
-    q.Let({ doc: q.Get(q.Var("ref")) }, processActions(actions))
+    q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions))
   );
 }
 
 export function HistoryWriteAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
-  actions = [
-    ...(actions as []),
-    is_activity_not_changed,
-    are_rights_not_changed
-  ];
-  return q.Lambda(["ref", "ts", "action", "doc"], processActions(actions));
+  actions = processActions(actions, [
+    // is_activity_not_changed,
+    // are_rights_not_changed
+  ]);
+  if (typeof actions === "boolean") return actions;
+  return q.Lambda(["ref", "ts", "action", "doc"], prepareRules(actions));
 }
 
 export function UnrestrictedReadAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
+  actions = processActions(actions);
+  if (typeof actions === "boolean") return actions;
   return false; // UPDATE!
 }
 
 export function CallAction(
   actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]
 ): FaunaRuleLambda {
-  if (!Array.isArray(actions)) actions = [actions];
-  actions = [
-    ...(actions as []),
-    is_first_argument_identity,
-    is_activity_not_changed,
-    are_rights_not_changed
-  ];
-  return q.Lambda(["args"], processActions(actions));
+  actions = processActions(actions, [
+    // is_first_argument_identity
+    // is_activity_not_changed,
+    // are_rights_not_changed
+  ]);
+  if (typeof actions === "boolean") return actions;
+  return q.Lambda("args", prepareRules(actions));
 }
