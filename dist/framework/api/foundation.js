@@ -6,6 +6,7 @@ const faunadb_1 = require("faunadb");
 const tasks_1 = require("~/tasks");
 const create_1 = require("~/factory/api/create");
 const upsert_1 = require("~/factory/api/upsert");
+const repsert_1 = require("~/factory/api/repsert");
 const defaultFunctions = require("~/framework/api/default/functions");
 const defaultRoles = require("~/framework/api/default/roles");
 const defaultCollections = require("~/framework/api/default/collections");
@@ -16,7 +17,7 @@ async function foundation() {
     /**
      *  Roles (base)
      */
-    if (false) {
+    if (true) {
         for (let defaultRole of Object.values(defaultRoles)) {
             tasks.push({
                 name: `Creating (base) role: ${defaultRole.name}`,
@@ -29,13 +30,14 @@ async function foundation() {
     /**
      *  Functions
      */
-    if (false) {
+    if (true) {
         for (let UDFunction of Object.values(defaultFunctions)) {
             tasks.push({
                 name: `Upserting function: ${UDFunction.name}`,
                 task() {
-                    return self.query(upsert_1.upsert.function(UDFunction));
-                }
+                    return self.query(repsert_1.repsert.function(UDFunction));
+                },
+                fullError: true
             });
         }
     }
@@ -55,7 +57,7 @@ async function foundation() {
     /**
      *  Indexes
      */
-    if (false) {
+    if (true) {
         for (let defaultIndex of Object.values(defaultIndexes)) {
             tasks.push({
                 name: `Upserting index: ${defaultIndex.name}`,
@@ -68,14 +70,14 @@ async function foundation() {
     /**
      *  Roles
      */
-    if (false) {
+    if (true) {
         for (let defaultRole of Object.values(defaultRoles)) {
             tasks.push({
                 name: `Upserting role: ${defaultRole.name}`,
                 task() {
                     return self.query(upsert_1.upsert.role(defaultRole));
                 },
-                fullError: false
+                fullError: true
             });
         }
     }

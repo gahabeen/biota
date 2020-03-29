@@ -5,4 +5,6 @@ var db_1 = require("./db");
 exports.Biota = db_1.DB;
 var faunadb_1 = require("faunadb");
 exports.q = faunadb_1.query;
+var page_1 = require("./page");
+exports.Page = page_1.Page;
 //# sourceMappingURL=index.js.map

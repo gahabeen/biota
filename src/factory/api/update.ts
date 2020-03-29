@@ -33,7 +33,7 @@ export const update: DBFactoryUpdate = {
           q.Var("memberships"),
           [q.Var("memberships")]
         ),
-        filteredPrivileges: q.Filter(
+        differencedPrivileges: q.Filter(
           q.Var("privileges"),
           q.Lambda(
             "privilege",
@@ -56,7 +56,23 @@ export const update: DBFactoryUpdate = {
             )
           )
         ),
-        filteredMembership: q.Filter(
+        filteredPrivileges: q.Filter(
+          q.Var("differencedPrivileges"),
+          q.Lambda(
+            "privilege",
+            q.Let(
+              {
+                resource: q.Select("resource", q.Var("privilege"), false)
+              },
+              q.If(
+                q.IsRef(q.Var("resource")),
+                q.Exists(q.Var("resource")),
+                false
+              )
+            )
+          )
+        ),
+        differencedMembership: q.Filter(
           q.Var("membershipArray"),
           q.Lambda(
             "membership",
@@ -78,17 +94,32 @@ export const update: DBFactoryUpdate = {
               q.If(q.IsEmpty(q.Var("checks")), true, q.And(q.Var("checks")))
             )
           )
+        ),
+        filteredMembership: q.Filter(
+          q.Var("differencedMembership"),
+          q.Lambda(
+            "membership",
+            q.Let(
+              {
+                resource: q.Select("resource", q.Var("membership"), false)
+              },
+              q.If(
+                q.IsRef(q.Var("resource")),
+                q.Exists(q.Var("resource")),
+                false
+              )
+            )
+          )
         )
       },
-      q.Update(q.Role(definition.name), {
-        name: definition.name,
-        membership: q.Distinct(
-          q.Union(q.Var("filteredMembership"), definition.membership || [])
-        ),
-        privileges: q.Distinct(
-          q.Union(q.Var("filteredPrivileges"), definition.privileges || [])
-        )
-      })
+      q.Distinct(q.Union(q.Var("filteredPrivileges"), privileges))
+      // q.Update(q.Role(definition.name), {
+      //   name: definition.name,
+      //   membership: q.Distinct(
+      //     q.Union(q.Var("filteredMembership"), membership)
+      //   ),
+      //   privileges: q.Distinct(q.Union(q.Var("filteredPrivileges"), privileges))
+      // })
     );
   },
   token: function tokenUpdate(id, options) {

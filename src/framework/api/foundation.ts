@@ -6,6 +6,7 @@ import { query as q } from "faunadb";
 import { execute } from "~/tasks";
 import { create } from "~/factory/api/create";
 import { upsert } from "~/factory/api/upsert";
+import { repsert } from "~/factory/api/repsert";
 import * as defaultFunctions from "~/framework/api/default/functions";
 import * as defaultRoles from "~/framework/api/default/roles";
 import * as defaultCollections from "~/framework/api/default/collections";
@@ -19,7 +20,7 @@ export async function foundation(this: DB) {
    *  Roles (base)
    */
 
-  if (false) {
+  if (true) {
     for (let defaultRole of Object.values(defaultRoles)) {
       tasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
@@ -40,13 +41,14 @@ export async function foundation(this: DB) {
    *  Functions
    */
 
-  if (false) {
+  if (true) {
     for (let UDFunction of Object.values(defaultFunctions)) {
       tasks.push({
         name: `Upserting function: ${UDFunction.name}`,
         task() {
-          return self.query(upsert.function(UDFunction));
-        }
+          return self.query(repsert.function(UDFunction));
+        },
+        fullError: true
       });
     }
   }
@@ -70,7 +72,7 @@ export async function foundation(this: DB) {
    *  Indexes
    */
 
-  if (false) {
+  if (true) {
     for (let defaultIndex of Object.values(defaultIndexes)) {
       tasks.push({
         name: `Upserting index: ${defaultIndex.name}`,
@@ -85,14 +87,14 @@ export async function foundation(this: DB) {
    *  Roles
    */
 
-  if (false) {
+  if (true) {
     for (let defaultRole of Object.values(defaultRoles)) {
       tasks.push({
         name: `Upserting role: ${defaultRole.name}`,
         task() {
           return self.query(upsert.role(defaultRole));
         },
-        fullError: false
+        fullError: true
       });
     }
   }

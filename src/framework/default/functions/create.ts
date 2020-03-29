@@ -16,6 +16,5 @@ export const Create = UDFunction({
         q.Create(q.Var("collectionRef"), { data: logData.create() })
       )
     )
-  ),
-
+  )
 });

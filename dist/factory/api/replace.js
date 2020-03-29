@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
 const faunadb_1 = require("faunadb");
+// biota
+// import { DB } from "~/db";
 exports.replace = {
     database: function databaseReplace(name, options) {
         return faunadb_1.query.Replace(faunadb_1.query.Database(name), options);

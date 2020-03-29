@@ -9,7 +9,6 @@ function Cursor(pathArray) {
 exports.Cursor = Cursor;
 function ToCursor(index) {
     const { name, source = {}, terms = [] } = index || {};
-    // const { fields } = source
     let pathArray;
     try {
         pathArray = terms[0].field;

@@ -15,6 +15,7 @@ export interface DBFactory {
   get: DBFactoryGet;
   me: DBFactoryMe;
   replace: DBFactoryReplace;
+  repsert: DBFactoryRepsert;
   update: DBFactoryUpdate;
   upsert: DBFactoryUpsert;
 }
@@ -46,7 +47,7 @@ export interface DBFactoryScaffoldOptions {
   functions?: any[];
   documents?: any[];
 }
-
+export type FaunaPaginateMapper = Fauna.Expr;
 export interface FaunaPaginateOptions {
   ts?: Fauna.Expr;
   after?: Fauna.Expr;
@@ -123,11 +124,21 @@ export interface DBFactoryUpsert {
 }
 
 export interface DBFactoryUpdate {
-  database?: (name: string, options: FaunaDatabaseOptions) => Fauna.Expr;
-  collection?: (name: string, options: FaunaCollectionOptions) => Fauna.Expr;
-  index?: (name: string, options: FaunaIndexOptions) => Fauna.Expr;
-  function?: (name: string, options: FaunaFunctionOptions) => Fauna.Expr;
-  role?: (name: string, options: FaunaRoleOptions) => Fauna.Expr;
+  database?: ValueOptionsFn<FaunaDatabaseOptions>;
+  collection?: ValueOptionsFn<FaunaCollectionOptions>;
+  index?: ValueOptionsFn<FaunaIndexOptions>;
+  function?: ValueOptionsFn<FaunaFunctionOptions>;
+  role?: ValueOptionsFn<FaunaRoleOptions>;
+  token?: (name: FaunaId, options: FaunaTokenOptions) => Fauna.Expr;
+  key?: (name: FaunaId, options: FaunaKeyOptions) => Fauna.Expr;
+}
+
+export interface DBFactoryRepsert {
+  database?: ValueOptionsFn<FaunaDatabaseOptions>;
+  collection?: ValueOptionsFn<FaunaCollectionOptions>;
+  index?: ValueOptionsFn<FaunaIndexOptions>;
+  function?: ValueOptionsFn<FaunaFunctionOptions>;
+  role?: ValueOptionsFn<FaunaRoleOptions>;
   token?: (name: FaunaId, options: FaunaTokenOptions) => Fauna.Expr;
   key?: (name: FaunaId, options: FaunaKeyOptions) => Fauna.Expr;
 }
@@ -206,17 +217,45 @@ export interface DBFactoryCollectionBatch {
   forget?: Fn<Fauna.Expr>;
 }
 
+export interface DBFramework {
+  collection: DBFrameworkCollectionFunction;
+}
+
+export type DBFrameworkCollectionFunction = (
+  collectionName: string | FaunaCollectionOptions
+) => DBFrameworkCollection;
+
 export interface DBFrameworkCollectionSearchableOptions {
-  role?: string;
+  role?: string | string[];
+  roles?: string[];
+  maxLength?: number;
 }
 
 export interface DBFrameworkCollection {
+  value: (value: DBFrameworkCollectionValueOptions) => any;
   field: (field: string | string[] | DBFrameworkCollectionFieldOptions) => any;
+  viewable: (
+    value: DBFrameworkCollectionValueOptions,
+    options?: DBFrameworkCollectionSearchableOptions
+  ) => any;
   searchable: (
     field: string | string[] | DBFrameworkCollectionFieldOptions,
     options?: DBFrameworkCollectionSearchableOptions
   ) => any;
-  search: (params: DBFrameworkCollectionSearchParams) => any;
+  autocomplete: (
+    field: string | string[] | DBFrameworkCollectionFieldOptions,
+    options?: DBFrameworkCollectionSearchableOptions
+  ) => any;
+  search: (
+    searchQuery?: DBFrameworkCollectionSearchParams,
+    paginateOptions?: FaunaPaginateOptions,
+    mapper?: FaunaPaginateMapper
+  ) => Promise<any>;
+  paginate: (
+    searchTerms?: DBFrameworkCollectionSearchParams,
+    paginateOptions?: FaunaPaginateOptions,
+    mapper?: FaunaPaginateMapper
+  ) => AsyncGenerator<any, any, any>;
   scaffold: () => any;
   import: (
     data: any | any[],
@@ -229,10 +268,20 @@ export interface DBFrameworkCollectionImportOptions {
   keepId?: boolean;
 }
 
-export interface DBFrameworkCollectionFieldOptions {
-  field?: string | string[];
+export interface DBFrameworkCollectionValueOptions {
+  field?: string;
   binding?: Fauna.Expr;
-  autocomplete?: boolean;
+  unique?: boolean;
+  serialized?: boolean;
+  data?: any;
+}
+
+export interface DBFrameworkCollectionFieldOptions {
+  field?: string;
+  binding?: Fauna.Expr;
+  ngram?: boolean;
+  ngramMin?: number;
+  ngramMax?: number;
   searchable?: boolean;
   reverse?: boolean;
   unique?: boolean;
@@ -258,10 +307,11 @@ export interface FaunaIndexOptions {
   serialized?: boolean;
   permissions?: object;
   data?: any;
-  addTerm?: Fn<FaunaIndexOptions>;
-  addValue?: Fn<FaunaIndexOptions>;
-  setData?: Fn<FaunaIndexOptions>;
-  toJSON?: Fn<any>;
+  active?: boolean;
+  // addTerm?: Fn<FaunaIndexOptions>;
+  // addValue?: Fn<FaunaIndexOptions>;
+  // setData?: Fn<FaunaIndexOptions>;
+  // toJSON?: Fn<any>;
 }
 
 export interface FaunaIndexSource {
@@ -280,7 +330,7 @@ export interface FaunaIndexTerm {
 }
 
 export interface FaunaIndexValue {
-  field?: string | string[];
+  field?: string[];
   binding?: string;
   reverse?: boolean;
 }

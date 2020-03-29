@@ -28,17 +28,27 @@ exports.update = {
             memberships: faunadb_1.query.Select("membership", faunadb_1.query.Var("role"), []),
             privileges: faunadb_1.query.Select("privileges", faunadb_1.query.Var("role"), []),
             membershipArray: faunadb_1.query.If(faunadb_1.query.IsArray(faunadb_1.query.Var("memberships")), faunadb_1.query.Var("memberships"), [faunadb_1.query.Var("memberships")]),
-            filteredPrivileges: faunadb_1.query.Filter(faunadb_1.query.Var("privileges"), faunadb_1.query.Lambda("privilege", faunadb_1.query.Let({
+            differencedPrivileges: faunadb_1.query.Filter(faunadb_1.query.Var("privileges"), faunadb_1.query.Lambda("privilege", faunadb_1.query.Let({
                 checks: faunadb_1.query.Map(privileges, faunadb_1.query.Lambda("newPrivilege", faunadb_1.query.Not(faunadb_1.query.Equals(faunadb_1.query.Select("resource", faunadb_1.query.Var("privilege"), -1), faunadb_1.query.Select("resource", faunadb_1.query.Var("newPrivilege"), -1)))))
             }, faunadb_1.query.If(faunadb_1.query.IsEmpty(faunadb_1.query.Var("checks")), true, faunadb_1.query.And(faunadb_1.query.Var("checks")))))),
-            filteredMembership: faunadb_1.query.Filter(faunadb_1.query.Var("membershipArray"), faunadb_1.query.Lambda("membership", faunadb_1.query.Let({
+            filteredPrivileges: faunadb_1.query.Filter(faunadb_1.query.Var("differencedPrivileges"), faunadb_1.query.Lambda("privilege", faunadb_1.query.Let({
+                resource: faunadb_1.query.Select("resource", faunadb_1.query.Var("privilege"), false)
+            }, faunadb_1.query.If(faunadb_1.query.IsRef(faunadb_1.query.Var("resource")), faunadb_1.query.Exists(faunadb_1.query.Var("resource")), false)))),
+            differencedMembership: faunadb_1.query.Filter(faunadb_1.query.Var("membershipArray"), faunadb_1.query.Lambda("membership", faunadb_1.query.Let({
                 checks: faunadb_1.query.Map(membership, faunadb_1.query.Lambda("newMembership", faunadb_1.query.Not(faunadb_1.query.Equals(faunadb_1.query.Select("resource", faunadb_1.query.Var("membership"), -1), faunadb_1.query.Select("resource", faunadb_1.query.Var("newMembership"), -1)))))
-            }, faunadb_1.query.If(faunadb_1.query.IsEmpty(faunadb_1.query.Var("checks")), true, faunadb_1.query.And(faunadb_1.query.Var("checks"))))))
-        }, faunadb_1.query.Update(faunadb_1.query.Role(definition.name), {
-            name: definition.name,
-            membership: faunadb_1.query.Distinct(faunadb_1.query.Union(faunadb_1.query.Var("filteredMembership"), definition.membership || [])),
-            privileges: faunadb_1.query.Distinct(faunadb_1.query.Union(faunadb_1.query.Var("filteredPrivileges"), definition.privileges || []))
-        }));
+            }, faunadb_1.query.If(faunadb_1.query.IsEmpty(faunadb_1.query.Var("checks")), true, faunadb_1.query.And(faunadb_1.query.Var("checks")))))),
+            filteredMembership: faunadb_1.query.Filter(faunadb_1.query.Var("differencedMembership"), faunadb_1.query.Lambda("membership", faunadb_1.query.Let({
+                resource: faunadb_1.query.Select("resource", faunadb_1.query.Var("membership"), false)
+            }, faunadb_1.query.If(faunadb_1.query.IsRef(faunadb_1.query.Var("resource")), faunadb_1.query.Exists(faunadb_1.query.Var("resource")), false))))
+        }, faunadb_1.query.Distinct(faunadb_1.query.Union(faunadb_1.query.Var("filteredPrivileges"), privileges))
+        // q.Update(q.Role(definition.name), {
+        //   name: definition.name,
+        //   membership: q.Distinct(
+        //     q.Union(q.Var("filteredMembership"), membership)
+        //   ),
+        //   privileges: q.Distinct(q.Union(q.Var("filteredPrivileges"), privileges))
+        // })
+        );
     },
     token: function tokenUpdate(id, options) {
         return faunadb_1.query.Update(faunadb_1.query.Ref(faunadb_1.query.Tokens(), id), options);

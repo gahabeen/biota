@@ -8,6 +8,7 @@ const udfunction_1 = require("~/factory/api/udfunction");
 // framework
 const has_role_1 = require("~/framework/default/rules/has_role");
 const wrapDoc_1 = require("~/framework/helpers/wrapDoc");
+// import { is_document_available } from "~/framework/default/rules/is_document_available";
 exports.user = role_1.Role({
     name: "user",
     membership: {
@@ -29,7 +30,7 @@ exports.user = role_1.Role({
          * Functions
          */
         role_1.Privilege({
-            resource: faunadb_1.query.Function(udfunction_1.BiotaUDFunctionName("Search")),
+            resource: faunadb_1.query.Function(udfunction_1.BiotaUDFunctionName("SearchQuery")),
             actions: { call: "all" }
         })
     ]

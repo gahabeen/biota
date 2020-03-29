@@ -13,3 +13,7 @@
 ## collections
 naming:
 - should be plural (and contain an s ending the collection name)
+
+
+## ideas
+- add search for ided fields

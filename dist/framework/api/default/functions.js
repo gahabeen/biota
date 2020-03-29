@@ -4,7 +4,7 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("~/framework/default/functions/find_index"));
-__export(require("~/framework/default/functions/search"));
+__export(require("~/framework/default/functions/search_query"));
 __export(require("~/framework/default/functions/create"));
 __export(require("~/framework/default/functions/update"));
 // export * from "~/framework/default/functions/import";

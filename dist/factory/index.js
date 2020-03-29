@@ -7,6 +7,8 @@ exports.role = require("./api/role");
 exports.rule = require("./api/rule");
 exports.ql = require("./api/ql");
 // crud
+var collection_1 = require("./api/collection");
+exports.collection = collection_1.collection;
 var get_1 = require("./api/get");
 exports.get = get_1.get;
 var create_1 = require("./api/create");
@@ -15,6 +17,8 @@ var update_1 = require("./api/update");
 exports.update = update_1.update;
 var upsert_1 = require("./api/upsert");
 exports.upsert = upsert_1.upsert;
+var repsert_1 = require("./api/repsert");
+exports.repsert = repsert_1.repsert;
 var replace_1 = require("./api/replace");
 exports.replace = replace_1.replace;
 var forget_1 = require("./api/forget");

@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fauna = require("faunadb");
 // biota
 const framework = require("~/framework");
+const factory = require("~/factory");
 const tasks_1 = require("~/tasks");
 function bindThis(self, rootKey) {
     const resolver = value => {
@@ -33,6 +34,10 @@ class DB {
         this.foundation = framework.foundation.bind(this);
         this.collection = framework.collection.bind(this);
         bindThis(this, "collection");
+        this.factory = factory;
+        bindThis(this, "factory");
+        this.framework = framework;
+        bindThis(this, "framework");
         // this.create = framework.create.bind(this)
         // bindThis(this, "collection")
         // this.scaffold = scaffold;

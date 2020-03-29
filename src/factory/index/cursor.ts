@@ -11,7 +11,6 @@ export function Cursor(pathArray: string | string[]) {
 
 export function ToCursor(index: FaunaIndexOptions): FaunaIndexOptions {
   const { name, source = {}, terms = [] } = index || {}
-  // const { fields } = source
   let pathArray
   try {
     pathArray = terms[0].field

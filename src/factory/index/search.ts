@@ -18,7 +18,6 @@ export function NGramOnField(depth: number = 10, field: string[]): Fauna.Expr {
 
 export function SearchIndex(collection: string, depth: number = 10, fields: string[][]): Fauna.Expr {
   return Index({
-
     name: `${collection}__search_on__${fields.map((field) => field.join('_')).join('_and_')}`,
     source: {
       collection: q.Collection(collection),

@@ -1,5 +1,5 @@
 export * from "~/framework/default/functions/find_index";
-export * from "~/framework/default/functions/search";
+export * from "~/framework/default/functions/search_query";
 
 export * from "~/framework/default/functions/create";
 export * from "~/framework/default/functions/update";

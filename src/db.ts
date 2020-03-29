@@ -2,19 +2,22 @@
 import {
   Fauna,
   DBFactoryQL,
+  FaunaCollectionOptions,
+  DBFramework,
   DBFrameworkCollection,
-  DBFrameworkFoundation,
-  DBFrameworkRelation,
   DBFrameworkDefault,
+  DBFrameworkFoundation,
   DBFrameworkGraphQL,
   DBFrameworkImport,
-  FaunaCollectionOptions
+  DBFrameworkRelation,
+  DBFactory
 } from "~/../types/db";
 import { Task } from "~/../types/task";
 // external
 import * as fauna from "faunadb";
 // biota
 import * as framework from "~/framework";
+import * as factory from "~/factory";
 import { execute } from "~/tasks";
 
 function bindThis(self, rootKey) {
@@ -36,7 +39,7 @@ function bindThis(self, rootKey) {
 
 export class DB {
   query: (fqlQuery: Fauna.Expr) => any;
-  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => any;
+  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
   login: (id: Fauna.Expr, password: string) => any;
   execute: (tasks: Task[]) => Promise<void>;
 
@@ -44,7 +47,12 @@ export class DB {
   ql: DBFactoryQL;
   client: Fauna.Client;
 
-  collection: (collectionName: string | FaunaCollectionOptions) => DBFrameworkCollection;
+  factory: DBFactory;
+  framework: DBFramework;
+
+  collection: (
+    collectionName: string | FaunaCollectionOptions
+  ) => DBFrameworkCollection;
   default: DBFrameworkDefault;
   foundation: DBFrameworkFoundation;
   graphql: DBFrameworkGraphQL;
@@ -62,6 +70,13 @@ export class DB {
 
     this.collection = framework.collection.bind(this);
     bindThis(this, "collection");
+
+    this.factory = factory;
+    bindThis(this, "factory");
+
+    this.framework = framework;
+    bindThis(this, "framework");
+
     // this.create = framework.create.bind(this)
     // bindThis(this, "collection")
     // this.scaffold = scaffold;

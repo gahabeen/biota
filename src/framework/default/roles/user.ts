@@ -8,7 +8,7 @@ import { BiotaUDFunctionName } from "~/factory/api/udfunction";
 // framework
 import { has_role } from "~/framework/default/rules/has_role";
 import { wrapDoc } from "~/framework/helpers/wrapDoc";
-import { is_document_available } from "~/framework/default/rules/is_document_available";
+// import { is_document_available } from "~/framework/default/rules/is_document_available";
 
 export const user: FaunaRoleOptions = Role({
   name: "user",
@@ -35,7 +35,7 @@ export const user: FaunaRoleOptions = Role({
      */
 
     Privilege({
-      resource: q.Function(BiotaUDFunctionName("Search")),
+      resource: q.Function(BiotaUDFunctionName("SearchQuery")),
       actions: { call: "all" }
     })
   ]
