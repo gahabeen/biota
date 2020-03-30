@@ -11,6 +11,9 @@ const index_1 = require("./index");
 const udfunction_1 = require("./udfunction");
 const role_1 = require("./role");
 exports.create = {
+    // document: function documentCreate(collectionName, options){
+    //   return q.Create(Database(definition));
+    // },
     database: function databaseCreate(name, options = {}) {
         let definition = helpers_1.nameOrOptions(name, options);
         return faunadb_1.query.CreateDatabase(database_1.Database(definition));

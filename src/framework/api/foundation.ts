@@ -11,6 +11,7 @@ import * as defaultFunctions from "~/framework/api/default/functions";
 import * as defaultRoles from "~/framework/api/default/roles";
 import * as defaultCollections from "~/framework/api/default/collections";
 import * as defaultIndexes from "~/framework/api/default/indexes";
+import { name } from "~/helpers";
 
 export async function foundation(this: DB) {
   const self = this;
@@ -20,7 +21,7 @@ export async function foundation(this: DB) {
    *  Roles (base)
    */
 
-  if (true) {
+  if (false) {
     for (let defaultRole of Object.values(defaultRoles)) {
       tasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
@@ -41,7 +42,7 @@ export async function foundation(this: DB) {
    *  Functions
    */
 
-  if (true) {
+  if (false) {
     for (let UDFunction of Object.values(defaultFunctions)) {
       tasks.push({
         name: `Upserting function: ${UDFunction.name}`,
@@ -58,12 +59,66 @@ export async function foundation(this: DB) {
    */
 
   if (true) {
-    for (let defaultCollection of Object.values(defaultCollections)) {
+    if (false) {
       tasks.push({
-        name: `Scaffold collection: ${defaultCollection.name}`,
+        name: `Scaffold collection: ${defaultCollections.users.name}`,
         task() {
-          return self.collection(defaultCollection).scaffold();
+          return self.collection(defaultCollections.users).scaffold();
         }
+      });
+    }
+
+    if (false) {
+      tasks.push({
+        name: `Scaffold collection: ${defaultCollections.actions.name}`,
+        task() {
+          return self
+            .collection(defaultCollections.actions)
+            .scaffold({ searchable: ["document", "ts", "user", "name"] });
+        }
+      });
+    }
+
+    if (true) {
+      tasks.push({
+        name: `Scaffold collection: ${defaultCollections.relations.name}`,
+        task() {
+          return self.collection(defaultCollections.relations).scaffold({
+            searchable: [
+              "name",
+              "parts.relation",
+              "parts.collection",
+              "parts.path"
+            ],
+            fields: [
+              {
+                field: "uniqueness_check",
+                unique: true,
+                values: [
+                  {
+                    field: ["data", "parts", "0", "relation"]
+                  },
+                  {
+                    field: ["data", "parts", "0", "collection"]
+                  },
+                  {
+                    field: ["data", "parts", "0", "path"]
+                  },
+                  {
+                    field: ["data", "parts", "1", "relation"]
+                  },
+                  {
+                    field: ["data", "parts", "1", "collection"]
+                  },
+                  {
+                    field: ["data", "parts", "1", "path"]
+                  }
+                ]
+              }
+            ]
+          });
+        },
+        fullError: true
       });
     }
   }
@@ -72,7 +127,7 @@ export async function foundation(this: DB) {
    *  Indexes
    */
 
-  if (true) {
+  if (false) {
     for (let defaultIndex of Object.values(defaultIndexes)) {
       tasks.push({
         name: `Upserting index: ${defaultIndex.name}`,
@@ -87,7 +142,7 @@ export async function foundation(this: DB) {
    *  Roles
    */
 
-  if (true) {
+  if (false) {
     for (let defaultRole of Object.values(defaultRoles)) {
       tasks.push({
         name: `Upserting role: ${defaultRole.name}`,

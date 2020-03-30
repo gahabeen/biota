@@ -9,7 +9,16 @@ const wrapActionToLog_1 = require("~/framework/helpers/wrapActionToLog");
 const logData_1 = require("~/framework/helpers/logData");
 exports.Import = udfunction_1.UDFunction({
     name: "Import",
-    body: faunadb_1.query.Query(faunadb_1.query.Lambda(["user", "ref", "data"], wrapActionToLog_1.WrapActionToLog("import", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.import() }))))
+    body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "options"], wrapActionToLog_1.WrapActionToLog("import", faunadb_1.query.Let({
+        data: faunadb_1.query.Select("data", faunadb_1.query.Var("options"), {}),
+        credentials: faunadb_1.query.Select("credentials", faunadb_1.query.Var("options"), {})
+    }, faunadb_1.query.If(faunadb_1.query.Exists(faunadb_1.query.Var("ref")), faunadb_1.query.Replace(faunadb_1.query.Var("ref"), {
+        data: logData_1.logData.import(),
+        credentials: faunadb_1.query.Var("credentials")
+    }), faunadb_1.query.Create(faunadb_1.query.Var("ref"), {
+        data: logData_1.logData.import(),
+        credentials: faunadb_1.query.Var("credentials")
+    }))))))
     //
 });
 //# sourceMappingURL=import.js.map

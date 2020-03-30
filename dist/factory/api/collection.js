@@ -26,7 +26,7 @@ function collection(name = undefined) {
         },
         changePassword: function collectionChangePassword(password) {
             return faunadb_1.query.Call("biota.ChangePassword", [
-                faunadb_1.query.Identity(),
+                faunadb_1.query.If(faunadb_1.query.HasIdentity(), faunadb_1.query.Identity(), null),
                 faunadb_1.query.Identity(),
                 password
             ]);
@@ -34,28 +34,52 @@ function collection(name = undefined) {
         get: function collectionGet(id) {
             return faunadb_1.query.Get(faunadb_1.query.Ref(faunadb_1.query.Collection(name), id));
         },
-        create: function collectionCreate(data, { id, password } = {}) {
-            return faunadb_1.query.Call("biota.Create", [
-                faunadb_1.query.Identity(),
+        import: function collectionImport(data, options = {}) {
+            let { id, password } = options;
+            return faunadb_1.query.Call("biota.Import", [
+                faunadb_1.query.If(faunadb_1.query.HasIdentity(), faunadb_1.query.Identity(), null),
                 ql_1.Reference({ collection: name, id }),
                 { data, credentials: { password } }
             ]);
         },
-        update: function collectionUpdate(id, data) {
+        create: function collectionCreate(data, { id, password } = {}) {
+            return faunadb_1.query.Call("biota.Create", [
+                faunadb_1.query.If(faunadb_1.query.HasIdentity(), faunadb_1.query.Identity(), null),
+                ql_1.Reference({ collection: name, id }),
+                { data, credentials: { password } }
+            ]);
+        },
+        update: function collectionUpdate(data, id) {
             return faunadb_1.query.Call("biota.Update", [
-                faunadb_1.query.Identity(),
+                faunadb_1.query.If(faunadb_1.query.HasIdentity(), faunadb_1.query.Identity(), null),
                 ql_1.Reference({ collection: name, id }),
                 { data }
             ]);
         },
-        upsert: function collectionUpsert(id, data) {
-            return faunadb_1.query.If(faunadb_1.query.Exists(ql_1.Reference({ collection: name, id })), collection(name).update(id, data), collection(name).create(data, { id }));
+        replace: function collectionReplace(data, id) {
+            return faunadb_1.query.Call("biota.Replace", [
+                faunadb_1.query.If(faunadb_1.query.HasIdentity(), faunadb_1.query.Identity(), null),
+                ql_1.Reference({ collection: name, id }),
+                { data }
+            ]);
+        },
+        upsert: function collectionUpsert(data, id) {
+            return faunadb_1.query.If(faunadb_1.query.Exists(ql_1.Reference({ collection: name, id })), collection(name).update(data, id), collection(name).create(data, { id }));
+        },
+        repsert: function collectionRepsert(data, id) {
+            return faunadb_1.query.If(faunadb_1.query.Exists(ql_1.Reference({ collection: name, id })), collection(name).replace(data, id), collection(name).create(data, { id }));
         },
         delete: function collectionDelete(id) {
-            return faunadb_1.query.Update(ql_1.Reference({ collection: name, id }), {});
+            return faunadb_1.query.Call("biota.Delete", [
+                faunadb_1.query.If(faunadb_1.query.HasIdentity(), faunadb_1.query.Identity(), null),
+                ql_1.Reference({ collection: name, id })
+            ]);
         },
         forget: function collectionForget(id) {
-            return faunadb_1.query.Delete(ql_1.Reference({ collection: name, id }));
+            return faunadb_1.query.Call("biota.Forget", [
+                faunadb_1.query.If(faunadb_1.query.HasIdentity(), faunadb_1.query.Identity(), null),
+                ql_1.Reference({ collection: name, id })
+            ]);
         }
     };
 }

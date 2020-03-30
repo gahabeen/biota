@@ -10,10 +10,26 @@ export const Import = UDFunction({
   name: "Import",
   body: q.Query(
     q.Lambda(
-      ["user", "ref", "data"],
+      ["userRef", "ref", "options"],
       WrapActionToLog(
         "import",
-        q.Update(q.Var("ref"), { data: logData.import() })
+        q.Let(
+          {
+            data: q.Select("data", q.Var("options"), {}),
+            credentials: q.Select("credentials", q.Var("options"), {})
+          },
+          q.If(
+            q.Exists(q.Var("ref")),
+            q.Replace(q.Var("ref"), {
+              data: logData.import(),
+              credentials: q.Var("credentials")
+            }),
+            q.Create(q.Var("ref"), {
+              data: logData.import(),
+              credentials: q.Var("credentials")
+            })
+          )
+        )
       )
     )
   )

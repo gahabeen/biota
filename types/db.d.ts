@@ -196,16 +196,27 @@ export interface DBFactoryCollection {
   logout?: (everywhere: boolean) => Fauna.Expr;
   changePassword?: (password: string) => Fauna.Expr;
   get?: (id: FaunaId) => Fauna.Expr;
+  import?: (
+    data: object,
+    options?: DBFactoryCollectionImportOptions
+  ) => Fauna.Expr;
   create?: (
     data: object,
     options?: DBFactoryCollectionCreationOptions
   ) => Fauna.Expr;
-  update?: (id: FaunaId, data: object) => Fauna.Expr;
-  upsert?: (id: FaunaId, data: object) => Fauna.Expr;
+  update?: (data: object, id: FaunaId) => Fauna.Expr;
+  upsert?: (data: object, id: FaunaId) => Fauna.Expr;
+  replace?: (data: object, id: FaunaId) => Fauna.Expr;
+  repsert?: (data: object, id: FaunaId) => Fauna.Expr;
   delete?: (id: FaunaId) => Fauna.Expr;
   forget?: (id: FaunaId) => Fauna.Expr;
   keys?: Fn<Fauna.Expr>;
   batch?: DBFactoryCollectionBatch;
+}
+
+export interface DBFactoryCollectionImportOptions {
+  id?: string;
+  password?: string;
 }
 
 export interface DBFactoryCollectionBatch {
@@ -219,11 +230,16 @@ export interface DBFactoryCollectionBatch {
 
 export interface DBFramework {
   collection: DBFrameworkCollectionFunction;
+  document: DBFrameworkDocumentFunction;
 }
 
 export type DBFrameworkCollectionFunction = (
   collectionName: string | FaunaCollectionOptions
 ) => DBFrameworkCollection;
+
+export type DBFrameworkDocumentFunction = (
+  docRef: FaunaRef
+) => DBFrameworkDocument;
 
 export interface DBFrameworkCollectionSearchableOptions {
   role?: string | string[];
@@ -231,9 +247,20 @@ export interface DBFrameworkCollectionSearchableOptions {
   maxLength?: number;
 }
 
+export interface DBFrameworkDocument {
+  get: () => Promise<any>;
+  view: (field: string | string[]) => Promise<any>;
+}
+
+export interface DBFrameworkCollectionScaffoldOptions {
+  searchable?: string[];
+  viewable?: DBFrameworkCollectionValueOptions[];
+  fields?: DBFrameworkCollectionFieldOptions[];
+}
+
 export interface DBFrameworkCollection {
   value: (value: DBFrameworkCollectionValueOptions) => any;
-  field: (field: string | string[] | DBFrameworkCollectionFieldOptions) => any;
+  field: (field: string | DBFrameworkCollectionFieldOptions) => any;
   viewable: (
     value: DBFrameworkCollectionValueOptions,
     options?: DBFrameworkCollectionSearchableOptions
@@ -256,7 +283,7 @@ export interface DBFrameworkCollection {
     paginateOptions?: FaunaPaginateOptions,
     mapper?: FaunaPaginateMapper
   ) => AsyncGenerator<any, any, any>;
-  scaffold: () => any;
+  scaffold: (options?: DBFrameworkCollectionScaffoldOptions) => any;
   import: (
     data: any | any[],
     options?: DBFrameworkCollectionImportOptions
@@ -271,13 +298,16 @@ export interface DBFrameworkCollectionImportOptions {
 export interface DBFrameworkCollectionValueOptions {
   field?: string;
   binding?: Fauna.Expr;
+  values?: FaunaIndexValue[];
   unique?: boolean;
   serialized?: boolean;
   data?: any;
 }
 
 export interface DBFrameworkCollectionFieldOptions {
+  name?: string;
   field?: string;
+  values?: FaunaIndexValue[];
   binding?: Fauna.Expr;
   ngram?: boolean;
   ngramMin?: number;
@@ -295,6 +325,20 @@ export interface DBFrameworkCollectionSearchParams {
 }
 
 export interface DBFrameworkFoundation {}
+
+export interface DBFrameworkRelationDefinition {
+  name: string;
+  parts: DBFrameworkRelationPart[];
+  destructive?: boolean;
+}
+
+export type DBFrameworkRelationPartRelation = "many" | "one";
+
+export interface DBFrameworkRelationPart {
+  relation: DBFrameworkRelationPartRelation;
+  collection: string;
+  path: string;
+}
 
 export interface DBFrameworkRelation {}
 

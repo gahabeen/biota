@@ -10,7 +10,9 @@ import {
   DBFrameworkGraphQL,
   DBFrameworkImport,
   DBFrameworkRelation,
-  DBFactory
+  DBFactory,
+  FaunaRef,
+  DBFrameworkDocument
 } from "~/../types/db";
 import { Task } from "~/../types/task";
 // external
@@ -39,7 +41,10 @@ function bindThis(self, rootKey) {
 
 export class DB {
   query: (fqlQuery: Fauna.Expr) => any;
-  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
+  paginate: (
+    paginateQuery: Fauna.Expr,
+    paginateOptions?: object
+  ) => AsyncGenerator<any, any, any>;
   login: (id: Fauna.Expr, password: string) => any;
   execute: (tasks: Task[]) => Promise<void>;
 
@@ -50,6 +55,7 @@ export class DB {
   factory: DBFactory;
   framework: DBFramework;
 
+  document: (docRef: FaunaRef) => DBFrameworkDocument;
   collection: (
     collectionName: string | FaunaCollectionOptions
   ) => DBFrameworkCollection;
@@ -64,11 +70,15 @@ export class DB {
     this.query = framework.query.bind(this);
     this.paginate = framework.paginate.bind(this);
     this.login = framework.login.bind(this);
+    this.relation = framework.relation.bind(this);
     this.execute = execute.bind(this);
 
     this.foundation = framework.foundation.bind(this);
 
     this.collection = framework.collection.bind(this);
+    bindThis(this, "collection");
+
+    this.document = framework.document.bind(this);
     bindThis(this, "collection");
 
     this.factory = factory;

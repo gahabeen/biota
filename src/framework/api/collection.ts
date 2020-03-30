@@ -47,6 +47,7 @@ export function collection(
   }
 
   let methods: DBFrameworkCollection = {
+    // async changes(){},
     async value() {},
     async field() {},
     async viewable() {},
@@ -61,14 +62,41 @@ export function collection(
   const valueDefinition = (value: DBFrameworkCollectionValueOptions) => {
     let options: DBFrameworkCollectionValueOptions = {
       field: null,
+      values: [],
       binding: null,
       unique: false,
-      serialized: null,
+      serialized: true,
       data: {}
     };
 
     Object.assign(options, value);
     return options;
+  };
+
+  const fieldDefinition = (field: string | DBFrameworkCollectionFieldOptions) => {
+    let definition: DBFrameworkCollectionFieldOptions = {
+      name: undefined,
+      field: undefined,
+      values: [],
+      binding: undefined,
+      unique: false,
+      ngram: false,
+      ngramMin: 3,
+      ngramMax: 10,
+      searchable: false,
+      data: {},
+      serialized: undefined,
+      permissions: undefined,
+      reverse: false
+    };
+
+    if (typeof field === "string") {
+      definition.name = field;
+      definition.field = field;
+    } else if (typeof field === "object") {
+      Object.assign(definition, field);
+    }
+    return definition;
   };
 
   methods.value = async function valueMethod(value) {
@@ -78,24 +106,27 @@ export function collection(
       name: null,
       source: {
         collection: q.Collection(collectionDefinition.name),
-        fields: {
-          [definition.field]: definition.binding
-        }
+        fields: {}
       },
       terms: [
         {
           field: "ref"
         }
       ],
-      values: [
-        {
-          binding: definition.field
-        }
-      ],
+      values: [],
       unique: definition.unique,
       serialized: definition.serialized,
       data: definition.data
     };
+
+    if (value.binding) {
+      index.source.fields[definition.field] = definition.binding;
+      index.values.push({
+        binding: definition.field
+      });
+    } else if (value.values.length > 0) {
+      index.values.push(...value.values);
+    }
 
     index.name = BiotaIndexName(
       helpers.name([collectionDefinition.name, "view", "as", definition.field])
@@ -106,7 +137,8 @@ export function collection(
         name: `Creating (value) index: ${index.name}`,
         async task() {
           return self.query(upsert.index(index));
-        }
+        },
+        fullError: true
       }
     ];
 
@@ -114,19 +146,7 @@ export function collection(
   };
 
   methods.field = async function fieldMethod(field) {
-    let definition: DBFrameworkCollectionFieldOptions = {
-      field: null,
-      binding: null,
-      unique: false,
-      ngram: false,
-      ngramMin: 3,
-      ngramMax: 10,
-      searchable: false,
-      data: {},
-      serialized: null,
-      permissions: null,
-      reverse: false
-    };
+    let definition: DBFrameworkCollectionFieldOptions = fieldDefinition(field);
 
     let index: FaunaIndexOptions = {
       name: null,
@@ -142,33 +162,78 @@ export function collection(
       data: definition.data
     };
 
-    if (typeof field === "string") {
-      definition.field = field;
-    } else if (typeof field === "object") {
-      Object.assign(definition, field);
-    }
-
-    if (!definition.field) {
-      throw new Error(`biota.field() - no field name has been given`);
-    }
+    // if (!definition.field) {
+    //   throw new Error(`biota.field() - no field name has been given`);
+    // }
 
     index.name = BiotaIndexName(
       helpers.name([
         collectionDefinition.name,
         "searchable",
         "by",
-        helpers.stringPath(definition.field)
+        helpers.stringPath(definition.name)
       ])
     );
 
-    index.terms = [
-      {
-        field: helpers.path(definition.field),
-        reverse: definition.reverse
-      }
-    ];
-
     let tasks = [];
+
+    if (definition.field) {
+      index.terms = [
+        {
+          field: helpers.path(definition.field),
+          reverse: definition.reverse
+        }
+      ];
+
+      if (definition.ngram) {
+        let ngramFieldName = "ngram:" + helpers.stringPath(definition.field);
+        let ngramIndex: FaunaIndexOptions = {
+          name: BiotaIndexName(
+            helpers.name([
+              collectionDefinition.name,
+              "ngram",
+              "on",
+              helpers.stringPath(definition.field)
+            ])
+          ),
+          source: {
+            collection: q.Collection(collectionDefinition.name),
+            fields: {
+              [ngramFieldName]: q.Query(
+                q.Lambda(
+                  "instance",
+                  q.Distinct(
+                    NGramOnField(
+                      definition.ngramMax,
+                      helpers.path(definition.field)
+                    )
+                  )
+                )
+              )
+            }
+          },
+          terms: [
+            {
+              binding: ngramFieldName
+            }
+          ],
+          serialized: true,
+          data: definition.data
+        };
+
+        tasks.push({
+          name: `Creating (ngram search) index: ${ngramIndex.name}`,
+          async task() {
+            return self.query(upsert.index(ngramIndex));
+          },
+          fullError: true
+        });
+      }
+    }
+
+    if (definition.values.length > 0) {
+      index.values = definition.values;
+    }
 
     if (definition.searchable) {
       tasks.push({
@@ -177,50 +242,12 @@ export function collection(
           return self.query(upsert.index(index));
         }
       });
-    }
-
-    if (definition.ngram) {
-      let ngramFieldName = "ngram:" + helpers.stringPath(definition.field);
-      let ngramIndex: FaunaIndexOptions = {
-        name: BiotaIndexName(
-          helpers.name([
-            collectionDefinition.name,
-            "ngram",
-            "on",
-            helpers.stringPath(definition.field)
-          ])
-        ),
-        source: {
-          collection: q.Collection(collectionDefinition.name),
-          fields: {
-            [ngramFieldName]: q.Query(
-              q.Lambda(
-                "instance",
-                q.Distinct(
-                  NGramOnField(
-                    definition.ngramMax,
-                    helpers.path(definition.field)
-                  )
-                )
-              )
-            )
-          }
-        },
-        terms: [
-          {
-            binding: ngramFieldName
-          }
-        ],
-        serialized: true,
-        data: definition.data
-      };
-
+    } else if (definition.unique) {
       tasks.push({
-        name: `Creating (ngram search) index: ${ngramIndex.name}`,
+        name: `Creating (unique) index: ${index.name}`,
         async task() {
-          return self.query(upsert.index(ngramIndex));
-        },
-        fullError: true
+          return self.query(upsert.index(index));
+        }
       });
     }
 
@@ -385,8 +412,8 @@ export function collection(
     return execute(tasks);
   };
 
-  methods.scaffold = async function scaffold() {
-    let activitySearchableFields = [
+  methods.scaffold = async function scaffold(options) {
+    let defaultSearchable = [
       "~ref",
       "~ts",
       "access.roles",
@@ -412,9 +439,12 @@ export function collection(
       // "activity.deleted_at",
       "activity.archived_by",
       // "activity.archived_at",
-      "activity.hidden_by",
+      "activity.hidden_by"
       // "activity.hidden_at"
     ];
+
+    let { searchable = defaultSearchable, viewable = [], fields = [] } =
+      options || {};
 
     let tasks = [
       {
@@ -425,11 +455,31 @@ export function collection(
       }
     ];
 
-    for (let searchableField of activitySearchableFields) {
+    for (let searchableField of searchable) {
       tasks.push({
         name: `Upserting searchable field (${searchableField}) on (${collectionDefinition.name})`,
         async task() {
           return methods.searchable(searchableField, { role: "user" });
+        }
+      });
+    }
+
+    for (let view of viewable) {
+      view = valueDefinition(view);
+      tasks.push({
+        name: `Upserting viewable field (${view.field}) on (${collectionDefinition.name})`,
+        async task() {
+          return methods.viewable(view);
+        }
+      });
+    }
+
+    for (let field of fields) {
+      field = fieldDefinition(field);
+      tasks.push({
+        name: `Upserting viewable field (${field.field}) on (${collectionDefinition.name})`,
+        async task() {
+          return methods.field(field);
         }
       });
     }
@@ -443,33 +493,36 @@ export function collection(
     if (!Array.isArray(items)) items = [items];
     let batches = helpers.splitEvery(batchSize, items);
     let tasks = [];
-    let createQuery: Fauna.Expr;
+
+    let importQuery: Fauna.Expr;
     if (!keepId) {
-      createQuery = collectionFactory
-        .collection(collectionDefinition.name)
-        .create(q.Var("item"));
+      importQuery = q.Create(q.Collection(collectionDefinition.name), {
+        data: q.Var("item")
+      });
     } else {
-      createQuery = collectionFactory
-        .collection(collectionDefinition.name)
-        .upsert(
-          q.Select("id", q.Var("item"), null),
-          q.Select("data", q.Var("item"), null)
-        );
+      let refId = q.Ref(
+        q.Collection(collectionDefinition.name),
+        q.Select("id", q.Var("item"), -1)
+      );
+      importQuery = q.If(
+        q.Exists(refId),
+        q.Update(refId, { data: q.Select("data", q.Var("item"), {}) }),
+        q.Create(refId, {
+          data: q.Select("data", q.Var("item"), {})
+        })
+      );
     }
+
     for (let [index, batch] of Object.entries(batches)) {
       tasks.push({
         name: `Importing batch n°${index + 1} on ${batches.length}`,
         task() {
-          return self.query(q.Map(batch, q.Lambda("item", createQuery)));
+          return self.query(q.Map(batch, q.Lambda("item", importQuery)));
         }
       });
     }
     return execute(tasks);
   };
-
-  /**
-   * db.collection("users").search({$or: [{ "profile.name": "Gabin" }, { "profile.email": "de@gmail.com" }]})
-   */
 
   function parseSearchQuery(collection: string, searchQuery: object) {
     const buildQuery = (sq: Fauna.Expr) => {

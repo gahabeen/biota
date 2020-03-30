@@ -30,9 +30,12 @@ class DB {
         this.query = framework.query.bind(this);
         this.paginate = framework.paginate.bind(this);
         this.login = framework.login.bind(this);
+        this.relation = framework.relation.bind(this);
         this.execute = tasks_1.execute.bind(this);
         this.foundation = framework.foundation.bind(this);
         this.collection = framework.collection.bind(this);
+        bindThis(this, "collection");
+        this.document = framework.document.bind(this);
         bindThis(this, "collection");
         this.factory = factory;
         bindThis(this, "factory");

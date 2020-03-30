@@ -3,8 +3,8 @@
 // biota
 import { Collection, BiotaCollectionName } from "~/factory/api/collection";
 
-export const users = Collection({
-  name: "users",
+export const relations = Collection({
+  name: BiotaCollectionName("relations"),
   history_days: null,
   ttl_days: null
 });

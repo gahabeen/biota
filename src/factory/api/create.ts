@@ -12,6 +12,9 @@ import { UDFunction } from "./udfunction";
 import { Role } from "./role";
 
 export const create: DBFactoryCreate = {
+  // document: function documentCreate(collectionName, options){
+  //   return q.Create(Database(definition));
+  // },
   database: function databaseCreate(name, options = {}) {
     let definition = nameOrOptions(name, options);
     return q.CreateDatabase(Database(definition));

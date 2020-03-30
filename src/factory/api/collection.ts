@@ -26,7 +26,7 @@ export function collection(name: string = undefined): DBFactoryCollection {
     },
     changePassword: function collectionChangePassword(password) {
       return q.Call("biota.ChangePassword", [
-        q.Identity(),
+        q.If(q.HasIdentity(), q.Identity(), null),
         q.Identity(),
         password
       ]);
@@ -34,32 +34,60 @@ export function collection(name: string = undefined): DBFactoryCollection {
     get: function collectionGet(id) {
       return q.Get(q.Ref(q.Collection(name), id));
     },
-    create: function collectionCreate(data, { id, password } = {}) {
-      return q.Call("biota.Create", [
-        q.Identity(),
+    import: function collectionImport(data, options = {}) {
+      let { id, password } = options;
+      return q.Call("biota.Import", [
+        q.If(q.HasIdentity(), q.Identity(), null),
         Reference({ collection: name, id }),
         { data, credentials: { password } }
       ]);
     },
-    update: function collectionUpdate(id, data) {
+    create: function collectionCreate(data, { id, password } = {}) {
+      return q.Call("biota.Create", [
+        q.If(q.HasIdentity(), q.Identity(), null),
+        Reference({ collection: name, id }),
+        { data, credentials: { password } }
+      ]);
+    },
+    update: function collectionUpdate(data, id) {
       return q.Call("biota.Update", [
-        q.Identity(),
+        q.If(q.HasIdentity(), q.Identity(), null),
         Reference({ collection: name, id }),
         { data }
       ]);
     },
-    upsert: function collectionUpsert(id, data) {
+    replace: function collectionReplace(data, id) {
+      return q.Call("biota.Replace", [
+        q.If(q.HasIdentity(), q.Identity(), null),
+        Reference({ collection: name, id }),
+        { data }
+      ]);
+    },
+    upsert: function collectionUpsert(data, id) {
       return q.If(
         q.Exists(Reference({ collection: name, id })),
-        collection(name).update(id, data),
+        collection(name).update(data, id),
+        collection(name).create(data, { id })
+      );
+    },
+    repsert: function collectionRepsert(data, id) {
+      return q.If(
+        q.Exists(Reference({ collection: name, id })),
+        collection(name).replace(data, id),
         collection(name).create(data, { id })
       );
     },
     delete: function collectionDelete(id) {
-      return q.Update(Reference({ collection: name, id }), {});
+      return q.Call("biota.Delete", [
+        q.If(q.HasIdentity(), q.Identity(), null),
+        Reference({ collection: name, id })
+      ]);
     },
     forget: function collectionForget(id) {
-      return q.Delete(Reference({ collection: name, id }));
+      return q.Call("biota.Forget", [
+        q.If(q.HasIdentity(), q.Identity(), null),
+        Reference({ collection: name, id })
+      ]);
     }
   };
 }

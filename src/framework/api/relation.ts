@@ -1,0 +1,124 @@
+import { Fauna, DBFrameworkRelationDefinition } from "~/../types/db";
+// external
+import { DB } from "~/db";
+// biota
+import {
+  CollectionNamePlural,
+  collection,
+  BiotaCollectionName
+} from "~/factory/api/collection";
+import { create } from "~/factory/api/create";
+import { name } from "~/helpers";
+import { execute } from "~/tasks";
+
+export function relation(this: DB, relationName?: string) {
+  let self = this;
+
+  let definition: DBFrameworkRelationDefinition = {
+    name: relationName,
+    // Does the relation implies deep destruction/delete
+    destructive: false,
+    parts: []
+  };
+
+  async function buildRelation() {
+    if (!definition.name) definition.name = name([""]);
+
+    let relations = definition.parts.map(p => p.relation);
+    let firstRelation = definition.parts[0];
+    let secondRelation = definition.parts[1];
+
+    let tasks = [];
+
+    tasks.push({
+      async task() {
+        let existingRelations = await self
+          .collection(BiotaCollectionName("relations"))
+          .search({
+            $and: [
+              {
+                "parts.collection": firstRelation.collection,
+                "parts.relation": firstRelation.relation,
+                "parts.path": firstRelation.path
+              },
+              {
+                "parts.collection": secondRelation.collection,
+                "parts.relation": secondRelation.relation,
+                "parts.path": secondRelation.path
+              }
+            ]
+          });
+
+
+        return self.query(
+          collection(BiotaCollectionName("relations")).create({
+            data: {
+              relations: {}
+            }
+          })
+        );
+      }
+    });
+
+    // one-to-one
+    if (relations.includes("one") && !relations.includes("many")) {
+    }
+    // many-to-one / one-to-many
+    else if (relations.includes("one") && relations.includes("many")) {
+    }
+    // many-to-many
+    else if (relations.includes("many") && !relations.includes("one")) {
+    } else {
+      throw new Error(`Relation ${name} isn't right`);
+    }
+
+    return execute(tasks);
+  }
+
+  let firstApi = {
+    many: function(collection: string, path: string = "~ref") {
+      definition.parts.push({
+        relation: "many",
+        collection: CollectionNamePlural(collection),
+        path
+      });
+      return secondApi;
+    },
+    one: function(collection: string, path: string = "~ref") {
+      definition.parts.push({
+        relation: "one",
+        collection: CollectionNamePlural(collection),
+        path
+      });
+      return secondApi;
+    }
+  };
+
+  let secondMethods = {
+    many: function(collection: string, path: string = "~ref") {
+      definition.parts.push({
+        relation: "many",
+        collection: CollectionNamePlural(collection),
+        path
+      });
+      return buildRelation();
+    },
+    one: function(collection: string, path: string = "~ref") {
+      definition.parts.push({
+        relation: "one",
+        collection: CollectionNamePlural(collection),
+        path
+      });
+      return buildRelation();
+    }
+  };
+
+  let secondApi = {
+    connects: secondMethods,
+    can: {
+      have: secondMethods
+    }
+  };
+
+  return firstApi;
+}

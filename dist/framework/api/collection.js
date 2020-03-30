@@ -8,7 +8,6 @@ const index_2 = require("~/factory/api/index");
 const udfunction_1 = require("~/factory/api/udfunction");
 const upsert_1 = require("~/factory/api/upsert");
 const update_1 = require("~/factory/api/update");
-const collectionFactory = require("~/factory/api/collection");
 function collection(collectionNameOrOptions) {
     let self = this;
     let collectionDefinition = {
@@ -27,6 +26,7 @@ function collection(collectionNameOrOptions) {
         throw new Error("biota.collection() - no valid collection name");
     }
     let methods = {
+        // async changes(){},
         async value() { },
         async field() { },
         async viewable() { },
@@ -40,13 +40,39 @@ function collection(collectionNameOrOptions) {
     const valueDefinition = (value) => {
         let options = {
             field: null,
+            values: [],
             binding: null,
             unique: false,
-            serialized: null,
+            serialized: true,
             data: {}
         };
         Object.assign(options, value);
         return options;
+    };
+    const fieldDefinition = (field) => {
+        let definition = {
+            name: undefined,
+            field: undefined,
+            values: [],
+            binding: undefined,
+            unique: false,
+            ngram: false,
+            ngramMin: 3,
+            ngramMax: 10,
+            searchable: false,
+            data: {},
+            serialized: undefined,
+            permissions: undefined,
+            reverse: false
+        };
+        if (typeof field === "string") {
+            definition.name = field;
+            definition.field = field;
+        }
+        else if (typeof field === "object") {
+            Object.assign(definition, field);
+        }
+        return definition;
     };
     methods.value = async function valueMethod(value) {
         let definition = valueDefinition(value);
@@ -54,49 +80,41 @@ function collection(collectionNameOrOptions) {
             name: null,
             source: {
                 collection: index_1.q.Collection(collectionDefinition.name),
-                fields: {
-                    [definition.field]: definition.binding
-                }
+                fields: {}
             },
             terms: [
                 {
                     field: "ref"
                 }
             ],
-            values: [
-                {
-                    binding: definition.field
-                }
-            ],
+            values: [],
             unique: definition.unique,
             serialized: definition.serialized,
             data: definition.data
         };
+        if (value.binding) {
+            index.source.fields[definition.field] = definition.binding;
+            index.values.push({
+                binding: definition.field
+            });
+        }
+        else if (value.values.length > 0) {
+            index.values.push(...value.values);
+        }
         index.name = index_2.BiotaIndexName(helpers.name([collectionDefinition.name, "view", "as", definition.field]));
         let tasks = [
             {
                 name: `Creating (value) index: ${index.name}`,
                 async task() {
                     return self.query(upsert_1.upsert.index(index));
-                }
+                },
+                fullError: true
             }
         ];
         return tasks_1.execute(tasks);
     };
     methods.field = async function fieldMethod(field) {
-        let definition = {
-            field: null,
-            binding: null,
-            unique: false,
-            ngram: false,
-            ngramMin: 3,
-            ngramMax: 10,
-            searchable: false,
-            data: {},
-            serialized: null,
-            permissions: null,
-            reverse: false
-        };
+        let definition = fieldDefinition(field);
         let index = {
             name: null,
             source: {
@@ -110,28 +128,58 @@ function collection(collectionNameOrOptions) {
             permissions: definition.permissions,
             data: definition.data
         };
-        if (typeof field === "string") {
-            definition.field = field;
-        }
-        else if (typeof field === "object") {
-            Object.assign(definition, field);
-        }
-        if (!definition.field) {
-            throw new Error(`biota.field() - no field name has been given`);
-        }
+        // if (!definition.field) {
+        //   throw new Error(`biota.field() - no field name has been given`);
+        // }
         index.name = index_2.BiotaIndexName(helpers.name([
             collectionDefinition.name,
             "searchable",
             "by",
-            helpers.stringPath(definition.field)
+            helpers.stringPath(definition.name)
         ]));
-        index.terms = [
-            {
-                field: helpers.path(definition.field),
-                reverse: definition.reverse
-            }
-        ];
         let tasks = [];
+        if (definition.field) {
+            index.terms = [
+                {
+                    field: helpers.path(definition.field),
+                    reverse: definition.reverse
+                }
+            ];
+            if (definition.ngram) {
+                let ngramFieldName = "ngram:" + helpers.stringPath(definition.field);
+                let ngramIndex = {
+                    name: index_2.BiotaIndexName(helpers.name([
+                        collectionDefinition.name,
+                        "ngram",
+                        "on",
+                        helpers.stringPath(definition.field)
+                    ])),
+                    source: {
+                        collection: index_1.q.Collection(collectionDefinition.name),
+                        fields: {
+                            [ngramFieldName]: index_1.q.Query(index_1.q.Lambda("instance", index_1.q.Distinct(index_2.NGramOnField(definition.ngramMax, helpers.path(definition.field)))))
+                        }
+                    },
+                    terms: [
+                        {
+                            binding: ngramFieldName
+                        }
+                    ],
+                    serialized: true,
+                    data: definition.data
+                };
+                tasks.push({
+                    name: `Creating (ngram search) index: ${ngramIndex.name}`,
+                    async task() {
+                        return self.query(upsert_1.upsert.index(ngramIndex));
+                    },
+                    fullError: true
+                });
+            }
+        }
+        if (definition.values.length > 0) {
+            index.values = definition.values;
+        }
         if (definition.searchable) {
             tasks.push({
                 name: `Creating (search) index: ${index.name}`,
@@ -140,35 +188,12 @@ function collection(collectionNameOrOptions) {
                 }
             });
         }
-        if (definition.ngram) {
-            let ngramFieldName = "ngram:" + helpers.stringPath(definition.field);
-            let ngramIndex = {
-                name: index_2.BiotaIndexName(helpers.name([
-                    collectionDefinition.name,
-                    "ngram",
-                    "on",
-                    helpers.stringPath(definition.field)
-                ])),
-                source: {
-                    collection: index_1.q.Collection(collectionDefinition.name),
-                    fields: {
-                        [ngramFieldName]: index_1.q.Query(index_1.q.Lambda("instance", index_1.q.Distinct(index_2.NGramOnField(definition.ngramMax, helpers.path(definition.field)))))
-                    }
-                },
-                terms: [
-                    {
-                        binding: ngramFieldName
-                    }
-                ],
-                serialized: true,
-                data: definition.data
-            };
+        else if (definition.unique) {
             tasks.push({
-                name: `Creating (ngram search) index: ${ngramIndex.name}`,
+                name: `Creating (unique) index: ${index.name}`,
                 async task() {
-                    return self.query(upsert_1.upsert.index(ngramIndex));
-                },
-                fullError: true
+                    return self.query(upsert_1.upsert.index(index));
+                }
             });
         }
         return tasks_1.execute(tasks);
@@ -315,8 +340,8 @@ function collection(collectionNameOrOptions) {
         });
         return tasks_1.execute(tasks);
     };
-    methods.scaffold = async function scaffold() {
-        let activitySearchableFields = [
+    methods.scaffold = async function scaffold(options) {
+        let defaultSearchable = [
             "~ref",
             "~ts",
             "access.roles",
@@ -342,8 +367,10 @@ function collection(collectionNameOrOptions) {
             // "activity.deleted_at",
             "activity.archived_by",
             // "activity.archived_at",
-            "activity.hidden_by",
+            "activity.hidden_by"
+            // "activity.hidden_at"
         ];
+        let { searchable = defaultSearchable, viewable = [], fields = [] } = options || {};
         let tasks = [
             {
                 name: `Upserting collection (${collectionDefinition.name})`,
@@ -352,11 +379,29 @@ function collection(collectionNameOrOptions) {
                 }
             }
         ];
-        for (let searchableField of activitySearchableFields) {
+        for (let searchableField of searchable) {
             tasks.push({
                 name: `Upserting searchable field (${searchableField}) on (${collectionDefinition.name})`,
                 async task() {
                     return methods.searchable(searchableField, { role: "user" });
+                }
+            });
+        }
+        for (let view of viewable) {
+            view = valueDefinition(view);
+            tasks.push({
+                name: `Upserting viewable field (${view.field}) on (${collectionDefinition.name})`,
+                async task() {
+                    return methods.viewable(view);
+                }
+            });
+        }
+        for (let field of fields) {
+            field = fieldDefinition(field);
+            tasks.push({
+                name: `Upserting viewable field (${field.field}) on (${collectionDefinition.name})`,
+                async task() {
+                    return methods.field(field);
                 }
             });
         }
@@ -369,30 +414,28 @@ function collection(collectionNameOrOptions) {
             items = [items];
         let batches = helpers.splitEvery(batchSize, items);
         let tasks = [];
-        let createQuery;
+        let importQuery;
         if (!keepId) {
-            createQuery = collectionFactory
-                .collection(collectionDefinition.name)
-                .create(index_1.q.Var("item"));
+            importQuery = index_1.q.Create(index_1.q.Collection(collectionDefinition.name), {
+                data: index_1.q.Var("item")
+            });
         }
         else {
-            createQuery = collectionFactory
-                .collection(collectionDefinition.name)
-                .upsert(index_1.q.Select("id", index_1.q.Var("item"), null), index_1.q.Select("data", index_1.q.Var("item"), null));
+            let refId = index_1.q.Ref(index_1.q.Collection(collectionDefinition.name), index_1.q.Select("id", index_1.q.Var("item"), -1));
+            importQuery = index_1.q.If(index_1.q.Exists(refId), index_1.q.Update(refId, { data: index_1.q.Select("data", index_1.q.Var("item"), {}) }), index_1.q.Create(refId, {
+                data: index_1.q.Select("data", index_1.q.Var("item"), {})
+            }));
         }
         for (let [index, batch] of Object.entries(batches)) {
             tasks.push({
                 name: `Importing batch n°${index + 1} on ${batches.length}`,
                 task() {
-                    return self.query(index_1.q.Map(batch, index_1.q.Lambda("item", createQuery)));
+                    return self.query(index_1.q.Map(batch, index_1.q.Lambda("item", importQuery)));
                 }
             });
         }
         return tasks_1.execute(tasks);
     };
-    /**
-     * db.collection("users").search({$or: [{ "profile.name": "Gabin" }, { "profile.email": "de@gmail.com" }]})
-     */
     function parseSearchQuery(collection, searchQuery) {
         const buildQuery = (sq) => {
             return index_1.q.Call(udfunction_1.BiotaUDFunctionName("SearchQuery"), [

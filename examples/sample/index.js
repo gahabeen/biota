@@ -32,8 +32,7 @@ for await (let todosPage of todosIterator) {
 
 // Ex: Ownership
 db.relation("todos_ownership")
-  .many("todo")
-  .at("activity.owner")
+  .many("todo", "activity.owner")
   .connects.one("user");
 
 await db
