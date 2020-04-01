@@ -1,5 +1,5 @@
 node_modules
 .env
-playground
+./playground
 yarn-error.log
-dist
+./dist
