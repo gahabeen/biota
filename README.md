@@ -5,6 +5,8 @@ A simple *opiniated* database framework for Fauna, written in Javascript/Typescr
 
 Including **features**, *in no specific order*, as a **permission system** (field protection, user rights, etc), **document tracking** (action history in addition to build-in document history), **complex search made simple** (inc. autocomplete), **hands-free relations** (between collections), **facilitated pagination**, **short-code ids** (read *Xh6si* instead of *23764999364764*) and lots of extra *already-build-in* logic as **expire** or **assign**  a document. 
 
+> **Biota isn't production ready**. It's api isn't fully settled yet. Breaking changes may happen!
+
 ```js
 import { Biota } from "biota"
 ```
