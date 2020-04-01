@@ -8,8 +8,17 @@
 
 A simple *opiniated* database framework for Fauna, written in Typescript.
 
-Including **features**, *in no specific order*, as a **permission system** (field protection, user rights, etc), **document tracking** (action history in addition to build-in document history), **complex search made simple** (inc. autocomplete), **hands-free relations** (between collections), **facilitated pagination**, **short-code ids** (read *Xh6si* instead of *23764999364764*) and lots of extra *already-build-in* logic as **expire** or **assign**  a document. 
+Some of the features:
+- **document life** (expiration, assignements, ownership, etc) 
+- **document tracking** (user action history, in addition to build-in document history)
+- **search made simple** (on any field, combined, excluded, joined, **autocompleted**, etc)
+- **computed fields** (build-in fields that auto-generate from your document)
+- **hands-free relationships** (between documents, with resolvers)
+- **permission system** (fine-grained)
+- **short-code ids** (read *Xh6si* instead of *23764999364764*) 
+- **facilitated pagination**
 
+See missing features which should be part of Biota? [Let us know!](https://github.com/gahabeen/biota/issues/new)
 
 ```js
 import { Biota } from "biota"
