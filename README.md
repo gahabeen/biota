@@ -6,27 +6,28 @@ A simple *opiniated* database framework for Fauna, written in Javascript/Typescr
 **Includes:** role/rules system, documents tracking, auto-indexing, complex search (inc. autocomplete), build-in action history, relations 
 
 ```js
-// 10 lines to set up your database, create a user, create a todo and fuzzy search it ;)
 import { Biota } from "biota"
-
-const db = new Biota({ secret: "<your-secret>"}) // instantiates
-
-await db.foundation() // scaffolds the database, make sure the minimum is set
-
-await db.collection("todos").scaffold() // scaffolds a todos collection
-
-await db.collection("todos").index({field: "name", ngram: true}) // index a field for autocomplete search
-
-let { ref } = await db.collection("users").insert({ nickname: "gahabeen" }, { password: "youdontknowme" }) // adds a user
-
+```
+```js
+// 4 lines to:
+const db = new Biota({ secret: "<your-secret>"})
+// - scaffold the whole database (inc. users collection for ex)
+await db.foundation()
+// - add todos collection
+await db.collection("todos").scaffold()
+// - add autocomplete-search on name field
+await db.collection("todos").index({field: "name", ngram: true})
+```
+```js
+// 4 lines to:
+// - create a user
+let { ref } = await db.collection("users").insert({ nickname: "gahabeen" }, { password: "youdontknowme" })
+// - log a user
 const logged = await db.login(ref.id, "youdontknowme") // logs in as the user
-
-// you can know query as the user
-const todos = logged.collection("todos")
-
-await todos.insert({ name: "Remember to star this project" })
-
-await todos.find({ name: { $ngram: "star" }})
+// - create a todo
+await logged.collection("todos").insert({ name: "Remember to star this project" })
+// - query a todo with $ngram (autocomplete behavior)
+await logged.collection("todos").find({ name: { $ngram: "star" }})
 // output: [{ ref, ts, data: { name: "Remember to star this project" } }]
 ```
 
