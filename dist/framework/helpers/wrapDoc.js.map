@@ -1,1 +1,0 @@
-{"version":3,"file":"wrapDoc.js","sourceRoot":"","sources":["../../../src/framework/helpers/wrapDoc.ts"],"names":[],"mappings":";;AAEA,WAAW;AACX,qCAAqC;AAErC,SAAgB,OAAO,CAAC,MAAc,EAAE,GAAe;IACrD,OAAO,eAAC,CAAC,GAAG,CACV;QACE,GAAG,EAAE,eAAC,CAAC,GAAG,CAAC,eAAC,CAAC,GAAG,CAAC,MAAM,CAAC,CAAC;KAC1B,EACD,GAAG,CACJ,CAAC;AACJ,CAAC;AAPD,0BAOC"}

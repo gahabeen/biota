@@ -1,1 +1,0 @@
-{"version":3,"file":"is_self.js","sourceRoot":"","sources":["../../../../src/framework/default/rules/is_self.ts"],"names":[],"mappings":";;AAAA,QAAQ;AACR,WAAW;AACX,qCAAqC;AACrC,QAAQ;AACR,yCAAsC;AAEzB,QAAA,OAAO,GAAG,WAAI,CAAC;IAC1B,IAAI,EAAE,SAAS;IACf,KAAK,EAAE,eAAC,CAAC,MAAM,CAAC,eAAC,CAAC,GAAG,CAAC,KAAK,CAAC,EAAE,eAAC,CAAC,QAAQ,EAAE,CAAC;CAC5C,CAAC,CAAC"}
