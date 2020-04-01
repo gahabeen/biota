@@ -11,10 +11,13 @@ import { Biota } from "biota"
 ```js
 // 4 lines to:
 const db = new Biota({ secret: "<your-secret>"})
+
 // - scaffold the whole database (inc. users collection for ex)
 await db.foundation()
+
 // - add todos collection
 await db.collection("todos").scaffold()
+
 // - add autocomplete-search on name field
 await db.collection("todos").index({field: "name", ngram: true})
 ```
@@ -22,10 +25,13 @@ await db.collection("todos").index({field: "name", ngram: true})
 // 4 lines to:
 // - create a user
 let { ref } = await db.collection("users").insert({ nickname: "gahabeen" }, { password: "youdontknowme" })
+
 // - log a user
-const logged = await db.login(ref.id, "youdontknowme") // logs in as the user
+const logged = await db.login(ref.id, "youdontknowme")
+
 // - create a todo
 await logged.collection("todos").insert({ name: "Remember to star this project" })
+
 // - query a todo with $ngram (autocomplete behavior)
 await logged.collection("todos").find({ name: { $ngram: "star" }})
 // output: [{ ref, ts, data: { name: "Remember to star this project" } }]
