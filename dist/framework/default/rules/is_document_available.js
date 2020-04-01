@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const faunadb_1 = require("faunadb");
 // biota
 const consts_1 = require("~/consts");
-const rule_1 = require("~/factory/api/rule");
+const rule_1 = require("~/factory/rule");
 exports.is_document_available = rule_1.Rule({
     name: "is_document_available",
     query: faunadb_1.query.Let({

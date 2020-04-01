@@ -1,7 +1,7 @@
 // types
 // external
 // biota
-import { Rule } from "~/factory/api/rule";
+import { Rule } from "~/factory/rule";
 
 export const none = Rule({
   name: "none",

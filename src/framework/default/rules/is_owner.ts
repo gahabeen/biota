@@ -2,7 +2,7 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { Rule } from "~/factory/api/rule";
+import { Rule } from "~/factory/rule";
 
 export const is_owner = Rule({
   name: "is_owner",

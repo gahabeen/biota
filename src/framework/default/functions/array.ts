@@ -2,10 +2,10 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { UDFunction } from "~/factory/api/udfunction";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
 
 export const Reverse = UDFunction({
-  name: "Array.Reverse",
+  name: udfunctionNameNormalized("Array.Reverse"),
   body: q.Query(
     q.Lambda(
       ["arr"],

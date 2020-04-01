@@ -3,8 +3,8 @@ import { FaunaRoleOptions } from "~/../types/db";
 // imports
 import { query as q } from "faunadb";
 // factory
-import { Role, Privilege, CustomPrivilege } from "~/factory/api/role";
-import { BiotaUDFunctionName } from "~/factory/api/udfunction";
+import { Role, Privilege, CustomPrivilege } from "~/factory/classes/role";
+import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
 // framework
 import { has_role } from "~/framework/default/rules/has_role";
 import { wrapDoc } from "~/framework/helpers/wrapDoc";
@@ -35,7 +35,7 @@ export const user: FaunaRoleOptions = Role({
      */
 
     Privilege({
-      resource: q.Function(BiotaUDFunctionName("SearchQuery")),
+      resource: q.Function(udfunctionNameNormalized("SearchQuery")),
       actions: { call: "all" }
     })
   ]

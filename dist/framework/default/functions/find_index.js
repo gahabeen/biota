@@ -4,14 +4,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // external
 const faunadb_1 = require("faunadb");
 // biota
-const udfunction_1 = require("~/factory/api/udfunction");
-const index_1 = require("~/factory/api/index");
+const udfunction_1 = require("~/factory/classes/udfunction");
+const index_1 = require("~/factory/classes/index");
 exports.FindIndex = udfunction_1.UDFunction({
-    name: "FindIndex",
+    name: udfunction_1.udfunctionNameNormalized("FindIndex"),
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["resource", "terms_fields"], faunadb_1.query.Let({
-        indexes: faunadb_1.query.Paginate(faunadb_1.query.Intersection(faunadb_1.query.Match(faunadb_1.query.Index(index_1.BiotaIndexName("indexes__by__resource")), [
+        indexes: faunadb_1.query.Paginate(faunadb_1.query.Intersection(faunadb_1.query.Match(faunadb_1.query.Index(index_1.indexNameNormalized("indexes__by__resource")), [
             faunadb_1.query.Var("resource")
-        ]), faunadb_1.query.Union(faunadb_1.query.Map(faunadb_1.query.Var("terms_fields"), faunadb_1.query.Lambda(["field"], faunadb_1.query.Match(faunadb_1.query.Index(index_1.BiotaIndexName("indexes__by__terms")), [
+        ]), faunadb_1.query.Union(faunadb_1.query.Map(faunadb_1.query.Var("terms_fields"), faunadb_1.query.Lambda(["field"], faunadb_1.query.Match(faunadb_1.query.Index(index_1.indexNameNormalized("indexes__by__terms")), [
             faunadb_1.query.Var("field")
         ])))))),
         termsCount: faunadb_1.query.Count(faunadb_1.query.Var("terms_fields")),

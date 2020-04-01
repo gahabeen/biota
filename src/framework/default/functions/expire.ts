@@ -2,20 +2,11 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { UDFunction } from "~/factory/api/udfunction";
-import { WrapActionToLog } from "~/framework/helpers/wrapActionToLog";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { WrapActionAndLog } from "~/framework/helpers/WrapActionAndLog";
 import { logData } from "~/framework/helpers/logData";
 
 export const Expire = UDFunction({
-  name: "Expire",
-  body: q.Query(
-    q.Lambda(
-      ["user", "ref", "at"],
-      WrapActionToLog(
-        "expire",
-        q.Update(q.Var("ref"), { data: logData.expire() })
-      )
-    )
-  ),
-
+  name: udfunctionNameNormalized("Expire"),
+  body: q.Query(q.Lambda(["userRef", "ref", "at"], WrapActionAndLog("expire", q.Update(q.Var("ref"), { data: logData.expire() }))))
 });

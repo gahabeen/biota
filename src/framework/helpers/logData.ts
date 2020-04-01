@@ -1,17 +1,15 @@
 // types
 // external
 import { query as q } from "faunadb";
+import { Fauna } from "~/../types/db";
 // biota
 
-const merge = (fieldValues: object) => {
+const merge = (fieldValues: object, data: Fauna.Expr = q.Var("data")) => {
   let dataToMerge = {};
   for (let fieldName in fieldValues) {
-    dataToMerge[fieldName] = q.Merge(
-      q.Select(fieldName, q.Var("data"), {}),
-      fieldValues[fieldName]
-    );
+    dataToMerge[fieldName] = q.Merge(q.Select(fieldName, data, {}), fieldValues[fieldName]);
   }
-  return q.Merge(q.Var("data"), dataToMerge);
+  return q.Merge(data, dataToMerge);
 };
 
 export const logData = {
@@ -27,12 +25,15 @@ export const logData = {
     });
   },
   credentials() {
-    return merge({
-      activity: {
-        credentials_changed_by: q.Var("ref"),
-        credentials_changed_at: q.Now()
-      }
-    });
+    return merge(
+      {
+        activity: {
+          credentials_changed_by: q.Var("ref"),
+          credentials_changed_at: q.Now()
+        }
+      },
+      {}
+    );
   },
   assign() {
     return merge({
@@ -42,12 +43,7 @@ export const logData = {
       activity: { assigned_by: q.Var("userRef"), assigned_at: q.Now() }
     });
   },
-  import() {
-    return merge({
-      activity: { imported_by: q.Var("userRef"), imported_at: q.Now() }
-    });
-  },
-  create() {
+  insert() {
     return merge({
       activity: { created_by: q.Var("userRef"), created_at: q.Now() }
     });
@@ -63,18 +59,27 @@ export const logData = {
     });
   },
   expire() {
-    return merge({
-      activity: { expired_by: q.Var("userRef"), expired_at: q.Var("at") }
-    });
+    return merge(
+      {
+        activity: { expired_by: q.Var("userRef"), expired_at: q.Var("at") }
+      },
+      {}
+    );
   },
   delete() {
-    return merge({
-      activity: { deleted_by: q.Var("userRef"), deleted_at: q.Now() }
-    });
+    return merge(
+      {
+        activity: { deleted_by: q.Var("userRef"), deleted_at: q.Now() }
+      },
+      {}
+    );
   },
   archive() {
-    return merge({
-      activity: { archived_by: q.Var("userRef"), archived_at: q.Now() }
-    });
+    return merge(
+      {
+        activity: { archived_by: q.Var("userRef"), archived_at: q.Now() }
+      },
+      {}
+    );
   }
 };

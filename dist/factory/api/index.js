@@ -7,5 +7,5 @@ __export(require("../index/activity"));
 __export(require("../index/cursor"));
 __export(require("../index/reverse"));
 __export(require("../index/search"));
-__export(require("../index/wrapper"));
+__export(require("../classes"));
 //# sourceMappingURL=index.js.map

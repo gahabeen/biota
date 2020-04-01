@@ -3,18 +3,19 @@ import { DBFactoryCreate } from "~/../types/db";
 // external
 import { query as q } from "faunadb";
 // biota
+import { Reference } from "~/factory/api/ql";
 import { nameOrOptions } from "~/helpers";
 // relative
-import { Database } from "./database";
-import { Collection } from "./collection";
-import { Index } from "./index";
-import { UDFunction } from "./udfunction";
-import { Role } from "./role";
+import { Database } from "~/factory/classes/database";
+import { Collection } from "~/factory/classes/collection";
+import { UDFunction } from "~/factory/classes/udfunction";
+import { Index } from "~/factory/classes/index";
+import { Role } from "~/factory/classes/role";
 
 export const create: DBFactoryCreate = {
-  // document: function documentCreate(collectionName, options){
-  //   return q.Create(Database(definition));
-  // },
+  document: function documentCreate(collectionName, options = {}) {
+    return q.Create(Reference({ collection: collectionName, id: options.id }), options);
+  },
   database: function databaseCreate(name, options = {}) {
     let definition = nameOrOptions(name, options);
     return q.CreateDatabase(Database(definition));

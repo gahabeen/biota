@@ -2,7 +2,7 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { RuleBuilder } from "~/factory/api/rule";
+import { RuleBuilder } from "~/factory/rule";
 
 export const has_role = RuleBuilder({
   name: "has_role",

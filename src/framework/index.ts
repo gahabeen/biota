@@ -1,4 +1,3 @@
-export * from "./api/document";
 export * from "./api/collection";
 export * from "./api/login";
 export * from "./api/paginate";

@@ -21,6 +21,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "debug": "^4.1.1",
     "faunadb": "^2.11.1",
     "module-alias": "^2.2.2",
     "nanohash": "^0.0.15"

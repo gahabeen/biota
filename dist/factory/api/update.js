@@ -11,8 +11,9 @@ exports.update = {
     collection: function collectionUpdate(name, options) {
         return faunadb_1.query.Update(faunadb_1.query.Collection(name), options);
     },
-    index: function indexUpdate(name, options) {
-        return faunadb_1.query.Update(faunadb_1.query.Index(name), options);
+    index: function indexUpdate(name, options = {}) {
+        let { unique } = options;
+        return faunadb_1.query.Update(faunadb_1.query.Index(name), { name, unique });
     },
     function: function functionUpdate(name, options) {
         return faunadb_1.query.Update(faunadb_1.query.Function(name), options);

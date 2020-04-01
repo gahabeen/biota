@@ -1,10 +1,10 @@
 // types
 // external
 // biota
-import { Collection, BiotaCollectionName } from "~/factory/api/collection";
+import { Collection, collectionNameNormalized } from "~/factory/classes/collection";
 
 export const relations = Collection({
-  name: BiotaCollectionName("relations"),
+  name: collectionNameNormalized("relations"),
   history_days: null,
   ttl_days: null
 });

@@ -2,12 +2,12 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { UDFunction } from "~/factory/api/udfunction";
-import { BiotaIndexName } from "~/factory/api/index";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { indexNameNormalized } from "~/factory/classes/index";
 import { pathString } from "~/framework/helpers/path";
 
 export const SearchQuery = UDFunction({
-  name: "SearchQuery",
+  name: udfunctionNameNormalized("SearchQuery"),
   body: q.Query(
     q.Lambda(
       ["resource", "search_terms"],
@@ -23,7 +23,7 @@ export const SearchQuery = UDFunction({
                 q.If(
                   q.Contains("$ngram", q.Var("value")),
                   [
-                    q.Call(BiotaIndexName("FindIndex"), [
+                    q.Call(indexNameNormalized("FindIndex"), [
                       q.Var("resource"),
                       [q.Concat(["binding:", "ngram:", q.Var("field")])]
                     ]),
@@ -35,7 +35,7 @@ export const SearchQuery = UDFunction({
                   [null, null, null]
                 ),
                 [
-                  q.Call(BiotaIndexName("FindIndex"), [
+                  q.Call(indexNameNormalized("FindIndex"), [
                     q.Var("resource"),
                     [q.Concat(["term:", pathString(q.Var("field"))])]
                   ]),

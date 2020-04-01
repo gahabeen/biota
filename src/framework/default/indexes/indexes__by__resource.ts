@@ -3,10 +3,10 @@
 import * as fauna from 'faunadb'
 const q = fauna.query
 // biota
-import { Index } from "~/factory/api/index"
+import { Index, indexNameNormalized } from "~/factory/classes/index"
 
 export const indexes__by__resource = Index({
-  name: 'indexes__by__resource',
+  name: indexNameNormalized('indexes__by__resource'),
   source: {
     collection: q.Indexes(),
     fields: {

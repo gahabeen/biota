@@ -2,11 +2,11 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { UDFunction } from "~/factory/api/udfunction";
-import { BiotaIndexName } from "~/factory/api/index";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { indexNameNormalized } from "~/factory/classes/index";
 
 export const FindIndex = UDFunction({
-  name: "FindIndex",
+  name: udfunctionNameNormalized("FindIndex"),
   body: q.Query(
     q.Lambda(
       ["resource", "terms_fields"],
@@ -14,7 +14,7 @@ export const FindIndex = UDFunction({
         {
           indexes: q.Paginate(
             q.Intersection(
-              q.Match(q.Index(BiotaIndexName("indexes__by__resource")), [
+              q.Match(q.Index(indexNameNormalized("indexes__by__resource")), [
                 q.Var("resource")
               ]),
               q.Union(
@@ -22,7 +22,7 @@ export const FindIndex = UDFunction({
                   q.Var("terms_fields"),
                   q.Lambda(
                     ["field"],
-                    q.Match(q.Index(BiotaIndexName("indexes__by__terms")), [
+                    q.Match(q.Index(indexNameNormalized("indexes__by__terms")), [
                       q.Var("field")
                     ])
                   )

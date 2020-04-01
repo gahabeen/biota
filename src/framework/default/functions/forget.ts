@@ -2,15 +2,15 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { UDFunction } from "~/factory/api/udfunction";
-import { WrapActionToLog } from "~/framework/helpers/wrapActionToLog";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { WrapActionAndLog } from "~/framework/helpers/WrapActionAndLog";
 
 export const Forget = UDFunction({
-  name: "Forget",
+  name: udfunctionNameNormalized("Forget"),
   body: q.Query(
     q.Lambda(
-      ["user", "ref", "at"],
-      WrapActionToLog("forget", q.Delete(q.Var("ref")))
+      ["userRef", "ref", "at"],
+      WrapActionAndLog("forget", q.Delete(q.Var("ref")))
     )
   ),
 

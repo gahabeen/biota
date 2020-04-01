@@ -2,18 +2,175 @@ import * as Fauna from "faunadb";
 export { Fauna };
 
 export type Fn<T = object> = (...args: any[]) => T;
-export type ValueOptionsFn<T = object> = (
-  value: String | T,
-  options?: T
-) => Fauna.Expr;
+export type ValueOptionsFn<T = object> = (value: String | T, options?: T) => Fauna.Expr;
 export type PromiseFn<T = object> = (...args: any[]) => Promise<T>;
+
+// DBCollection
+export interface DBFrameworkDefault {
+  rules: object;
+}
+
+export interface DBFrameworkGraphQL {
+  _empty?: String;
+}
+
+export interface DBFrameworkImport {
+  _empty?: String;
+}
+
+export interface DBFramework {
+  collection: DBFrameworkCollectionFunction;
+  // document: DBFrameworkDocumentFunction;
+}
+
+export type DBFrameworkCollectionFunction = (collectionName: string | FaunaCollectionOptions) => DBFrameworkCollection;
+
+export type DBFrameworkDocumentFunction = (docRef: FaunaRef) => DBFrameworkDocument;
+
+export interface DBFrameworkCollectionIndexOptions {
+  role?: string | string[];
+  roles?: string[];
+  maxLength?: number;
+}
+
+export interface DBFrameworkDocument {
+  get: () => Promise<any>;
+  view: (field: string | string[]) => Promise<any>;
+}
+
+export interface DBFrameworkCollectionScaffoldOptions {
+  index?: (string | DBFrameworkCollectionFieldOptions)[];
+  compute?: DBFrameworkCollectionFieldOptions[];
+  field?: DBFrameworkCollectionFieldOptions[];
+}
+
+export type DBFrameworkCollectionFind = (
+  searchQuery?: DBFrameworkCollectionSearchParams,
+  paginateOptions?: FaunaPaginateOptions,
+  mapper?: FaunaPaginateMapper
+) => Promise<any>;
+
+export type DBFrameworkCollectionPaginate = (
+  searchTerms?: DBFrameworkCollectionSearchParams,
+  paginateOptions?: FaunaPaginateOptions,
+  mapper?: FaunaPaginateMapper
+) => AsyncGenerator<any, any, any>;
+
+export type DBFrameworkCollectionScaffold = (options?: DBFrameworkCollectionScaffoldOptions) => Promise<any>;
+
+export type DBFrameworkCollectionField = (field: string | DBFrameworkCollectionFieldOptions) => Promise<any>;
+
+export type DBFrameworkCollectionIndex = (
+  field: string | DBFrameworkCollectionFieldOptions,
+  options?: DBFrameworkCollectionIndexOptions
+) => Promise<any>;
+
+export type DBFrameworkCollectionCompute = (
+  field: DBFrameworkCollectionFieldOptions,
+  options?: DBFrameworkCollectionIndexOptions
+) => Promise<any>;
+
+export interface DBFrameworkCollection {
+  // builder
+  scaffold: DBFrameworkCollectionScaffold;
+  field: DBFrameworkCollectionField;
+  index: DBFrameworkCollectionIndex;
+  compute: DBFrameworkCollectionCompute;
+
+  // custom crud
+  find: DBFrameworkCollectionFind;
+  // findByOwner: any;
+  // findByAssignee: any;
+  paginate: DBFrameworkCollectionPaginate;
+  // basic crud
+  get: (id: FaunaId) => Promise<any>;
+  insert: (data: object, options?: DBFactoryCollectionCreationOptions) => Promise<any>;
+  insertBatch: (data: object[], options: DBFrameworkCollectionInsertBatchOptions) => Promise<any>;
+  replace: (id: FaunaId, data: object) => Promise<any>;
+  update: (id: FaunaId, data: object) => Promise<any>;
+  repsert: (id: FaunaId, data: object) => Promise<any>;
+  upsert: (id: FaunaId, data: object) => Promise<any>;
+  delete: (id: FaunaId) => Promise<any>;
+  forget: (id: FaunaId) => Promise<any>;
+  changes: () => Promise<any>;
+}
+
+export interface DBFrameworkCollectionInsertOptions {
+  keepId?: boolean;
+}
+
+export interface DBFrameworkCollectionInsertBatchOptions {
+  batchSize?: number;
+  keepId?: boolean;
+}
+
+// export interface DBFrameworkCollectionValueOptions {
+//   field?: string;
+//   binding?: Fauna.Expr;
+//   values?: FaunaIndexValue[];
+//   unique?: boolean;
+//   serialized?: boolean;
+//   data?: any;
+// }
+
+export interface DBFoundationOptions {
+  roles?: boolean;
+  functions?: boolean;
+  collections?: boolean;
+  indexes?: boolean;
+}
+
+export type DBFrameworkCollectionFieldOptionsAction = "compute" | "index";
+
+export interface DBFrameworkCollectionFieldOptions {
+  field?: string;
+  binding?: Fauna.Expr;
+  inputs?: string[] | FaunaIndexTerm[];
+  outputs?: string[] | FaunaIndexValue[];
+
+  name?: string;
+  // view
+  action?: DBFrameworkCollectionFieldOptionsAction;
+  // search
+  ngram?: boolean;
+  ngramMin?: number;
+  ngramMax?: number;
+  reverse?: boolean;
+  // common
+  // values?: FaunaIndexValue[];
+  unique?: boolean;
+  serialized?: boolean;
+  permissions?: object;
+  data?: any;
+}
+
+export interface DBFrameworkCollectionSearchParams {
+  [path: string]: any;
+}
+
+export interface DBFrameworkFoundation {}
+
+export interface DBFrameworkRelationDefinition {
+  name: string;
+  parts: DBFrameworkRelationPart[];
+  destructive?: boolean;
+}
+
+export type DBFrameworkRelationPartRelation = "many" | "one";
+
+export interface DBFrameworkRelationPart {
+  relation: DBFrameworkRelationPartRelation;
+  collection: string;
+  path: string;
+}
+
+export interface DBFrameworkRelation {}
 
 export interface DBFactory {
   collection: (collectionName: string) => DBFactoryCollection;
   create: DBFactoryCreate;
   forget: DBFactoryForget;
   get: DBFactoryGet;
-  me: DBFactoryMe;
   replace: DBFactoryReplace;
   repsert: DBFactoryRepsert;
   update: DBFactoryUpdate;
@@ -103,7 +260,7 @@ export interface DBFactoryGet {
 }
 
 export interface DBFactoryCreate {
-  // document?: (data: object, options?: FaunaDocumentOptions) => Fauna.Expr;
+  document?: (data: object, options?: DBFactoryCollectionCreationOptions) => Fauna.Expr;
   database?: ValueOptionsFn<FaunaDatabaseOptions>;
   collection?: ValueOptionsFn<FaunaCollectionOptions>;
   index?: ValueOptionsFn<FaunaIndexOptions>;
@@ -176,38 +333,19 @@ export interface DBFactoryMe {
 export interface DBFactoryCollectionCreationOptions {
   id?: FaunaId;
   password?: String;
-}
-
-export interface DBFrameworkDefault {
-  rules: object;
-}
-
-export interface DBFrameworkGraphQL {
-  _empty?: String;
-}
-
-export interface DBFrameworkImport {
-  _empty?: String;
+  credentials?: FaunaDocumentCredentials;
 }
 
 export interface DBFactoryCollection {
-  list?: () => Fauna.Expr;
   login?: (password: string, id?: FaunaId) => Fauna.Expr;
-  logout?: (everywhere: boolean) => Fauna.Expr;
+  logout?: (everywhere: boolean, id?: FaunaId) => Fauna.Expr;
   changePassword?: (password: string) => Fauna.Expr;
   get?: (id: FaunaId) => Fauna.Expr;
-  import?: (
-    data: object,
-    options?: DBFactoryCollectionImportOptions
-  ) => Fauna.Expr;
-  create?: (
-    data: object,
-    options?: DBFactoryCollectionCreationOptions
-  ) => Fauna.Expr;
-  update?: (data: object, id: FaunaId) => Fauna.Expr;
-  upsert?: (data: object, id: FaunaId) => Fauna.Expr;
-  replace?: (data: object, id: FaunaId) => Fauna.Expr;
-  repsert?: (data: object, id: FaunaId) => Fauna.Expr;
+  insert?: (data: object, options?: DBFactoryCollectionCreationOptions) => Fauna.Expr;
+  update?: (id: FaunaId, data: object) => Fauna.Expr;
+  upsert?: (id: FaunaId, data: object) => Fauna.Expr;
+  replace?: (id: FaunaId, data: object) => Fauna.Expr;
+  repsert?: (id: FaunaId, data: object) => Fauna.Expr;
   delete?: (id: FaunaId) => Fauna.Expr;
   forget?: (id: FaunaId) => Fauna.Expr;
   keys?: Fn<Fauna.Expr>;
@@ -227,120 +365,6 @@ export interface DBFactoryCollectionBatch {
   delete?: Fn<Fauna.Expr>;
   forget?: Fn<Fauna.Expr>;
 }
-
-export interface DBFramework {
-  collection: DBFrameworkCollectionFunction;
-  document: DBFrameworkDocumentFunction;
-}
-
-export type DBFrameworkCollectionFunction = (
-  collectionName: string | FaunaCollectionOptions
-) => DBFrameworkCollection;
-
-export type DBFrameworkDocumentFunction = (
-  docRef: FaunaRef
-) => DBFrameworkDocument;
-
-export interface DBFrameworkCollectionSearchableOptions {
-  role?: string | string[];
-  roles?: string[];
-  maxLength?: number;
-}
-
-export interface DBFrameworkDocument {
-  get: () => Promise<any>;
-  view: (field: string | string[]) => Promise<any>;
-}
-
-export interface DBFrameworkCollectionScaffoldOptions {
-  searchable?: string[];
-  viewable?: DBFrameworkCollectionValueOptions[];
-  fields?: DBFrameworkCollectionFieldOptions[];
-}
-
-export interface DBFrameworkCollection {
-  value: (value: DBFrameworkCollectionValueOptions) => any;
-  field: (field: string | DBFrameworkCollectionFieldOptions) => any;
-  viewable: (
-    value: DBFrameworkCollectionValueOptions,
-    options?: DBFrameworkCollectionSearchableOptions
-  ) => any;
-  searchable: (
-    field: string | string[] | DBFrameworkCollectionFieldOptions,
-    options?: DBFrameworkCollectionSearchableOptions
-  ) => any;
-  autocomplete: (
-    field: string | string[] | DBFrameworkCollectionFieldOptions,
-    options?: DBFrameworkCollectionSearchableOptions
-  ) => any;
-  search: (
-    searchQuery?: DBFrameworkCollectionSearchParams,
-    paginateOptions?: FaunaPaginateOptions,
-    mapper?: FaunaPaginateMapper
-  ) => Promise<any>;
-  paginate: (
-    searchTerms?: DBFrameworkCollectionSearchParams,
-    paginateOptions?: FaunaPaginateOptions,
-    mapper?: FaunaPaginateMapper
-  ) => AsyncGenerator<any, any, any>;
-  scaffold: (options?: DBFrameworkCollectionScaffoldOptions) => any;
-  import: (
-    data: any | any[],
-    options?: DBFrameworkCollectionImportOptions
-  ) => Promise<any>;
-}
-
-export interface DBFrameworkCollectionImportOptions {
-  batchSize?: number;
-  keepId?: boolean;
-}
-
-export interface DBFrameworkCollectionValueOptions {
-  field?: string;
-  binding?: Fauna.Expr;
-  values?: FaunaIndexValue[];
-  unique?: boolean;
-  serialized?: boolean;
-  data?: any;
-}
-
-export interface DBFrameworkCollectionFieldOptions {
-  name?: string;
-  field?: string;
-  values?: FaunaIndexValue[];
-  binding?: Fauna.Expr;
-  ngram?: boolean;
-  ngramMin?: number;
-  ngramMax?: number;
-  searchable?: boolean;
-  reverse?: boolean;
-  unique?: boolean;
-  serialized?: boolean;
-  permissions?: object;
-  data?: any;
-}
-
-export interface DBFrameworkCollectionSearchParams {
-  [path: string]: any;
-}
-
-export interface DBFrameworkFoundation {}
-
-export interface DBFrameworkRelationDefinition {
-  name: string;
-  parts: DBFrameworkRelationPart[];
-  destructive?: boolean;
-}
-
-export type DBFrameworkRelationPartRelation = "many" | "one";
-
-export interface DBFrameworkRelationPart {
-  relation: DBFrameworkRelationPartRelation;
-  collection: string;
-  path: string;
-}
-
-export interface DBFrameworkRelation {}
 
 export interface FaunaIndexOptions {
   name?: string;
@@ -374,7 +398,7 @@ export interface FaunaIndexTerm {
 }
 
 export interface FaunaIndexValue {
-  field?: string[];
+  field?: string | string[];
   binding?: string;
   reverse?: boolean;
 }
@@ -392,23 +416,16 @@ export interface FaunaDatabaseOptions {
   api_version?: number;
 }
 
-// export interface FaunaDocumentOptions {
-//   data?: object;
-//   credentials?: FaunaDocumentOptionsCredentials;
-// }
+export interface FaunaDocumentOptions {
+  data?: object;
+  credentials?: FaunaDocumentCredentials;
+}
 
-// export interface FaunaDocumentOptionsCredentials {
-//   password?: string;
-// }
+export interface FaunaDocumentCredentials {
+  password?: string;
+}
 
-export type FaunaRuleAction =
-  | "self"
-  | "owner"
-  | "not_owner"
-  | "assignee"
-  | "not_assignee"
-  | "all"
-  | "none";
+export type FaunaRuleAction = "self" | "owner" | "not_owner" | "assignee" | "not_assignee" | "all" | "none";
 
 export type FaunaRuleLambda = Fauna.Expr | Fn<Fauna.Expr>;
 
@@ -516,18 +533,7 @@ export interface UserRights {
   roles?: FaunaRef[];
 }
 
-export type ActionName =
-  | "create"
-  | "update"
-  | "replace"
-  | "delete"
-  | "forget"
-  | "credentials"
-  | "assign"
-  | "own"
-  | "import"
-  | "expire"
-  | "archive";
+export type ActionName = "insert" | "update" | "replace" | "delete" | "forget" | "credentials" | "assign" | "own" | "expire" | "archive";
 
 export interface Action {
   document: FaunaRef;
@@ -552,9 +558,6 @@ export interface DocumentActivity {
   credentials_changed_by?: FaunaRef;
   credentials_changed_at?: FaunaTime;
 
-  imported_by?: FaunaRef;
-  imported_at?: FaunaTime;
-
   created_by?: FaunaRef;
   created_at?: FaunaTime;
 
@@ -572,7 +575,4 @@ export interface DocumentActivity {
 
   archived_by?: FaunaRef;
   archived_at?: FaunaTime;
-
-  hidden_by?: FaunaRef;
-  hidden_at?: FaunaTime;
 }

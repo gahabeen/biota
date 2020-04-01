@@ -2,11 +2,7 @@ import { Fauna, DBFrameworkRelationDefinition } from "~/../types/db";
 // external
 import { DB } from "~/db";
 // biota
-import {
-  CollectionNamePlural,
-  collection,
-  BiotaCollectionName
-} from "~/factory/api/collection";
+import { collectionNamePlural, collectionNameNormalized } from "~/factory/classes/collection";
 import { create } from "~/factory/api/create";
 import { name } from "~/helpers";
 import { execute } from "~/tasks";
@@ -32,31 +28,26 @@ export function relation(this: DB, relationName?: string) {
 
     tasks.push({
       async task() {
-        let existingRelations = await self
-          .collection(BiotaCollectionName("relations"))
-          .search({
-            $and: [
-              {
-                "parts.collection": firstRelation.collection,
-                "parts.relation": firstRelation.relation,
-                "parts.path": firstRelation.path
-              },
-              {
-                "parts.collection": secondRelation.collection,
-                "parts.relation": secondRelation.relation,
-                "parts.path": secondRelation.path
-              }
-            ]
-          });
+        // let existingRelations = await self.collection(collectionNameNormalized("relations")).find({
+        //   $and: [
+        //     {
+        //       "parts.collection": firstRelation.collection,
+        //       "parts.relation": firstRelation.relation,
+        //       "parts.path": firstRelation.path
+        //     },
+        //     {
+        //       "parts.collection": secondRelation.collection,
+        //       "parts.relation": secondRelation.relation,
+        //       "parts.path": secondRelation.path
+        //     }
+        //   ]
+        // });
 
-
-        return self.query(
-          collection(BiotaCollectionName("relations")).create({
-            data: {
-              relations: {}
-            }
-          })
-        );
+        return self.collection(collectionNameNormalized("relations")).insert({
+          data: {
+            relations: {}
+          }
+        });
       }
     });
 
@@ -79,7 +70,7 @@ export function relation(this: DB, relationName?: string) {
     many: function(collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "many",
-        collection: CollectionNamePlural(collection),
+        collection: collectionNamePlural(collection),
         path
       });
       return secondApi;
@@ -87,7 +78,7 @@ export function relation(this: DB, relationName?: string) {
     one: function(collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "one",
-        collection: CollectionNamePlural(collection),
+        collection: collectionNamePlural(collection),
         path
       });
       return secondApi;
@@ -98,7 +89,7 @@ export function relation(this: DB, relationName?: string) {
     many: function(collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "many",
-        collection: CollectionNamePlural(collection),
+        collection: collectionNamePlural(collection),
         path
       });
       return buildRelation();
@@ -106,7 +97,7 @@ export function relation(this: DB, relationName?: string) {
     one: function(collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "one",
-        collection: CollectionNamePlural(collection),
+        collection: collectionNamePlural(collection),
         path
       });
       return buildRelation();

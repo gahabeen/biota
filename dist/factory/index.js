@@ -1,14 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.database = require("./api/database");
-exports.index = require("./api/index");
-exports.udfunction = require("./api/udfunction");
-exports.role = require("./api/role");
-exports.rule = require("./api/rule");
 exports.ql = require("./api/ql");
-// crud
+// by class
 var collection_1 = require("./api/collection");
 exports.collection = collection_1.collection;
+// export { database } from "./api/database";
+// crud
 var get_1 = require("./api/get");
 exports.get = get_1.get;
 var create_1 = require("./api/create");
@@ -23,6 +20,4 @@ var replace_1 = require("./api/replace");
 exports.replace = replace_1.replace;
 var forget_1 = require("./api/forget");
 exports.forget = forget_1.forget;
-var me_1 = require("./api/me");
-exports.me = me_1.me;
 //# sourceMappingURL=index.js.map

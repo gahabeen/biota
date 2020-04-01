@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // external
 const faunadb_1 = require("faunadb");
 // biota
-const udfunction_1 = require("~/factory/api/udfunction");
+const udfunction_1 = require("~/factory/classes/udfunction");
 exports.Reverse = udfunction_1.UDFunction({
-    name: "Array.Reverse",
+    name: udfunction_1.udfunctionNameNormalized("Array.Reverse"),
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["arr"], faunadb_1.query.Reduce(faunadb_1.query.Lambda(["reversed", "item"], faunadb_1.query.Prepend(faunadb_1.query.Var("item"), faunadb_1.query.Var("reversed"))), [], faunadb_1.query.Var("arr"))))
 });
 //# sourceMappingURL=array.js.map

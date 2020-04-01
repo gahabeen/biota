@@ -5,4 +5,6 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("../ql/batch"));
 __export(require("../ql/reference"));
+__export(require("../ql/identity"));
+__export(require("../ql/string_split"));
 //# sourceMappingURL=ql.js.map

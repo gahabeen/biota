@@ -5,5 +5,5 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("../role/action"));
 __export(require("../role/privilege"));
-__export(require("../role/wrapper"));
+__export(require("../classes/role"));
 //# sourceMappingURL=role.js.map

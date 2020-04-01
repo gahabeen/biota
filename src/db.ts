@@ -1,25 +1,17 @@
-// types
+import Debug from "debug";
+import * as fauna from "faunadb";
 import {
-  Fauna,
   DBFactoryQL,
-  FaunaCollectionOptions,
   DBFramework,
   DBFrameworkCollection,
   DBFrameworkDefault,
   DBFrameworkFoundation,
-  DBFrameworkGraphQL,
-  DBFrameworkImport,
   DBFrameworkRelation,
-  DBFactory,
-  FaunaRef,
-  DBFrameworkDocument
+  Fauna,
+  FaunaCollectionOptions
 } from "~/../types/db";
 import { Task } from "~/../types/task";
-// external
-import * as fauna from "faunadb";
-// biota
 import * as framework from "~/framework";
-import * as factory from "~/factory";
 import { execute } from "~/tasks";
 
 function bindThis(self, rootKey) {
@@ -39,33 +31,33 @@ function bindThis(self, rootKey) {
   resolver(self[rootKey] || {});
 }
 
+interface DBOptions {
+  secret: string;
+  debug?: boolean;
+}
+
 export class DB {
   query: (fqlQuery: Fauna.Expr) => any;
-  paginate: (
-    paginateQuery: Fauna.Expr,
-    paginateOptions?: object
-  ) => AsyncGenerator<any, any, any>;
+  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
   login: (id: Fauna.Expr, password: string) => any;
+  logout: (everywhere: boolean) => any;
   execute: (tasks: Task[]) => Promise<void>;
 
-  q: any;
   ql: DBFactoryQL;
   client: Fauna.Client;
 
-  factory: DBFactory;
   framework: DBFramework;
 
-  document: (docRef: FaunaRef) => DBFrameworkDocument;
-  collection: (
-    collectionName: string | FaunaCollectionOptions
-  ) => DBFrameworkCollection;
+  collection: (collectionName: string | FaunaCollectionOptions) => DBFrameworkCollection;
   default: DBFrameworkDefault;
   foundation: DBFrameworkFoundation;
-  graphql: DBFrameworkGraphQL;
-  import: DBFrameworkImport;
   relation: DBFrameworkRelation;
 
-  constructor({ secret }) {
+  constructor(options: DBOptions) {
+    let { secret, debug } = options || {};
+    const log = Debug("biota");
+    log.enabled = debug;
+
     this.client = new fauna.Client({ secret });
     this.query = framework.query.bind(this);
     this.paginate = framework.paginate.bind(this);
@@ -76,41 +68,8 @@ export class DB {
     this.foundation = framework.foundation.bind(this);
 
     this.collection = framework.collection.bind(this);
-    bindThis(this, "collection");
-
-    this.document = framework.document.bind(this);
-    bindThis(this, "collection");
-
-    this.factory = factory;
-    bindThis(this, "factory");
 
     this.framework = framework;
     bindThis(this, "framework");
-
-    // this.create = framework.create.bind(this)
-    // bindThis(this, "collection")
-    // this.scaffold = scaffold;
-    // bindThis(this, "scaffold");
-    // this.create = api.create;
-    // bindThis(this, "create");
-    // this.update = api.update;
-    // bindThis(this, "update");
-    // this.upsert = api.upsert;
-    // bindThis(this, "upsert");
-    // this.replace = api.replace;
-    // bindThis(this, "replace");
-    // this.forget = api.forget;
-    // bindThis(this, "forget");
-    // this.me = api.me;
-    // bindThis(this, "me");
-
-    // this.get = api.get.get.bind(this);
-    // this.collections = api.get.collections.bind(this);
-    // this.indexes = api.get.indexes.bind(this);
-    // this.functions = api.get.functions.bind(this);
-    // this.roles = api.get.roles.bind(this);
-    // this.keys = api.get.keys.bind(this);
-    // this.tokens = api.get.tokens.bind(this);
-    // this.credentials = api.get.credentials.bind(this);
   }
 }

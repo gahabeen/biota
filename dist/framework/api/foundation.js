@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// external
 const faunadb_1 = require("faunadb");
-// biota
 const tasks_1 = require("~/tasks");
 const create_1 = require("~/factory/api/create");
 const upsert_1 = require("~/factory/api/upsert");
@@ -11,13 +9,14 @@ const defaultFunctions = require("~/framework/api/default/functions");
 const defaultRoles = require("~/framework/api/default/roles");
 const defaultCollections = require("~/framework/api/default/collections");
 const defaultIndexes = require("~/framework/api/default/indexes");
-async function foundation() {
+async function foundation(options) {
     const self = this;
+    options = { roles: true, functions: true, collections: true, indexes: true, ...options };
     let tasks = [];
     /**
      *  Roles (base)
      */
-    if (false) {
+    if (options.roles) {
         for (let defaultRole of Object.values(defaultRoles)) {
             tasks.push({
                 name: `Creating (base) role: ${defaultRole.name}`,
@@ -30,7 +29,7 @@ async function foundation() {
     /**
      *  Functions
      */
-    if (false) {
+    if (options.functions) {
         for (let UDFunction of Object.values(defaultFunctions)) {
             tasks.push({
                 name: `Upserting function: ${UDFunction.name}`,
@@ -44,72 +43,72 @@ async function foundation() {
     /**
      *  Collections
      */
-    if (true) {
-        if (false) {
-            tasks.push({
-                name: `Scaffold collection: ${defaultCollections.users.name}`,
-                task() {
-                    return self.collection(defaultCollections.users).scaffold();
-                }
-            });
-        }
-        if (false) {
-            tasks.push({
-                name: `Scaffold collection: ${defaultCollections.actions.name}`,
-                task() {
-                    return self
-                        .collection(defaultCollections.actions)
-                        .scaffold({ searchable: ["document", "ts", "user", "name"] });
-                }
-            });
-        }
-        if (true) {
-            tasks.push({
-                name: `Scaffold collection: ${defaultCollections.relations.name}`,
-                task() {
-                    return self.collection(defaultCollections.relations).scaffold({
-                        searchable: [
-                            "name",
-                            "parts.relation",
-                            "parts.collection",
-                            "parts.path"
-                        ],
-                        fields: [
-                            {
-                                field: "uniqueness_check",
-                                unique: true,
-                                values: [
-                                    {
-                                        field: ["data", "parts", "0", "relation"]
-                                    },
-                                    {
-                                        field: ["data", "parts", "0", "collection"]
-                                    },
-                                    {
-                                        field: ["data", "parts", "0", "path"]
-                                    },
-                                    {
-                                        field: ["data", "parts", "1", "relation"]
-                                    },
-                                    {
-                                        field: ["data", "parts", "1", "collection"]
-                                    },
-                                    {
-                                        field: ["data", "parts", "1", "path"]
-                                    }
-                                ]
-                            }
-                        ]
-                    });
-                },
-                fullError: true
-            });
-        }
+    if (options.collections) {
+        tasks.push({
+            name: `Scaffold collection: ${defaultCollections.users.name}`,
+            task() {
+                return self.collection(defaultCollections.users).scaffold();
+            }
+        });
+        tasks.push({
+            name: `Scaffold collection: ${defaultCollections.actions.name}`,
+            task() {
+                return self.collection(defaultCollections.actions).scaffold({
+                    index: [
+                        "document",
+                        "ts",
+                        "user",
+                        "name",
+                        {
+                            field: "at",
+                            binding: faunadb_1.query.Query(faunadb_1.query.Lambda("doc", faunadb_1.query.Let({
+                                ts: faunadb_1.query.Select("ts", faunadb_1.query.Var("doc"), null)
+                            }, faunadb_1.query.If(faunadb_1.query.IsTimestamp(faunadb_1.query.Var("ts")), faunadb_1.query.ToTime(faunadb_1.query.Var("ts")), null))))
+                        }
+                    ]
+                });
+            }
+        });
+        tasks.push({
+            name: `Scaffold collection: ${defaultCollections.relations.name}`,
+            task() {
+                return self.collection(defaultCollections.relations).scaffold({
+                    index: ["name", "parts.relation", "parts.collection", "parts.path"],
+                    field: [
+                        {
+                            field: "uniqueness_check",
+                            unique: true,
+                            outputs: [
+                                {
+                                    field: "data.parts.0.relation"
+                                },
+                                {
+                                    field: "data.parts.0.collection"
+                                },
+                                {
+                                    field: "data.parts.0.path"
+                                },
+                                {
+                                    field: "data.parts.1.relation"
+                                },
+                                {
+                                    field: "data.parts.1.collection"
+                                },
+                                {
+                                    field: "data.parts.1.path"
+                                }
+                            ]
+                        }
+                    ]
+                });
+            },
+            fullError: true
+        });
     }
     /**
      *  Indexes
      */
-    if (false) {
+    if (options.indexes) {
         for (let defaultIndex of Object.values(defaultIndexes)) {
             tasks.push({
                 name: `Upserting index: ${defaultIndex.name}`,
@@ -122,7 +121,7 @@ async function foundation() {
     /**
      *  Roles
      */
-    if (false) {
+    if (options.roles) {
         for (let defaultRole of Object.values(defaultRoles)) {
             tasks.push({
                 name: `Upserting role: ${defaultRole.name}`,
@@ -133,7 +132,9 @@ async function foundation() {
             });
         }
     }
-    return tasks_1.execute(tasks);
+    return tasks_1.execute(tasks, {
+        domain: "DB.foundation"
+    });
 }
 exports.foundation = foundation;
 //# sourceMappingURL=foundation.js.map

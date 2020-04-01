@@ -2,16 +2,16 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { UDFunction } from "~/factory/api/udfunction";
-import { WrapActionToLog } from "~/framework/helpers/wrapActionToLog";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { WrapActionAndLog } from "~/framework/helpers/WrapActionAndLog";
 import { logData } from "~/framework/helpers/logData";
 
 export const Update = UDFunction({
-  name: "Update",
+  name: udfunctionNameNormalized("Update"),
   body: q.Query(
     q.Lambda(
       ["userRef", "ref", "data"],
-      WrapActionToLog(
+      WrapActionAndLog(
         "update",
         q.Update(q.Var("ref"), { data: logData.update() })
       )

@@ -5,25 +5,25 @@ const faunadb_1 = require("faunadb");
 // biota
 const collection_1 = require("~/factory/api/collection");
 exports.me = {
-    logout: function meLogout(everywhere) {
-        return collection_1.collection("users").logout(everywhere);
+    logout(everywhere) {
+        return faunadb_1.query.Logout(everywhere);
     },
-    changePassword: function meChangePassword(password) {
+    changePassword(password) {
         return collection_1.collection("users").changePassword(password);
     },
-    get: function meGet() {
+    get() {
         return collection_1.collection("users").get(faunadb_1.query.Select("id", faunadb_1.query.Identity()));
     },
-    update: function meUpdate(data) {
+    update(data) {
         return collection_1.collection("users").update(faunadb_1.query.Select("id", faunadb_1.query.Identity()), data);
     },
-    upsert: function meUpsert(data) {
+    upsert(data) {
         return collection_1.collection("users").upsert(faunadb_1.query.Select("id", faunadb_1.query.Identity()), data);
     },
-    delete: function meDelete() {
+    delete() {
         return collection_1.collection("users").delete(faunadb_1.query.Select("id", faunadb_1.query.Identity()));
     },
-    forget: function meForget() {
+    forget() {
         return collection_1.collection("users").forget(faunadb_1.query.Select("id", faunadb_1.query.Identity()));
     }
 };

@@ -4,12 +4,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // external
 const faunadb_1 = require("faunadb");
 // biota
-const merge = (fieldValues) => {
+const merge = (fieldValues, data = faunadb_1.query.Var("data")) => {
     let dataToMerge = {};
     for (let fieldName in fieldValues) {
-        dataToMerge[fieldName] = faunadb_1.query.Merge(faunadb_1.query.Select(fieldName, faunadb_1.query.Var("data"), {}), fieldValues[fieldName]);
+        dataToMerge[fieldName] = faunadb_1.query.Merge(faunadb_1.query.Select(fieldName, data, {}), fieldValues[fieldName]);
     }
-    return faunadb_1.query.Merge(faunadb_1.query.Var("data"), dataToMerge);
+    return faunadb_1.query.Merge(data, dataToMerge);
 };
 exports.logData = {
     own() {
@@ -29,7 +29,7 @@ exports.logData = {
                 credentials_changed_by: faunadb_1.query.Var("ref"),
                 credentials_changed_at: faunadb_1.query.Now()
             }
-        });
+        }, {});
     },
     assign() {
         return merge({
@@ -39,12 +39,7 @@ exports.logData = {
             activity: { assigned_by: faunadb_1.query.Var("userRef"), assigned_at: faunadb_1.query.Now() }
         });
     },
-    import() {
-        return merge({
-            activity: { imported_by: faunadb_1.query.Var("userRef"), imported_at: faunadb_1.query.Now() }
-        });
-    },
-    create() {
+    insert() {
         return merge({
             activity: { created_by: faunadb_1.query.Var("userRef"), created_at: faunadb_1.query.Now() }
         });
@@ -62,17 +57,17 @@ exports.logData = {
     expire() {
         return merge({
             activity: { expired_by: faunadb_1.query.Var("userRef"), expired_at: faunadb_1.query.Var("at") }
-        });
+        }, {});
     },
     delete() {
         return merge({
             activity: { deleted_by: faunadb_1.query.Var("userRef"), deleted_at: faunadb_1.query.Now() }
-        });
+        }, {});
     },
     archive() {
         return merge({
             activity: { archived_by: faunadb_1.query.Var("userRef"), archived_at: faunadb_1.query.Now() }
-        });
+        }, {});
     }
 };
 //# sourceMappingURL=logData.js.map

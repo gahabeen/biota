@@ -4,7 +4,7 @@ import { FaunaRuleLambda, FaunaRuleAction, Fauna } from "~/../types/db";
 import * as fauna from "faunadb";
 const q = fauna.query;
 // biota
-import { Rules } from "~/factory/api/rule";
+import { Rules } from "~/factory/rule";
 import {
   is_self,
   is_owner,

@@ -1,5 +1,5 @@
 // types
-import { DBFactoryUpdate, FaunaRoleOptions } from "~/../types/db";
+import { DBFactoryUpdate, FaunaRoleOptions, FaunaIndexOptions } from "~/../types/db";
 // external
 import { query as q } from "faunadb";
 // biota
@@ -12,8 +12,9 @@ export const update: DBFactoryUpdate = {
   collection: function collectionUpdate(name, options) {
     return q.Update(q.Collection(name), options);
   },
-  index: function indexUpdate(name, options) {
-    return q.Update(q.Index(name), options);
+  index: function indexUpdate(name, options: FaunaIndexOptions = {}) {
+    let { unique } = options;
+    return q.Update(q.Index(name), { name, unique });
   },
   function: function functionUpdate(name, options) {
     return q.Update(q.Function(name), options);
@@ -28,11 +29,7 @@ export const update: DBFactoryUpdate = {
         role: q.Get(q.Role(definition.name)),
         memberships: q.Select("membership", q.Var("role"), []),
         privileges: q.Select("privileges", q.Var("role"), []),
-        membershipArray: q.If(
-          q.IsArray(q.Var("memberships")),
-          q.Var("memberships"),
-          [q.Var("memberships")]
-        ),
+        membershipArray: q.If(q.IsArray(q.Var("memberships")), q.Var("memberships"), [q.Var("memberships")]),
         differencedPrivileges: q.Filter(
           q.Var("privileges"),
           q.Lambda(
@@ -43,12 +40,7 @@ export const update: DBFactoryUpdate = {
                   privileges,
                   q.Lambda(
                     "newPrivilege",
-                    q.Not(
-                      q.Equals(
-                        q.Select("resource", q.Var("privilege"), -1),
-                        q.Select("resource", q.Var("newPrivilege"), -1)
-                      )
-                    )
+                    q.Not(q.Equals(q.Select("resource", q.Var("privilege"), -1), q.Select("resource", q.Var("newPrivilege"), -1)))
                   )
                 )
               },
@@ -64,11 +56,7 @@ export const update: DBFactoryUpdate = {
               {
                 resource: q.Select("resource", q.Var("privilege"), false)
               },
-              q.If(
-                q.IsRef(q.Var("resource")),
-                q.Exists(q.Var("resource")),
-                false
-              )
+              q.If(q.IsRef(q.Var("resource")), q.Exists(q.Var("resource")), false)
             )
           )
         ),
@@ -82,12 +70,7 @@ export const update: DBFactoryUpdate = {
                   membership,
                   q.Lambda(
                     "newMembership",
-                    q.Not(
-                      q.Equals(
-                        q.Select("resource", q.Var("membership"), -1),
-                        q.Select("resource", q.Var("newMembership"), -1)
-                      )
-                    )
+                    q.Not(q.Equals(q.Select("resource", q.Var("membership"), -1), q.Select("resource", q.Var("newMembership"), -1)))
                   )
                 )
               },
@@ -103,11 +86,7 @@ export const update: DBFactoryUpdate = {
               {
                 resource: q.Select("resource", q.Var("membership"), false)
               },
-              q.If(
-                q.IsRef(q.Var("resource")),
-                q.Exists(q.Var("resource")),
-                false
-              )
+              q.If(q.IsRef(q.Var("resource")), q.Exists(q.Var("resource")), false)
             )
           )
         )

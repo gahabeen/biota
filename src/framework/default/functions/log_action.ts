@@ -2,14 +2,15 @@
 // external
 import { query as q } from "faunadb";
 // biota
-import { UDFunction } from "~/factory/api/udfunction";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { collectionNameNormalized} from "~/factory/classes/collection";
 
 export const LogAction = UDFunction({
-  name: "LogAction",
+  name: udfunctionNameNormalized("LogAction"),
   body: q.Query(
     q.Lambda(
       ["documentRef", "ts", "userRef", "actionName"],
-      q.Create(q.Collection("actions"), {
+      q.Create(q.Collection(collectionNameNormalized("actions")), {
         data: {
           document: q.Var("documentRef"),
           ts: q.Var("ts"),
@@ -20,4 +21,3 @@ export const LogAction = UDFunction({
     )
   )
 });
-

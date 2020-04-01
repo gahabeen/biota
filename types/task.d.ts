@@ -6,5 +6,7 @@ export interface Task {
 }
 
 export interface TaskExecuteOptions {
-  indent?: number
+  indent?: number,
+  singleResult?: boolean
+  domain?: string
 }

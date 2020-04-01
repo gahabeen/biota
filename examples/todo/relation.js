@@ -9,8 +9,17 @@ const { Biota, Page } = require("../../dist");
   //   .many("todos")
   //   .connects.on("user");
 
+  // relations
+  // db.relation("todos_ownership")
+  //   .many("todos", "activity.owner")
+  //   .connects.one("users");
+
+  // db.relation("todos_ownership")
+  //   .many("todos", "activity.owner")
+  //   .connects.one("users");
+
   console.log(
-    db
+    await db
       .relation("todos_relation")
       .many("todos", "activity.owner")
       .connects.many("users")

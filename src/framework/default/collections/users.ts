@@ -1,7 +1,7 @@
 // types
 // external
 // biota
-import { Collection, BiotaCollectionName } from "~/factory/api/collection";
+import { Collection, collectionNameNormalized } from "~/factory/classes/collection";
 
 export const users = Collection({
   name: "users",

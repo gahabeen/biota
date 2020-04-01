@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fauna = require("faunadb");
 const q = fauna.query;
 // biota
-const rule_1 = require("~/factory/api/rule");
+const rule_1 = require("~/factory/rule");
 const rules_1 = require("~/framework/api/default/rules");
 const wrapDoc_1 = require("~/framework/helpers/wrapDoc");
 function Action(type) {

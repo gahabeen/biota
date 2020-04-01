@@ -3,9 +3,7 @@ import { DBFactoryCollection } from "~/../types/db";
 // external
 import { query as q } from "faunadb";
 // biota
-import { Reference } from "~/factory/api/ql";
-
-export * from "../collection/wrapper";
+import { Reference, Identity } from "~/factory/api/ql";
 
 export function collection(name: string = undefined): DBFactoryCollection {
   if (!name) {
@@ -13,79 +11,67 @@ export function collection(name: string = undefined): DBFactoryCollection {
   }
 
   return {
-    list: function collectionList() {
-      return q.Paginate(q.Documents(q.Collection(name)));
-    },
-    login: function collectionLogin(id, password) {
+    /**
+     * Specific methods
+     */
+    login(id, password) {
       return q.Login(Reference({ collection: name, id }), {
         password
       });
     },
-    logout: function collectionLogout(everywhere) {
-      return q.Logout(everywhere);
+    changePassword(password, id = q.Identity()) {
+      return q.Call("biota.ChangePassword", [Identity(), id, password]);
     },
-    changePassword: function collectionChangePassword(password) {
-      return q.Call("biota.ChangePassword", [
-        q.If(q.HasIdentity(), q.Identity(), null),
-        q.Identity(),
-        password
-      ]);
-    },
-    get: function collectionGet(id) {
+    /**
+     * General methods
+     */
+    get(id) {
       return q.Get(q.Ref(q.Collection(name), id));
     },
-    import: function collectionImport(data, options = {}) {
-      let { id, password } = options;
-      return q.Call("biota.Import", [
-        q.If(q.HasIdentity(), q.Identity(), null),
+    insert(data, { id, password, credentials } = {}) {
+      return q.Call("biota.Insert", [
+        Identity(),
         Reference({ collection: name, id }),
-        { data, credentials: { password } }
+        { data, credentials: { ...credentials, password } }
       ]);
     },
-    create: function collectionCreate(data, { id, password } = {}) {
-      return q.Call("biota.Create", [
-        q.If(q.HasIdentity(), q.Identity(), null),
-        Reference({ collection: name, id }),
-        { data, credentials: { password } }
-      ]);
-    },
-    update: function collectionUpdate(data, id) {
+    update(id, data) {
       return q.Call("biota.Update", [
-        q.If(q.HasIdentity(), q.Identity(), null),
+        Identity(),
         Reference({ collection: name, id }),
         { data }
       ]);
     },
-    replace: function collectionReplace(data, id) {
+    replace(id, data) {
       return q.Call("biota.Replace", [
-        q.If(q.HasIdentity(), q.Identity(), null),
+        Identity(),
         Reference({ collection: name, id }),
         { data }
       ]);
     },
-    upsert: function collectionUpsert(data, id) {
+    upsert(id, data) {
       return q.If(
         q.Exists(Reference({ collection: name, id })),
-        collection(name).update(data, id),
-        collection(name).create(data, { id })
+        collection(name).update(id, data),
+        collection(name).insert(data, { id })
       );
     },
-    repsert: function collectionRepsert(data, id) {
+    repsert(id, data) {
       return q.If(
         q.Exists(Reference({ collection: name, id })),
-        collection(name).replace(data, id),
-        collection(name).create(data, { id })
+        collection(name).replace(id, data),
+        collection(name).insert(data, { id })
       );
     },
-    delete: function collectionDelete(id) {
+    delete(id) {
       return q.Call("biota.Delete", [
-        q.If(q.HasIdentity(), q.Identity(), null),
+        Identity(),
         Reference({ collection: name, id })
       ]);
     },
-    forget: function collectionForget(id) {
+    forget(id) {
       return q.Call("biota.Forget", [
-        q.If(q.HasIdentity(), q.Identity(), null),
+        Identity(),
         Reference({ collection: name, id })
       ]);
     }

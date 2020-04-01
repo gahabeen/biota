@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // imports
 const faunadb_1 = require("faunadb");
 // factory
-const role_1 = require("~/factory/api/role");
-const udfunction_1 = require("~/factory/api/udfunction");
+const role_1 = require("~/factory/classes/role");
+const udfunction_1 = require("~/factory/classes/udfunction");
 // framework
 const has_role_1 = require("~/framework/default/rules/has_role");
 const wrapDoc_1 = require("~/framework/helpers/wrapDoc");
@@ -30,7 +30,7 @@ exports.user = role_1.Role({
          * Functions
          */
         role_1.Privilege({
-            resource: faunadb_1.query.Function(udfunction_1.BiotaUDFunctionName("SearchQuery")),
+            resource: faunadb_1.query.Function(udfunction_1.udfunctionNameNormalized("SearchQuery")),
             actions: { call: "all" }
         })
     ]

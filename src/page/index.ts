@@ -7,7 +7,6 @@ PageInstance.prototype.data = function(){
   return this.value.data
 }
 
-
 export async function Page(cursor: AsyncIterator<any>) {
   return cursor.next().then(({ value }) => {
     if (!value) {

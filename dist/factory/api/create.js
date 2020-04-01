@@ -3,17 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // external
 const faunadb_1 = require("faunadb");
 // biota
+const ql_1 = require("~/factory/api/ql");
 const helpers_1 = require("~/helpers");
 // relative
-const database_1 = require("./database");
-const collection_1 = require("./collection");
-const index_1 = require("./index");
-const udfunction_1 = require("./udfunction");
-const role_1 = require("./role");
+const database_1 = require("~/factory/classes/database");
+const collection_1 = require("~/factory/classes/collection");
+const udfunction_1 = require("~/factory/classes/udfunction");
+const index_1 = require("~/factory/classes/index");
+const role_1 = require("~/factory/classes/role");
 exports.create = {
-    // document: function documentCreate(collectionName, options){
-    //   return q.Create(Database(definition));
-    // },
+    document: function documentCreate(collectionName, options = {}) {
+        return faunadb_1.query.Create(ql_1.Reference({ collection: collectionName, id: options.id }), options);
+    },
     database: function databaseCreate(name, options = {}) {
         let definition = helpers_1.nameOrOptions(name, options);
         return faunadb_1.query.CreateDatabase(database_1.Database(definition));

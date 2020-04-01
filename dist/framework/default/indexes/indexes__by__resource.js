@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fauna = require("faunadb");
 const q = fauna.query;
 // biota
-const index_1 = require("~/factory/api/index");
+const index_1 = require("~/factory/classes/index");
 exports.indexes__by__resource = index_1.Index({
-    name: 'indexes__by__resource',
+    name: index_1.indexNameNormalized('indexes__by__resource'),
     source: {
         collection: q.Indexes(),
         fields: {
