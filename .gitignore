@@ -3,3 +3,4 @@ node_modules
 playground
 yarn-error.log
 dist
+examples
