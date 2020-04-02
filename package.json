@@ -18,7 +18,8 @@
     "gen-js": "tsc -w",
     "gen": "yarn run clean-dist && npm run gen-js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "browser": "browserify src/index.ts -t aliasify -p tsify > browser/biota.js"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -32,14 +33,20 @@
     "@types/jest": "^25.1.4",
     "@types/listr": "^0.14.2",
     "@types/node": "^13.7.6",
+    "aliasify": "^2.1.0",
+    "browserify": "^16.5.1",
     "dotenv": "^8.2.0",
     "jest": "^25.1.0",
     "minimist": "^1.2.5",
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0",
+    "pathmodify": "^0.5.0",
+    "tinyify": "^2.5.2",
     "ts-jest": "^25.2.1",
+    "tsify": "^4.0.1",
     "typedoc": "^0.17.1",
     "typescript": "^3.8.3",
+    "uglifyify": "^5.0.2",
     "yarn-run-all": "^3.1.1"
   },
   "resolutions": {
@@ -47,5 +54,10 @@
   },
   "_moduleAliases": {
     "~": "dist"
+  },
+  "aliasify": {
+    "aliases": {
+      "~(.+)": "./dist/$1"
+    }
   }
 }
