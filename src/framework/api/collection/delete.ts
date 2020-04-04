@@ -1,21 +1,24 @@
 import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/db";
-import { collection } from "~/factory/api/classes/collection";
+import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
+import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 
 export function deleteFn(this: DB, collectionDefinition: FaunaCollectionOptions) {
   let self = this;
 
   return async function deleteMethod(id: FaunaId) {
-    return execute([
+    return execute(
+      [
+        {
+          name: `Delete (${id}) in (${collectionDefinition.name})`,
+          task() {
+            return self.query(document.delete(collectionDefinition.name, id));
+          },
+        },
+      ],
       {
-        name: `Delete (${id}) in (${collectionDefinition.name})`,
-        task() {
-          return self.query(collection(collectionDefinition.name).delete(id));
-        }
+        domain: "DB.collection.delete",
       }
-    ], {
-      domain: "DB.collection.delete"
-    });
+    );
   };
 }

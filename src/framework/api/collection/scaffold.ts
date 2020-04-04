@@ -1,7 +1,7 @@
+import { FaunaCollectionOptions } from "~/../types/fauna";
+import { DBFrameworkCollectionScaffoldOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-import { FaunaCollectionOptions, DBFrameworkCollectionScaffoldOptions } from "~/../types/db";
-import { upsert } from "~/factory";
-import { fieldDefinition } from "./field";
+import { upsert } from "~/factory/api/udf";
 import { execute } from "~/tasks";
 
 export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions) {
@@ -45,7 +45,7 @@ export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions)
       {
         name: `Upserting collection (${collectionDefinition.name})`,
         async task() {
-          return self.query(upsert.collection(collectionDefinition));
+          return self.query(upsert.collection(collectionDefinition.name, collectionDefinition));
         },
       },
     ];

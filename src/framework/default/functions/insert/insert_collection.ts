@@ -1,20 +1,8 @@
-// types
-// external
 import { query as q } from "faunadb";
-// biota
 import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
-import { WrapActionAndLog } from "~/framework/helpers/WrapActionAndLog";
-import { logData } from "~/framework/helpers/logData";
+import { insert as insertFQLUDF } from "~/factory/api/fql/udf/insert";
 
-export const Insert = UDFunction({
-  name: udfunctionNameNormalized("Insert"),
-  body: q.Query(
-    q.Lambda(
-      ["userRef", "collectionRef", "data"],
-      WrapActionAndLog(
-        "insert",
-        q.Create(q.Var("collectionRef"), { data: logData.insert() })
-      )
-    )
-  )
+export const InsertCollection = UDFunction({
+  name: udfunctionNameNormalized("InsertCollection"),
+  body: q.Query((userRef, name, options, id) => insertFQLUDF.collection(name, options)),
 });

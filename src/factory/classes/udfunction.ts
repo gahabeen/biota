@@ -1,5 +1,5 @@
 // types
-import { FaunaUDFunctionOptions, FaunaRef, Fauna } from "~/../types/db";
+import { FaunaUDFunctionOptions, FaunaRef, Fauna } from "~/../types/fauna";
 // external
 // biota
 import { CONVENTION } from "~/consts";

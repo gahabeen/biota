@@ -1,9 +1,8 @@
-// types
-import { FaunaCollectionOptions, DBFrameworkCollectionIndexOptions, DBFrameworkCollectionFieldOptions } from "~/../types/db";
-import { update } from "~/factory/api/update";
-// biota
-import { execute } from "~/tasks";
+import { FaunaCollectionOptions } from "~/../types/fauna";
+import { DBFrameworkCollectionFieldOptions, DBFrameworkCollectionIndexOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
+import { update } from "~/factory/api/udf";
+import { execute } from "~/tasks";
 
 export function compute(this: DB, collectionDefinition: FaunaCollectionOptions) {
   let self = this;
@@ -36,13 +35,13 @@ export function compute(this: DB, collectionDefinition: FaunaCollectionOptions) 
                               resource: ref,
                               actions: {
                                 read: true,
-                                history_read: true
-                              }
-                            }
-                          ]
+                                history_read: true,
+                              },
+                            },
+                          ],
                         })
                       );
-                    }
+                    },
                   });
                 }
                 await execute(subTasks);
@@ -50,11 +49,11 @@ export function compute(this: DB, collectionDefinition: FaunaCollectionOptions) 
             }
             return indexes;
           });
-      }
+      },
     });
 
     return execute(tasks, {
-      domain: "DB.collection.compute"
+      domain: "DB.collection.compute",
     });
   };
 }

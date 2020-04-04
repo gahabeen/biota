@@ -1,12 +1,7 @@
 import { DB } from "~/db";
-import {
-  FaunaPaginateMapper,
-  FaunaPaginateOptions,
-  FaunaPaginateResponse,
-  FaunaCollectionOptions,
-  DBFrameworkCollectionSearchParams
-} from "~/../types/db";
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from "~/../types/fauna";
 import { execute } from "~/tasks";
+import { DBFrameworkCollectionSearchParams } from "~/../types/framework/framework.collection";
 
 export function paginate(this: DB, collectionDefinition: FaunaCollectionOptions) {
   let self = this;
@@ -37,11 +32,11 @@ export function paginate(this: DB, collectionDefinition: FaunaCollectionOptions)
                   }
                   return res;
                 });
-            }
-          }
+            },
+          },
         ],
         {
-          domain: "DB.collection.paginate"
+          domain: "DB.collection.paginate",
         }
       );
     }

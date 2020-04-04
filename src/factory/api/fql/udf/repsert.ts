@@ -8,7 +8,7 @@ export const repsert: DBFactoryFQLUDFRepsert = {
     return q.If(
       q.Exists(q.Ref(q.Collection(collection), id)),
       replaceFQLUDF.document(collection, id, options),
-      insertFQLUDF.document(collection, id, options)
+      insertFQLUDF.document(collection, options, id)
     );
   },
   database(name, options) {
@@ -27,9 +27,9 @@ export const repsert: DBFactoryFQLUDFRepsert = {
     return q.If(q.Exists(q.Role(name)), replaceFQLUDF.role(name, options), insertFQLUDF.role(name, options));
   },
   token(id, options) {
-    return q.If(q.Exists(q.Ref(q.Tokens(), name)), replaceFQLUDF.token(name, options), insertFQLUDF.token(name, options));
+    return q.If(q.Exists(q.Ref(q.Tokens(), id)), replaceFQLUDF.token(id, options), insertFQLUDF.token(options.name, options));
   },
   key(id, options) {
-    return q.If(q.Exists(q.Ref(q.Keys(), id)), replaceFQLUDF.key(id, options), insertFQLUDF.key(id, options));
+    return q.If(q.Exists(q.Ref(q.Keys(), id)), replaceFQLUDF.key(id, options), insertFQLUDF.key(options.name, options));
   },
 };

@@ -1,8 +1,5 @@
-// types
-import { FaunaIndexOptions, Fauna } from "~/../types/db";
-// external
 import { query as q } from "faunadb";
-// biota
+import { Fauna, FaunaIndexOptions } from "~/../types/fauna";
 
 export function indexNameNormalized(name: string) {
   return `biota.${name.replace("biota.", "")}`;
@@ -13,14 +10,14 @@ export function Index(index: FaunaIndexOptions): FaunaIndexOptions {
     name,
     source = {
       collection: undefined,
-      fields: {}
+      fields: {},
     },
     terms = [],
     values = [],
     unique = false,
     serialized = true,
     permissions = {},
-    data = {}
+    data = {},
   } = index || {};
 
   let self = {
@@ -31,7 +28,7 @@ export function Index(index: FaunaIndexOptions): FaunaIndexOptions {
     unique,
     serialized,
     permissions,
-    data
+    data,
   };
 
   return self;
@@ -55,10 +52,10 @@ export function ToCursor(index: FaunaIndexOptions): FaunaIndexOptions {
       source: {
         ...source,
         fields: {
-          cursor: Cursor(pathArray)
-        }
+          cursor: Cursor(pathArray),
+        },
       },
-      values: [{ binding: "cursor" }, { field: ["ref"] }]
+      values: [{ binding: "cursor" }, { field: ["ref"] }],
     };
   } else {
     return undefined;
@@ -73,7 +70,7 @@ export function ToReverse(index: FaunaIndexOptions): FaunaIndexOptions {
     ...index,
     name: `${index.name}__reverse`,
     terms: [firstTerm, ...otherTerms],
-    data: { ...data, reverse: true }
+    data: { ...data, reverse: true },
   };
 }
 
@@ -81,38 +78,20 @@ export function NGramOnField(depth: number = 10, field: string[]): Fauna.Expr {
   return q.Union(
     q.Map(
       new Array(depth).fill(null).map((_, i) => i + 1),
-      q.Lambda(
-        "min",
-        q.NGram(
-          q.LowerCase(q.Select(field, q.Var("instance"))),
-          q.Var("min"),
-          q.Add(1, q.Var("min"))
-        )
-      )
+      q.Lambda("min", q.NGram(q.LowerCase(q.Select(field, q.Var("instance"))), q.Var("min"), q.Add(1, q.Var("min"))))
     )
   );
 }
 
-export function SearchIndex(
-  collection: string,
-  depth: number = 10,
-  fields: string[][]
-): Fauna.Expr {
+export function SearchIndex(collection: string, depth: number = 10, fields: string[][]): Fauna.Expr {
   return Index({
-    name: `${collection}__search_on__${fields
-      .map(field => field.join("_"))
-      .join("_and_")}`,
+    name: `${collection}__search_on__${fields.map((field) => field.join("_")).join("_and_")}`,
     source: {
       collection: q.Collection(collection),
       fields: {
-        search: q.Query(
-          q.Lambda(
-            "instance",
-            q.Distinct(q.Union(fields.map(field => NGramOnField(depth, field))))
-          )
-        )
-      }
+        search: q.Query(q.Lambda("instance", q.Distinct(q.Union(fields.map((field) => NGramOnField(depth, field)))))),
+      },
     },
-    terms: [{ binding: "search" }]
+    terms: [{ binding: "search" }],
   });
 }

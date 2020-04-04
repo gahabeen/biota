@@ -1,35 +1,32 @@
-import { DBFactoryCollection } from "~/../types/db";
+import { DBFactoryUDFunctionApi } from "~/../types/factory/factory.collection";
 import * as udf from "~/factory/api/udf";
 
-export function udfunction(name: string = undefined): DBFactoryCollection {
-  if (!name) {
-    throw new Error(`biota.udfunction(name) - valid name is required`);
-  }
-
-  return {
-    get(id, options = {}) {
-      return udf.get.udfunction(name, id, options);
-    },
-    insert(data, { id, password, credentials } = {}) {
-      return udf.insert.udfunction(name, data, { id, password, credentials });
-    },
-    update(id, data) {
-      return udf.update.udfunction(name, id, data);
-    },
-    replace(id, data) {
-      return udf.replace.udfunction(name, id, data);
-    },
-    upsert(id, data) {
-      return udf.upsert.udfunction(name, id, data);
-    },
-    repsert(id, data) {
-      return udf.repsert.udfunction(name, id, data);
-    },
-    delete(id) {
-      return udf.delete_.udfunction(name, id);
-    },
-    forget(id) {
-      return udf.forget.udfunction(name, id);
-    },
-  };
-}
+export const udfunction: DBFactoryUDFunctionApi = {
+  all() {
+    return udf.get.udfunctions();
+  },
+  get(name) {
+    return udf.get.udfunction(name);
+  },
+  insert(name, options) {
+    return udf.insert.udfunction(name, options);
+  },
+  update(name, options) {
+    return udf.update.udfunction(name, options);
+  },
+  replace(name, options) {
+    return udf.replace.udfunction(name, options);
+  },
+  upsert(name, options) {
+    return udf.upsert.udfunction(name, options);
+  },
+  repsert(name, options) {
+    return udf.repsert.udfunction(name, options);
+  },
+  delete(name) {
+    return udf.delete.udfunction(name);
+  },
+  forget(name) {
+    return udf.forget.udfunction(name);
+  },
+};

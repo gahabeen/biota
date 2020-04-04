@@ -21,6 +21,22 @@ export interface DBFactoryUDF {
   forget?: DBFactoryUDFForget;
 }
 
+export interface DBFactoryUDFOwn {
+  document?: CRUDReferenceDocument["own"];
+}
+
+export interface DBFactoryUDFAssign {
+  document?: CRUDReferenceDocument["assign"];
+}
+
+export interface DBFactoryUDFUnAssign {
+  document?: CRUDReferenceDocument["unassign"];
+}
+
+export interface DBFactoryUDFExpire {
+  document?: CRUDReferenceDocument["expire"];
+}
+
 export interface DBFactoryUDFGet {
   document?: CRUDReferenceDocument["read"];
   documents?: CRUDReferenceDocument["readAll"];

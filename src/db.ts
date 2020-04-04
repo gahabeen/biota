@@ -1,21 +1,14 @@
 import Debug from "debug";
 import * as fauna from "faunadb";
-import {
-  DBFactoryQL,
-  DBFramework,
-  DBFrameworkCollection,
-  DBFrameworkDefault,
-  DBFrameworkFoundation,
-  DBFrameworkRelation,
-  Fauna,
-  FaunaCollectionOptions
-} from "~/../types/db";
+import { Fauna, FaunaCollectionOptions } from "~/../types/fauna";
 import { Task } from "~/../types/task";
 import * as framework from "~/framework";
 import { execute } from "~/tasks";
+import { DBFactoryQL } from "../types/db";
+import { DBFrameworkCollection, DBFrameworkFoundation, DBFrameworkRelation } from "../types/framework/framework.collection";
 
 function bindThis(self, rootKey) {
-  const resolver = value => {
+  const resolver = (value) => {
     let entries = Object.entries(value);
     for (let [key, entry] of entries) {
       if (typeof entry === "object") {
@@ -46,10 +39,10 @@ export class DB {
   ql: DBFactoryQL;
   client: Fauna.Client;
 
-  framework: DBFramework;
+  // framework: DBFramework;
 
   collection: (collectionName: string | FaunaCollectionOptions) => DBFrameworkCollection;
-  default: DBFrameworkDefault;
+  // default: DBFrameworkDefault;
   foundation: DBFrameworkFoundation;
   relation: DBFrameworkRelation;
 
@@ -69,7 +62,7 @@ export class DB {
 
     this.collection = framework.collection.bind(this);
 
-    this.framework = framework;
-    bindThis(this, "framework");
+    // this.framework = framework;
+    // bindThis(this, "framework");
   }
 }

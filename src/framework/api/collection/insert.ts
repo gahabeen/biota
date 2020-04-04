@@ -1,6 +1,7 @@
+import { FaunaCollectionOptions } from "~/../types/fauna";
+import { DBFrameworkCollectionInsertOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-import { FaunaCollectionOptions, DBFrameworkCollectionInsertOptions, Fauna } from "~/../types/db";
-import { collection } from "~/factory/api/classes/collection";
+import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 
 export function insert(this: DB, collectionDefinition: FaunaCollectionOptions) {
@@ -17,15 +18,15 @@ export function insert(this: DB, collectionDefinition: FaunaCollectionOptions) {
           task() {
             if (keepId) {
               if (!id) throw new Error(`Doesn't have any given id`);
-              return self.query(collection(collectionDefinition.name).upsert(data.data || {}, { id, credentials }));
+              return self.query(document.upsert(collectionDefinition.name, id, { credentials, data: data.data || {} }));
             } else {
-              return self.query(collection(collectionDefinition.name).insert(data));
+              return self.query(document.insert(collectionDefinition.name, { data }));
             }
-          }
-        }
+          },
+        },
       ],
       {
-        domain: "DB.collection.insert"
+        domain: "DB.collection.insert",
       }
     );
   };

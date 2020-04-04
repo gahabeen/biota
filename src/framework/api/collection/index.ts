@@ -1,7 +1,8 @@
-import { DBFrameworkCollectionIndexOptions, FaunaCollectionOptions, DBFrameworkCollectionFieldOptions } from "~/../types/db";
-import { update } from "~/factory";
-import { execute } from "~/tasks";
+import { FaunaCollectionOptions } from "~/../types/fauna";
+import { DBFrameworkCollectionFieldOptions, DBFrameworkCollectionIndexOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
+import { update } from "~/factory/api/udf";
+import { execute } from "~/tasks";
 
 export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
   let self = this;
@@ -16,7 +17,7 @@ export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
       field: null,
       action: "index",
       ngram: false,
-      ngramMax: maxLength
+      ngramMax: maxLength,
     };
 
     if (typeof field === "string") {
@@ -48,14 +49,14 @@ export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
                               resource: ref,
                               actions: {
                                 read: true,
-                                history_read: true
-                              }
-                            }
-                          ]
+                                history_read: true,
+                              },
+                            },
+                          ],
                         })
                       );
                     },
-                    fullError: true
+                    fullError: true,
                   });
                 }
                 await execute(subTasks);
@@ -63,11 +64,11 @@ export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
             }
             return indexes;
           });
-      }
+      },
     });
 
     return execute(tasks, {
-      domain: "DB.collection.index"
+      domain: "DB.collection.index",
     });
   };
 }

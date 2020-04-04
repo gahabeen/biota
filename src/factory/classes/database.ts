@@ -1,5 +1,4 @@
-// types
-import { FaunaDatabaseOptions } from "~/../types/db";
+import { FaunaDatabaseOptions } from "~/../types/fauna";
 
 export function Database(database: FaunaDatabaseOptions): FaunaDatabaseOptions {
   let { name, data = {}, api_version } = database || {};
@@ -7,7 +6,7 @@ export function Database(database: FaunaDatabaseOptions): FaunaDatabaseOptions {
   let self = {
     name,
     data,
-    api_version
+    api_version,
   };
 
   return self;

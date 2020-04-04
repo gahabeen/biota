@@ -1,9 +1,10 @@
-import * as qs from "querystring";
 import { query as q } from "faunadb";
-import { DBFrameworkCollectionSearchParams, FaunaPaginateMapper, FaunaPaginateOptions, FaunaCollectionOptions, Fauna } from "~/../types/db";
+import * as qs from "querystring";
+import { Fauna, FaunaCollectionOptions, FaunaPaginateMapper, FaunaPaginateOptions } from "~/../types/fauna";
+import { DBFrameworkCollectionSearchParams } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-import { execute } from "~/tasks";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { execute } from "~/tasks";
 
 export function parseSearchQuery(collection: string, searchQuery: object) {
   const buildQuery = (sq: Fauna.Expr) => {
@@ -22,16 +23,16 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     },
     $nor: (query: Fauna.Expr, ...queries: Fauna.Expr[]) => {
       return q.Difference(buildQuery(query), ...queries.map(buildQuery));
-    }
+    },
     // $not: (source: Fauna.Expr, query: Fauna.Expr) =>
     //   q.Difference(source, query)
     // $distinct: (queries: Fauna.Expr[]) => q.Distinct(queries)
   };
 
   const isSystemOperator = (key: string) => Object.keys(operators).includes(key);
-  const hasSystemOperators = (obj: object) => Object.keys(obj).some(key => Object.keys(operators).includes(key));
+  const hasSystemOperators = (obj: object) => Object.keys(obj).some((key) => Object.keys(operators).includes(key));
   const getFirstSystemOperator = (obj: object) => {
-    return Object.keys(obj).find(key => isSystemOperator(key));
+    return Object.keys(obj).find((key) => isSystemOperator(key));
   };
 
   // UPDATE!
@@ -93,11 +94,11 @@ export function find(this: DB, collectionDefinition: FaunaCollectionOptions) {
           task() {
             let paginate = q.Paginate(parseSearchQuery(collectionDefinition.name, searchQuery), paginateOptions);
             return self.query(mapper ? q.Map(paginate, mapper) : paginate);
-          }
-        }
+          },
+        },
       ],
       {
-        domain: "DB.collection.find"
+        domain: "DB.collection.find",
       }
     );
   };

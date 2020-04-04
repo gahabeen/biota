@@ -1,29 +1,40 @@
-import { DBFactoryCollection, FaunaRef } from "~/../types/db";
 import { query as q } from "faunadb";
-import { Reference, Identity } from "~/factory/api/ql";
+import { DBFactoryDocumentApi } from "~/../types/factory/factory.collection";
 import * as udf from "~/factory/api/udf";
+import { Reference } from "../ql";
 
-export const document = {
-  get(collection, id, options = {}) {
-    return udf.get.document(collection, id, options);
+export const document: DBFactoryDocumentApi = {
+  login(name, id, password) {
+    return q.Login(Reference({ collection: name, id }), {
+      password,
+    });
   },
-  insert(collection, data, { id, password, credentials } = {}) {
-    return udf.insert.document(collection, data, { id, password, credentials });
+  credentials(name, id, credentials) {
+    return udf.update.credentials(name, id, credentials);
   },
-  update(collection, id, data) {
-    return udf.update.document(collection, id, data);
+  changePassword(name, id, password) {
+    return udf.update.credentials(name, id, { password });
   },
-  replace(collection, id, data) {
-    return udf.replace.document(collection, id, data);
+  get(collection, id) {
+    return udf.get.document(collection, id);
   },
-  upsert(collection, id, data) {
-    return udf.upsert.document(collection, id, data);
+  insert(collection, options) {
+    return udf.insert.document(collection, options);
   },
-  repsert(collection, id, data) {
-    return udf.repsert.document(collection, id, data);
+  update(collection, id, options) {
+    return udf.update.document(collection, id, options);
+  },
+  replace(collection, id, options) {
+    return udf.replace.document(collection, id, options);
+  },
+  upsert(collection, id, options) {
+    return udf.upsert.document(collection, id, options);
+  },
+  repsert(collection, id, options) {
+    return udf.repsert.document(collection, id, options);
   },
   delete(collection, id) {
-    return udf.delete_.document(collection, id);
+    return udf.delete.document(collection, id);
   },
   forget(collection, id) {
     return udf.forget.document(collection, id);

@@ -1,20 +1,35 @@
-// types
-import { FaunaRoleOptions } from "~/../types/fauna";
-// imports
 import { query as q } from "faunadb";
-// factory
-import { Role, Privilege, CustomPrivilege } from "~/factory/classes/role";
+import { FaunaRoleOptions } from "~/../types/fauna";
+import { collectionNameNormalized } from "~/factory/classes/collection";
+import { Privilege, Role } from "~/factory/classes/role";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
-// framework
 import { has_role } from "~/framework/default/rules/has_role";
-import { wrapDoc } from "~/framework/helpers/wrapDoc";
-// import { is_document_available } from "~/framework/default/rules/is_document_available";
 
 export const user: FaunaRoleOptions = Role({
   name: "user",
   membership: {
-    resource: q.Collection("users"),
-    predicate: q.Query(q.Lambda("ref", wrapDoc("ref", has_role("user"))))
+    resource: q.Collection(collectionNameNormalized("user_sessions")),
+    predicate: q.Query(
+      q.Lambda(
+        "ref",
+        q.Let(
+          {
+            session: q.Get(q.Var("ref")),
+            is_valid: q.GTE(q.Select(["data", "expire_at"], q.Var("session"), q.ToTime(0)), q.Now()),
+          },
+          q.If(
+            q.Var("is_valid"),
+            q.Let(
+              {
+                user: q.Get(q.Select("user", q.Var("sessions"), null)),
+              },
+              has_role(q.Var("user"), "user")
+            ),
+            false
+          )
+        )
+      )
+    ),
   },
   privileges: [
     /**
@@ -26,8 +41,8 @@ export const user: FaunaRoleOptions = Role({
      */
 
     Privilege({
-      resource: q.Collection("users"),
-      actions: { read: "self" }
+      resource: q.Collection(collectionNameNormalized("users")),
+      actions: { read: "self" },
     }),
 
     /**
@@ -36,7 +51,7 @@ export const user: FaunaRoleOptions = Role({
 
     Privilege({
       resource: q.Function(udfunctionNameNormalized("SearchQuery")),
-      actions: { call: "all" }
-    })
-  ]
+      actions: { call: "all" },
+    }),
+  ],
 });

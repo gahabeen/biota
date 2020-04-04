@@ -1,27 +1,32 @@
-import { DBFactoryIndex } from "~/../types/factory.index";
+import { DBFactoryIndexApi } from "~/../types/factory/factory.collection";
+import * as udf from "~/factory/api/udf";
 
-import { get } from "~/factory/api/fql/base/get";
-import { insert } from "~/factory/api/fql/base/insert";
-import { update } from "~/factory/api/fql/base/update";
-import { upsert } from "~/factory/api/fql/base/upsert";
-import { replace } from "~/factory/api/fql/base/replace";
-import { repsert } from "~/factory/api/fql/base/repsert";
-import { deleteMethods } from "~/factory/api/fql/base/delete";
-import { forget } from "~/factory/api/fql/base/forget";
-
-export function index(name: string = undefined): DBFactoryIndex {
-  if (!name) {
-    throw new Error(`biota.index(name) - valid name is required`);
-  }
-
-  return {
-    get: get.index,
-    insert: insert.index,
-    update: update.index,
-    upsert: upsert.index,
-    replace: replace.index,
-    repsert: repsert.index,
-    delete: deleteMethods.index,
-    forget: forget.index,
-  };
-}
+export const index: DBFactoryIndexApi = {
+  all() {
+    return udf.get.indexes();
+  },
+  get(name) {
+    return udf.get.index(name);
+  },
+  insert(name, options) {
+    return udf.insert.index(name, options);
+  },
+  update(name, options) {
+    return udf.update.index(name, options);
+  },
+  replace(name, options) {
+    return udf.replace.index(name, options);
+  },
+  upsert(name, options) {
+    return udf.upsert.index(name, options);
+  },
+  repsert(name, options) {
+    return udf.repsert.index(name, options);
+  },
+  delete(name) {
+    return udf.delete.index(name);
+  },
+  forget(name) {
+    return udf.forget.index(name);
+  },
+};

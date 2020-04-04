@@ -65,14 +65,14 @@ export interface DBFactoryFQLBaseUpdate {
 }
 
 export interface DBFactoryFQLBaseUpsert {
-  document?: CRUDReferenceDocument["update"];
-  database?: CRUDReferenceDatabase["update"];
-  collection?: CRUDReferenceCollection["update"];
-  index?: CRUDReferenceIndex["update"];
-  udfunction?: CRUDReferenceUDFunction["update"];
-  role?: CRUDReferenceRole["update"];
-  token?: CRUDReferenceToken["update"];
-  key?: CRUDReferenceKey["update"];
+  document?: CRUDReferenceDocument["upsert"];
+  database?: CRUDReferenceDatabase["upsert"];
+  collection?: CRUDReferenceCollection["upsert"];
+  index?: CRUDReferenceIndex["upsert"];
+  udfunction?: CRUDReferenceUDFunction["upsert"];
+  role?: CRUDReferenceRole["upsert"];
+  token?: CRUDReferenceToken["upsert"];
+  key?: CRUDReferenceKey["upsert"];
 }
 
 export interface DBFactoryFQLBaseReplace {

@@ -1,8 +1,8 @@
 // types
-import { DBFrameworkCollection, FaunaCollectionOptions } from "~/../types/db";
+import { FaunaCollectionOptions } from "~/../types/fauna";
 import { Collection } from "~/factory/classes/collection";
 
-import { scaffold } from "~/framework/api/collection/scaffold"
+import { scaffold } from "~/framework/api/collection/scaffold";
 import { field } from "~/framework/api/collection/field";
 import { index } from "~/framework/api/collection/index";
 import { compute } from "~/framework/api/collection/compute";
@@ -17,6 +17,7 @@ import { repsert } from "~/framework/api/collection/repsert";
 import { upsert } from "~/framework/api/collection/upsert";
 import { deleteFn } from "~/framework/api/collection/delete";
 import { forget } from "~/framework/api/collection/forget";
+import { DBFrameworkCollection } from "~/../types/framework/framework.collection";
 
 export function collection(collectionNameOrOptions: string | FaunaCollectionOptions): DBFrameworkCollection {
   let self = this;
@@ -49,7 +50,7 @@ export function collection(collectionNameOrOptions: string | FaunaCollectionOpti
     upsert: upsert.call(self, collectionDefinition),
     delete: deleteFn.call(self, collectionDefinition),
     forget: forget.call(self, collectionDefinition),
-    async changes() {}
+    async changes() {},
   };
 
   return methods;

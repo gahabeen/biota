@@ -1,30 +1,31 @@
-import { DBFactoryUDFForget } from "~/../types/factory/factory.udf";
 import { query as q } from "faunadb";
-import { Reference, Identity } from "~/factory/api/ql";
+import { DBFactoryUDFForget } from "~/../types/factory/factory.udf";
+import { Identity } from "~/factory/api/ql";
+import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunction";
 
 export const forget: DBFactoryUDFForget = {
   document(collection, id) {
-    return q.Call("biota.Forget", [Identity(),  Reference({ collection, id })]);
+    return q.Call(udfName("ForgetDocument"), [Identity(), collection, id]);
   },
   database(name) {
-    return q.Call("biota.Forget", [Identity(), q.Database(name)]);
+    return q.Call(udfName("ForgetDatabase"), [Identity(), name]);
   },
   collection(name) {
-    return q.Call("biota.Forget", [Identity(), q.Collection(name)]);
+    return q.Call(udfName("ForgetCollection"), [Identity(), name]);
   },
   index(name) {
-    return q.Call("biota.Forget", [Identity(), q.Index(name)]);
+    return q.Call(udfName("ForgetIndex"), [Identity(), name]);
   },
   udfunction(name) {
-    return q.Call("biota.Forget", [Identity(), q.Function(name)]);
+    return q.Call(udfName("ForgetUDFunction"), [Identity(), name]);
   },
   role(name) {
-    return q.Call("biota.Forget", [Identity(), q.Role(name)]);
+    return q.Call(udfName("ForgetRole"), [Identity(), name]);
   },
   token(id) {
-    return q.Call("biota.Forget", [Identity(), q.Ref(q.Tokens(), id)]);
+    return q.Call(udfName("ForgetToken"), [Identity(), id]);
   },
   key(id) {
-    return q.Call("biota.Forget", [Identity(), q.Ref(q.Keys(), id)]);
-  }
+    return q.Call(udfName("ForgetKey"), [Identity(), id]);
+  },
 };

@@ -8,22 +8,22 @@ export const forget: DBFactoryFQLBaseForget = {
   database(name) {
     return q.Delete(q.Database(name));
   },
-  collection(name: string) {
+  collection(name) {
     return q.Delete(q.Collection(name));
   },
-  index(name: string) {
+  index(name) {
     return q.Delete(q.Index(name));
   },
-  udfunction(name: string) {
+  udfunction(name) {
     return q.Delete(q.Function(name));
   },
-  role(name: string) {
+  role(name) {
     return q.Delete(q.Role(name));
   },
-  token(id: FaunaId) {
+  token(id) {
     return q.Delete(q.Ref(q.Tokens(), id));
   },
-  key(id: FaunaId) {
+  key(id) {
     return q.Delete(q.Ref(q.Keys(), id));
   },
 };

@@ -1,8 +1,7 @@
-// types
-// external
 import { DB } from "~/db";
-import * as collectionFactory from "~/factory/api/classes/collection";
+import * as documentFactory from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
+import { collectionNameNormalized } from "~/factory/classes/collection";
 
 export async function login(this: DB, id: string, password: string): Promise<DB> {
   return execute(
@@ -10,12 +9,14 @@ export async function login(this: DB, id: string, password: string): Promise<DB>
       {
         name: `Loggin in as (${id})`,
         task() {
-          return this.query(collectionFactory.collection("users").login(id, password)).then(({ secret }) => new DB({ secret }));
-        }
-      }
+          return this.query(documentFactory.document.login(collectionNameNormalized("users"), id, password)).then(
+            ({ secret }) => new DB({ secret })
+          );
+        },
+      },
     ],
     {
-      domain: "DB.login"
+      domain: "DB.login",
     }
   );
 }

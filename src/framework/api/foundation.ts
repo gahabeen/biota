@@ -39,7 +39,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       tasks.push({
         name: `Upserting function: ${UDFunction.name}`,
         task() {
-          return self.query(repsert.function(UDFunction));
+          return self.query(repsert.udfunction(UDFunction.name, UDFunction));
         },
         fullError: true
       });
@@ -132,7 +132,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       tasks.push({
         name: `Upserting index: ${defaultIndex.name}`,
         task() {
-          return self.query(upsert.index(defaultIndex));
+          return self.query(upsert.index(defaultIndex.name, defaultIndex));
         }
       });
     }
@@ -147,7 +147,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       tasks.push({
         name: `Upserting role: ${defaultRole.name}`,
         task() {
-          return self.query(upsert.role(defaultRole));
+          return self.query(upsert.role(defaultRole.name, defaultRole));
         },
         fullError: true
       });

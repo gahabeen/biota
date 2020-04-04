@@ -1,6 +1,6 @@
 import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/db";
-import { collection } from "~/factory/api/classes/collection";
+import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
+import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 
 export function get(this: DB, collectionDefinition: FaunaCollectionOptions) {
@@ -12,12 +12,12 @@ export function get(this: DB, collectionDefinition: FaunaCollectionOptions) {
         {
           name: `Get (${id}) in (${collectionDefinition.name})`,
           task() {
-            return self.query(collection(collectionDefinition.name).get(id));
-          }
-        }
+            return self.query(document.get(collectionDefinition.name, id));
+          },
+        },
       ],
       {
-        domain: "DB.collection.get"
+        domain: "DB.collection.get",
       }
     );
   };

@@ -27,12 +27,12 @@ export const delete_: DBFactoryFQLBaseDelete = {
     // Nothing necessary, logging do the job
     return get.role(name);
   },
-  token(id: FaunaId) {
+  token(id) {
     //  #comment
     // Nothing necessary, logging do the job
     return get.token(name);
   },
-  key(id: FaunaId) {
+  key(id) {
     //  #comment
     // Nothing necessary, logging do the job
     return get.key(name);

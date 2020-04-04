@@ -21,6 +21,22 @@ export interface DBFactoryFQLUDF {
   forget?: DBFactoryFQLUDFForget;
 }
 
+export interface DBFactoryFQLUDFAssign {
+  document?: CRUDReferenceDocument["assign"];
+}
+
+export interface DBFactoryFQLUDFUnAssign {
+  document?: CRUDReferenceDocument["unassign"];
+}
+
+export interface DBFactoryFQLUDFOwn {
+  document?: CRUDReferenceDocument["own"];
+}
+
+export interface DBFactoryFQLUDFExpire {
+  document?: CRUDReferenceDocument["expire"];
+}
+
 export interface DBFactoryFQLUDFGet {
   document?: CRUDReferenceDocument["read"];
   documents?: CRUDReferenceDocument["readAll"];

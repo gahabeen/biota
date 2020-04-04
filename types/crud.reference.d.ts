@@ -11,6 +11,7 @@ import {
   FaunaRoleOptions,
   FaunaTokenOptions,
   FaunaUDFunctionOptions,
+  FaunaTime,
 } from "./fauna";
 
 export interface CRUDReferenceDocumentReadOptions {
@@ -23,14 +24,20 @@ export interface CRUDReferenceDocument {
   read?(collection: string, id: FaunaId, options?: CRUDReferenceDocumentReadOptions): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(collection: string, id: FaunaId, options: FaunaDocumentOptions): Expr;
+  upsert?(collection: string, id: FaunaId, options: FaunaDocumentOptions): Expr;
   delete?(collection: string, id: FaunaId): Expr;
+  expire?(collection: string, id: FaunaId, at: FaunaTime): Expr;
+  own?(collection: string, id: FaunaId, newOwner: FaunaRef): Expr;
+  assign?(collection: string, id: FaunaId, newAssignee: FaunaRef): Expr;
+  unassign?(collection: string, id: FaunaId, newAssignee: FaunaRef): Expr;
 }
 
 export interface CRUDReferenceCollection {
-  create?(name: string, options?: FaunaCollectionOptions): Expr;
+  create?(name: string, options: FaunaCollectionOptions): Expr;
   read?(name: string): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(name: string, options: FaunaCollectionOptions): Expr;
+  upsert?(name: string, options: FaunaCollectionOptions): Expr;
   delete?(name: string): Expr;
 }
 
@@ -39,6 +46,7 @@ export interface CRUDReferenceDatabase {
   read?(name: string): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(name: string, options: FaunaDatabaseOptions): Expr;
+  upsert?(name: string, options: FaunaDocumentOptions): Expr;
   delete?(name: string): Expr;
 }
 
@@ -47,6 +55,7 @@ export interface CRUDReferenceIndex {
   read?(name: string): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(name: string, options: FaunaIndexOptions): Expr;
+  upsert?(name: string, options: FaunaDocumentOptions): Expr;
   delete?(name: string): Expr;
 }
 
@@ -55,6 +64,7 @@ export interface CRUDReferenceUDFunction {
   read?(name: string): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(name: string, options: FaunaUDFunctionOptions): Expr;
+  upsert?(name: string, options: FaunaUDFunctionOptions): Expr;
   delete?(name: string): Expr;
 }
 
@@ -63,6 +73,7 @@ export interface CRUDReferenceRole {
   read?(name: string): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(name: string, options: FaunaRoleOptions): Expr;
+  upsert?(name: string, options: FaunaRoleOptions): Expr;
   delete?(name: string): Expr;
 }
 
@@ -71,6 +82,7 @@ export interface CRUDReferenceToken {
   read?(id: FaunaId): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(id: FaunaId, options: FaunaTokenOptions): Expr;
+  upsert?(ref: FaunaRef, options: FaunaTokenOptions): Expr;
   delete?(id: FaunaId): Expr;
 }
 
@@ -79,6 +91,7 @@ export interface CRUDReferenceKey {
   read?(id: FaunaId): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(id: FaunaId, options: FaunaKeyOptions): Expr;
+  upsert?(name: string, options: FaunaKeyOptions): Expr;
   delete?(id: FaunaId): Expr;
 }
 

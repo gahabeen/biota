@@ -1,6 +1,6 @@
 import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/db";
-import { collection } from "~/factory/api/classes/collection";
+import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
+import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 
 export function upsert(this: DB, collectionDefinition: FaunaCollectionOptions) {
@@ -12,12 +12,12 @@ export function upsert(this: DB, collectionDefinition: FaunaCollectionOptions) {
         {
           name: `Update/Insert (${id}) in (${collectionDefinition.name})`,
           task() {
-            return self.query(collection(collectionDefinition.name).upsert(id, data));
-          }
-        }
+            return self.query(document.upsert(collectionDefinition.name, id, { data }));
+          },
+        },
       ],
       {
-        domain: "DB.collection.upsert"
+        domain: "DB.collection.upsert",
       }
     );
   };

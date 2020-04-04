@@ -3,7 +3,7 @@
 import { query as q } from "faunadb";
 // biota
 import { TS_2500_YEARS } from "~/consts";
-import { Rule } from "~/factory/rule";
+import { Rule } from "~/factory/role/rule";
 
 export const is_document_available = Rule({
   name: "is_document_available",

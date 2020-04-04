@@ -7,7 +7,7 @@ import {
   FaunaIndexValue,
   FaunaId,
   FaunaIndexTerm,
-} from "./fauna";
+} from "../fauna";
 
 export interface DBFrameworkCollection {
   // builder

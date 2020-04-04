@@ -1,5 +1,5 @@
 // types
-import { Fauna, FaunaPaginateResponse, FaunaPaginateOptions } from "~/../types/db";
+import { Fauna, FaunaPaginateResponse, FaunaPaginateOptions } from "~/../types/fauna";
 // external
 import { query as q } from "faunadb";
 import { DB } from "~/db";

@@ -1,61 +1,34 @@
-import { DBFactoryFQLBaseUpsert } from "~/../types/factory/factory.fql.base";
-import {
-  FaunaDatabaseOptions,
-  FaunaCollectionOptions,
-  FaunaIndexOptions,
-  FaunaUDFunctionOptions,
-  FaunaRoleOptions,
-  FaunaTokenOptions,
-  FaunaKeyOptions,
-} from "~/../types/fauna";
 import { query as q } from "faunadb";
-import { nameOrOptions } from "~/helpers";
+import { DBFactoryFQLBaseUpsert } from "~/../types/factory/factory.fql.base";
 import { insert } from "~/factory/api/fql/base/insert";
 import { update } from "~/factory/api/fql/base/update";
+import { Index, indexNameNormalized } from "~/factory/classes/index";
 
 export const upsert: DBFactoryFQLBaseUpsert = {
+  document(collection, id, options = {}) {
+    return q.If(q.Exists(q.Database(name)), update.document(collection, id, options), insert.document(collection, options));
+  },
   database(name, options = {}) {
-    let definition: FaunaDatabaseOptions = nameOrOptions(name, options);
-    return q.If(
-      q.Exists(q.Database(definition.name)),
-      update.database(definition.name, definition),
-      insert.database(definition.name, definition)
-    );
+    return q.If(q.Exists(q.Database(name)), update.database(name, options), insert.database(name, options));
   },
   collection(name, options = {}) {
-    let definition: FaunaCollectionOptions = nameOrOptions(name, options);
-    return q.If(
-      q.Exists(q.Collection(definition.name)),
-      update.collection(definition.name, definition),
-      insert.collection(definition.name, definition)
-    );
+    return q.If(q.Exists(q.Collection(name)), update.collection(name, options), insert.collection(name, options));
   },
   index(name, options = {}) {
-    let definition: FaunaIndexOptions = nameOrOptions(name, options);
-    return q.If(q.Exists(q.Index(definition.name)), update.index(definition.name, definition), insert.index(definition.name, definition));
+    return q.If(q.Exists(q.Index(name)), update.index(name, options), insert.index(name, options));
   },
   udfunction(name, options = {}) {
-    let definition: FaunaUDFunctionOptions = nameOrOptions(name, options);
-    return q.If(
-      q.Exists(q.Function(definition.name)),
-      update.udfunction(definition.name, definition),
-      insert.udfunction(definition.name, definition)
-    );
+    return q.If(q.Exists(q.Function(name)), update.udfunction(name, options), insert.udfunction(name, options));
   },
   role(name, options = {}) {
-    let definition: FaunaRoleOptions = nameOrOptions(name, options);
-    return q.If(q.Exists(q.Role(definition.name)), update.role(definition.name, definition), insert.role(definition.name, definition));
+    return q.If(q.Exists(q.Role(name)), update.role(name, options), insert.role(name, options));
   },
-  token(id, options = {}) {
-    let definition: FaunaTokenOptions = nameOrOptions(id, options);
-    return q.If(
-      q.Exists(q.Ref(q.Tokens(), definition.name)),
-      update.token(definition.name, definition),
-      insert.token(definition.name, definition)
-    );
+  token(ref, options = {}) {
+    return insert.token(ref, options);
+    // #improve
+    // return q.If(q.Exists(q.Ref(q.Tokens(), null)), update.token(id, options), insert.token(ref, options));
   },
   key(id, options = {}) {
-    let definition: FaunaKeyOptions = nameOrOptions(id, options);
-    return q.If(q.Exists(q.Ref(q.Keys(), definition.name)), update.key(definition.name, definition), insert.key(definition));
+    return q.If(q.Exists(q.Ref(q.Keys(), id)), update.key(id, options), insert.key(options.name, options));
   },
 };
