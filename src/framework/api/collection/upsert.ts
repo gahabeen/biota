@@ -1,6 +1,6 @@
 import { DB } from "~/db";
 import { FaunaCollectionOptions, FaunaId } from "~/../types/db";
-import { collection } from "~/factory/api/collection";
+import { collection } from "~/factory/api/classes/collection";
 import { execute } from "~/tasks";
 
 export function upsert(this: DB, collectionDefinition: FaunaCollectionOptions) {

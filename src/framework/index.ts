@@ -4,5 +4,5 @@ export * from "./api/paginate";
 export * from "./api/query";
 export * from "./api/foundation"
 export * from "./api/relation"
-// export * from "./api/graphql"
+export * as auth from "./api/auth"
 // export * from "./api/import"

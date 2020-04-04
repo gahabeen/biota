@@ -12,7 +12,7 @@ import { query as q } from "faunadb";
 import { execute } from "~/tasks";
 import * as helpers from "~/helpers";
 import { indexNameNormalized, NGramOnField, Index } from "~/factory/classes/index";
-import { upsert } from "~/factory/api/upsert";
+import { upsert } from "~/factory/api/fql/base/upsert";
 import { DB } from "~/db";
 
 export function fieldDefinition(field: string | DBFrameworkCollectionFieldOptions) {

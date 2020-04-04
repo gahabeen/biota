@@ -19,7 +19,7 @@
     "gen": "yarn run clean-dist && npm run gen-js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "browser": "browserify src/index.ts -t aliasify -p tsify > browser/biota.js"
+    "browser": "node bin/browserify"
   },
   "dependencies": {
     "debug": "^4.1.1",
@@ -34,12 +34,15 @@
     "@types/listr": "^0.14.2",
     "@types/node": "^13.7.6",
     "aliasify": "^2.1.0",
+    "axios": "^0.19.2",
     "browserify": "^16.5.1",
     "dotenv": "^8.2.0",
+    "fastify": "^2.13.0",
     "jest": "^25.1.0",
     "minimist": "^1.2.5",
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0",
+    "open": "^7.0.3",
     "pathmodify": "^0.5.0",
     "tinyify": "^2.5.2",
     "ts-jest": "^25.2.1",

@@ -10,17 +10,17 @@ export const is_document_available = Rule({
   query: q.Let(
     {
       deleted_at: q.Select(
-        ["data", "activity", "deleted_at"],
+        ["data", "_activity", "deleted_at"],
         q.Var("doc"),
         q.ToTime(TS_2500_YEARS)
       ),
       archived_at: q.Select(
-        ["data", "activity", "archived_at"],
+        ["data", "_activity", "archived_at"],
         q.Var("doc"),
         q.ToTime(TS_2500_YEARS)
       ),
       expired_at: q.Select(
-        ["data", "activity", "expired_at"],
+        ["data", "_activity", "expired_at"],
         q.Var("doc"),
         q.ToTime(TS_2500_YEARS)
       )

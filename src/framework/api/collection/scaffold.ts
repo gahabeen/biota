@@ -11,29 +11,32 @@ export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions)
     let defaultSearchable = [
       "~ref",
       "~ts",
-      "access.roles",
-      "access.owner",
-      "access.assignees",
-      "activity.assigned_by",
-      // "activity.assigned_at",
-      "activity.owner_changed_by",
-      // "activity.owner_changed_at",
-      "activity.credentials_changed_by",
-      // "activity.credentials_changed_at",
-      "activity.created_by",
-      // "activity.created_at",
-      "activity.updated_by",
-      // "activity.updated_at",
-      "activity.replaced_by",
-      // "activity.replaced_at",
-      "activity.expired_by",
-      // "activity.expired_at",
-      "activity.deleted_by",
-      // "activity.deleted_at",
-      "activity.archived_by",
-      // "activity.archived_at",
-      "activity.hidden_by"
-      // "activity.hidden_at"
+      "_auth.providers.provider",
+      "_auth.providers.id",
+      "_access.owner",
+      "_access.roles",
+      "_access.owner",
+      "_access.assignees",
+      "_activity.assigned_by",
+      // "_activity.assigned_at",
+      "_activity.owner_changed_by",
+      // "_activity.owner_changed_at",
+      "_activity.credentials_changed_by",
+      // "_activity.credentials_changed_at",
+      "_activity.created_by",
+      // "_activity.created_at",
+      "_activity.updated_by",
+      // "_activity.updated_at",
+      "_activity.replaced_by",
+      // "_activity.replaced_at",
+      "_activity.expired_by",
+      // "_activity.expired_at",
+      "_activity.deleted_by",
+      // "_activity.deleted_at",
+      "_activity.archived_by",
+      // "_activity.archived_at",
+      "_activity.hidden_by",
+      // "_activity.hidden_at"
     ];
 
     let { index = defaultSearchable, compute = [], field = [] } = options || {};
@@ -43,8 +46,8 @@ export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions)
         name: `Upserting collection (${collectionDefinition.name})`,
         async task() {
           return self.query(upsert.collection(collectionDefinition));
-        }
-      }
+        },
+      },
     ];
 
     for (let indexField of index) {
@@ -52,7 +55,7 @@ export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions)
         name: `Upserting index field (${indexField}) on (${collectionDefinition.name})`,
         async task() {
           return self.collection(collectionDefinition.name).index(indexField, { role: "user" });
-        }
+        },
       });
     }
 
@@ -61,7 +64,7 @@ export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions)
         name: `Upserting viewable field (${computeField.field}) on (${collectionDefinition.name})`,
         async task() {
           return self.collection(collectionDefinition.name).compute(computeField, { role: "user" });
-        }
+        },
       });
     }
 
@@ -70,12 +73,12 @@ export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions)
         name: `Upserting viewable field (${fieldField.field}) on (${collectionDefinition.name})`,
         async task() {
           return self.collection(collectionDefinition.name).field(fieldField);
-        }
+        },
       });
     }
 
     return execute(tasks, {
-      domain: "DB.collection.scaffold"
+      domain: "DB.collection.scaffold",
     });
   };
 }

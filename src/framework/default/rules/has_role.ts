@@ -9,7 +9,7 @@ export const has_role = RuleBuilder({
   query: (role: string) =>
     q.GT(
       q.Filter(
-        q.Select(["access", "roles"], q.Var("doc"), []),
+        q.Select(["_access", "roles"], q.Var("doc"), []),
         q.Lambda(["role"], q.Equals(q.Role(role), q.Var("role")))
       ),
       0

@@ -1,5 +1,5 @@
 // types
-import { FaunaRoleOptions } from "~/../types/db";
+import { FaunaRoleOptions } from "~/../types/fauna";
 // imports
 import { query as q } from "faunadb";
 // factory

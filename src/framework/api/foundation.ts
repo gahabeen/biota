@@ -1,9 +1,9 @@
 import { DB } from "~/db";
 import { query as q } from "faunadb";
 import { execute } from "~/tasks";
-import { create } from "~/factory/api/create";
-import { upsert } from "~/factory/api/upsert";
-import { repsert } from "~/factory/api/repsert";
+import { insert } from "~/factory/api/fql/base/insert";
+import { upsert } from "~/factory/api/fql/base/upsert";
+import { repsert } from "~/factory/api/fql/base/repsert";
 import * as defaultFunctions from "~/framework/api/default/functions";
 import * as defaultRoles from "~/framework/api/default/roles";
 import * as defaultCollections from "~/framework/api/default/collections";
@@ -24,7 +24,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       tasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
         task() {
-          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, create.role(defaultRole.name)));
+          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name)));
         }
       });
     }

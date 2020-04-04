@@ -4,7 +4,7 @@ import { query as q } from "faunadb";
 import { Fauna, FaunaCollectionOptions, DBFrameworkCollectionInsertBatchOptions } from "~/../types/db";
 import * as helpers from "~/helpers";
 // biota
-import { collection } from "~/factory/api/collection";
+import { collection } from "~/factory/api/classes/collection";
 import { execute } from "~/tasks";
 import { DB } from "~/db";
 

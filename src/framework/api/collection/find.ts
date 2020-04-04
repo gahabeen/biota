@@ -28,10 +28,10 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     // $distinct: (queries: Fauna.Expr[]) => q.Distinct(queries)
   };
 
-  const isOperator = (key: string) => Object.keys(operators).includes(key);
-  const hasOperators = (obj: object) => Object.keys(obj).some(key => Object.keys(operators).includes(key));
-  const getFirstOperator = (obj: object) => {
-    return Object.keys(obj).find(key => isOperator(key));
+  const isSystemOperator = (key: string) => Object.keys(operators).includes(key);
+  const hasSystemOperators = (obj: object) => Object.keys(obj).some(key => Object.keys(operators).includes(key));
+  const getFirstSystemOperator = (obj: object) => {
+    return Object.keys(obj).find(key => isSystemOperator(key));
   };
 
   // UPDATE!
@@ -39,8 +39,8 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     let reduced = {};
     const reducee = (value: any, acc: object) => {
       if (typeof value === "object") {
-        if (hasOperators(value)) {
-          let operator = getFirstOperator(value);
+        if (hasSystemOperators(value)) {
+          let operator = getFirstSystemOperator(value);
           let operatorValue = value[operator];
           let operation = operators[operator](...operatorValue);
           Object.assign(acc, operation);
@@ -71,7 +71,7 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     return q.Documents(q.Collection(collection));
   }
 
-  if (!hasOperators(searchQuery)) {
+  if (!hasSystemOperators(searchQuery)) {
     return buildQuery(searchQuery);
   } else {
     return reducer(searchQuery);

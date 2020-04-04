@@ -3,7 +3,7 @@ import { Fauna, DBFrameworkRelationDefinition } from "~/../types/db";
 import { DB } from "~/db";
 // biota
 import { collectionNamePlural, collectionNameNormalized } from "~/factory/classes/collection";
-import { create } from "~/factory/api/create";
+import { create } from "~/factory/api/fql/base/insert";
 import { name } from "~/helpers";
 import { execute } from "~/tasks";
 

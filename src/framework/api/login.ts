@@ -1,7 +1,7 @@
 // types
 // external
 import { DB } from "~/db";
-import * as collectionFactory from "~/factory/api/collection";
+import * as collectionFactory from "~/factory/api/classes/collection";
 import { execute } from "~/tasks";
 
 export async function login(this: DB, id: string, password: string): Promise<DB> {

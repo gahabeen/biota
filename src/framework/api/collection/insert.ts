@@ -1,6 +1,6 @@
 import { DB } from "~/db";
 import { FaunaCollectionOptions, DBFrameworkCollectionInsertOptions, Fauna } from "~/../types/db";
-import { collection } from "~/factory/api/collection";
+import { collection } from "~/factory/api/classes/collection";
 import { execute } from "~/tasks";
 
 export function insert(this: DB, collectionDefinition: FaunaCollectionOptions) {

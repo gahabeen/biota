@@ -8,3 +8,18 @@ export const CONVENTION = {
   COLLECTION_PREFIX: "biota.",
   UDFUNCTION_PREFIX: "biota."
 };
+
+export const OAUTH2 = {
+  GITHUB: {
+    AUTHORIZE: "https://github.com/login/oauth/authorize",
+    ACCESS_TOKEN: "https://github.com/login/oauth/access_token",
+    USER_INFO: "https://api.github.com/user"
+    // "TOKEN_INFO": "https://github.com/authorizations/"
+  },
+  GOOGLE: {
+    AUTHORIZE: "https://accounts.google.com/o/oauth2/v2/auth",
+    ACCESS_TOKEN: "https://www.googleapis.com/oauth2/v4/token",
+    TOKEN_INFO: "https://www.googleapis.com/oauth2/v3/tokeninfo",
+    USER_INFO: "https://www.googleapis.com/oauth2/v3/userinfo"
+  }
+};
