@@ -3,16 +3,16 @@ import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
 import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 
-export function replace(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function replace(this: DB, collectionName: string) {
   let self = this;
 
   return async function replaceMethod(id: FaunaId, data: object) {
     return execute(
       [
         {
-          name: `Replace (${id}) in (${collectionDefinition.name})`,
+          name: `Replace (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.replace(collectionDefinition.name, id, data));
+            return self.query(document.replace(collectionName, id, data));
           },
         },
       ],

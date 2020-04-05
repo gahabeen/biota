@@ -12,9 +12,7 @@ export const own: DBFactoryFQLUDFExpire = {
   document(collection, id, newOwner) {
     return q.Let(
       {
-        operation: CallSystemOperator(
-          updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: ownLogData(newOwner) })
-        ),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: ownLogData(newOwner) })),
         doc: getBaseFQL.document(collection, id),
         action: CallLogAction("own", q.Var("doc")),
       },

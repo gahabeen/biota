@@ -10,7 +10,7 @@ export const CallSystemOperator = (action: Fauna.Expr) => {
 export const CallLogAction = (action: Fauna.Expr, doc: Fauna.Expr, udf?: string) => {
   return q.Call(udfunctionNameNormalized("LogAction"), {
     documentRef: q.Select("ref", doc),
-    userRef: Identity(),
+    identity: Identity(),
     ts: q.Select("ts", doc),
     action,
     udf,

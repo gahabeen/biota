@@ -13,7 +13,7 @@ export const LogAction = UDFunction({
       q.Let(
         {
           documentRef: q.Select("documentRef", q.Var("options"), null),
-          userRef: q.Select("userRef", q.Var("options"), null),
+          identity: q.Select("identity", q.Var("options"), null),
           ts: q.Select("ts", q.Var("options"), null),
           actionName: q.Select("documentRef", q.Var("options"), null),
           udf: q.Select("udf", q.Var("options"), null),
@@ -22,7 +22,7 @@ export const LogAction = UDFunction({
           data: {
             document: q.Var("documentRef"),
             ts: q.Var("ts"),
-            user: q.Var("userRef"),
+            user: q.Var("identity"),
             name: q.Var("actionName"),
             udf: q.Var("udf"),
           },

@@ -2,6 +2,9 @@ import { DBFactoryFQLBaseReplace } from "~/../types/factory/factory.fql.base";
 import { query as q } from "faunadb";
 
 export const replace: DBFactoryFQLBaseReplace = {
+  document(collection, id, options) {
+    return q.Replace(q.Ref(q.Collection(collection), id), options);
+  },
   database(name, options) {
     return q.Replace(q.Database(name), options);
   },

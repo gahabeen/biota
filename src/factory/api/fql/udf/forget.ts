@@ -74,7 +74,7 @@ export const forget: DBFactoryFQLUDFForget = {
   token(id) {
     return q.Let(
       {
-        operation: CallSystemOperator(updateBaseFQL.token(name, { data: forgotLogData })),
+        operation: CallSystemOperator(updateBaseFQL.token(id, { data: forgotLogData })),
         doc: forgetBaseFQL.token(id),
         action: CallLogAction("forget", q.Var("doc")),
       },
@@ -84,7 +84,7 @@ export const forget: DBFactoryFQLUDFForget = {
   key(id) {
     return q.Let(
       {
-        operation: CallSystemOperator(updateBaseFQL.key(name, { data: forgotLogData })),
+        operation: CallSystemOperator(updateBaseFQL.key(id, { data: forgotLogData })),
         doc: forgetBaseFQL.key(id),
         action: CallLogAction("forget", q.Var("doc")),
       },

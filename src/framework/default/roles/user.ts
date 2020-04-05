@@ -1,12 +1,12 @@
 import { query as q } from "faunadb";
 import { FaunaRoleOptions } from "~/../types/fauna";
 import { collectionNameNormalized } from "~/factory/classes/collection";
-import { Privilege, Role } from "~/factory/classes/role";
+import { Privilege, Role, roleNameNormalized } from "~/factory/classes/role";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { has_role } from "~/framework/default/rules/has_role";
 
 export const user: FaunaRoleOptions = Role({
-  name: "user",
+  name: roleNameNormalized("user"),
   membership: {
     resource: q.Collection(collectionNameNormalized("user_sessions")),
     predicate: q.Query(
@@ -21,9 +21,9 @@ export const user: FaunaRoleOptions = Role({
             q.Var("is_valid"),
             q.Let(
               {
-                user: q.Get(q.Select("user", q.Var("sessions"), null)),
+                user: q.Get(q.Select("user", q.Var("session"), null)),
               },
-              has_role(q.Var("user"), "user")
+              has_role(q.Var("user"), roleNameNormalized("user"))
             ),
             false
           )

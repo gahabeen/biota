@@ -12,9 +12,7 @@ export const assign: DBFactoryFQLUDFAssign = {
   document(collection, id, newAssignee) {
     return q.Let(
       {
-        operation: CallSystemOperator(
-          updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: assignLogData(newAssignee) })
-        ),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: assignLogData(newAssignee) })),
         doc: getBaseFQL.document(collection, id),
         action: CallLogAction("assign", q.Var("doc")),
       },

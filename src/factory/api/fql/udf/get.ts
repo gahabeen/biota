@@ -11,10 +11,34 @@ export const get: DBFactoryFQLUDFGet = {
       q.Var("doc")
     );
   },
+  collection(name) {
+    return q.Let(
+      {
+        doc: getBaseFQL.collection(name),
+      },
+      q.Var("doc")
+    );
+  },
   collections(options) {
     return q.Let(
       {
         doc: getBaseFQL.collections(options),
+      },
+      q.Var("doc")
+    );
+  },
+  database(name) {
+    return q.Let(
+      {
+        doc: getBaseFQL.database(name),
+      },
+      q.Var("doc")
+    );
+  },
+  databases(options) {
+    return q.Let(
+      {
+        doc: getBaseFQL.databases(options),
       },
       q.Var("doc")
     );
@@ -67,10 +91,26 @@ export const get: DBFactoryFQLUDFGet = {
       q.Var("doc")
     );
   },
+  key(id) {
+    return q.Let(
+      {
+        doc: getBaseFQL.key(id),
+      },
+      q.Var("doc")
+    );
+  },
   keys(options) {
     return q.Let(
       {
         doc: getBaseFQL.keys(options),
+      },
+      q.Var("doc")
+    );
+  },
+  token(id) {
+    return q.Let(
+      {
+        doc: getBaseFQL.token(id),
       },
       q.Var("doc")
     );

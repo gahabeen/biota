@@ -1,13 +1,15 @@
 import { FaunaCollectionOptions } from "~/../types/fauna";
 import { DBFrameworkCollectionScaffoldOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-import { upsert } from "~/factory/api/udf";
+// import { upsert } from "~/factory/api/udf";
+import { upsert } from "~/factory/api/fql/base";
+import { roleNameNormalized } from "~/factory/classes/role";
 import { execute } from "~/tasks";
 
-export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function scaffold(this: DB, collectionName: string) {
   let self = this;
 
-  return async function scaffoldMethod(options: DBFrameworkCollectionScaffoldOptions = {}) {
+  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options?: DBFrameworkCollectionScaffoldOptions) {
     let defaultSearchable = [
       "~ref",
       "~ts",
@@ -43,36 +45,36 @@ export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions)
 
     let tasks = [
       {
-        name: `Upserting collection (${collectionDefinition.name})`,
+        name: `Upserting collection (${collectionName})`,
         async task() {
-          return self.query(upsert.collection(collectionDefinition.name, collectionDefinition));
+          return self.query(upsert.collection(collectionName, collectionOptions));
         },
       },
     ];
 
     for (let indexField of index) {
       tasks.push({
-        name: `Upserting index field (${indexField}) on (${collectionDefinition.name})`,
+        name: `Upserting index field (${indexField}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionDefinition.name).index(indexField, { role: "user" });
+          return self.collection(collectionName).index(indexField, { role: roleNameNormalized("user") });
         },
       });
     }
 
     for (let computeField of compute) {
       tasks.push({
-        name: `Upserting viewable field (${computeField.field}) on (${collectionDefinition.name})`,
+        name: `Upserting viewable field (${computeField.field}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionDefinition.name).compute(computeField, { role: "user" });
+          return self.collection(collectionName).compute(computeField, { role: roleNameNormalized("user") });
         },
       });
     }
 
     for (let fieldField of field) {
       tasks.push({
-        name: `Upserting viewable field (${fieldField.field}) on (${collectionDefinition.name})`,
+        name: `Upserting viewable field (${fieldField.field}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionDefinition.name).field(fieldField);
+          return self.collection(collectionName).field(fieldField);
         },
       });
     }

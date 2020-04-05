@@ -10,7 +10,7 @@ export const Relations = UDFunction({
   name: udfunctionNameNormalized("Relations"),
   body: q.Query(
     q.Lambda(
-      ["userRef", "ref"],
+      ["identity", "ref"],
       q.If(
         q.And(q.IsRef(q.Var("ref")), q.Exists(q.Var("ref"))),
         q.Let(

@@ -15,8 +15,11 @@ import {
 } from "./fauna";
 
 export interface CRUDReferenceDocumentReadOptions {
-  resolveRelations?: boolean;
-  relationsToResolve?: string[];
+  expired?: boolean;
+  deleted?: boolean;
+  forgotten?: boolean;
+  relations?: boolean;
+  relationsNames?: string[];
 }
 
 export interface CRUDReferenceDocument {

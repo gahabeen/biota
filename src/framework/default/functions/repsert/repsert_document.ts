@@ -4,5 +4,5 @@ import { repsert as repsertFQLUDF } from "~/factory/api/fql/udf/repsert";
 
 export const RepsertDocument = UDFunction({
   name: udfunctionNameNormalized("RepsertDocument"),
-  body: q.Query((userRef, collection, id, options) => repsertFQLUDF.document(collection, id, options)),
+  body: q.Query((identity, collection, id, options) => repsertFQLUDF.document(collection, id, options)),
 });

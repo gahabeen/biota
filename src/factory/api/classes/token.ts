@@ -1,4 +1,4 @@
-import { DBFactoryTokenApi } from "~/../types/factory/factory.collection";
+import { DBFactoryTokenApi } from "~/../types/factory/factory.classes";
 import * as udf from "~/factory/api/udf";
 
 export const token: DBFactoryTokenApi = {

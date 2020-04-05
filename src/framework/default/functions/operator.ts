@@ -1,11 +1,9 @@
-// types
-// external
 import { query as q } from "faunadb";
-// biota
 import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { roleNameNormalized } from "~/factory/classes/role";
 
 export const SystemOperator = UDFunction({
   name: udfunctionNameNormalized("SystemOperator"),
   body: q.Query(q.Lambda(["identity", "query"], q.Var("query"))),
-  role: q.Role("system"),
+  role: q.Role(roleNameNormalized("system")),
 });

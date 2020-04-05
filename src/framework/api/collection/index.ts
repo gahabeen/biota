@@ -1,13 +1,13 @@
 import { FaunaCollectionOptions } from "~/../types/fauna";
-import { DBFrameworkCollectionFieldOptions, DBFrameworkCollectionIndexOptions } from "~/../types/framework/framework.collection";
+import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
 import { update } from "~/factory/api/udf";
 import { execute } from "~/tasks";
 
-export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function index(this: DB, collectionName: string) {
   let self = this;
 
-  return async function indexMethod(field: string | DBFrameworkCollectionFieldOptions, options: DBFrameworkCollectionIndexOptions = {}) {
+  return async function indexMethod(field: string | DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
     let { role, roles, maxLength } = options;
     let roleList = role || roles;
     if (!Array.isArray(roleList)) roleList = [role as string];
@@ -27,10 +27,10 @@ export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
     }
 
     tasks.push({
-      name: `Adding index field ${definition.field} on ${collectionDefinition.name}`,
+      name: `Adding index field ${definition.field} on ${collectionName}`,
       async task() {
         return self
-          .collection(collectionDefinition.name)
+          .collection(collectionName)
           .field(definition)
           .then(async (indexes: any) => {
             for (let index of indexes) {

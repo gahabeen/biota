@@ -1,5 +1,5 @@
 import { query as q } from "faunadb";
-import { DBFactoryDocumentApi } from "~/../types/factory/factory.collection";
+import { DBFactoryDocumentApi } from "~/../types/factory/factory.classes";
 import * as udf from "~/factory/api/udf";
 import { Reference } from "../ql";
 

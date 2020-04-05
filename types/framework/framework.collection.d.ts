@@ -9,17 +9,15 @@ import {
   FaunaIndexTerm,
 } from "../fauna";
 
-export interface DBFrameworkCollection {
+export interface DBFrameworkCollectionApi {
   // builder
-  scaffold: (options?: DBFrameworkCollectionScaffoldOptions) => Promise<any>;
+  scaffold: (collectionDefinition: FaunaCollectionOptions, options?: DBFrameworkCollectionScaffoldOptions) => Promise<any>;
   field: (field: string | DBFrameworkCollectionFieldOptions) => Promise<any>;
-  index: (field: string | DBFrameworkCollectionFieldOptions, options?: DBFrameworkCollectionIndexOptions) => Promise<any>;
-  compute: (field: DBFrameworkCollectionFieldOptions, options?: DBFrameworkCollectionIndexOptions) => Promise<any>;
+  index: (field: string | DBFrameworkCollectionFieldOptions, options?: DBFrameworkIndexOptions) => Promise<any>;
+  compute: (field: DBFrameworkCollectionFieldOptions, options?: DBFrameworkIndexOptions) => Promise<any>;
 
   // custom crud
   find: (searchQuery?: DBFrameworkCollectionSearchParams, pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper) => Promise<any>;
-  // findByOwner: any;
-  // findByAssignee: any;
   paginate: (
     searchTerms?: DBFrameworkCollectionSearchParams,
     pagination?: FaunaPaginateOptions,
@@ -40,10 +38,8 @@ export interface DBFrameworkCollection {
 }
 
 export type DBFrameworkRelationPartRelation = "many" | "one";
-export type DBFrameworkCollectionFunction = (collectionName: string | FaunaCollectionOptions) => DBFrameworkCollection;
-export type DBFrameworkDocumentFunction = (docRef: FaunaRef) => DBFrameworkDocument;
 
-export interface DBFrameworkCollectionIndexOptions {
+export interface DBFrameworkIndexOptions {
   role?: string | string[];
   roles?: string[];
   maxLength?: number;
@@ -116,7 +112,7 @@ export interface DBFrameworkRelation {}
 
 export type DBFrameworkCollectionFieldOptionsAction = "compute" | "index";
 
-export interface DBFrameworkCollectionIndexOptions {
+export interface DBFrameworkIndexOptions {
   role?: string | string[];
   roles?: string[];
   maxLength?: number;

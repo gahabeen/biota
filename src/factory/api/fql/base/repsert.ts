@@ -14,6 +14,13 @@ import { replace } from "~/factory/api/fql/base/replace";
 import { nameOrOptions } from "~/helpers";
 
 export const repsert: DBFactoryFQLBaseRepsert = {
+  document(collection, id, options) {
+    return q.If(
+      q.Exists(q.Ref(q.Collection(collection), id)),
+      replace.document(collection, id, options),
+      insert.document(collection, options, id)
+    );
+  },
   database(name, options) {
     return q.If(q.Exists(q.Database(name)), replace.database(name, options), insert.database(name, options));
   },

@@ -1,23 +1,23 @@
 import { FaunaCollectionOptions } from "~/../types/fauna";
-import { DBFrameworkCollectionFieldOptions, DBFrameworkCollectionIndexOptions } from "~/../types/framework/framework.collection";
+import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
 import { update } from "~/factory/api/udf";
 import { execute } from "~/tasks";
 
-export function compute(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function compute(this: DB, collectionName: string) {
   let self = this;
 
-  return async function computeMethod(field: DBFrameworkCollectionFieldOptions, options: DBFrameworkCollectionIndexOptions = {}) {
+  return async function computeMethod(field: DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
     let { role, roles } = options;
     let roleList = role || roles;
     if (!Array.isArray(roleList)) roleList = [role as string];
     let tasks = [];
 
     tasks.push({
-      name: `Scaffolding index field on ${collectionDefinition.name}`,
+      name: `Scaffolding index field on ${collectionName}`,
       async task() {
         return self
-          .collection(collectionDefinition.name)
+          .collection(collectionName)
           .field({ ...field, action: "compute" })
           .then(async (indexes: any) => {
             for (let index of indexes) {

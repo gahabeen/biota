@@ -4,5 +4,5 @@ import { update as updateFQLUDF } from "~/factory/api/fql/udf/update";
 
 export const UpdateCollection = UDFunction({
   name: udfunctionNameNormalized("UpdateCollection"),
-  body: q.Query((userRef, name, options) => updateFQLUDF.collection(name, options)),
+  body: q.Query((identity, name, options) => updateFQLUDF.collection(name, options)),
 });

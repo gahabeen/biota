@@ -12,9 +12,7 @@ export const expire: DBFactoryFQLUDFExpire = {
   document(collection, id, at) {
     return q.Let(
       {
-        operation: CallSystemOperator(
-          updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: expireLogData(at) })
-        ),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: expireLogData(at) })),
         doc: getBaseFQL.document(collection, id),
         action: CallLogAction("expire", q.Var("doc")),
       },

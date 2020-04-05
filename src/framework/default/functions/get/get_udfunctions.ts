@@ -4,5 +4,5 @@ import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfuncti
 
 export const GetUDFunctions = UDFunction({
   name: udfunctionNameNormalized("GetUDFunctions"),
-  body: q.Query((userRef) => getFQLUDF.udfunctions()),
+  body: q.Query((identity) => getFQLUDF.udfunctions()),
 });

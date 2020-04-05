@@ -1,4 +1,4 @@
-import { DBFactoryDatabaseApi } from "~/../types/factory/factory.collection";
+import { DBFactoryDatabaseApi } from "~/../types/factory/factory.classes";
 import * as udf from "~/factory/api/udf";
 
 export const database: DBFactoryDatabaseApi = {

@@ -5,6 +5,9 @@ export const get: DBFactoryFQLBaseGet = {
   document(collection, id) {
     return q.Get(q.Ref(q.Collection(collection), id));
   },
+  collection(name) {
+    return q.Get(q.Collection(name));
+  },
   collections(pagination) {
     return q.Paginate(q.Collections(), pagination);
   },
@@ -32,8 +35,14 @@ export const get: DBFactoryFQLBaseGet = {
   roles(pagination) {
     return q.Paginate(q.Roles(), pagination);
   },
+  key(id) {
+    return q.Get(q.Ref(q.Keys(), id));
+  },
   keys(pagination) {
     return q.Paginate(q.Keys(), pagination);
+  },
+  token(id) {
+    return q.Get(q.Ref(q.Tokens(), id));
   },
   tokens(pagination) {
     return q.Paginate(q.Documents(q.Tokens()), pagination);

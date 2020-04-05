@@ -1,4 +1,4 @@
-import { DBFactoryUDFunctionApi } from "~/../types/factory/factory.collection";
+import { DBFactoryUDFunctionApi } from "~/../types/factory/factory.classes";
 import * as udf from "~/factory/api/udf";
 
 export const udfunction: DBFactoryUDFunctionApi = {

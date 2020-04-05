@@ -1,4 +1,4 @@
-import { DBFactoryIndexApi } from "~/../types/factory/factory.collection";
+import { DBFactoryIndexApi } from "~/../types/factory/factory.classes";
 import * as udf from "~/factory/api/udf";
 
 export const index: DBFactoryIndexApi = {

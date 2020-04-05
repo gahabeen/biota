@@ -16,7 +16,7 @@ export const logDataOld = {
       },
       activity: {
         owner_changed_at: q.Now(),
-        owner_changed_by: q.Var("userRef"),
+        owner_changed_by: q.Var("identity"),
       },
     });
   },
@@ -25,7 +25,7 @@ export const logDataOld = {
       access: {
         assignees: q.Var("ref"),
       },
-      activity: { assigned_by: q.Var("userRef"), assigned_at: q.Now() },
+      activity: { assigned_by: q.Var("identity"), assigned_at: q.Now() },
     });
   },
 };

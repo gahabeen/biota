@@ -4,5 +4,5 @@ import { replace as replaceFQLUDF } from "~/factory/api/fql/udf/replace";
 
 export const ReplaceToken = UDFunction({
   name: udfunctionNameNormalized("ReplaceToken"),
-  body: q.Query((userRef, id, options) => replaceFQLUDF.token(id, options)),
+  body: q.Query((identity, id, options) => replaceFQLUDF.token(id, options)),
 });

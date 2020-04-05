@@ -4,5 +4,5 @@ import { delete_ as deleteFQLUDF } from "~/factory/api/fql/udf/delete";
 
 export const DeleteKey = UDFunction({
   name: udfunctionNameNormalized("DeleteKey"),
-  body: q.Query((userRef, id) => deleteFQLUDF.key(id)),
+  body: q.Query((identity, id) => deleteFQLUDF.key(id)),
 });

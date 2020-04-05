@@ -4,5 +4,5 @@ import { update as updateFQLUDF } from "~/factory/api/fql/udf/update";
 
 export const UpdateToken = UDFunction({
   name: udfunctionNameNormalized("UpdateToken"),
-  body: q.Query((userRef, id, options) => updateFQLUDF.token(id, options)),
+  body: q.Query((identity, id, options) => updateFQLUDF.token(id, options)),
 });

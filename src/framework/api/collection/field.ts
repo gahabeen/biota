@@ -37,7 +37,7 @@ export function fieldDefinition(field: string | DBFrameworkCollectionFieldOption
   return definition;
 }
 
-export function field(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function field(this: DB, collectionName: string) {
   let self = this;
 
   return async function fieldMethod(field: string | DBFrameworkCollectionFieldOptions) {
@@ -45,7 +45,7 @@ export function field(this: DB, collectionDefinition: FaunaCollectionOptions) {
 
     let index: FaunaIndexOptions = Index({
       source: {
-        collection: q.Collection(collectionDefinition.name),
+        collection: q.Collection(collectionName),
         fields: {},
       },
       // values: definition.values,
@@ -120,7 +120,7 @@ export function field(this: DB, collectionDefinition: FaunaCollectionOptions) {
       }
 
       index.name = indexNameNormalized(
-        helpers.name([collectionDefinition.name, "search", "on", helpers.stringPath(definition.name || definition.field)])
+        helpers.name([collectionName, "search", "on", helpers.stringPath(definition.name || definition.field)])
       );
 
       // if (definition.field === "at") {
@@ -141,9 +141,9 @@ export function field(this: DB, collectionDefinition: FaunaCollectionOptions) {
 
         let ngramFieldName = "ngram:" + fieldName;
         let ngramIndex: FaunaIndexOptions = {
-          name: indexNameNormalized(helpers.name([collectionDefinition.name, "ngram", "on", helpers.stringPath(fieldName)])),
+          name: indexNameNormalized(helpers.name([collectionName, "ngram", "on", helpers.stringPath(fieldName)])),
           source: {
-            collection: q.Collection(collectionDefinition.name),
+            collection: q.Collection(collectionName),
             fields: {
               [ngramFieldName]: q.Query(
                 q.Lambda("instance", q.Distinct(NGramOnField(definition.ngramMax, helpers.path(definition.field))))
@@ -182,7 +182,7 @@ export function field(this: DB, collectionDefinition: FaunaCollectionOptions) {
 
       let indexByBinding = {
         ...index,
-        name: indexNameNormalized(helpers.name([collectionDefinition.name, "compute", "on", helpers.stringPath(fieldOrName)])),
+        name: indexNameNormalized(helpers.name([collectionName, "compute", "on", helpers.stringPath(fieldOrName)])),
         values: [
           {
             binding: fieldOrName,
@@ -205,7 +205,7 @@ export function field(this: DB, collectionDefinition: FaunaCollectionOptions) {
       // let indexByRef = {
       //   ...index,
       //   name: indexNameNormalized(
-      //     helpers.name([collectionDefinition.name, "computed", "as", helpers.stringPath(definition.name || definition.field)])
+      //     helpers.name([collectionName, "computed", "as", helpers.stringPath(definition.name || definition.field)])
       //   ),
       //   values: [
       //     {

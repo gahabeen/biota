@@ -1,5 +1,5 @@
 import * as udf from "~/factory/api/udf";
-import { DBFactoryCollectionApi } from "~/../types/factory/factory.collection";
+import { DBFactoryCollectionApi } from "~/../types/factory/factory.classes";
 
 export const collection: DBFactoryCollectionApi = {
   all() {

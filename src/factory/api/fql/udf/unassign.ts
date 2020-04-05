@@ -12,9 +12,7 @@ export const unassign: DBFactoryFQLUDFUnAssign = {
   document(collection, id, oldAssignee) {
     return q.Let(
       {
-        operation: CallSystemOperator(
-          updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: assignLogData(oldAssignee) })
-        ),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: assignLogData(oldAssignee) })),
         doc: getBaseFQL.document(collection, id),
         action: CallLogAction("assign", q.Var("doc")),
       },

@@ -4,5 +4,5 @@ import { get as getFQLUDF } from "~/factory/api/fql/udf/get";
 
 export const GetIndexes = UDFunction({
   name: udfunctionNameNormalized("GetIndexes"),
-  body: q.Query((userRef) => getFQLUDF.indexes()),
+  body: q.Query((identity) => getFQLUDF.indexes()),
 });

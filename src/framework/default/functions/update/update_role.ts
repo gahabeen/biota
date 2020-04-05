@@ -4,5 +4,5 @@ import { update as updateFQLUDF } from "~/factory/api/fql/udf/update";
 
 export const UpdateRole = UDFunction({
   name: udfunctionNameNormalized("UpdateRole"),
-  body: q.Query((userRef, name, options) => updateFQLUDF.key(name, options)),
+  body: q.Query((identity, name, options) => updateFQLUDF.role(name, options)),
 });

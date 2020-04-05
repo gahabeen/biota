@@ -1,4 +1,4 @@
-import { DBFrameworkCollection } from "./framework/framework.collection";
+import { DBFrameworkCollectionApi } from "./framework/framework.collection";
 
 export interface DBFramework {
   collection: DBFrameworkCollection;

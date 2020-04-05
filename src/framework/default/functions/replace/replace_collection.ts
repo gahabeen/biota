@@ -4,5 +4,5 @@ import { replace as replaceFQLUDF } from "~/factory/api/fql/udf/replace";
 
 export const ReplaceCollection = UDFunction({
   name: udfunctionNameNormalized("ReplaceCollection"),
-  body: q.Query((userRef, name, options) => replaceFQLUDF.collection(name, options)),
+  body: q.Query((identity, name, options) => replaceFQLUDF.collection(name, options)),
 });

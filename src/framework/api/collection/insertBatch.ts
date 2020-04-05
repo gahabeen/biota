@@ -6,7 +6,7 @@ import { document } from "~/factory/api/classes/document";
 import * as helpers from "~/helpers";
 import { execute } from "~/tasks";
 
-export function insertBatch(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function insertBatch(this: DB, collectionName: string) {
   let self = this;
 
   return async function insertBatchMethod(data: object[], options: DBFrameworkCollectionInsertBatchOptions = {}) {
@@ -27,7 +27,7 @@ export function insertBatch(this: DB, collectionDefinition: FaunaCollectionOptio
         },
         q.If(
           q.Var("id"),
-          document.upsert(collectionDefinition.name, q.Var("id"), {
+          document.upsert(collectionName, q.Var("id"), {
             data: q.Var("data"),
             credentials: q.Var("credentials"),
           }),
@@ -35,7 +35,7 @@ export function insertBatch(this: DB, collectionDefinition: FaunaCollectionOptio
         )
       );
     } else {
-      query = document.insert(collectionDefinition.name, { data: q.Var("item") });
+      query = document.insert(collectionName, { data: q.Var("item") });
     }
 
     for (let [index, batch] of Object.entries(batches)) {

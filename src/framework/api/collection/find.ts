@@ -79,7 +79,7 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
   }
 }
 
-export function find(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function find(this: DB, collectionName: string) {
   let self = this;
 
   return async function findMethod(
@@ -90,9 +90,9 @@ export function find(this: DB, collectionDefinition: FaunaCollectionOptions) {
     return execute(
       [
         {
-          name: `Find (${qs.stringify(searchQuery).slice(0, 20)}...) in (${collectionDefinition.name})`,
+          name: `Find (${qs.stringify(searchQuery).slice(0, 20)}...) in (${collectionName})`,
           task() {
-            let paginate = q.Paginate(parseSearchQuery(collectionDefinition.name, searchQuery), paginateOptions);
+            let paginate = q.Paginate(parseSearchQuery(collectionName, searchQuery), paginateOptions);
             return self.query(mapper ? q.Map(paginate, mapper) : paginate);
           },
         },

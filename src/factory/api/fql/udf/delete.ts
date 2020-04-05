@@ -83,7 +83,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
     return q.Let(
       {
         // #improve
-        doc: deleteBaseFQL.token(name),
+        doc: deleteBaseFQL.token(id),
         operation: CallSystemOperator(updateBaseFQL.token(id, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
       },

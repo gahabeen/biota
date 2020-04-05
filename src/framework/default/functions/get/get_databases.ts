@@ -4,5 +4,5 @@ import { get as getFQLUDF } from "~/factory/api/fql/udf/get";
 
 export const GetDatabases = UDFunction({
   name: udfunctionNameNormalized("GetDatabases"),
-  body: q.Query((userRef) => getFQLUDF.databases()),
+  body: q.Query((identity) => getFQLUDF.databases()),
 });

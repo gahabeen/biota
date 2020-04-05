@@ -4,5 +4,5 @@ import { forget as forgetFQLUDF } from "~/factory/api/fql/udf/forget";
 
 export const ForgetDocument = UDFunction({
   name: udfunctionNameNormalized("ForgetDocument"),
-  body: q.Query((userRef, collection, id) => forgetFQLUDF.document(collection, id)),
+  body: q.Query((identity, collection, id) => forgetFQLUDF.document(collection, id)),
 });
