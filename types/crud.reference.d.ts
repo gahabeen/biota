@@ -36,7 +36,7 @@ export interface CRUDReferenceDocument {
 }
 
 export interface CRUDReferenceCollection {
-  create?(name: string, options: FaunaCollectionOptions): Expr;
+  create?(name: string, options?: FaunaCollectionOptions): Expr;
   read?(name: string): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
   update?(name: string, options: FaunaCollectionOptions): Expr;
