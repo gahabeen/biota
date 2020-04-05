@@ -1,6 +1,6 @@
-import { DBFactoryFQLBase } from "./factory.fql.base";
+import { DBFactoryFQLBase } from "./factory/factory.fql.base";
 import { DBFactoryFQLUDF } from "./factory/factory.fql.udf";
-import { DBFactoryUDF } from "./factory.udf";
+import { DBFactoryUDF } from "./factory/factory.udf";
 
 export interface DBFactoryFQL {
   base: DBFactoryFQLBase;

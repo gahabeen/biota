@@ -1,45 +1,29 @@
 import { DBFactoryFQLBaseForget } from "~/../types/factory/factory.fql.base";
-import { get } from "~/factory/api/fql/base/get";
+import { query as q } from "faunadb";
 
 export const forget: DBFactoryFQLBaseForget = {
   document(collection, id) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.document(collection, id);
+    return q.Delete(q.Ref(q.Collection(collection), id));
   },
   database(name) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.database(name);
+    return q.Delete(q.Database(name));
   },
   collection(name) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.collection(name);
+    return q.Delete(q.Collection(name));
   },
   index(name) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.index(name);
+    return q.Delete(q.Index(name));
   },
   udfunction(name) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.udfunction(name);
+    return q.Delete(q.Function(name));
   },
   role(name) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.role(name);
+    return q.Delete(q.Role(name));
   },
   token(id) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.token(id);
+    return q.Delete(q.Ref(q.Tokens(), id));
   },
   key(id) {
-    //  #comment
-    // Nothing necessary, logging do the job
-    return get.key(id);
+    return q.Delete(q.Ref(q.Keys(), id));
   },
 };

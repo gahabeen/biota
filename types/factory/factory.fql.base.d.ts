@@ -19,6 +19,7 @@ export interface DBFactoryFQLBase {
   repsert: DBFactoryFQLBaseRepsert;
   delete: DBFactoryFQLBaseDelete;
   forget: DBFactoryFQLBaseForget;
+  clean: DBFactoryFQLBaseClean;
 }
 
 export interface DBFactoryFQLBaseGet {
@@ -116,4 +117,22 @@ export interface DBFactoryFQLBaseForget {
   role: CRUDReferenceRole["delete"];
   token: CRUDReferenceToken["delete"];
   key: CRUDReferenceKey["delete"];
+}
+
+export interface DBFactoryFQLBaseClean {
+  document: CRUDReferenceDocument["delete"];
+  database: CRUDReferenceDatabase["delete"];
+  databases: CRUDReferenceDatabase["cleanAll"];
+  collection: CRUDReferenceCollection["delete"];
+  collections: CRUDReferenceCollection["cleanAll"];
+  index: CRUDReferenceIndex["delete"];
+  indexes: CRUDReferenceIndex["cleanAll"];
+  udfunction: CRUDReferenceUDFunction["delete"];
+  udfunctions: CRUDReferenceUDFunction["cleanAll"];
+  role: CRUDReferenceRole["delete"];
+  roles: CRUDReferenceRole["cleanAll"];
+  token: CRUDReferenceToken["delete"];
+  tokens: CRUDReferenceToken["cleanAll"];
+  key: CRUDReferenceKey["delete"];
+  keys: CRUDReferenceKey["cleanAll"];
 }

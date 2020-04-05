@@ -19,6 +19,7 @@ export interface DBFactoryUDF {
   repsert: DBFactoryUDFRepsert;
   delete: DBFactoryUDFDelete;
   forget: DBFactoryUDFForget;
+  clean: DBFactoryUDFClean;
 }
 
 export interface DBFactoryUDFOwn {
@@ -132,4 +133,22 @@ export interface DBFactoryUDFForget {
   role: CRUDReferenceRole["delete"];
   token: CRUDReferenceToken["delete"];
   key: CRUDReferenceKey["delete"];
+}
+
+export interface DBFactoryUDFClean {
+  document: CRUDReferenceDocument["delete"];
+  database: CRUDReferenceDatabase["delete"];
+  databases: CRUDReferenceDatabase["cleanAll"];
+  collection: CRUDReferenceCollection["delete"];
+  collections: CRUDReferenceCollection["cleanAll"];
+  index: CRUDReferenceIndex["delete"];
+  indexes: CRUDReferenceIndex["cleanAll"];
+  udfunction: CRUDReferenceUDFunction["delete"];
+  udfunctions: CRUDReferenceUDFunction["cleanAll"];
+  role: CRUDReferenceRole["delete"];
+  roles: CRUDReferenceRole["cleanAll"];
+  token: CRUDReferenceToken["delete"];
+  tokens: CRUDReferenceToken["cleanAll"];
+  key: CRUDReferenceKey["delete"];
+  keys: CRUDReferenceKey["cleanAll"];
 }

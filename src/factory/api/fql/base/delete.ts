@@ -1,29 +1,45 @@
 import { DBFactoryFQLBaseDelete } from "~/../types/factory/factory.fql.base";
-import { query as q } from "faunadb";
+import { get } from "~/factory/api/fql/base/get";
 
 export const delete_: DBFactoryFQLBaseDelete = {
   document(collection, id) {
-    return q.Delete(q.Ref(q.Collection(collection), id));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.document(collection, id);
   },
   database(name) {
-    return q.Delete(q.Database(name));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.database(name);
   },
   collection(name) {
-    return q.Delete(q.Collection(name));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.collection(name);
   },
   index(name) {
-    return q.Delete(q.Index(name));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.index(name);
   },
   udfunction(name) {
-    return q.Delete(q.Function(name));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.udfunction(name);
   },
   role(name) {
-    return q.Delete(q.Role(name));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.role(name);
   },
   token(id) {
-    return q.Delete(q.Ref(q.Tokens(), id));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.token(id);
   },
   key(id) {
-    return q.Delete(q.Ref(q.Keys(), id));
+    //  #comment
+    // Nothing necessary, logging do the job
+    return get.key(id);
   },
 };

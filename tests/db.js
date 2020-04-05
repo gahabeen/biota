@@ -1,11 +1,11 @@
-import { Biota, factory, q } from "../src/index";
-import { nanohash } from "nanohash";
+const fauna = require("faunadb");
+const q = fauna.query;
+const path = require("path");
+const { nanohash } = require("nanohash");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+const { Biota, factory } = require("./../dist/index");
 
-export function client() {
-  return new Biota({ secret: process.env.FAUNA_TEST });
-}
-
-export async function database() {
+async function database() {
   const c = new Biota({ secret: process.env.FAUNA_TEST });
   const nshash = nanohash({ size: 9 });
   const id = nshash.generate();
@@ -30,4 +30,8 @@ export async function database() {
   };
 }
 
-export { factory };
+(async () => {
+  const db = await database();
+  let response = await db.query(factory.fql.base.insert.collection("users"));
+  console.log(response);
+})();

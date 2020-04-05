@@ -19,6 +19,7 @@ export interface DBFactoryFQLUDF {
   repsert: DBFactoryFQLUDFRepsert;
   delete: DBFactoryFQLUDFDelete;
   forget: DBFactoryFQLUDFForget;
+  clean: DBFactoryFQLUDFClean;
 }
 
 export interface DBFactoryFQLUDFAssign {
@@ -132,4 +133,22 @@ export interface DBFactoryFQLUDFForget {
   role: CRUDReferenceRole["delete"];
   token: CRUDReferenceToken["delete"];
   key: CRUDReferenceKey["delete"];
+}
+
+export interface DBFactoryFQLUDFClean {
+  document: CRUDReferenceDocument["delete"];
+  database: CRUDReferenceDatabase["delete"];
+  databases: CRUDReferenceDatabase["cleanAll"];
+  collection: CRUDReferenceCollection["delete"];
+  collections: CRUDReferenceCollection["cleanAll"];
+  index: CRUDReferenceIndex["delete"];
+  indexes: CRUDReferenceIndex["cleanAll"];
+  udfunction: CRUDReferenceUDFunction["delete"];
+  udfunctions: CRUDReferenceUDFunction["cleanAll"];
+  role: CRUDReferenceRole["delete"];
+  roles: CRUDReferenceRole["cleanAll"];
+  token: CRUDReferenceToken["delete"];
+  tokens: CRUDReferenceToken["cleanAll"];
+  key: CRUDReferenceKey["delete"];
+  keys: CRUDReferenceKey["cleanAll"];
 }
