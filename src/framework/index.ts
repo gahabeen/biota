@@ -2,7 +2,10 @@ export * from "./api/paginate";
 export * from "./api/query";
 
 export * from "./api/collection";
+export * from "./api/document";
 export * from "./api/index";
+export * from "./api/indexes";
+export * from "./api/roles";
 
 export * from "./api/login";
 

@@ -5,23 +5,29 @@ export const collection: DBFactoryCollectionApi = {
   all() {
     return udf.get.collections();
   },
+  clean(name) {
+    return udf.clean.documents(name);
+  },
+  cleanAll() {
+    return udf.clean.collections();
+  },
   get(name) {
     return udf.get.collection(name);
   },
-  insert(name, options) {
-    return udf.insert.collection(name, options);
+  insert(name, data) {
+    return udf.insert.collection(name, data);
   },
-  update(name, options) {
-    return udf.update.collection(name, options);
+  update(name, data) {
+    return udf.update.collection(name, data);
   },
-  replace(name, options) {
-    return udf.replace.collection(name, options);
+  replace(name, data) {
+    return udf.replace.collection(name, data);
   },
-  upsert(name, options) {
-    return udf.upsert.collection(name, options);
+  upsert(name, data) {
+    return udf.upsert.collection(name, data);
   },
-  repsert(name, options) {
-    return udf.repsert.collection(name, options);
+  repsert(name, data) {
+    return udf.repsert.collection(name, data);
   },
   delete(name) {
     return udf.delete.collection(name);

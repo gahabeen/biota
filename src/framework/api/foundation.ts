@@ -1,6 +1,7 @@
 import { DB } from "~/db";
 import { query as q } from "faunadb";
 import { execute } from "~/tasks";
+import { insert } from "~/factory/api/fql/base/insert";
 import { upsert } from "~/factory/api/fql/base/upsert";
 import { repsert } from "~/factory/api/fql/base/repsert";
 import * as defaultFunctions from "~/framework/api/default/functions";
@@ -23,7 +24,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       tasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
         task() {
-          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, upsert.role(defaultRole.name, defaultRole)));
+          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name)));
         },
       });
     }
@@ -61,26 +62,30 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: `Scaffold collection: ${defaultCollections.actions.name}`,
       task() {
         return self.collection(defaultCollections.actions.name).scaffold(defaultCollections.actions, {
-          // index: [
-          //   "document",
-          //   "ts",
-          //   "user",
-          //   "name",
-          //   {
-          //     field: "at",
-          //     binding: q.Query(
-          //       q.Lambda(
-          //         "doc",
-          //         q.Let(
-          //           {
-          //             ts: q.Select("ts", q.Var("doc"), null),
-          //           },
-          //           q.If(q.IsTimestamp(q.Var("ts")), q.ToTime(q.Var("ts")), null)
-          //         )
-          //       )
-          //     ),
-          //   },
-          // ],
+          index: [
+            "document",
+            "ts",
+            "user",
+            "name",
+            {
+              field: "collection",
+              binding: q.Query(q.Lambda("doc", q.Select(["data", "document", "collection"], q.Var("doc"), null))),
+            },
+            {
+              field: "at",
+              binding: q.Query(
+                q.Lambda(
+                  "doc",
+                  q.Let(
+                    {
+                      ts: q.Select("ts", q.Var("doc"), null),
+                    },
+                    q.If(q.IsTimestamp(q.Var("ts")), q.ToTime(q.Var("ts")), null)
+                  )
+                )
+              ),
+            },
+          ],
         });
       },
     });

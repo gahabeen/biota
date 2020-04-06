@@ -5,18 +5,18 @@ import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
 
 let insertLogData = {
-  activity: { created_by: q.Var("identity"), created_at: q.Now() },
+  _activity: { created_by: q.Var("identity"), created_at: q.Now() },
 };
 
 export const insert: DBFactoryFQLUDFInsert = {
-  document(collection, options = {}, id) {
+  document(collection, data = {}, id) {
     return q.Let(
       {
-        doc: insertBaseFQL.document(collection, options, id),
-        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
+        doc: insertBaseFQL.document(collection, data, id),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), insertLogData)),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   database(name, options = {}) {
@@ -26,7 +26,7 @@ export const insert: DBFactoryFQLUDFInsert = {
         operation: CallSystemOperator(updateBaseFQL.database(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   collection(name, options = {}) {
@@ -36,7 +36,7 @@ export const insert: DBFactoryFQLUDFInsert = {
         operation: CallSystemOperator(updateBaseFQL.collection(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   index(name, options = {}) {
@@ -46,7 +46,7 @@ export const insert: DBFactoryFQLUDFInsert = {
         operation: CallSystemOperator(updateBaseFQL.index(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   udfunction(name, options = {}) {
@@ -56,7 +56,7 @@ export const insert: DBFactoryFQLUDFInsert = {
         operation: CallSystemOperator(updateBaseFQL.udfunction(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   role(name, options = {}) {
@@ -73,20 +73,20 @@ export const insert: DBFactoryFQLUDFInsert = {
     return q.Let(
       {
         doc: insertBaseFQL.token(ref, options),
-        operation: CallSystemOperator(updateBaseFQL.token(q.Select("id", q.Var("doc")), { data: insertLogData })),
+        operation: CallSystemOperator(updateBaseFQL.token(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   key(name, options) {
     return q.Let(
       {
         doc: insertBaseFQL.key(name, options),
-        operation: CallSystemOperator(updateBaseFQL.key(q.Select("id", q.Var("doc")), { data: insertLogData })),
+        operation: CallSystemOperator(updateBaseFQL.key(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
 };

@@ -5,6 +5,9 @@ export const key: DBFactoryKeyApi = {
   all() {
     return udf.get.keys();
   },
+  cleanAll() {
+    return udf.clean.keys();
+  },
   get(id) {
     return udf.get.key(id);
   },

@@ -5,7 +5,7 @@ import { Reference } from "../ql";
 
 export const document: DBFactoryDocumentApi = {
   login(name, id, password) {
-    return q.Login(Reference({ collection: name, id }), {
+    return q.Login(q.Ref(q.Collection(name), id), {
       password,
     });
   },
@@ -18,20 +18,20 @@ export const document: DBFactoryDocumentApi = {
   get(collection, id) {
     return udf.get.document(collection, id);
   },
-  insert(collection, options) {
-    return udf.insert.document(collection, options);
+  insert(collection, data, id) {
+    return udf.insert.document(collection, data, id);
   },
-  update(collection, id, options) {
-    return udf.update.document(collection, id, options);
+  update(collection, id, data) {
+    return udf.update.document(collection, id, data);
   },
-  replace(collection, id, options) {
-    return udf.replace.document(collection, id, options);
+  replace(collection, id, data) {
+    return udf.replace.document(collection, id, data);
   },
-  upsert(collection, id, options) {
-    return udf.upsert.document(collection, id, options);
+  upsert(collection, id, data) {
+    return udf.upsert.document(collection, id, data);
   },
-  repsert(collection, id, options) {
-    return udf.repsert.document(collection, id, options);
+  repsert(collection, id, data) {
+    return udf.repsert.document(collection, id, data);
   },
   delete(collection, id) {
     return udf.delete.document(collection, id);

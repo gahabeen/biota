@@ -5,6 +5,9 @@ export const token: DBFactoryTokenApi = {
   all() {
     return udf.get.tokens();
   },
+  cleanAll() {
+    return udf.clean.tokens();
+  },
   get(id) {
     return udf.get.token(id);
   },

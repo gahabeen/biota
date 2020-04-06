@@ -12,7 +12,7 @@ export function upsert(this: DB, collectionName: string) {
         {
           name: `Update/Insert (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.upsert(collectionName, id, { data }));
+            return self.query(document.upsert(collectionName, id, data));
           },
         },
       ],

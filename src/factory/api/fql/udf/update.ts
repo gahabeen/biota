@@ -5,8 +5,12 @@ import { nameOrOptions } from "~/helpers";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
 
+let updateCredentialsLogData = {
+  _activity: { credentials_changed_by: q.Var("identity"), credentials_changed_at: q.Now() },
+};
+
 let updateLogData = {
-  activity: { credentials_changed_by: q.Var("identity"), credentials_changed_at: q.Now() },
+  _activity: { updated_by: q.Var("identity"), updated_at: q.Now() },
 };
 
 export const update: DBFactoryFQLUDFUpdate = {
@@ -14,20 +18,20 @@ export const update: DBFactoryFQLUDFUpdate = {
     return q.Let(
       {
         doc: updateBaseFQL.credentials(collection, id, credentials),
-        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: updateLogData })),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), updateCredentialsLogData)),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   document(collection, id, data) {
     return q.Let(
       {
         doc: updateBaseFQL.document(collection, id, data),
-        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: updateLogData })),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), updateLogData)),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   database(name, options) {
@@ -37,7 +41,7 @@ export const update: DBFactoryFQLUDFUpdate = {
         operation: CallSystemOperator(updateBaseFQL.database(name, { data: updateLogData })),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   collection(name, options) {
@@ -47,7 +51,7 @@ export const update: DBFactoryFQLUDFUpdate = {
         operation: CallSystemOperator(updateBaseFQL.collection(name, { data: updateLogData })),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   index(name, options: FaunaIndexOptions = {}) {
@@ -57,7 +61,7 @@ export const update: DBFactoryFQLUDFUpdate = {
         operation: CallSystemOperator(updateBaseFQL.index(name, { data: updateLogData })),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   udfunction(name, options) {
@@ -67,7 +71,7 @@ export const update: DBFactoryFQLUDFUpdate = {
         operation: CallSystemOperator(updateBaseFQL.udfunction(name, { data: updateLogData })),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   role(name, options = {}) {
@@ -87,7 +91,7 @@ export const update: DBFactoryFQLUDFUpdate = {
         operation: CallSystemOperator(updateBaseFQL.token(id, { data: updateLogData })),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   key(id, options) {
@@ -97,7 +101,7 @@ export const update: DBFactoryFQLUDFUpdate = {
         operation: CallSystemOperator(updateBaseFQL.key(id, { data: updateLogData })),
         action: CallLogAction("update", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
 };

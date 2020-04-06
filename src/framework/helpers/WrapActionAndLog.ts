@@ -7,13 +7,12 @@ export const CallSystemOperator = (action: Fauna.Expr) => {
   return q.Call(udfunctionNameNormalized("SystemOperator"), Identity(), action);
 };
 
-export const CallLogAction = (action: Fauna.Expr, doc: Fauna.Expr, udf?: string) => {
+export const CallLogAction = (name: string, doc: Fauna.Expr) => {
   return q.Call(udfunctionNameNormalized("LogAction"), {
-    documentRef: q.Select("ref", doc),
+    document: q.Select("ref", doc),
     identity: Identity(),
     ts: q.Select("ts", doc),
-    action,
-    udf,
+    name,
   });
 };
 

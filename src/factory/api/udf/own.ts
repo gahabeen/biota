@@ -5,6 +5,6 @@ import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunctio
 
 export const own: DBFactoryUDFOwn = {
   document(collection, id, newOwner) {
-    return q.Call(udfName("OwnDocument"), [Identity(), collection, id, newOwner]);
+    return q.Call(udfName("OwnDocument"), Identity(), collection, id, newOwner);
   },
 };

@@ -5,16 +5,24 @@ import { clean as cleanBaseFQL } from "~/factory/api/fql/base/clean";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 
 let forgotLogData = {
-  activity: { forgotten_by: q.Var("identity"), forgotten_at: q.Now() },
+  _activity: { forgotten_by: q.Var("identity"), forgotten_at: q.Now() },
 };
 
 export const clean: DBFactoryFQLUDFClean = {
   document(collection, id) {
     return q.Let(
       {
-        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: forgotLogData })),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, forgotLogData)),
         doc: cleanBaseFQL.document(collection, id),
         action: CallLogAction("forget", q.Var("doc")),
+      },
+      q.Var("doc")
+    );
+  },
+  documents(collection) {
+    return q.Let(
+      {
+        doc: cleanBaseFQL.documents(collection),
       },
       q.Var("doc")
     );

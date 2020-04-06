@@ -36,6 +36,8 @@ export interface DBFactoryCollectionApi {
   repsert: CRUDReferenceCollection["upsert"];
   delete: CRUDReferenceCollection["delete"];
   forget: CRUDReferenceCollection["delete"];
+  clean: CRUDReferenceDocument["cleanAll"];
+  cleanAll: CRUDReferenceCollection["cleanAll"];
 }
 
 // export interface DBFactoryCollectionMethodApi {
@@ -63,6 +65,7 @@ export interface DBFactoryDatabaseApi {
   repsert: CRUDReferenceDatabase["upsert"];
   delete: CRUDReferenceDatabase["delete"];
   forget: CRUDReferenceDatabase["delete"];
+  cleanAll: CRUDReferenceDatabase["cleanAll"];
 }
 
 export interface DBFactoryIndexApi {
@@ -75,6 +78,7 @@ export interface DBFactoryIndexApi {
   repsert: CRUDReferenceIndex["upsert"];
   delete: CRUDReferenceIndex["delete"];
   forget: CRUDReferenceIndex["delete"];
+  cleanAll: CRUDReferenceIndex["cleanAll"];
 }
 
 export interface DBFactoryUDFunctionApi {
@@ -87,16 +91,17 @@ export interface DBFactoryUDFunctionApi {
   repsert: CRUDReferenceUDFunction["upsert"];
   delete: CRUDReferenceUDFunction["delete"];
   forget: CRUDReferenceUDFunction["delete"];
+  cleanAll: CRUDReferenceUDFunction["cleanAll"];
 }
 
 export interface DBFactoryRoleMembershipApi {
-  upsert: (name: string, membership: FaunaRoleMembership) => void;
-  delete: (name: string, resource: FaunaRef) => void;
+  upsert: (name: string, membership: FaunaRoleMembership) => Expr;
+  delete: (name: string, resource: FaunaRef) => Expr;
 }
 
 export interface DBFactoryRolePrivilegeApi {
-  upsert: (name: string, membership: FaunaRolePrivilege) => void;
-  delete: (name: string, resource: FaunaRef) => void;
+  upsert: (name: string, membership: FaunaRolePrivilege) => Expr;
+  delete: (name: string, resource: FaunaRef) => Expr;
 }
 
 export interface DBFactoryRoleApi {
@@ -110,7 +115,8 @@ export interface DBFactoryRoleApi {
   delete: CRUDReferenceRole["delete"];
   forget: CRUDReferenceRole["delete"];
   membership: DBFactoryRoleMembershipApi;
-  privilege: DBFactoryRoleMembershipApi;
+  privilege: DBFactoryRolePrivilegeApi;
+  cleanAll: CRUDReferenceIndex["cleanAll"];
 }
 
 export interface DBFactoryTokenApi {
@@ -123,6 +129,7 @@ export interface DBFactoryTokenApi {
   repsert: CRUDReferenceToken["upsert"];
   delete: CRUDReferenceToken["delete"];
   forget: CRUDReferenceToken["delete"];
+  cleanAll: CRUDReferenceIndex["cleanAll"];
 }
 
 export interface DBFactoryKeyApi {
@@ -135,6 +142,7 @@ export interface DBFactoryKeyApi {
   repsert: CRUDReferenceKey["upsert"];
   delete: CRUDReferenceKey["delete"];
   forget: CRUDReferenceKey["delete"];
+  cleanAll: CRUDReferenceIndex["cleanAll"];
 }
 
 export interface DBFactoryCredentialsApi {

@@ -6,6 +6,12 @@ export * from "~/framework/default/functions/operator";
 export * from "~/framework/default/functions/find_index";
 export * from "~/framework/default/functions/search_query";
 
+// classes
+export * from "~/framework/default/functions/classes/role/role_upsert_privilege";
+export * from "~/framework/default/functions/classes/role/role_upsert_membership";
+export * from "~/framework/default/functions/classes/role/role_delete_privilege";
+export * from "~/framework/default/functions/classes/role/role_delete_membership";
+
 // crud
 export * from "~/framework/default/functions/unassign/unassign_document";
 export * from "~/framework/default/functions/assign/assign_document";
@@ -90,6 +96,7 @@ export * from "~/framework/default/functions/clean/clean_collections";
 export * from "~/framework/default/functions/clean/clean_database";
 export * from "~/framework/default/functions/clean/clean_databases";
 export * from "~/framework/default/functions/clean/clean_document";
+export * from "~/framework/default/functions/clean/clean_documents";
 export * from "~/framework/default/functions/clean/clean_index";
 export * from "~/framework/default/functions/clean/clean_indexes";
 export * from "~/framework/default/functions/clean/clean_key";

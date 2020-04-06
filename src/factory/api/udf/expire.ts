@@ -5,6 +5,6 @@ import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunctio
 
 export const expire: DBFactoryUDFExpire = {
   document(collection, id, at) {
-    return q.Call(udfName("ExpireDocument"), [Identity(), collection, id, at]);
+    return q.Call(udfName("ExpireDocument"), Identity(), collection, id, at);
   },
 };

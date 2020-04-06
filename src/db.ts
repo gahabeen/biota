@@ -1,6 +1,6 @@
 import Debug from "debug";
 import * as fauna from "faunadb";
-import { Fauna } from "~/../types/fauna";
+import { Fauna, FaunaId } from "~/../types/fauna";
 import * as framework from "~/framework";
 import {
   DBFrameworkCollectionApi,
@@ -8,23 +8,26 @@ import {
   DBFrameworkIndexOptions,
   DBFrameworkRelation,
 } from "../types/framework/framework.collection";
+import { DBFrameworkIndexesApi } from "../types/framework/framework.indexes";
+import { DBFrameworkRolesApi } from "../types/framework/framework.roles";
+import { DBFrameworkDocumentApi } from "../types/framework/framework.document";
 
-// function bindThis(self, rootKey) {
-//   const resolver = (value) => {
-//     let entries = Object.entries(value);
-//     for (let [key, entry] of entries) {
-//       if (typeof entry === "object") {
-//         value[key] = resolver(entry);
-//       } else if (typeof entry === "function") {
-//         value[key] = entry.bind(self);
-//       } else {
-//         value[key] = entry;
-//       }
-//     }
-//     return value;
-//   };
-//   resolver(self[rootKey] || {});
-// }
+function bindThis(self, rootKey) {
+  const resolver = (value) => {
+    let entries = Object.entries(value);
+    for (let [key, entry] of entries) {
+      if (typeof entry === "object") {
+        value[key] = resolver(entry);
+      } else if (typeof entry === "function") {
+        value[key] = entry.bind(self);
+      } else {
+        value[key] = entry;
+      }
+    }
+    return value;
+  };
+  resolver(self[rootKey] || {});
+}
 
 interface DBOptions {
   secret: string;
@@ -41,7 +44,10 @@ export class DB {
   logout: (everywhere: boolean) => any;
 
   collection?: (name: string) => DBFrameworkCollectionApi;
+  document?: (collectionName: string, id: FaunaId) => DBFrameworkDocumentApi;
   index?: (name: string) => DBFrameworkIndexOptions;
+  indexes?: DBFrameworkIndexesApi;
+  roles?: DBFrameworkRolesApi;
 
   foundation: DBFrameworkFoundation;
   relation: DBFrameworkRelation;
@@ -60,7 +66,12 @@ export class DB {
     // this.logout = framework.logout.bind(this);
 
     this.collection = framework.collection.bind(this);
+    this.document = framework.document.bind(this);
     this.index = framework.index.bind(this);
+    this.indexes = framework.indexes;
+    bindThis(this, "indexes");
+    this.roles = framework.roles;
+    bindThis(this, "roles");
 
     this.foundation = framework.foundation.bind(this);
     this.relation = framework.relation.bind(this);

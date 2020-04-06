@@ -12,19 +12,17 @@ export const LogAction = UDFunction({
       ["options"],
       q.Let(
         {
-          documentRef: q.Select("documentRef", q.Var("options"), null),
+          document: q.Select("document", q.Var("options"), null),
           identity: q.Select("identity", q.Var("options"), null),
           ts: q.Select("ts", q.Var("options"), null),
-          actionName: q.Select("documentRef", q.Var("options"), null),
-          udf: q.Select("udf", q.Var("options"), null),
+          name: q.Select("name", q.Var("options"), null),
         },
         q.Create(q.Collection(collectionNameNormalized("actions")), {
           data: {
-            document: q.Var("documentRef"),
+            document: q.Var("document"),
             ts: q.Var("ts"),
             user: q.Var("identity"),
-            name: q.Var("actionName"),
-            udf: q.Var("udf"),
+            name: q.Var("name"),
           },
         })
       )

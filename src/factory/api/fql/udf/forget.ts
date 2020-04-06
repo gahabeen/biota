@@ -5,14 +5,14 @@ import { forget as forgetBaseFQL } from "~/factory/api/fql/base/forget";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 
 let forgotLogData = {
-  activity: { forgotten_by: q.Var("identity"), forgotten_at: q.Now() },
+  _activity: { forgotten_by: q.Var("identity"), forgotten_at: q.Now() },
 };
 
 export const forget: DBFactoryFQLUDFForget = {
   document(collection, id) {
     return q.Let(
       {
-        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: forgotLogData })),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, forgotLogData)),
         doc: forgetBaseFQL.document(collection, id),
         action: CallLogAction("forget", q.Var("doc")),
       },

@@ -137,6 +137,7 @@ export interface DBFactoryUDFForget {
 
 export interface DBFactoryUDFClean {
   document: CRUDReferenceDocument["delete"];
+  documents: CRUDReferenceDocument["cleanAll"];
   database: CRUDReferenceDatabase["delete"];
   databases: CRUDReferenceDatabase["cleanAll"];
   collection: CRUDReferenceCollection["delete"];

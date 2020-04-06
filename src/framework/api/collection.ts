@@ -1,4 +1,5 @@
 import { DBFrameworkCollectionApi } from "~/../types/framework/framework.collection";
+import { activity } from "~/framework/api/collection/activity";
 import { compute } from "~/framework/api/collection/compute";
 import { deleteFn } from "~/framework/api/collection/delete";
 import { field } from "~/framework/api/collection/field";
@@ -14,6 +15,7 @@ import { repsert } from "~/framework/api/collection/repsert";
 import { scaffold } from "~/framework/api/collection/scaffold";
 import { update } from "~/framework/api/collection/update";
 import { upsert } from "~/framework/api/collection/upsert";
+import { clean } from "~/framework/api/collection/clean";
 
 export function collection(collectionName: string): DBFrameworkCollectionApi {
   let self = this;
@@ -23,7 +25,9 @@ export function collection(collectionName: string): DBFrameworkCollectionApi {
   }
 
   return {
+    clean: clean.call(self, collectionName),
     scaffold: scaffold.call(self, collectionName),
+    activity: activity.call(self, collectionName),
     field: field.call(self, collectionName),
     index: index.call(self, collectionName),
     compute: compute.call(self, collectionName),

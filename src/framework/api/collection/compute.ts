@@ -1,7 +1,6 @@
-import { FaunaCollectionOptions } from "~/../types/fauna";
 import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-import { update } from "~/factory/api/udf";
+import { role as roleFactory } from "~/factory/api/classes";
 import { execute } from "~/tasks";
 
 export function compute(this: DB, collectionName: string) {
@@ -29,16 +28,12 @@ export function compute(this: DB, collectionName: string) {
                     name: `Adding privilege (read) for index ${name} on ${r}`,
                     task() {
                       return self.query(
-                        update.role(r, {
-                          privileges: [
-                            {
-                              resource: ref,
-                              actions: {
-                                read: true,
-                                history_read: true,
-                              },
-                            },
-                          ],
+                        roleFactory.privilege.upsert(r, {
+                          resource: ref,
+                          actions: {
+                            read: true,
+                            history_read: true,
+                          },
                         })
                       );
                     },

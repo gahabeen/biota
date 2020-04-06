@@ -14,6 +14,18 @@ export const clean: DBFactoryFQLBaseClean = {
       { ref: q.Ref(q.Collection(collection), id), cleaned: false }
     );
   },
+  documents(collection) {
+    return q.Let(
+      {
+        documents: q.Map(q.Paginate(q.Documents(q.Collection(collection)), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
+        cleaned: q.GT(q.Count(q.Var("documents")), 0),
+      },
+      {
+        documents: q.Var("documents"),
+        cleaned: q.Var("cleaned"),
+      }
+    );
+  },
   database(name) {
     return q.If(
       q.Exists(q.Database(name)),
@@ -26,7 +38,7 @@ export const clean: DBFactoryFQLBaseClean = {
   },
   databases() {
     return q.If(
-      q.Exists(q.GT(q.Count(q.Databases()), 0)),
+      q.GT(q.Count(q.Databases()), 0),
       {
         databases: q.Map(q.Paginate(q.Databases(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
         cleaned: true,
@@ -46,7 +58,7 @@ export const clean: DBFactoryFQLBaseClean = {
   },
   collections() {
     return q.If(
-      q.Exists(q.GT(q.Count(q.Collections()), 0)),
+      q.GT(q.Count(q.Collections()), 0),
       {
         collections: q.Map(q.Paginate(q.Collections(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
         cleaned: true,
@@ -66,9 +78,9 @@ export const clean: DBFactoryFQLBaseClean = {
   },
   indexes() {
     return q.If(
-      q.Exists(q.GT(q.Count(q.Indexes()), 0)),
+      q.GT(q.Count(q.Indexes()), 0),
       {
-        databases: q.Map(q.Paginate(q.Indexes(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
+        indexes: q.Map(q.Paginate(q.Indexes(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
         cleaned: true,
       },
       { ref: q.Indexes(), cleaned: false }
@@ -86,9 +98,9 @@ export const clean: DBFactoryFQLBaseClean = {
   },
   udfunctions() {
     return q.If(
-      q.Exists(q.GT(q.Count(q.Functions()), 0)),
+      q.GT(q.Count(q.Functions()), 0),
       {
-        databases: q.Map(q.Paginate(q.Functions(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
+        udfunctions: q.Map(q.Paginate(q.Functions(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
         cleaned: true,
       },
       { ref: q.Functions(), cleaned: false }
@@ -106,9 +118,9 @@ export const clean: DBFactoryFQLBaseClean = {
   },
   roles() {
     return q.If(
-      q.Exists(q.GT(q.Count(q.Roles()), 0)),
+      q.GT(q.Count(q.Roles()), 0),
       {
-        databases: q.Map(q.Paginate(q.Roles(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
+        roles: q.Map(q.Paginate(q.Roles(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
         cleaned: true,
       },
       { ref: q.Roles(), cleaned: false }
@@ -126,9 +138,9 @@ export const clean: DBFactoryFQLBaseClean = {
   },
   tokens() {
     return q.If(
-      q.Exists(q.GT(q.Count(q.Tokens()), 0)),
+      q.GT(q.Count(q.Tokens()), 0),
       {
-        databases: q.Map(q.Paginate(q.Documents(q.Tokens()), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
+        tokens: q.Map(q.Paginate(q.Documents(q.Tokens()), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
         cleaned: true,
       },
       { ref: q.Documents(q.Tokens()), cleaned: false }
@@ -146,9 +158,9 @@ export const clean: DBFactoryFQLBaseClean = {
   },
   keys() {
     return q.If(
-      q.Exists(q.GT(q.Count(q.Keys()), 0)),
+      q.GT(q.Count(q.Keys()), 0),
       {
-        databases: q.Map(q.Paginate(q.Keys(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
+        keys: q.Map(q.Paginate(q.Keys(), { size: PAGINATION_SIZE_MAX }), (x) => q.Delete(x)),
         cleaned: true,
       },
       { ref: q.Keys(), cleaned: false }

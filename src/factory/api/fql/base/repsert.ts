@@ -1,24 +1,14 @@
 import { query as q } from "faunadb";
 import { DBFactoryFQLBaseRepsert } from "~/../types/factory/factory.fql.base";
-import {
-  FaunaCollectionOptions,
-  FaunaDatabaseOptions,
-  FaunaIndexOptions,
-  FaunaKeyOptions,
-  FaunaRoleOptions,
-  FaunaTokenOptions,
-  FaunaUDFunctionOptions,
-} from "~/../types/fauna";
 import { insert } from "~/factory/api/fql/base/insert";
 import { replace } from "~/factory/api/fql/base/replace";
-import { nameOrOptions } from "~/helpers";
 
 export const repsert: DBFactoryFQLBaseRepsert = {
-  document(collection, id, options) {
+  document(collection, id, data) {
     return q.If(
       q.Exists(q.Ref(q.Collection(collection), id)),
-      replace.document(collection, id, options),
-      insert.document(collection, options, id)
+      replace.document(collection, id, data),
+      insert.document(collection, data, id)
     );
   },
   database(name, options) {

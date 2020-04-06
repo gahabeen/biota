@@ -5,9 +5,9 @@ import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { delete_ as deleteBaseFQL } from "~/factory/api/fql/base/delete";
 
 let deleteLogData = {
-  activity: {
+  _activity: {
     deleted_by: {
-      activity: { deleted_by: q.Var("identity"), deleted_at: q.Now() },
+      _activity: { deleted_by: q.Var("identity"), deleted_at: q.Now() },
     },
     deleted_at: q.Now(),
   },
@@ -18,10 +18,10 @@ export const delete_: DBFactoryFQLUDFDelete = {
     return q.Let(
       {
         doc: deleteBaseFQL.document(collection, id),
-        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: deleteLogData })),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, deleteLogData)),
         action: CallLogAction("delete", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   database(name) {
@@ -32,7 +32,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
         operation: CallSystemOperator(updateBaseFQL.database(name, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   collection(name) {
@@ -43,7 +43,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
         operation: CallSystemOperator(updateBaseFQL.collection(name, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   index(name) {
@@ -54,7 +54,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
         operation: CallSystemOperator(updateBaseFQL.index(name, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   udfunction(name) {
@@ -65,7 +65,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
         operation: CallSystemOperator(updateBaseFQL.udfunction(name, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   role(name) {
@@ -87,7 +87,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
         operation: CallSystemOperator(updateBaseFQL.token(id, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   key(id) {
@@ -98,7 +98,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
         operation: CallSystemOperator(updateBaseFQL.key(id, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
 };

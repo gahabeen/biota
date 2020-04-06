@@ -11,7 +11,7 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     return q.Call(udfunctionNameNormalized("SearchQuery"), [q.Collection(collection), sq]);
   };
 
-  const safe = (x: object) => JSON.parse(JSON.stringify(x));
+  // const safe = (x: object) => JSON.parse(JSON.stringify(x));
 
   const operators = {
     $and: (...queries: Fauna.Expr[]) => {

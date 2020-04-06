@@ -1,5 +1,4 @@
-import { FaunaCollectionOptions } from "~/../types/fauna";
-import { DBFrameworkCollectionInsertOptions } from "~/../types/framework/framework.collection";
+import { FaunaId, FaunaDocumentOptions } from "~/../types/fauna";
 import { DB } from "~/db";
 import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
@@ -7,21 +6,13 @@ import { execute } from "~/tasks";
 export function insert(this: DB, collectionName: string) {
   let self = this;
 
-  return async function insertMethod(data: any, options?: DBFrameworkCollectionInsertOptions) {
-    let { keepId = false } = options || {};
-    const { id, credentials } = data || {};
-
+  return async function insertMethod(data: any = {}, id: FaunaId = null) {
     return execute(
       [
         {
-          name: (keepId ? `Upserting ${id}` : `Inserting`) + ` in ${collectionName}`,
+          name: `Insert data in [${collectionName}]`,
           task() {
-            if (keepId) {
-              if (!id) throw new Error(`Doesn't have any given id`);
-              return self.query(document.upsert(collectionName, id, { credentials, data: data.data || {} }));
-            } else {
-              return self.query(document.insert(collectionName, { data }));
-            }
+            return self.query(document.insert(collectionName, data, id));
           },
         },
       ],

@@ -5,7 +5,7 @@ import { update } from "~/factory/api/fql/base/update";
 
 export const upsert: DBFactoryFQLBaseUpsert = {
   document(collection, id, options = {}) {
-    return q.If(q.Exists(q.Database(name)), update.document(collection, id, options), insert.document(collection, options));
+    return q.If(q.Exists(q.Database(name)), update.document(collection, id, options), insert.document(collection, options, id));
   },
   database(name, options = {}) {
     return q.If(q.Exists(q.Database(name)), update.database(name, options), insert.database(name, options));

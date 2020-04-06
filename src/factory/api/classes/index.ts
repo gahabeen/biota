@@ -5,6 +5,9 @@ export const index: DBFactoryIndexApi = {
   all() {
     return udf.get.indexes();
   },
+  cleanAll() {
+    return udf.clean.indexes();
+  },
   get(name) {
     return udf.get.index(name);
   },

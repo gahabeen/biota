@@ -34,6 +34,8 @@ export interface DBFrameworkCollectionApi {
   upsert: (id: FaunaId, data: object) => Promise<any>;
   delete: (id: FaunaId) => Promise<any>;
   forget: (id: FaunaId) => Promise<any>;
+  clean: () => Promise<any>;
+  activity: (pagination: FaunaPaginateOptions) => Promise<any>;
   changes: () => Promise<any>;
 }
 
@@ -54,10 +56,6 @@ export interface DBFrameworkCollectionScaffoldOptions {
   searchable?: string[];
   viewable?: DBFrameworkCollectionValueOptions[];
   fields?: DBFrameworkCollectionFieldOptions[];
-}
-
-export interface DBFrameworkCollectionInsertOptions {
-  keepId?: boolean;
 }
 
 export interface DBFrameworkCollectionInsertBatchOptions {

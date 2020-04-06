@@ -5,14 +5,14 @@ import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
 
 let assignLogData = (newAssignee: any) => ({
-  activity: { assigned_by: newAssignee, assigned_at: q.Now() },
+  _activity: { assigned_by: newAssignee, assigned_at: q.Now() },
 });
 
 export const assign: DBFactoryFQLUDFAssign = {
   document(collection, id, newAssignee) {
     return q.Let(
       {
-        operation: CallSystemOperator(updateBaseFQL.document(collection, id, { data: assignLogData(newAssignee) })),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, assignLogData(newAssignee))),
         doc: getBaseFQL.document(collection, id),
         action: CallLogAction("assign", q.Var("doc")),
       },

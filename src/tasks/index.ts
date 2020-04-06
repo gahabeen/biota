@@ -3,7 +3,7 @@ import { Task, TaskExecuteOptions } from "~/../types/task";
 import * as fs from "fs";
 
 export async function execute(tasks: Task[], options?: TaskExecuteOptions): Promise<any | any[]> {
-  let { indent = 0, singleResult = false, domain = "task" } = options || {};
+  let { indent = 0, singleResult = true, domain = "task" } = options || {};
   const debug = Debug("biota").extend(domain);
   let indentation = "--".repeat(indent);
   let ctx = {};
@@ -41,7 +41,7 @@ export async function execute(tasks: Task[], options?: TaskExecuteOptions): Prom
   }
   if (singleResult) {
     try {
-      return results[0];
+      return results[results.length - 1];
     } catch (error) {
       return {};
     }

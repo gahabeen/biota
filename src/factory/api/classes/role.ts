@@ -8,6 +8,9 @@ export const role: DBFactoryRoleApi = {
   all() {
     return udf.get.roles();
   },
+  cleanAll() {
+    return udf.clean.roles();
+  },
   get(name) {
     return udf.get.role(name);
   },
@@ -74,8 +77,8 @@ export const role: DBFactoryRoleApi = {
             q.Lambda("cm", q.Not(q.Equals(q.Select("resource", q.Var("cm")), q.Var("resource"))))
           ),
         },
-        fql.base.upsert.role(name, { membership: q.Var("membership_filtered") })
-        // udf.upsert.role(name, { membership: q.Var("membership_filtered") })
+        // fql.base.upsert.role(name, { membership: q.Var("membership_filtered") })
+        udf.upsert.role(name, { membership: q.Var("membership_filtered") })
       );
     },
   },
@@ -84,7 +87,7 @@ export const role: DBFactoryRoleApi = {
       return q.Let(
         {
           privilege,
-          privilege_resource: q.Select("resource", q.Var("privilege"), null),
+          privilege_resource: q.Select("resource", q.Var("privilege")),
           has_privilege_resource: q.If(q.IsRef(q.Var("privilege_resource")), true, q.Abort("Privilege doesn't have a resource")),
           current_privilege_raw: q.Select("privileges", q.Get(q.Role(name)), []),
           current_privilege: q.If(

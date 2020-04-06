@@ -23,11 +23,12 @@ export interface CRUDReferenceDocumentReadOptions {
 }
 
 export interface CRUDReferenceDocument {
-  create?(collection: string, options?: FaunaDocumentOptions, id?: FaunaId): Expr;
+  create?(collection: string, data?: any, id?: FaunaId): Expr;
   read?(collection: string, id: FaunaId, options?: CRUDReferenceDocumentReadOptions): Expr;
   readAll?(pagination?: FaunaPaginateOptions): Expr;
-  update?(collection: string, id: FaunaId, options: FaunaDocumentOptions): Expr;
-  upsert?(collection: string, id: FaunaId, options: FaunaDocumentOptions): Expr;
+  cleanAll?(collection: string): Expr;
+  update?(collection: string, id: FaunaId, data: any): Expr;
+  upsert?(collection: string, id: FaunaId, data: any): Expr;
   delete?(collection: string, id: FaunaId): Expr;
   expire?(collection: string, id: FaunaId, at: FaunaTime): Expr;
   own?(collection: string, id: FaunaId, newOwner: FaunaRef): Expr;

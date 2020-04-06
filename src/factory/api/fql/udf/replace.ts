@@ -5,7 +5,7 @@ import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
 
 let replaceLogData = {
-  activity: { replaced_by: q.Var("identity"), replaced_at: q.Now() },
+  _activity: { replaced_by: q.Var("identity"), replaced_at: q.Now() },
 };
 
 export const replace: DBFactoryFQLUDFReplace = {
@@ -13,10 +13,10 @@ export const replace: DBFactoryFQLUDFReplace = {
     return q.Let(
       {
         doc: replacebaseFQL.document(collection, id, options),
-        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), { data: replaceLogData })),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), replaceLogData)),
         action: CallLogAction("replace", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   database(name, options) {
@@ -26,7 +26,7 @@ export const replace: DBFactoryFQLUDFReplace = {
         operation: CallSystemOperator(updateBaseFQL.database(name, { data: replaceLogData })),
         action: CallLogAction("replace", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   collection(name, options) {
@@ -36,7 +36,7 @@ export const replace: DBFactoryFQLUDFReplace = {
         operation: CallSystemOperator(updateBaseFQL.collection(name, { data: replaceLogData })),
         action: CallLogAction("replace", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   index(name, options) {
@@ -46,7 +46,7 @@ export const replace: DBFactoryFQLUDFReplace = {
         operation: CallSystemOperator(updateBaseFQL.index(name, { data: replaceLogData })),
         action: CallLogAction("replace", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   udfunction(name, options) {
@@ -56,7 +56,7 @@ export const replace: DBFactoryFQLUDFReplace = {
         operation: CallSystemOperator(updateBaseFQL.udfunction(name, { data: replaceLogData })),
         action: CallLogAction("replace", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   role(name, options) {
@@ -76,7 +76,7 @@ export const replace: DBFactoryFQLUDFReplace = {
         operation: CallSystemOperator(updateBaseFQL.token(id, { data: replaceLogData })),
         action: CallLogAction("replace", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
   key(id, options) {
@@ -86,7 +86,7 @@ export const replace: DBFactoryFQLUDFReplace = {
         operation: CallSystemOperator(updateBaseFQL.key(id, { data: replaceLogData })),
         action: CallLogAction("replace", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
 };

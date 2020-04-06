@@ -1,16 +1,15 @@
-import { DBFactoryFQLBaseInsert } from "~/../types/factory/factory.fql.base";
 import { query as q } from "faunadb";
-import { Reference } from "~/factory/api/ql";
-import { nameOrOptions } from "~/helpers";
-import { Database } from "~/factory/classes/database";
+import { DBFactoryFQLBaseInsert } from "~/../types/factory/factory.fql.base";
 import { Collection } from "~/factory/classes/collection";
-import { UDFunction } from "~/factory/classes/udfunction";
+import { Database } from "~/factory/classes/database";
 import { Index } from "~/factory/classes/index";
 import { Role } from "~/factory/classes/role";
+import { UDFunction } from "~/factory/classes/udfunction";
+import { nameOrOptions } from "~/helpers";
 
 export const insert: DBFactoryFQLBaseInsert = {
-  document(collection, options = {}, id) {
-    return q.Create(Reference({ collection, id }), options);
+  document(collection, data = {}, id) {
+    return q.Create(q.If(q.IsString(id), q.Ref(q.Collection(collection), id), q.Collection(collection)), { data });
   },
   database(name, options = {}) {
     let definition = nameOrOptions(name, options);

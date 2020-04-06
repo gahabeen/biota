@@ -5,27 +5,27 @@ import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunctio
 
 export const upsert: DBFactoryUDFUpsert = {
   document(collection, id, data) {
-    return q.Call(udfName("UpsertDocument"), [Identity(), collection, id, data]);
+    return q.Call(udfName("UpsertDocument"), Identity(), collection, id, data);
   },
   database(name, options) {
-    return q.Call(udfName("UpsertDabase"), [Identity(), name, options]);
+    return q.Call(udfName("UpsertDabase"), Identity(), name, options);
   },
   collection(name, options) {
-    return q.Call(udfName("UpsertCollection"), [Identity(), name, options]);
+    return q.Call(udfName("UpsertCollection"), Identity(), name, options);
   },
   index(name, options) {
-    return q.Call(udfName("UpsertIndex"), [Identity(), name, options]);
+    return q.Call(udfName("UpsertIndex"), Identity(), name, options);
   },
   udfunction(name, options) {
-    return q.Call(udfName("UpsertFunction"), [Identity(), name, options]);
+    return q.Call(udfName("UpsertFunction"), Identity(), name, options);
   },
   role(name, options) {
-    return q.Call(udfName("UpsertRole"), [Identity(), name, options]);
+    return q.Call(udfName("UpsertRole"), Identity(), name, options);
   },
   token(ref, options) {
-    return q.Call(udfName("UpsertToken"), [Identity(), ref, options]);
+    return q.Call(udfName("UpsertToken"), Identity(), ref, options);
   },
   key(options) {
-    return q.Call(udfName("UpsertKey"), [Identity(), options]);
+    return q.Call(udfName("UpsertKey"), Identity(), options);
   },
 };

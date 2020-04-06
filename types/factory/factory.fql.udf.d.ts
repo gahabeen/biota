@@ -137,6 +137,7 @@ export interface DBFactoryFQLUDFForget {
 
 export interface DBFactoryFQLUDFClean {
   document: CRUDReferenceDocument["delete"];
+  documents: CRUDReferenceDocument["cleanAll"];
   database: CRUDReferenceDatabase["delete"];
   databases: CRUDReferenceDatabase["cleanAll"];
   collection: CRUDReferenceCollection["delete"];

@@ -4,11 +4,11 @@ import { insert as insertFQLUDF } from "~/factory/api/fql/udf/insert";
 import { update as updateFQLUDF } from "~/factory/api/fql/udf/update";
 
 export const upsert: DBFactoryFQLUDFUpsert = {
-  document(collection, id, options) {
+  document(collection, id, data) {
     return q.If(
       q.Exists(q.Ref(q.Collection(collection), id)),
-      updateFQLUDF.document(collection, id, options),
-      insertFQLUDF.document(collection, options)
+      updateFQLUDF.document(collection, id, data),
+      insertFQLUDF.document(collection, data, id)
     );
   },
   database(name, options = {}) {

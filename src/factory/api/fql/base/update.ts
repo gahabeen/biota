@@ -16,7 +16,7 @@ export const update: DBFactoryFQLBaseUpdate = {
   collection(name, options) {
     return q.Update(q.Collection(name), options);
   },
-  index(name, options: FaunaIndexOptions = {}) {
+  index(name, options) {
     let { unique } = options;
     return q.Update(q.Index(name), { name, unique });
   },

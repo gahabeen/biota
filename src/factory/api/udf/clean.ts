@@ -5,48 +5,51 @@ import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunctio
 
 export const clean: DBFactoryUDFClean = {
   document(collection, id) {
-    return q.Call(udfName("CleanDocument"), [Identity(), collection, id]);
+    return q.Call(udfName("CleanDocument"), Identity(), collection, id);
+  },
+  documents(collection) {
+    return q.Call(udfName("CleanDocuments"), Identity(), collection);
   },
   database(name) {
-    return q.Call(udfName("CleanDatabase"), [Identity(), name]);
+    return q.Call(udfName("CleanDatabase"), Identity(), name);
   },
   databases() {
-    return q.Call(udfName("CleanDatabases"), [Identity()]);
+    return q.Call(udfName("CleanDatabases"), Identity());
   },
   collection(name) {
-    return q.Call(udfName("CleanCollection"), [Identity(), name]);
+    return q.Call(udfName("CleanCollection"), Identity(), name);
   },
   collections() {
-    return q.Call(udfName("CleanCollections"), [Identity()]);
+    return q.Call(udfName("CleanCollections"), Identity());
   },
   index(name) {
-    return q.Call(udfName("CleanIndex"), [Identity(), name]);
+    return q.Call(udfName("CleanIndex"), Identity(), name);
   },
   indexes() {
-    return q.Call(udfName("CleanIndexes"), [Identity()]);
+    return q.Call(udfName("CleanIndexes"), Identity());
   },
   udfunction(name) {
-    return q.Call(udfName("CleanUDFunction"), [Identity(), name]);
+    return q.Call(udfName("CleanUDFunction"), Identity(), name);
   },
   udfunctions() {
-    return q.Call(udfName("CleanUDFunctions"), [Identity()]);
+    return q.Call(udfName("CleanUDFunctions"), Identity());
   },
   role(name) {
-    return q.Call(udfName("CleanRole"), [Identity(), name]);
+    return q.Call(udfName("CleanRole"), Identity(), name);
   },
   roles() {
-    return q.Call(udfName("CleanRoles"), [Identity()]);
+    return q.Call(udfName("CleanRoles"), Identity());
   },
   token(id) {
-    return q.Call(udfName("CleanToken"), [Identity(), id]);
+    return q.Call(udfName("CleanToken"), Identity(), id);
   },
   tokens() {
-    return q.Call(udfName("CleanTokens"), [Identity()]);
+    return q.Call(udfName("CleanTokens"), Identity());
   },
   key(id) {
-    return q.Call(udfName("CleanKey"), [Identity(), id]);
+    return q.Call(udfName("CleanKey"), Identity(), id);
   },
   keys() {
-    return q.Call(udfName("CleanKeys"), [Identity()]);
+    return q.Call(udfName("CleanKeys"), Identity());
   },
 };
