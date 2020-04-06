@@ -59,7 +59,9 @@ export function index(this: DB, collectionName: string) {
                     fullError: true,
                   });
                 }
-                await execute(subTasks);
+                await execute(subTasks, {
+                  domain: "DB.collection.index",
+                });
               }
             }
             return indexes;

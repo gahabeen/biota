@@ -10,7 +10,7 @@ import {
   CRUDReferenceToken,
   CRUDReferenceUDFunction,
 } from "../crud.reference";
-import { FaunaId, Fauna, FaunaDocumentOptions } from "../fauna";
+import { FaunaDocumentOptions, FaunaId, FaunaRoleMembership, FaunaRolePrivilege, FaunaRef } from "../fauna";
 
 export interface DBFactoryDocumentApi {
   login(collection: string, id: FaunaId, password: string): Expr;
@@ -89,6 +89,16 @@ export interface DBFactoryUDFunctionApi {
   forget: CRUDReferenceUDFunction["delete"];
 }
 
+export interface DBFactoryRoleMembershipApi {
+  upsert: (name: string, membership: FaunaRoleMembership) => void;
+  delete: (name: string, resource: FaunaRef) => void;
+}
+
+export interface DBFactoryRolePrivilegeApi {
+  upsert: (name: string, membership: FaunaRolePrivilege) => void;
+  delete: (name: string, resource: FaunaRef) => void;
+}
+
 export interface DBFactoryRoleApi {
   all: CRUDReferenceRole["readAll"];
   get: CRUDReferenceRole["read"];
@@ -99,6 +109,8 @@ export interface DBFactoryRoleApi {
   repsert: CRUDReferenceRole["upsert"];
   delete: CRUDReferenceRole["delete"];
   forget: CRUDReferenceRole["delete"];
+  membership: DBFactoryRoleMembershipApi;
+  privilege: DBFactoryRoleMembershipApi;
 }
 
 export interface DBFactoryTokenApi {

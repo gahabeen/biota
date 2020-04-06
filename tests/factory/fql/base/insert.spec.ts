@@ -1,10 +1,10 @@
-import { database, factory } from "../../../client";
+import { wrapper } from "../../../wrapper";
+import { factory } from "../../../client";
 
 describe("factory.fql.base.insert.collection", () => {
-  test("should [insert] the [collection]", async (done) => {
-    const { db, drop } = await database();
-    try {
-      // ---
+  test(
+    "should [insert] the [collection]",
+    wrapper(async (db) => {
       let response = await db.query(factory.fql.base.insert.collection("users"));
       expect(response).toMatchObject({
         name: "users",
@@ -17,21 +17,14 @@ describe("factory.fql.base.insert.collection", () => {
         ts: expect.any(Number),
         history_days: 30,
       });
-      // ---
-    } catch (error) {
-      done(error);
-    } finally {
-      await drop();
-      done();
-    }
-  });
+    })
+  );
 });
 
 describe("factory.fql.base.insert.document", () => {
-  test("should [insert] the [document]", async (done) => {
-    const { db, drop } = await database();
-    try {
-      // ---
+  test(
+    "should [insert] the [document]",
+    wrapper(async (db) => {
       await db.query(factory.fql.base.insert.collection("users"));
       let response = await db.query(factory.fql.base.insert.document("users", { data: { test: true } }, "123"));
       expect(response).toMatchObject({
@@ -46,12 +39,6 @@ describe("factory.fql.base.insert.document", () => {
         },
         ts: expect.any(Number),
       });
-      // ---
-    } catch (error) {
-      done(error);
-    } finally {
-      await drop();
-      done();
-    }
-  });
+    })
+  );
 });

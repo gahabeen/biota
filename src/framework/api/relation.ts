@@ -63,7 +63,9 @@ export function relation(this: DB, relationName?: string) {
       throw new Error(`Relation ${name} isn't right`);
     }
 
-    return execute(tasks);
+    return execute(tasks, {
+      domain: "DB.relation"
+    });
   }
 
   let firstApi = {

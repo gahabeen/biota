@@ -2,7 +2,6 @@ import { query as q } from "faunadb";
 import { DBFactoryFQLBaseUpsert } from "~/../types/factory/factory.fql.base";
 import { insert } from "~/factory/api/fql/base/insert";
 import { update } from "~/factory/api/fql/base/update";
-import { Index, indexNameNormalized } from "~/factory/classes/index";
 
 export const upsert: DBFactoryFQLBaseUpsert = {
   document(collection, id, options = {}) {

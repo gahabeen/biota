@@ -44,7 +44,9 @@ export function compute(this: DB, collectionName: string) {
                     },
                   });
                 }
-                await execute(subTasks);
+                await execute(subTasks, {
+                  domain: "DB.collection.compute",
+                });
               }
             }
             return indexes;

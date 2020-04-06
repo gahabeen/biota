@@ -85,6 +85,21 @@ export * from "~/framework/default/functions/repsert/repsert_key";
 export * from "~/framework/default/functions/repsert/repsert_role";
 export * from "~/framework/default/functions/repsert/repsert_token";
 export * from "~/framework/default/functions/repsert/repsert_udfunction";
+export * from "~/framework/default/functions/clean/clean_collection";
+export * from "~/framework/default/functions/clean/clean_collections";
+export * from "~/framework/default/functions/clean/clean_database";
+export * from "~/framework/default/functions/clean/clean_databases";
+export * from "~/framework/default/functions/clean/clean_document";
+export * from "~/framework/default/functions/clean/clean_index";
+export * from "~/framework/default/functions/clean/clean_indexes";
+export * from "~/framework/default/functions/clean/clean_key";
+export * from "~/framework/default/functions/clean/clean_keys";
+export * from "~/framework/default/functions/clean/clean_role";
+export * from "~/framework/default/functions/clean/clean_roles";
+export * from "~/framework/default/functions/clean/clean_token";
+export * from "~/framework/default/functions/clean/clean_tokens";
+export * from "~/framework/default/functions/clean/clean_udfunction";
+export * from "~/framework/default/functions/clean/clean_udfunctions";
 
 // advanced
 export * from "~/framework/default/functions/relations";
