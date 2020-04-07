@@ -1,12 +1,25 @@
 import * as fauna from "faunadb";
 import { Fauna, FaunaRuleAction, FaunaRuleLambda } from "~/../types/fauna";
 import { Rules } from "~/factory/role/rule";
-import { all, is_assignee, is_not_assignee, is_not_owner, is_owner, is_self, none } from "~/framework/api/default/rules";
-import { wrapDoc } from "~/framework/helpers/wrapDoc";
+import {
+  all,
+  are_fields_secure,
+  is_assignee,
+  is_not_assignee,
+  is_not_owner,
+  is_owned_by,
+  is_owner,
+  is_self,
+  none,
+} from "~/framework/api/default/rules";
 const q = fauna.query;
 
 export function Action(type: FaunaRuleAction): FaunaRuleLambda {
   switch (type) {
+    case "secured_fields":
+      return are_fields_secure;
+    case "self_own":
+      return is_owned_by;
     case "self":
       return is_self;
     case "owner":
@@ -50,7 +63,15 @@ function prepareRules(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] 
 export function ReadAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]): FaunaRuleLambda {
   actions = processActions(actions);
   if (typeof actions === "boolean") return actions;
-  return q.Lambda("ref", wrapDoc("ref", prepareRules(actions)));
+  return q.Lambda(
+    "ref",
+    q.Let(
+      {
+        doc: q.Get(q.Var("ref")),
+      },
+      prepareRules(actions)
+    )
+  );
 }
 
 export function WriteAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]): FaunaRuleLambda {
@@ -59,7 +80,15 @@ export function WriteAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAct
     // are_rights_not_changed
   ]);
   if (typeof actions === "boolean") return actions;
-  return q.Lambda(["oldDoc", "newDoc"], prepareRules(actions));
+  return q.Lambda(
+    ["oldDoc", "newDoc"],
+    q.Let(
+      {
+        doc: q.Var("newDoc"),
+      },
+      prepareRules(actions)
+    )
+  );
 }
 
 export function CreateAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]): FaunaRuleLambda {

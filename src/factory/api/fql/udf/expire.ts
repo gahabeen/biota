@@ -9,10 +9,32 @@ let expireLogData = (at: any) => ({
 });
 
 export const expire: DBFactoryFQLUDFExpire = {
-  document(collection, id, at) {
+  documentAt(collection, id, at) {
     return q.Let(
       {
         operation: CallSystemOperator(updateBaseFQL.document(collection, id, expireLogData(at))),
+        doc: getBaseFQL.document(collection, id),
+        action: CallLogAction("expire", q.Var("doc")),
+      },
+      q.Var("doc")
+    );
+  },
+  documentIn(collection, id, delayInMs) {
+    return q.Let(
+      {
+        operation: CallSystemOperator(
+          updateBaseFQL.document(collection, id, expireLogData(q.TimeAdd(q.Now(), q.ToNumber(delayInMs), "milliseconds")))
+        ),
+        doc: getBaseFQL.document(collection, id),
+        action: CallLogAction("expire", q.Var("doc")),
+      },
+      q.Var("doc")
+    );
+  },
+  documentNow(collection, id) {
+    return q.Let(
+      {
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, expireLogData(q.Now()))),
         doc: getBaseFQL.document(collection, id),
         action: CallLogAction("expire", q.Var("doc")),
       },

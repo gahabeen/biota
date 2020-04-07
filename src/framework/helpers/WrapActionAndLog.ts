@@ -3,15 +3,15 @@ import { query as q } from "faunadb";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { Identity } from "~/factory/api/ql";
 
-export const CallSystemOperator = (action: Fauna.Expr) => {
-  return q.Call(udfunctionNameNormalized("SystemOperator"), Identity(), action);
+export const CallSystemOperator = (action: Fauna.Expr, identity = Identity()) => {
+  return q.Call(udfunctionNameNormalized("SystemOperator"), identity, action);
 };
 
 export const CallLogAction = (name: string, doc: Fauna.Expr) => {
   return q.Call(udfunctionNameNormalized("LogAction"), {
-    document: q.Select("ref", doc),
+    document: q.Select("ref", doc, null),
     identity: Identity(),
-    ts: q.Select("ts", doc),
+    ts: q.Select("ts", doc, null),
     name,
   });
 };

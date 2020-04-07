@@ -231,6 +231,7 @@ export function field(this: DB, collectionName: string) {
 
     return execute(tasks, {
       domain: "DB.collection.field",
+      singleResult: false,
     });
   };
 }

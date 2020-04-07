@@ -9,6 +9,7 @@ import {
   CRUDReferenceKey,
   CRUDReferenceCredentials,
 } from "../crud.reference";
+import { DBFactorySpecificUserApi } from "./factory.specific.user";
 
 export interface DBFactoryUDF {
   get: DBFactoryUDFGet;
@@ -20,6 +21,7 @@ export interface DBFactoryUDF {
   delete: DBFactoryUDFDelete;
   forget: DBFactoryUDFForget;
   clean: DBFactoryUDFClean;
+  user: DBFactoryUDFUser
 }
 
 export interface DBFactoryUDFOwn {
@@ -35,7 +37,9 @@ export interface DBFactoryUDFUnAssign {
 }
 
 export interface DBFactoryUDFExpire {
-  document: CRUDReferenceDocument["expire"];
+  documentAt: CRUDReferenceDocument["expireAt"];
+  documentIn: CRUDReferenceDocument["expireIn"];
+  documentNow: CRUDReferenceDocument["expireNow"];
 }
 
 export interface DBFactoryUDFGet {
@@ -152,4 +156,10 @@ export interface DBFactoryUDFClean {
   tokens: CRUDReferenceToken["cleanAll"];
   key: CRUDReferenceKey["delete"];
   keys: CRUDReferenceKey["cleanAll"];
+}
+
+export interface DBFactoryUDFUser {
+  login: DBFactorySpecificUserApi["login"];
+  register: DBFactorySpecificUserApi["register"];
+  changePassword: DBFactorySpecificUserApi["changePassword"];
 }

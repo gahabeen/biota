@@ -1,7 +1,5 @@
-import { DBFactoryFQLBaseUpdate } from "~/../types/factory/factory.fql.base";
 import { query as q } from "faunadb";
-import { nameOrOptions } from "~/helpers";
-import { FaunaIndexOptions, FaunaRoleOptions } from "~/../types/fauna";
+import { DBFactoryFQLBaseUpdate } from "~/../types/factory/factory.fql.base";
 
 export const update: DBFactoryFQLBaseUpdate = {
   credentials(collection, id, credentials) {

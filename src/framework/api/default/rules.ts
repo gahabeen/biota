@@ -8,5 +8,7 @@ export * from "~/framework/default/rules/is_document_available";
 export * from "~/framework/default/rules/is_first_argument_identity";
 export * from "~/framework/default/rules/is_not_owner";
 export * from "~/framework/default/rules/is_owner";
+export * from "~/framework/default/rules/is_owned_by";
 export * from "~/framework/default/rules/is_self";
+export * from "~/framework/default/rules/are_fields_secure";
 export * from "~/framework/default/rules/none";

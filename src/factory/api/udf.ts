@@ -11,3 +11,4 @@ export * from "./udf/unassign";
 export * from "./udf/assign";
 export * from "./udf/own";
 export * from "./udf/expire";
+export * from "./udf/user";

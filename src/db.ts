@@ -11,6 +11,7 @@ import {
 import { DBFrameworkIndexesApi } from "../types/framework/framework.indexes";
 import { DBFrameworkRolesApi } from "../types/framework/framework.roles";
 import { DBFrameworkDocumentApi } from "../types/framework/framework.document";
+import { DBFrameworkUserApi } from "../types/framework/framework.user";
 
 function bindThis(self, rootKey) {
   const resolver = (value) => {
@@ -40,9 +41,7 @@ export class DB {
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
-  login: (id: Fauna.Expr, password: string) => any;
-  logout: (everywhere: boolean) => any;
-
+  user?: DBFrameworkUserApi;
   collection?: (name: string) => DBFrameworkCollectionApi;
   document?: (collectionName: string, id: FaunaId) => DBFrameworkDocumentApi;
   index?: (name: string) => DBFrameworkIndexOptions;
@@ -62,9 +61,6 @@ export class DB {
     this.query = framework.query.bind(this);
     this.paginate = framework.paginate.bind(this);
 
-    this.login = framework.login.bind(this);
-    // this.logout = framework.logout.bind(this);
-
     this.collection = framework.collection.bind(this);
     this.document = framework.document.bind(this);
     this.index = framework.index.bind(this);
@@ -72,6 +68,8 @@ export class DB {
     bindThis(this, "indexes");
     this.roles = framework.roles;
     bindThis(this, "roles");
+    this.user = framework.user;
+    bindThis(this, "user");
 
     this.foundation = framework.foundation.bind(this);
     this.relation = framework.relation.bind(this);

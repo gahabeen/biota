@@ -30,7 +30,9 @@ export interface CRUDReferenceDocument {
   update?(collection: string, id: FaunaId, data: any): Expr;
   upsert?(collection: string, id: FaunaId, data: any): Expr;
   delete?(collection: string, id: FaunaId): Expr;
-  expire?(collection: string, id: FaunaId, at: FaunaTime): Expr;
+  expireAt?(collection: string, id: FaunaId, at: FaunaTime): Expr;
+  expireIn?(collection: string, id: FaunaId, delayInMs: number): Expr;
+  expireNow?(collection: string, id: FaunaId): Expr;
   own?(collection: string, id: FaunaId, newOwner: FaunaRef): Expr;
   assign?(collection: string, id: FaunaId, newAssignee: FaunaRef): Expr;
   unassign?(collection: string, id: FaunaId, newAssignee: FaunaRef): Expr;

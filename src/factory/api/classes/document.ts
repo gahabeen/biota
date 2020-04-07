@@ -39,4 +39,13 @@ export const document: DBFactoryDocumentApi = {
   forget(collection, id) {
     return udf.forget.document(collection, id);
   },
+  expireIn(collection, id, delayInMs) {
+    return udf.expire.documentIn(collection, id, delayInMs);
+  },
+  expireAt(collection, id, at) {
+    return udf.expire.documentAt(collection, id, at);
+  },
+  expireNow(collection, id) {
+    return udf.expire.documentNow(collection, id);
+  },
 };

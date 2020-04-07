@@ -3,18 +3,33 @@ import { FaunaRoleOptions } from "~/../types/fauna";
 import { indexNameNormalized } from "~/factory/classes/index";
 import { Privilege, roleNameNormalized } from "~/factory/classes/role";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { collectionNameNormalized } from "~/factory/classes/collection";
 
 export const system: FaunaRoleOptions = {
   name: roleNameNormalized("system"),
   privileges: [
     /**
-     * Indexes
+     * Collections
      */
 
     Privilege({
       resource: q.Indexes(),
       actions: { read: "all", unrestricted_read: "all" },
     }),
+
+    Privilege({
+      resource: q.Collection(collectionNameNormalized("user_sessions")),
+      actions: { create: "all", read: "all", write: "all", delete: "all" },
+    }),
+
+    Privilege({
+      resource: q.Tokens(),
+      actions: { create: "all", read: "all", write: "all", delete: "all" },
+    }),
+
+    /**
+     * Indexes
+     */
 
     Privilege({
       resource: q.Index(indexNameNormalized("indexes__by__resource")),

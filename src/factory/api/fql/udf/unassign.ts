@@ -4,19 +4,24 @@ import { get as getBaseFQL } from "~/factory/api/fql/base/get";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
 
-let assignLogData = (oldAssignee: any) => ({
-  _activity: { assigned_by: oldAssignee, assigned_at: q.Now() },
+let assignLogData = (assignees: any) => ({
+  _membership: {
+    assignees: assignees,
+  },
+  _activity: { assigned_by: q.Var("identity"), assigned_at: q.Now() },
 });
 
 export const unassign: DBFactoryFQLUDFUnAssign = {
   document(collection, id, oldAssignee) {
     return q.Let(
       {
-        operation: CallSystemOperator(updateBaseFQL.document(collection, id, assignLogData(oldAssignee))),
         doc: getBaseFQL.document(collection, id),
+        current_assignees: q.Select(["data", "_membership", "assignees"], q.Var("doc"), []),
+        assignees: q.Distinct(q.Difference(q.Var("current_assignees"), [oldAssignee])),
+        operation: CallSystemOperator(updateBaseFQL.document(collection, id, assignLogData(q.Var("assignees")))),
         action: CallLogAction("assign", q.Var("doc")),
       },
-      q.Var("doc")
+      q.Var("operation")
     );
   },
 };

@@ -5,7 +5,7 @@ import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunctio
 
 export const update: DBFactoryUDFUpdate = {
   credentials(collection, id, credentials) {
-    return q.Call(udfName("UpdateDocument"), Identity(), collection, id, credentials);
+    return q.Call(udfName("UpdateCredentials"), Identity(), collection, id, credentials);
   },
   document(collection, id, data) {
     return q.Call(udfName("UpdateDocument"), Identity(), collection, id, data);

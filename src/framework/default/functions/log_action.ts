@@ -17,14 +17,18 @@ export const LogAction = UDFunction({
           ts: q.Select("ts", q.Var("options"), null),
           name: q.Select("name", q.Var("options"), null),
         },
-        q.Create(q.Collection(collectionNameNormalized("actions")), {
-          data: {
-            document: q.Var("document"),
-            ts: q.Var("ts"),
-            user: q.Var("identity"),
-            name: q.Var("name"),
-          },
-        })
+        q.If(
+          q.IsRef(q.Var("document")),
+          q.Create(q.Collection(collectionNameNormalized("actions")), {
+            data: {
+              document: q.Var("document"),
+              ts: q.Var("ts"),
+              user: q.Var("identity"),
+              name: q.Var("name"),
+            },
+          }),
+          {}
+        )
       )
     )
   ),

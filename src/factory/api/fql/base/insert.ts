@@ -34,7 +34,7 @@ export const insert: DBFactoryFQLBaseInsert = {
   token(ref, options = {}) {
     return q.Create(q.Tokens(), { instance: ref, ...options });
   },
-  key(name, options) {
+  key(name, options = {}) {
     let definition = nameOrOptions(name, options);
     return q.CreateKey(definition);
   },

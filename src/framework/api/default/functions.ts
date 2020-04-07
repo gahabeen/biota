@@ -12,10 +12,20 @@ export * from "~/framework/default/functions/classes/role/role_upsert_membership
 export * from "~/framework/default/functions/classes/role/role_delete_privilege";
 export * from "~/framework/default/functions/classes/role/role_delete_membership";
 
+// auth
+export * from "~/framework/default/functions/auth/auth_start_user_session";
+
+// user
+export * from "~/framework/default/functions/user/user_login";
+export * from "~/framework/default/functions/user/user_register";
+export * from "~/framework/default/functions/user/user_change_password";
+
 // crud
 export * from "~/framework/default/functions/unassign/unassign_document";
 export * from "~/framework/default/functions/assign/assign_document";
-export * from "~/framework/default/functions/expire/expire_document";
+export * from "~/framework/default/functions/expire/expire_document_at";
+export * from "~/framework/default/functions/expire/expire_document_in";
+export * from "~/framework/default/functions/expire/expire_document_now";
 export * from "~/framework/default/functions/own/own_document";
 export * from "~/framework/default/functions/assign/assign_document";
 export * from "~/framework/default/functions/delete/delete_collection";
@@ -26,7 +36,6 @@ export * from "~/framework/default/functions/delete/delete_key";
 export * from "~/framework/default/functions/delete/delete_role";
 export * from "~/framework/default/functions/delete/delete_token";
 export * from "~/framework/default/functions/delete/delete_udfunction";
-export * from "~/framework/default/functions/expire/expire_document";
 export * from "~/framework/default/functions/forget/forget_collection";
 export * from "~/framework/default/functions/forget/forget_database";
 export * from "~/framework/default/functions/forget/forget_document";

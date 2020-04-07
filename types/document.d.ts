@@ -1,15 +1,16 @@
 import { FaunaRef, FaunaTime } from "./fauna";
 
-export interface DocumentAuthProvider {
+export interface DocumentAuthAccount {
   provider: string;
   id: string;
 }
 
 export interface DocumentAuth {
-  providers?: DocumentAuthProvider[];
+  email?: string;
+  accounts?: DocumentAuthAccount[];
 }
 
-export interface DocumentAccess {
+export interface DocumentMembership {
   owner?: FaunaRef;
   assignees?: FaunaRef[];
   roles?: String[];

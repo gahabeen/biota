@@ -35,7 +35,9 @@ export interface DBFactoryFQLUDFOwn {
 }
 
 export interface DBFactoryFQLUDFExpire {
-  document: CRUDReferenceDocument["expire"];
+  documentIn: CRUDReferenceDocument["expireIn"];
+  documentAt: CRUDReferenceDocument["expireAt"];
+  documentNow: CRUDReferenceDocument["expireNow"];
 }
 
 export interface DBFactoryFQLUDFGet {

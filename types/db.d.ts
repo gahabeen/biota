@@ -36,7 +36,19 @@ export interface UserRights {
   roles?: FaunaRef[];
 }
 
-export type ActionName = "insert" | "update" | "replace" | "delete" | "forget" | "credentials" | "assign" | "own" | "expire" | "archive";
+export type ActionName =
+  | "register"
+  | "login"
+  | "insert"
+  | "update"
+  | "replace"
+  | "delete"
+  | "forget"
+  | "credentials"
+  | "assign"
+  | "own"
+  | "expire"
+  | "archive";
 
 export interface Action {
   document: FaunaRef;

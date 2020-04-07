@@ -3,8 +3,10 @@ import { DBFactoryFQLUDFInsert } from "~/../types/factory/factory.fql.udf";
 import { insert as insertBaseFQL } from "~/factory/api/fql/base/insert";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
+import { DOCUMENT_RESERVED_DATA_FIELDS_OBJ } from "~/consts";
 
 let insertLogData = {
+  _membership: { owner: q.Var("identity") },
   _activity: { created_by: q.Var("identity"), created_at: q.Now() },
 };
 
@@ -12,7 +14,8 @@ export const insert: DBFactoryFQLUDFInsert = {
   document(collection, data = {}, id) {
     return q.Let(
       {
-        doc: insertBaseFQL.document(collection, data, id),
+        safeData: q.Merge(data, DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        doc: insertBaseFQL.document(collection, q.Var("safeData"), id),
         operation: CallSystemOperator(updateBaseFQL.document(collection, q.Select(["ref", "id"], q.Var("doc")), insertLogData)),
         action: CallLogAction("insert", q.Var("doc")),
       },
@@ -22,7 +25,9 @@ export const insert: DBFactoryFQLUDFInsert = {
   database(name, options = {}) {
     return q.Let(
       {
-        doc: insertBaseFQL.database(name, options),
+        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.database(name, q.Var("safeOptions")),
         operation: CallSystemOperator(updateBaseFQL.database(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
@@ -32,7 +37,9 @@ export const insert: DBFactoryFQLUDFInsert = {
   collection(name, options = {}) {
     return q.Let(
       {
-        doc: insertBaseFQL.collection(name, options),
+        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.collection(name, q.Var("safeOptions")),
         operation: CallSystemOperator(updateBaseFQL.collection(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
@@ -42,7 +49,9 @@ export const insert: DBFactoryFQLUDFInsert = {
   index(name, options = {}) {
     return q.Let(
       {
-        doc: insertBaseFQL.index(name, options),
+        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.index(name, q.Var("safeOptions")),
         operation: CallSystemOperator(updateBaseFQL.index(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
@@ -52,7 +61,9 @@ export const insert: DBFactoryFQLUDFInsert = {
   udfunction(name, options = {}) {
     return q.Let(
       {
-        doc: insertBaseFQL.udfunction(name, options),
+        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.udfunction(name, q.Var("safeOptions")),
         operation: CallSystemOperator(updateBaseFQL.udfunction(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
@@ -72,7 +83,9 @@ export const insert: DBFactoryFQLUDFInsert = {
   token(ref, options = {}) {
     return q.Let(
       {
-        doc: insertBaseFQL.token(ref, options),
+        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.token(ref, q.Var("safeOptions")),
         operation: CallSystemOperator(updateBaseFQL.token(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
@@ -82,7 +95,9 @@ export const insert: DBFactoryFQLUDFInsert = {
   key(name, options) {
     return q.Let(
       {
-        doc: insertBaseFQL.key(name, options),
+        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.key(name, q.Var("safeOptions")),
         operation: CallSystemOperator(updateBaseFQL.key(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },

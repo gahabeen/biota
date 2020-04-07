@@ -24,6 +24,9 @@ export interface DBFactoryDocumentApi {
   repsert: CRUDReferenceDocument["upsert"];
   delete: CRUDReferenceDocument["delete"];
   forget: CRUDReferenceDocument["delete"];
+  expireIn: CRUDReferenceDocument["expireIn"];
+  expireAt: CRUDReferenceDocument["expireAt"];
+  expireNow: CRUDReferenceDocument["expireNow"];
 }
 
 export interface DBFactoryCollectionApi {

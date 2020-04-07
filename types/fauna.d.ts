@@ -104,8 +104,6 @@ export interface FaunaRoleOptions {
   name?: string;
   membership?: FaunaRoleMembership;
   privileges?: FaunaRolePrivilege[];
-  setMembership?: Fn<any>;
-  addPrivilege?: Fn<any>;
 }
 
 export interface FaunaRoleMembership {
@@ -147,7 +145,7 @@ export interface FaunaRolePrivilegeActionsDefault {
 
 export type FaunaPaginateMapper = Fauna.Expr;
 
-export type FaunaRuleAction = "self" | "owner" | "not_owner" | "assignee" | "not_assignee" | "all" | "none";
+export type FaunaRuleAction = "self_own" | "secured_fields" | "self" | "owner" | "not_owner" | "assignee" | "not_assignee" | "all" | "none";
 
 export type FaunaRuleLambda = Fauna.Expr | Fn<Fauna.Expr>;
 
