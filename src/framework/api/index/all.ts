@@ -6,7 +6,7 @@ import { FaunaPaginateOptions } from "~/../types/fauna";
 export function all(this: DB, indexName: string) {
   let self = this;
 
-  return async function allMethod(pagination: FaunaPaginateOptions) {
+  return async function allMethod(pagination: FaunaPaginateOptions = {}) {
     return execute(
       [
         {

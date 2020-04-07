@@ -1,23 +1,23 @@
 import { DB } from "~/db";
 import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
-import { document } from "~/factory/api/classes/document";
+import { role } from "~/factory/api/classes/role";
 import { execute } from "~/tasks";
 
-export function delete_(this: DB, collectionName: string) {
+export function delete_(this: DB, roleName: string) {
   let self = this;
 
   return async function deleteMethod(id: FaunaId) {
     return execute(
       [
         {
-          name: `Delete (${id}) in (${collectionName})`,
+          name: `Delete (${id}) in (${roleName})`,
           task() {
-            return self.query(document.delete(collectionName, id));
+            return self.query(role.delete(roleName));
           },
         },
       ],
       {
-        domain: "DB.collection.delete",
+        domain: "DB.role.delete",
       }
     );
   };

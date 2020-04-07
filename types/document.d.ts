@@ -1,5 +1,9 @@
 import { FaunaRef, FaunaTime } from "./fauna";
 
+export interface DocumentGroup {
+  _name: string;
+}
+
 export interface DocumentAuthAccount {
   provider: string;
   id: string;

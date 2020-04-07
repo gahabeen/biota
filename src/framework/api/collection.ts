@@ -1,7 +1,7 @@
 import { DBFrameworkCollectionApi } from "~/../types/framework/framework.collection";
 import { activity } from "~/framework/api/collection/activity";
 import { compute } from "~/framework/api/collection/compute";
-import { deleteFn } from "~/framework/api/collection/delete";
+import { delete_ } from "~/framework/api/collection/delete";
 import { field } from "~/framework/api/collection/field";
 import { find } from "~/framework/api/collection/find";
 import { forget } from "~/framework/api/collection/forget";
@@ -40,7 +40,7 @@ export function collection(collectionName: string): DBFrameworkCollectionApi {
     update: update.call(self, collectionName),
     repsert: repsert.call(self, collectionName),
     upsert: upsert.call(self, collectionName),
-    delete: deleteFn.call(self, collectionName),
+    delete: delete_.call(self, collectionName),
     forget: forget.call(self, collectionName),
     async changes() {},
   };

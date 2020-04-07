@@ -8,6 +8,9 @@ export const udfunction: DBFactoryUDFunctionApi = {
   cleanAll() {
     return udf.clean.udfunctions();
   },
+  clean(name) {
+    return udf.clean.udfunction(name);
+  },
   get(name) {
     return udf.get.udfunction(name);
   },

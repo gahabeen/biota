@@ -11,6 +11,9 @@ export const role: DBFactoryRoleApi = {
   cleanAll() {
     return udf.clean.roles();
   },
+  clean(name) {
+    return udf.clean.role(name);
+  },
   get(name) {
     return udf.get.role(name);
   },

@@ -69,6 +69,7 @@ export interface DBFactoryDatabaseApi {
   delete: CRUDReferenceDatabase["delete"];
   forget: CRUDReferenceDatabase["delete"];
   cleanAll: CRUDReferenceDatabase["cleanAll"];
+  clean: CRUDReferenceDatabase["delete"];
 }
 
 export interface DBFactoryIndexApi {
@@ -95,6 +96,7 @@ export interface DBFactoryUDFunctionApi {
   delete: CRUDReferenceUDFunction["delete"];
   forget: CRUDReferenceUDFunction["delete"];
   cleanAll: CRUDReferenceUDFunction["cleanAll"];
+  clean: CRUDReferenceUDFunction["delete"];
 }
 
 export interface DBFactoryRoleMembershipApi {
@@ -120,6 +122,7 @@ export interface DBFactoryRoleApi {
   membership: DBFactoryRoleMembershipApi;
   privilege: DBFactoryRolePrivilegeApi;
   cleanAll: CRUDReferenceIndex["cleanAll"];
+  clean: CRUDReferenceIndex["delete"];
 }
 
 export interface DBFactoryTokenApi {

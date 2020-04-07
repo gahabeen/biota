@@ -1,10 +1,6 @@
-// types
-// external
 import { query as q } from "faunadb";
-// biota
-import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { collectionNameNormalized } from "~/factory/classes/collection";
-import { logData } from "~/framework/helpers/logData";
+import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
 
 export const Relations = UDFunction({
   name: udfunctionNameNormalized("Relations"),

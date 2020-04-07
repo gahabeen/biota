@@ -1,23 +1,23 @@
 import { DB } from "~/db";
 import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
-import { document } from "~/factory/api/classes/document";
+import { udfunction } from "~/factory/api/classes/udfunction";
 import { execute } from "~/tasks";
 
-export function delete_(this: DB, collectionName: string, id: FaunaId) {
+export function delete_(this: DB, udfunctionName: string) {
   let self = this;
 
   return async function deleteMethod() {
     return execute(
       [
         {
-          name: `Delete (${id}) in (${collectionName})`,
+          name: `Delete udfunction [${udfunctionName}]`,
           task() {
-            return self.query(document.delete(collectionName, id));
+            return self.query(udfunction.delete(udfunctionName));
           },
         },
       ],
       {
-        domain: "DB.document.delete",
+        domain: "DB.udfunction.delete",
       }
     );
   };

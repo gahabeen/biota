@@ -8,6 +8,9 @@ export const database: DBFactoryDatabaseApi = {
   cleanAll() {
     return udf.clean.databases();
   },
+  clean(name) {
+    return udf.clean.database(name);
+  },
   get(name) {
     return udf.get.database(name);
   },

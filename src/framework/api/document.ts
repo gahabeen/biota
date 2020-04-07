@@ -1,6 +1,6 @@
 import { DBFrameworkDocumentApi } from "~/../types/framework/framework.document";
 import { activity } from "~/framework/api/document/activity";
-import { deleteFn } from "~/framework/api/document/delete";
+import { delete_ } from "~/framework/api/document/delete";
 import { forget } from "~/framework/api/document/forget";
 import { get } from "~/framework/api/document/get";
 import { replace } from "~/framework/api/document/replace";
@@ -23,7 +23,7 @@ export function document(collectionName: string, id: FaunaId): DBFrameworkDocume
     update: update.call(self, collectionName, id),
     repsert: repsert.call(self, collectionName, id),
     upsert: upsert.call(self, collectionName, id),
-    delete: deleteFn.call(self, collectionName, id),
+    delete: delete_.call(self, collectionName, id),
     forget: forget.call(self, collectionName, id),
     async changes() {},
   };

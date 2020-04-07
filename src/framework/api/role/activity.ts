@@ -4,19 +4,19 @@ import { DB } from "~/db";
 import { execute } from "~/tasks";
 import { collectionNameNormalized } from "~/factory/classes/collection";
 
-export function activity(this: DB, collectionName: string) {
+export function activity(this: DB, roleName: string) {
   let self = this;
 
   return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
     return execute(
       [
         {
-          name: `Activity for (${collectionName})`,
+          name: `Activity for (${roleName})`,
           async task() {
             return self.collection(collectionNameNormalized("actions")).find(
               {
                 collection: {
-                  $computed: q.Collection(collectionName),
+                  $computed: q.Role(roleName),
                 },
               },
               pagination
@@ -25,7 +25,7 @@ export function activity(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: "DB.collection.activity",
+        domain: "DB.role.activity",
       }
     );
   };
