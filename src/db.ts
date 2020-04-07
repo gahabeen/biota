@@ -2,15 +2,17 @@ import Debug from "debug";
 import * as fauna from "faunadb";
 import { Fauna, FaunaId } from "~/../types/fauna";
 import * as framework from "~/framework";
-import {
-  DBFrameworkCollectionApi,
-  DBFrameworkFoundation,
-  DBFrameworkIndexOptions,
-  DBFrameworkRelation,
-} from "../types/framework/framework.collection";
-import { DBFrameworkIndexesApi } from "../types/framework/framework.indexes";
-import { DBFrameworkRolesApi } from "../types/framework/framework.roles";
+import { DBFrameworkCollectionApi, DBFrameworkFoundation, DBFrameworkRelation } from "../types/framework/framework.collection";
+import { DBFrameworkCollectionsApi } from "../types/framework/framework.collections";
+import { DBFrameworkDatabaseApi } from "../types/framework/framework.database";
+import { DBFrameworkDatabasesApi } from "../types/framework/framework.databases";
 import { DBFrameworkDocumentApi } from "../types/framework/framework.document";
+import { DBFrameworkIndexApi } from "../types/framework/framework.index";
+import { DBFrameworkIndexesApi } from "../types/framework/framework.indexes";
+import { DBFrameworkRoleApi } from "../types/framework/framework.role";
+import { DBFrameworkRolesApi } from "../types/framework/framework.roles";
+import { DBFrameworkUDFunctionApi } from "../types/framework/framework.udfunction";
+import { DBFrameworkUDFunctionsApi } from "../types/framework/framework.udfunctions";
 import { DBFrameworkUserApi } from "../types/framework/framework.user";
 
 function bindThis(self, rootKey) {
@@ -41,12 +43,18 @@ export class DB {
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
+  document?: (collectionName: string, id: FaunaId) => DBFrameworkDocumentApi;
   user?: DBFrameworkUserApi;
   collection?: (name: string) => DBFrameworkCollectionApi;
-  document?: (collectionName: string, id: FaunaId) => DBFrameworkDocumentApi;
-  index?: (name: string) => DBFrameworkIndexOptions;
+  collections?: DBFrameworkCollectionsApi;
+  index?: (name: string) => DBFrameworkIndexApi;
   indexes?: DBFrameworkIndexesApi;
+  role?: (name: string) => DBFrameworkRoleApi;
   roles?: DBFrameworkRolesApi;
+  database?: (name: string) => DBFrameworkDatabaseApi;
+  databases?: DBFrameworkDatabasesApi;
+  udfunction?: (name: string) => DBFrameworkUDFunctionApi;
+  udfunctions?: DBFrameworkUDFunctionsApi;
 
   foundation: DBFrameworkFoundation;
   relation: DBFrameworkRelation;
@@ -60,16 +68,25 @@ export class DB {
 
     this.query = framework.query.bind(this);
     this.paginate = framework.paginate.bind(this);
-
-    this.collection = framework.collection.bind(this);
     this.document = framework.document.bind(this);
+
+    this.user = framework.user;
+    bindThis(this, "user");
+    this.collection = framework.collection.bind(this);
+    this.collections = framework.collections;
+    bindThis(this, "collections");
     this.index = framework.index.bind(this);
     this.indexes = framework.indexes;
     bindThis(this, "indexes");
+    this.role = framework.role.bind(this);
     this.roles = framework.roles;
     bindThis(this, "roles");
-    this.user = framework.user;
-    bindThis(this, "user");
+    this.database = framework.database.bind(this);
+    this.databases = framework.databases;
+    bindThis(this, "databases");
+    this.udfunction = framework.udfunction.bind(this);
+    this.udfunctions = framework.udfunctions;
+    bindThis(this, "udfunctions");
 
     this.foundation = framework.foundation.bind(this);
     this.relation = framework.relation.bind(this);
