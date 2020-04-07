@@ -7,7 +7,7 @@ import { execute } from "~/tasks";
 export function activity(this: DB, collectionName: string, id: FaunaId) {
   let self = this;
 
-  return async function activityMethod(pagination?: FaunaPaginateOptions = {}) {
+  return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
     return execute(
       [
         {

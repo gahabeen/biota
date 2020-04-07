@@ -12,7 +12,7 @@ import { FaunaId } from "~/../types/fauna";
 export function database(collectionName: string): DBFrameworkDatabaseApi {
   let self = this;
 
-  if (!(collectionName && id)) {
+  if (!(collectionName)) {
     throw new Error("biota.database() - no valid collection or id");
   }
 

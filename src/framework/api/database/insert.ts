@@ -1,4 +1,4 @@
-import { FaunaId, FaunaDocumentOptions, FaunaRoleOptions } from "~/../types/fauna";
+import { FaunaId, FaunaDocumentOptions, FaunaDatabaseOptions } from "~/../types/fauna";
 import { DB } from "~/db";
 import { database } from "~/factory/api/classes/database";
 import { execute } from "~/tasks";
@@ -6,7 +6,7 @@ import { execute } from "~/tasks";
 export function insert(this: DB, databaseName: string) {
   let self = this;
 
-  return async function insertMethod(options: FaunaRoleOptions = {}) {
+  return async function insertMethod(options: FaunaDatabaseOptions = {}) {
     return execute(
       [
         {

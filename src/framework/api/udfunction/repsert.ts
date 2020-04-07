@@ -1,4 +1,4 @@
-import { FaunaRoleOptions } from "~/../types/fauna";
+import { FaunaUDFunctionOptions } from "~/../types/fauna";
 import { DB } from "~/db";
 import { udfunction } from "~/factory/api/classes/udfunction";
 import { execute } from "~/tasks";
@@ -6,7 +6,7 @@ import { execute } from "~/tasks";
 export function repsert(this: DB, udfunctionName: string) {
   let self = this;
 
-  return async function repsertMethod(options: FaunaRoleOptions = {}) {
+  return async function repsertMethod(options: FaunaUDFunctionOptions = {}) {
     return execute(
       [
         {

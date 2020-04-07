@@ -16,5 +16,4 @@ export * from "./api/user";
 
 export * from "./api/foundation";
 export * from "./api/relation";
-export * as auth from "./api/auth";
 // export * from "./api/import"
