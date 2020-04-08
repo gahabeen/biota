@@ -1,4 +1,3 @@
-import Debug from "debug";
 import * as fauna from "faunadb";
 import { Fauna, FaunaId } from "~/../types/fauna";
 import * as framework from "~/framework";
@@ -14,23 +13,7 @@ import { DBFrameworkRolesApi } from "../types/framework/framework.roles";
 import { DBFrameworkUDFunctionApi } from "../types/framework/framework.udfunction";
 import { DBFrameworkUDFunctionsApi } from "../types/framework/framework.udfunctions";
 import { DBFrameworkUserApi } from "../types/framework/framework.user";
-
-function bindThis(self, rootKey) {
-  const resolver = (value) => {
-    let entries = Object.entries(value);
-    for (let [key, entry] of entries) {
-      if (typeof entry === "object") {
-        value[key] = resolver(entry);
-      } else if (typeof entry === "function") {
-        value[key] = entry.bind(self);
-      } else {
-        value[key] = entry;
-      }
-    }
-    return value;
-  };
-  resolver(self[rootKey] || {});
-}
+import { bindSubFunctions } from "./helpers";
 
 interface DBOptions {
   secret: string;
@@ -41,6 +24,7 @@ interface DBOptions {
 export class DB {
   client: Fauna.Client;
   private_key: string;
+  secret: string;
 
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
@@ -65,10 +49,10 @@ export class DB {
 
   constructor(options: DBOptions) {
     let { secret, debug, private_key } = options || {};
-    const log = Debug("biota");
-    log.enabled = debug;
 
+    this.secret = secret;
     this.private_key = private_key;
+
     try {
       this.client = new fauna.Client({ secret });
     } catch (error) {}
@@ -78,22 +62,22 @@ export class DB {
     this.document = framework.document.bind(this);
 
     this.user = framework.user;
-    bindThis(this, "user");
+    bindSubFunctions(this, "user");
     this.collection = framework.collection.bind(this);
     this.collections = framework.collections;
-    bindThis(this, "collections");
+    bindSubFunctions(this, "collections");
     this.index = framework.index.bind(this);
     this.indexes = framework.indexes;
-    bindThis(this, "indexes");
+    bindSubFunctions(this, "indexes");
     this.role = framework.role.bind(this);
     this.roles = framework.roles;
-    bindThis(this, "roles");
+    bindSubFunctions(this, "roles");
     this.database = framework.database.bind(this);
     this.databases = framework.databases;
-    bindThis(this, "databases");
+    bindSubFunctions(this, "databases");
     this.udfunction = framework.udfunction.bind(this);
     this.udfunctions = framework.udfunctions;
-    bindThis(this, "udfunctions");
+    bindSubFunctions(this, "udfunctions");
 
     this.foundation = framework.foundation.bind(this);
     this.relation = framework.relation.bind(this);

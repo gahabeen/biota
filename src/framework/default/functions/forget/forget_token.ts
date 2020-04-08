@@ -4,5 +4,5 @@ import { forget as forgetFQLUDF } from "~/factory/api/fql/udf/forget";
 
 export const ForgetToken = UDFunction({
   name: udfunctionNameNormalized("ForgetToken"),
-  body: q.Query((identity, private_key, id) => forgetFQLUDF.token(id)),
+  body: q.Query((identity, private_key, id) => forgetFQLUDF.token(q.Var("id") as any)),
 });

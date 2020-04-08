@@ -4,5 +4,5 @@ import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfuncti
 
 export const GetToken = UDFunction({
   name: udfunctionNameNormalized("GetToken"),
-  body: q.Query((identity, private_key, id) => getFQLUDF.token(id)),
+  body: q.Query((identity, private_key, id) => getFQLUDF.token(q.Var("id") as any)),
 });

@@ -3,6 +3,7 @@ import { DBFactoryRoleApi } from "~/../types/factory/factory.classes";
 import { FaunaRolePrivilege } from "~/../types/fauna";
 import { DB } from "~/db";
 import * as call from "~/factory/api/call";
+import * as fql from "~/factory/api/fql";
 
 export const role: DBFactoryRoleApi = {
   all(this: DB) {
@@ -85,8 +86,38 @@ export const role: DBFactoryRoleApi = {
       );
     },
   },
+  // privileges: {
+  //   upsert(this: DB, name, privileges) {
+  //     return q.Let(
+  //       {
+  //         privilege,
+  //         privilege_resource: q.Select("resource", q.Var("privilege")),
+  //         has_privilege_resource: q.If(q.IsRef(q.Var("privilege_resource")), true, q.Abort("Privilege doesn't have a resource")),
+  //         current_privilege_raw: q.Select("privileges", q.Get(q.Role(name)), []),
+  //         current_privilege: q.If(
+  //           q.IsObject(q.Var("current_privilege_raw")),
+  //           [q.Var("current_privilege_raw")],
+  //           q.Var("current_privilege_raw")
+  //         ),
+  //         same_current_privilege: q.Filter(
+  //           q.Var("current_privilege"),
+  //           q.Lambda("cm", q.Equals(q.Select("resource", q.Var("cm")), q.Var("privilege_resource")))
+  //         ),
+  //         current_privilege_except_new: q.Filter(
+  //           q.Var("current_privilege"),
+  //           q.Lambda("cm", q.Not(q.Equals(q.Select("resource", q.Var("cm")), q.Var("privilege_resource"))))
+  //         ),
+  //         new_privilege: q.Merge(q.Var("privilege"), q.Var("same_current_privilege")),
+  //         new_privileges: q.Append(q.Var("current_privilege_except_new"), [q.Var("new_privilege")]),
+  //       },
+  //       // fql.base.upsert.role(name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
+  //       call.upsert.role.call(this, name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
+  //     );
+  //   },
+  // },
   privilege: {
     upsert(this: DB, name, privilege) {
+      // #bug WRAP INTO A FUNCTION
       return q.Let(
         {
           privilege,
@@ -110,6 +141,7 @@ export const role: DBFactoryRoleApi = {
           new_privileges: q.Append(q.Var("current_privilege_except_new"), [q.Var("new_privilege")]),
         },
         // fql.base.upsert.role(name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
+        // q.Var("new_privileges")
         call.upsert.role.call(this, name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
       );
     },
@@ -128,8 +160,8 @@ export const role: DBFactoryRoleApi = {
             q.Lambda("cm", q.Not(q.Equals(q.Select("resource", q.Var("cm")), q.Var("resource"))))
           ),
         },
-        // fql.base.upsert.role(name, { privileges: q.Var("privileges_filtered") as FaunaRolePrivilege[] })
-        call.upsert.role.call(this, name, { privileges: q.Var("privileges_filtered") as FaunaRolePrivilege[] })
+        fql.base.upsert.role(name, { privileges: q.Var("privileges_filtered") as FaunaRolePrivilege[] })
+        // call.upsert.role.call(this, name, { privileges: q.Var("privileges_filtered") as FaunaRolePrivilege[] })
       );
     },
   },

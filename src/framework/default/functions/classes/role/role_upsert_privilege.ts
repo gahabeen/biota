@@ -4,5 +4,5 @@ import { role } from "~/factory/api/classes";
 
 export const RoleUpsertPrivilege = UDFunction({
   name: udfunctionNameNormalized("RoleUpsertPrivilege"),
-  body: q.Query((identity, private_key, name, privilege) => role.privilege.upsert(name, privilege)),
+  body: q.Query((identity, private_key, name, privilege) => role.privilege.upsert(q.Var("name") as string, q.Var("privilege"))),
 });

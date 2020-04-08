@@ -4,5 +4,5 @@ import { forget as forgetFQLUDF } from "~/factory/api/fql/udf/forget";
 
 export const ForgetIndex = UDFunction({
   name: udfunctionNameNormalized("ForgetIndex"),
-  body: q.Query((identity, private_key, name) => forgetFQLUDF.index(name)),
+  body: q.Query((identity, private_key, name) => forgetFQLUDF.index(q.Var("name") as any)),
 });

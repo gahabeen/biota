@@ -2,13 +2,13 @@ import { FaunaPaginateOptions, FaunaDocumentCredentials, FaunaRoleMembership, Fa
 import { Expr } from "faunadb";
 
 export interface DBFrameworkRoleMembershipApi {
-  upsert: (membership: FaunaRoleMembership) => Expr;
-  delete: (resource: FaunaRef) => Expr;
+  upsert: (membership: FaunaRoleMembership) => Promise<any>;
+  delete: (resource: FaunaRef) => Promise<any>;
 }
 
 export interface DBFrameworkRolePrivilegeApi {
-  upsert: (privilege: FaunaRolePrivilege) => Expr;
-  delete: (resource: FaunaRef) => Expr;
+  upsert: (privilege: FaunaRolePrivilege) => Promise<any>;
+  delete: (resource: FaunaRef) =>Promise<any>;
 }
 
 export interface DBFrameworkRoleApi {

@@ -10,6 +10,8 @@ import * as defaultCollections from "~/framework/api/default/collections";
 import * as defaultIndexes from "~/framework/api/default/indexes";
 import { DBFoundationOptions } from "~/../types/db";
 import { FaunaUDFunctionOptions } from "~/../types/fauna";
+import { roleNameNormalized } from "~/factory/classes/role";
+import { delay } from "~/helpers/delay";
 
 export async function foundation(this: DB, options: DBFoundationOptions) {
   const self = this;
@@ -223,6 +225,45 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       },
       fullError: true,
     });
+  }
+
+  if (options.udfunctions) {
+    for (let UDFunction of Object.values(defaultFunctions)) {
+      let UDFunctionDefinition = UDFunction;
+      if (typeof UDFunctionDefinition === "function") {
+        UDFunctionDefinition = (UDFunctionDefinition as any)({ privateKey: self.private_key || null });
+      }
+
+      tasks.push({
+        name: `Adding function ${UDFunctionDefinition.name} to [user] role`,
+        async task() {
+          await delay(300);
+          return self
+            .role(roleNameNormalized("user"))
+            .privilege.upsert({
+              resource: q.Function(UDFunctionDefinition.name),
+              actions: { call: true },
+            })
+            .then(console.log);
+        },
+        fullError: true,
+      });
+
+      tasks.push({
+        name: `Adding function ${UDFunctionDefinition.name} to [system] role`,
+        async task() {
+          await delay(300);
+          return self
+            .role(roleNameNormalized("system"))
+            .privilege.upsert({
+              resource: q.Function(UDFunctionDefinition.name),
+              actions: { call: true },
+            })
+            .then(console.log);
+        },
+        fullError: true,
+      });
+    }
   }
 
   return execute(tasks, {

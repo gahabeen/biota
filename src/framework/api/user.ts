@@ -1,240 +1,67 @@
-import { query as q } from "faunadb";
 import { DBFrameworkUserApi } from "~/../types/framework/framework.user";
-import { DB } from "~/db";
-import { user as userCALL } from "~/factory/api/call/user";
-import { document } from "~/factory/api/classes/document";
-import { execute } from "~/tasks";
-import { collectionNameNormalized } from "~/factory/classes/collection";
-import { Identity } from "~/factory/api/ql";
+import { changePassword } from "~/framework/api/user/changePassword";
+import { googleLoginUrl } from "~/framework/api/user/google_loginUrl";
+import { googleRegisterUrl } from "~/framework/api/user/google_registerUrl";
+import { googleSyncUrl } from "~/framework/api/user/google_syncUrl";
+import { login } from "~/framework/api/user/login";
+import { logout } from "~/framework/api/user/logout";
+import { me } from "~/framework/api/user/me";
+import { register } from "~/framework/api/user/register";
+import { delete_ as deleteSession } from "~/framework/api/user/session_delete";
+import { expireAt as expireAtSession } from "~/framework/api/user/session_expire_at";
+import { expireIn as expireInSession } from "~/framework/api/user/session_expire_in";
+import { expireNow as expireNowSession } from "~/framework/api/user/session_expire_now";
+import { forget as forgetSession } from "~/framework/api/user/session_forget";
+import { get as getSession } from "~/framework/api/user/session_get";
+import { replace as replaceSession } from "~/framework/api/user/session_replace";
+import { update as updateSession } from "~/framework/api/user/session_update";
+import { update } from "~/framework/api/user/update";
+import { replace } from "~/framework/api/user/replace";
+import { delete_ } from "~/framework/api/user/delete";
+import { forget } from "~/framework/api/user/forget";
 
 export const user: DBFrameworkUserApi = {
-  async me(this: DB) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Get me`,
-          task() {
-            return self.query(q.Get(Identity()));
-          },
-        },
-      ],
-      {
-        domain: "DB.user.me",
-      }
-    );
-  },
-  async login(this: DB, email, password) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Login for [${email}]`,
-          task() {
-            return self.query(userCALL.login.call(self, email, password)).then(({ secret }) => {
-              console.log("secret", secret);
-              if (secret) return new DB({ secret });
-              else return self;
-            });
-          },
-        },
-      ],
-      {
-        domain: "DB.user.login",
-      }
-    );
-  },
-  async register(this: DB, email, password, data = {}) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Register for [${email}]`,
-          task() {
-            return self.query(userCALL.register.call(self, email, password, data)).then((res) => {
-              console.log("res", res);
-              let { secret } = res;
-              if (secret) return new DB({ secret });
-              else return self;
-            });
-          },
-        },
-      ],
-      {
-        domain: "DB.user.register",
-      }
-    );
-  },
-  async changePassword(this: DB, newPassword) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Change password for current user`,
-          task() {
-            return self.query(userCALL.changePassword.call(self, newPassword));
-          },
-        },
-      ],
-      {
-        domain: "DB.user.login",
-      }
-    );
-  },
-  async logout(this: DB, everywhere) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Logout`,
-          task() {
-            return self.query(q.Logout(everywhere));
-          },
-        },
-      ],
-      {
-        domain: "DB.user.logout",
-      }
-    );
-  },
+  me,
+  login,
+  register,
+  changePassword,
+  logout,
+
+  update,
+  replace,
+  delete: delete_,
+  forget,
+
   session: {
-    get(this: DB) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Get session`,
-            task() {
-              return self.query(q.Get(q.Identity()));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.get",
-        }
-      );
-    },
-    async expireNow(this: DB) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Expire session now`,
-            task() {
-              return self.query(document.expireNow(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.expireNow",
-        }
-      );
-    },
-    async expireIn(this: DB, delayInMs) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Expire session in [${delayInMs}]ms`,
-            task() {
-              return self.query(document.expireIn(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), delayInMs));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.expireIn",
-        }
-      );
-    },
-    async expireAt(this: DB, at) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Expire session at [${at}]`,
-            task() {
-              return self.query(document.expireAt(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), at));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.expireAt",
-        }
-      );
-    },
-    async update(this: DB, data = {}) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Update session data`,
-            task() {
-              return self.query(document.update(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), data));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.update",
-        }
-      );
-    },
-    async replace(this: DB, data = {}) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Replace session data`,
-            task() {
-              return self.query(document.replace(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), data));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.replace",
-        }
-      );
-    },
-    async delete(this: DB) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Delete session`,
-            task() {
-              return self.query(document.delete(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.delete",
-        }
-      );
-    },
-    async forget(this: DB) {
-      let self = this;
-      return execute(
-        [
-          {
-            name: `Forget session`,
-            task() {
-              return self.query(document.forget(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
-            },
-          },
-        ],
-        {
-          domain: "DB.user.session.forget",
-        }
-      );
-    },
+    get: getSession,
+    expireNow: expireNowSession,
+    expireIn: expireInSession,
+    expireAt: expireAtSession,
+    delete: deleteSession,
+    update: updateSession,
+    replace: replaceSession,
+    forget: forgetSession,
   },
   google: {
-    async login(this: DB) {},
-    async register(this: DB) {},
-    async sync(this: DB) {},
+    loginUrl: googleLoginUrl,
+    registerUrl: googleRegisterUrl,
+    syncUrl: googleSyncUrl,
+    server: {
+      async authenticate() {},
+    },
   },
   github: {
-    async login(this: DB) {},
-    async register(this: DB) {},
-    async sync(this: DB) {},
+    async loginUrl() {
+      return "";
+    },
+    async registerUrl() {
+      return "";
+    },
+    async syncUrl() {
+      return "";
+    },
+    server: {
+      async authenticate() {},
+    },
   },
 };

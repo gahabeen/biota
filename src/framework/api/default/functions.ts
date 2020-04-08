@@ -1,4 +1,5 @@
 export * from "~/framework/default/functions/is_private_key_valid";
+export * from "~/framework/default/functions/new_short_id";
 
 // admin
 export * from "~/framework/default/functions/log_action";

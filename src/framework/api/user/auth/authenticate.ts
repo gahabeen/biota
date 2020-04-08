@@ -1,4 +1,4 @@
-import { DBFrameworkAuthAuthenticateResponse } from "~/../types/framework/framework.auth";
+import { DBFrameworkAuthAuthenticateResponse } from "~/../types/framework/framework.user";
 import * as qs from "querystring";
 import axios from "axios";
 
