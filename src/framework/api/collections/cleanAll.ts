@@ -9,7 +9,7 @@ export function cleanAll(this: DB) {
       {
         name: `Clean all collections`,
         task() {
-          return self.query(collection.cleanAll());
+          return self.query(collection.cleanAll.call(self));
         },
       },
     ],

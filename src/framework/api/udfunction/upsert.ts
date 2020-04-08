@@ -12,7 +12,7 @@ export function upsert(this: DB, collectionName: string) {
         {
           name: `Update/Insert udfunction [${collectionName}]`,
           task() {
-            return self.query(udfunction.upsert(collectionName, options));
+            return self.query(udfunction.upsert.call(self, collectionName, options));
           },
         },
       ],

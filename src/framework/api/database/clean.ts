@@ -11,7 +11,7 @@ export function clean(this: DB, databaseName: string) {
         {
           name: `Clean database [${databaseName}]`,
           task() {
-            return self.query(database.clean(databaseName));
+            return self.query(database.clean.call(self, databaseName));
           },
         },
       ],

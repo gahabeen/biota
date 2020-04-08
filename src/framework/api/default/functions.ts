@@ -1,6 +1,8 @@
+export * from "~/framework/default/functions/is_private_key_valid";
+
 // admin
 export * from "~/framework/default/functions/log_action";
-export * from "~/framework/default/functions/operator";
+export * from "~/framework/default/functions/system_operator";
 
 // system
 export * from "~/framework/default/functions/find_index";

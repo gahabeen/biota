@@ -12,7 +12,7 @@ export function replace(this: DB, roleName: string) {
         {
           name: `Replace [${roleName}]`,
           task() {
-            return self.query(role.replace(roleName, options));
+            return self.query(role.replace.call(self, roleName, options));
           },
         },
       ],

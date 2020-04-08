@@ -4,5 +4,5 @@ import { replace as replaceFQLUDF } from "~/factory/api/fql/udf/replace";
 
 export const ReplaceDatabase = UDFunction({
   name: udfunctionNameNormalized("ReplaceDatabase"),
-  body: q.Query((identity, name, options) => replaceFQLUDF.database(name, options)),
+  body: q.Query((identity, private_key, name, options) => replaceFQLUDF.database(name, options)),
 });

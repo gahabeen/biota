@@ -11,7 +11,7 @@ export function clean(this: DB, roleName: string) {
         {
           name: `Clean everything in (${roleName})`,
           task() {
-            return self.query(role.clean(roleName));
+            return self.query(role.clean.call(self, roleName));
           },
         },
       ],

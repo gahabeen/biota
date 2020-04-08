@@ -12,7 +12,7 @@ export function forget(this: DB, roleName: string) {
         {
           name: `Forget (${id}) in (${roleName})`,
           task() {
-            return self.query(role.forget(roleName));
+            return self.query(role.forget.call(self, roleName));
           },
         },
       ],

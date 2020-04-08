@@ -12,7 +12,7 @@ export function upsert(this: DB, indexName: string) {
         {
           name: `Upsert (${indexName})`,
           task() {
-            return self.query(index.upsert(indexName, options));
+            return self.query(index.upsert.call(self, indexName, options));
           },
         },
       ],

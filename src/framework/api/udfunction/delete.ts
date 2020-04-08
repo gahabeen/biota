@@ -12,7 +12,7 @@ export function delete_(this: DB, udfunctionName: string) {
         {
           name: `Delete udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.delete(udfunctionName));
+            return self.query(udfunction.delete.call(self, udfunctionName));
           },
         },
       ],

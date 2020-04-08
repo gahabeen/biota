@@ -4,5 +4,5 @@ import { unassign as unassignFQLUDF } from "~/factory/api/fql/udf/unassign";
 
 export const UnAssignDocument = UDFunction({
   name: udfunctionNameNormalized("UnAssignDocument"),
-  body: q.Query((identity, collection, id, oldAssignee) => unassignFQLUDF.document(collection, id, oldAssignee)),
+  body: q.Query((identity, private_key, collection, id, oldAssignee) => unassignFQLUDF.document(collection, id, oldAssignee)),
 });

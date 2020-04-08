@@ -1,10 +1,11 @@
 import { query as q } from "faunadb";
 import { DBFrameworkUserApi } from "~/../types/framework/framework.user";
 import { DB } from "~/db";
-import { user as userUDF } from "~/factory/api/udf/user";
+import { user as userCALL } from "~/factory/api/call/user";
 import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 import { collectionNameNormalized } from "~/factory/classes/collection";
+import { Identity } from "~/factory/api/ql";
 
 export const user: DBFrameworkUserApi = {
   async me(this: DB) {
@@ -14,12 +15,85 @@ export const user: DBFrameworkUserApi = {
         {
           name: `Get me`,
           task() {
-            return self.query(q.Get(q.Select(["data", "_membership", "owner"], q.Get(q.Identity()))));
+            return self.query(q.Get(Identity()));
           },
         },
       ],
       {
         domain: "DB.user.me",
+      }
+    );
+  },
+  async login(this: DB, email, password) {
+    let self = this;
+    return execute(
+      [
+        {
+          name: `Login for [${email}]`,
+          task() {
+            return self.query(userCALL.login.call(self, email, password)).then(({ secret }) => {
+              console.log("secret", secret);
+              if (secret) return new DB({ secret });
+              else return self;
+            });
+          },
+        },
+      ],
+      {
+        domain: "DB.user.login",
+      }
+    );
+  },
+  async register(this: DB, email, password, data = {}) {
+    let self = this;
+    return execute(
+      [
+        {
+          name: `Register for [${email}]`,
+          task() {
+            return self.query(userCALL.register.call(self, email, password, data)).then((res) => {
+              console.log("res", res);
+              let { secret } = res;
+              if (secret) return new DB({ secret });
+              else return self;
+            });
+          },
+        },
+      ],
+      {
+        domain: "DB.user.register",
+      }
+    );
+  },
+  async changePassword(this: DB, newPassword) {
+    let self = this;
+    return execute(
+      [
+        {
+          name: `Change password for current user`,
+          task() {
+            return self.query(userCALL.changePassword.call(self, newPassword));
+          },
+        },
+      ],
+      {
+        domain: "DB.user.login",
+      }
+    );
+  },
+  async logout(this: DB, everywhere) {
+    let self = this;
+    return execute(
+      [
+        {
+          name: `Logout`,
+          task() {
+            return self.query(q.Logout(everywhere));
+          },
+        },
+      ],
+      {
+        domain: "DB.user.logout",
       }
     );
   },
@@ -152,78 +226,6 @@ export const user: DBFrameworkUserApi = {
         }
       );
     },
-  },
-  async login(this: DB, email, password) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Login for [${email}]`,
-          task() {
-            return self.query(userUDF.login(email, password)).then(({ secret }) => {
-              if (secret) return new DB({ secret });
-              else return self;
-            });
-          },
-        },
-      ],
-      {
-        domain: "DB.user.login",
-      }
-    );
-  },
-  async register(this: DB, email, password, data = {}) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Register for [${email}]`,
-          task() {
-            return self.query(userUDF.register(email, password, data)).then((res) => {
-              console.log("res", res);
-              let { secret } = res;
-              if (secret) return new DB({ secret });
-              else return self;
-            });
-          },
-        },
-      ],
-      {
-        domain: "DB.user.register",
-      }
-    );
-  },
-  async changePassword(this: DB, newPassword) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Change password for current user`,
-          task() {
-            return self.query(userUDF.changePassword(newPassword));
-          },
-        },
-      ],
-      {
-        domain: "DB.user.login",
-      }
-    );
-  },
-  async logout(this: DB, everywhere) {
-    let self = this;
-    return execute(
-      [
-        {
-          name: `Logout`,
-          task() {
-            return self.query(q.Logout(everywhere));
-          },
-        },
-      ],
-      {
-        domain: "DB.user.logout",
-      }
-    );
   },
   google: {
     async login(this: DB) {},

@@ -12,7 +12,7 @@ export function insert(this: DB, indexName: string) {
         {
           name: `Insert (${indexName})`,
           task() {
-            return self.query(index.insert(indexName, options));
+            return self.query(index.insert.call(self, indexName, options));
           },
         },
       ],

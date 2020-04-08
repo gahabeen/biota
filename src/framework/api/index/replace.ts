@@ -12,7 +12,7 @@ export function replace(this: DB, indexName: string) {
         {
           name: `Update (${indexName})`,
           task() {
-            return self.query(index.replace(indexName, options));
+            return self.query(index.replace.call(self, indexName, options));
           },
         },
       ],

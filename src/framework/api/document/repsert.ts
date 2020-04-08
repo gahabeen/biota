@@ -12,7 +12,7 @@ export function repsert(this: DB, collectionName: string, id: FaunaId) {
         {
           name: `Replace/Insert (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.repsert(collectionName, id, data));
+            return self.query(document.repsert.call(self, collectionName, id, data));
           },
         },
       ],

@@ -4,5 +4,5 @@ import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfuncti
 
 export const ExpireDocumentAt = UDFunction({
   name: udfunctionNameNormalized("ExpireDocumentAt"),
-  body: q.Query((identity, collection, id, at) => expireFQLUDF.documentAt(q.Var("collection") as string, q.Var("id"), q.Var("at"))),
+  body: q.Query((identity, private_key, collection, id, at) => expireFQLUDF.documentAt(q.Var("collection") as string, q.Var("id"), q.Var("at"))),
 });

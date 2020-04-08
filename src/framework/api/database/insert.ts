@@ -12,7 +12,7 @@ export function insert(this: DB, databaseName: string) {
         {
           name: `Insert database [${databaseName}]`,
           task() {
-            return self.query(database.insert(databaseName, options));
+            return self.query(database.insert.call(self, databaseName, options));
           },
         },
       ],

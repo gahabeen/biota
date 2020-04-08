@@ -12,7 +12,7 @@ export function delete_(this: DB, collectionName: string, id: FaunaId) {
         {
           name: `Delete (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.delete(collectionName, id));
+            return self.query(document.delete.call(self, collectionName, id));
           },
         },
       ],

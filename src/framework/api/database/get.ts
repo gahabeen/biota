@@ -12,7 +12,7 @@ export function get(this: DB, databaseName: string) {
         {
           name: `Get database [${databaseName}]`,
           task() {
-            return self.query(database.get(databaseName));
+            return self.query(database.get.call(self, databaseName));
           },
         },
       ],

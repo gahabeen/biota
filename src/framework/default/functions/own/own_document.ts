@@ -4,5 +4,5 @@ import { own as ownFQLUDF } from "~/factory/api/fql/udf/own";
 
 export const OwnDocument = UDFunction({
   name: udfunctionNameNormalized("OwnDocument"),
-  body: q.Query((identity, collection, id, newOwner) => ownFQLUDF.document(collection, id, newOwner)),
+  body: q.Query((identity, private_key, collection, id, newOwner) => ownFQLUDF.document(collection, id, newOwner)),
 });

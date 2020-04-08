@@ -3,13 +3,13 @@ import { index } from "~/factory/api/classes/index";
 import { execute } from "~/tasks";
 
 export function cleanAll(this: DB) {
-  let self = this
+  let self = this;
   return execute(
     [
       {
         name: `Clean all indexes`,
         task() {
-          return self.query(index.cleanAll());
+          return self.query(index.cleanAll.call(self));
         },
       },
     ],

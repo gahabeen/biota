@@ -12,7 +12,7 @@ export function insert(this: DB, collectionName: string) {
         {
           name: `Insert data in [${collectionName}]`,
           task() {
-            return self.query(document.insert(collectionName, data, id));
+            return self.query(document.insert.call(self, collectionName, data, id));
           },
         },
       ],

@@ -1,45 +1,45 @@
 import { query as q } from "faunadb";
 import { DBFactoryRoleApi } from "~/../types/factory/factory.classes";
-import * as udf from "~/factory/api/udf";
-import * as fql from "~/factory/api/fql";
 import { FaunaRolePrivilege } from "~/../types/fauna";
+import { DB } from "~/db";
+import * as call from "~/factory/api/call";
 
 export const role: DBFactoryRoleApi = {
-  all() {
-    return udf.get.roles();
+  all(this: DB) {
+    return call.get.roles.call(this);
   },
-  cleanAll() {
-    return udf.clean.roles();
+  cleanAll(this: DB) {
+    return call.clean.roles.call(this);
   },
-  clean(name) {
-    return udf.clean.role(name);
+  clean(this: DB, name) {
+    return call.clean.role.call(this, name);
   },
-  get(name) {
-    return udf.get.role(name);
+  get(this: DB, name) {
+    return call.get.role.call(this, name);
   },
-  insert(name, options) {
-    return udf.insert.role(name, options);
+  insert(this: DB, name, options) {
+    return call.insert.role.call(this, name, options);
   },
-  update(name, options) {
-    return udf.update.role(name, options);
+  update(this: DB, name, options) {
+    return call.update.role.call(this, name, options);
   },
-  replace(name, options) {
-    return udf.replace.role(name, options);
+  replace(this: DB, name, options) {
+    return call.replace.role.call(this, name, options);
   },
-  upsert(name, options) {
-    return udf.upsert.role(name, options);
+  upsert(this: DB, name, options) {
+    return call.upsert.role.call(this, name, options);
   },
-  repsert(name, options) {
-    return udf.repsert.role(name, options);
+  repsert(this: DB, name, options) {
+    return call.repsert.role.call(this, name, options);
   },
-  delete(name) {
-    return udf.delete.role(name);
+  delete(this: DB, name) {
+    return call.delete.role.call(this, name);
   },
-  forget(name) {
-    return udf.forget.role(name);
+  forget(this: DB, name) {
+    return call.forget.role.call(this, name);
   },
   membership: {
-    upsert(name, membership) {
+    upsert(this: DB, name, membership) {
       return q.Let(
         {
           membership,
@@ -62,10 +62,10 @@ export const role: DBFactoryRoleApi = {
           new_membership_array: q.Append(q.Var("current_membership_except_new"), [q.Var("new_membership")]),
         },
         // fql.base.upsert.role(name, { membership: q.Var("new_membership_array") })
-        udf.upsert.role(name, { membership: q.Var("new_membership") })
+        call.upsert.role.call(this, name, { membership: q.Var("new_membership") })
       );
     },
-    delete(name, resource) {
+    delete(this: DB, name, resource) {
       return q.Let(
         {
           resource,
@@ -81,12 +81,12 @@ export const role: DBFactoryRoleApi = {
           ),
         },
         // fql.base.upsert.role(name, { membership: q.Var("membership_filtered") })
-        udf.upsert.role(name, { membership: q.Var("membership_filtered") })
+        call.upsert.role.call(this, name, { membership: q.Var("membership_filtered") })
       );
     },
   },
   privilege: {
-    upsert(name, privilege) {
+    upsert(this: DB, name, privilege) {
       return q.Let(
         {
           privilege,
@@ -110,10 +110,10 @@ export const role: DBFactoryRoleApi = {
           new_privileges: q.Append(q.Var("current_privilege_except_new"), [q.Var("new_privilege")]),
         },
         // fql.base.upsert.role(name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
-        udf.upsert.role(name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
+        call.upsert.role.call(this, name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
       );
     },
-    delete(name, resource) {
+    delete(this: DB, name, resource) {
       return q.Let(
         {
           resource,
@@ -129,7 +129,7 @@ export const role: DBFactoryRoleApi = {
           ),
         },
         // fql.base.upsert.role(name, { privileges: q.Var("privileges_filtered") as FaunaRolePrivilege[] })
-        udf.upsert.role(name, { privileges: q.Var("privileges_filtered") as FaunaRolePrivilege[] })
+        call.upsert.role.call(this, name, { privileges: q.Var("privileges_filtered") as FaunaRolePrivilege[] })
       );
     },
   },

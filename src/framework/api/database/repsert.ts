@@ -12,7 +12,7 @@ export function repsert(this: DB, databaseName: string) {
         {
           name: `Replace/Insert database [${databaseName}]`,
           task() {
-            return self.query(database.repsert(databaseName, options));
+            return self.query(database.repsert.call(self, databaseName, options));
           },
         },
       ],

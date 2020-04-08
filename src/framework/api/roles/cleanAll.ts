@@ -9,7 +9,7 @@ export function cleanAll(this: DB) {
       {
         name: `Clean all roles`,
         task() {
-          return self.query(role.cleanAll());
+          return self.query(role.cleanAll.call(self));
         },
       },
     ],

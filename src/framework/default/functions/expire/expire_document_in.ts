@@ -4,7 +4,7 @@ import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfuncti
 
 export const ExpireDocumentIn = UDFunction({
   name: udfunctionNameNormalized("ExpireDocumentIn"),
-  body: q.Query((identity, collection, id, delayInMs) =>
+  body: q.Query((identity, private_key, collection, id, delayInMs) =>
     expireFQLUDF.documentIn(q.Var("collection") as string, q.Var("id"), q.Var("delayInMs") as number)
   ),
 });

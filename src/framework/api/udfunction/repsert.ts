@@ -12,7 +12,7 @@ export function repsert(this: DB, udfunctionName: string) {
         {
           name: `Replace/Insert udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.repsert(udfunctionName, options));
+            return self.query(udfunction.repsert.call(self, udfunctionName, options));
           },
         },
       ],

@@ -35,10 +35,12 @@ function bindThis(self, rootKey) {
 interface DBOptions {
   secret: string;
   debug?: boolean;
+  private_key?: string;
 }
 
 export class DB {
   client: Fauna.Client;
+  private_key: string;
 
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
@@ -59,12 +61,17 @@ export class DB {
   foundation: DBFrameworkFoundation;
   relation: DBFrameworkRelation;
 
+  privateKey: (private_key: string) => Promise<any>;
+
   constructor(options: DBOptions) {
-    let { secret, debug } = options || {};
+    let { secret, debug, private_key } = options || {};
     const log = Debug("biota");
     log.enabled = debug;
 
-    this.client = new fauna.Client({ secret });
+    this.private_key = private_key;
+    try {
+      this.client = new fauna.Client({ secret });
+    } catch (error) {}
 
     this.query = framework.query.bind(this);
     this.paginate = framework.paginate.bind(this);
@@ -90,5 +97,7 @@ export class DB {
 
     this.foundation = framework.foundation.bind(this);
     this.relation = framework.relation.bind(this);
+
+    this.privateKey = framework.privateKey.bind(this);
   }
 }

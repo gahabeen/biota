@@ -12,7 +12,7 @@ export function insert(this: DB, roleName: string) {
         {
           name: `Insert role [${roleName}]`,
           task() {
-            return self.query(role.insert(roleName, options));
+            return self.query(role.insert.call(self, roleName, options));
           },
         },
       ],

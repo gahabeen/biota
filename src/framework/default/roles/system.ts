@@ -18,6 +18,16 @@ export const system: FaunaRoleOptions = {
     }),
 
     Privilege({
+      resource: q.Collection(collectionNameNormalized("users")),
+      actions: { create: "all", read: "all", write: "all", delete: "all" },
+    }),
+
+    Privilege({
+      resource: q.Collection(collectionNameNormalized("actions")),
+      actions: { create: "all", read: "all", write: "all", delete: "all" },
+    }),
+
+    Privilege({
       resource: q.Collection(collectionNameNormalized("user_sessions")),
       actions: { create: "all", read: "all", write: "all", delete: "all" },
     }),
@@ -47,6 +57,11 @@ export const system: FaunaRoleOptions = {
 
     Privilege({
       resource: q.Function(udfunctionNameNormalized("FindIndex")),
+      actions: { call: "all" },
+    }),
+
+    Privilege({
+      resource: q.Function(udfunctionNameNormalized("IsPrivateKeyValid")),
       actions: { call: "all" },
     }),
   ],

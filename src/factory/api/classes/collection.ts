@@ -1,38 +1,39 @@
-import * as udf from "~/factory/api/udf";
+import * as call from "~/factory/api/call";
 import { DBFactoryCollectionApi } from "~/../types/factory/factory.classes";
+import { DB } from "~/db";
 
 export const collection: DBFactoryCollectionApi = {
-  all() {
-    return udf.get.collections();
+  all(this: DB) {
+    return call.get.collections.call(this);
   },
-  clean(name) {
-    return udf.clean.documents(name);
+  clean(this: DB, name) {
+    return call.clean.documents.call(this, name);
   },
-  cleanAll() {
-    return udf.clean.collections();
+  cleanAll(this: DB) {
+    return call.clean.collections.call(this);
   },
-  get(name) {
-    return udf.get.collection(name);
+  get(this: DB, name) {
+    return call.get.collection.call(this, name);
   },
-  insert(name, data) {
-    return udf.insert.collection(name, data);
+  insert(this: DB, name, data) {
+    return call.insert.collection.call(this, name, data);
   },
-  update(name, data) {
-    return udf.update.collection(name, data);
+  update(this: DB, name, data) {
+    return call.update.collection.call(this, name, data);
   },
-  replace(name, data) {
-    return udf.replace.collection(name, data);
+  replace(this: DB, name, data) {
+    return call.replace.collection.call(this, name, data);
   },
-  upsert(name, data) {
-    return udf.upsert.collection(name, data);
+  upsert(this: DB, name, data) {
+    return call.upsert.collection.call(this, name, data);
   },
-  repsert(name, data) {
-    return udf.repsert.collection(name, data);
+  repsert(this: DB, name, data) {
+    return call.repsert.collection.call(this, name, data);
   },
-  delete(name) {
-    return udf.delete.collection(name);
+  delete(this: DB, name) {
+    return call.delete.collection.call(this, name);
   },
-  forget(name) {
-    return udf.forget.collection(name);
+  forget(this: DB, name) {
+    return call.forget.collection.call(this, name);
   },
 };

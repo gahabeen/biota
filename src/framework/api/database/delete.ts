@@ -12,7 +12,7 @@ export function delete_(this: DB, databaseName: string) {
         {
           name: `Delete database [${databaseName}]`,
           task() {
-            return self.query(database.delete(databaseName));
+            return self.query(database.delete.call(self, databaseName));
           },
         },
       ],

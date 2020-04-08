@@ -12,7 +12,7 @@ export function update(this: DB, indexName: string) {
         {
           name: `Update (${indexName})`,
           task() {
-            return self.query(index.update(indexName, options));
+            return self.query(index.update.call(self, indexName, options));
           },
         },
       ],

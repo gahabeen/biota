@@ -4,5 +4,5 @@ import { forget as forgetFQLUDF } from "~/factory/api/fql/udf/forget";
 
 export const ForgetRole = UDFunction({
   name: udfunctionNameNormalized("ForgetRole"),
-  body: q.Query((identity, name) => forgetFQLUDF.role(name)),
+  body: q.Query((identity, private_key, name) => forgetFQLUDF.role(name)),
 });

@@ -12,7 +12,7 @@ export function replace(this: DB, databaseName: string) {
         {
           name: `Replace database [${databaseName}]`,
           task() {
-            return self.query(database.replace(databaseName, options));
+            return self.query(database.replace.call(self, databaseName, options));
           },
         },
       ],

@@ -12,7 +12,7 @@ export function update(this: DB, collectionName: string) {
         {
           name: `Update (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.update(collectionName, id, data));
+            return self.query(document.update.call(self, collectionName, id, data));
           },
         },
       ],

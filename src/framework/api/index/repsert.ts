@@ -12,7 +12,7 @@ export function repsert(this: DB, indexName: string) {
         {
           name: `Repsert (${indexName})`,
           task() {
-            return self.query(index.repsert(indexName, options));
+            return self.query(index.repsert.call(self, indexName, options));
           },
         },
       ],

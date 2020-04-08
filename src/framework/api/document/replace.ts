@@ -12,7 +12,7 @@ export function replace(this: DB, collectionName: string, id: FaunaId) {
         {
           name: `Replace (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.replace(collectionName, id, data));
+            return self.query(document.replace.call(self, collectionName, id, data));
           },
         },
       ],

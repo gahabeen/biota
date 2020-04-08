@@ -1,8 +1,8 @@
+import { query as q } from "faunadb";
 import { DBFactoryFQLUDFDelete } from "~/../types/factory/factory.fql.udf";
-import { query as q, Expr } from "faunadb";
-import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
-import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { delete_ as deleteBaseFQL } from "~/factory/api/fql/base/delete";
+import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
+import { CallLogAction, CallSystemOperator } from "~/framework/helpers/call_functions";
 
 let deleteLogData = {
   _activity: {
@@ -28,6 +28,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
     return q.Let(
       {
         // #improve
+
         doc: deleteBaseFQL.database(name),
         operation: CallSystemOperator(updateBaseFQL.database(name, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),
@@ -39,6 +40,7 @@ export const delete_: DBFactoryFQLUDFDelete = {
     return q.Let(
       {
         // #improve
+
         doc: deleteBaseFQL.collection(name),
         operation: CallSystemOperator(updateBaseFQL.collection(name, { data: deleteLogData })),
         action: CallLogAction("delete", q.Var("doc")),

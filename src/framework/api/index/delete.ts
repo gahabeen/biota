@@ -6,13 +6,13 @@ import { execute } from "~/tasks";
 export function delete_(this: DB, indexName: string) {
   let self = this;
 
-  return async function deleteMethod(options: FaunaIndexOptions) {
+  return async function deleteMethod() {
     return execute(
       [
         {
           name: `Delete (${indexName})`,
           task() {
-            return self.query(index.delete(indexName));
+            return self.query(index.delete.call(self, indexName));
           },
         },
       ],

@@ -12,7 +12,7 @@ export function get(this: DB, roleName: string) {
         {
           name: `Get [${roleName}]`,
           task() {
-            return self.query(role.get(roleName));
+            return self.query(role.get.call(self, roleName));
           },
         },
       ],

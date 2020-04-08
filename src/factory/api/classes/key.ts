@@ -1,35 +1,36 @@
 import { DBFactoryKeyApi } from "~/../types/factory/factory.classes";
-import * as udf from "~/factory/api/udf";
+import * as call from "~/factory/api/call";
+import { DB } from "~/db";
 
 export const key: DBFactoryKeyApi = {
-  all() {
-    return udf.get.keys();
+  all(this: DB) {
+    return call.get.keys.call(this);
   },
-  cleanAll() {
-    return udf.clean.keys();
+  cleanAll(this: DB) {
+    return call.clean.keys.call(this);
   },
-  get(id) {
-    return udf.get.key(id);
+  get(this: DB, id) {
+    return call.get.key.call(this, id);
   },
-  insert(name, options) {
-    return udf.insert.key(name, options);
+  insert(this: DB, name, options) {
+    return call.insert.key.call(this, name, options);
   },
-  update(id, options) {
-    return udf.update.key(id, options);
+  update(this: DB, id, options) {
+    return call.update.key.call(this, id, options);
   },
-  replace(id, options) {
-    return udf.replace.key(id, options);
+  replace(this: DB, id, options) {
+    return call.replace.key.call(this, id, options);
   },
-  upsert(id, options) {
-    return udf.upsert.key(id, options);
+  upsert(this: DB, id, options) {
+    return call.upsert.key.call(this, id, options);
   },
-  repsert(id, options) {
-    return udf.repsert.key(id, options);
+  repsert(this: DB, id, options) {
+    return call.repsert.key.call(this, id, options);
   },
-  delete(id) {
-    return udf.delete.key(id);
+  delete(this: DB, id) {
+    return call.delete.key.call(this, id);
   },
-  forget(id) {
-    return udf.forget.key(id);
+  forget(this: DB, id) {
+    return call.forget.key.call(this, id);
   },
 };

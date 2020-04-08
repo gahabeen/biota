@@ -4,5 +4,5 @@ import { update as updateFQLUDF } from "~/factory/api/fql/udf/update";
 
 export const UpdateDatabase = UDFunction({
   name: udfunctionNameNormalized("UpdateDatabase"),
-  body: q.Query((identity, name, options) => updateFQLUDF.database(name, options)),
+  body: q.Query((identity, private_key, name, options) => updateFQLUDF.database(name, options)),
 });

@@ -12,7 +12,7 @@ export function forget(this: DB, collectionName: string, id: FaunaId) {
         {
           name: `Forget (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.forget(collectionName, id));
+            return self.query(document.forget.call(self, collectionName, id));
           },
         },
       ],

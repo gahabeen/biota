@@ -1,51 +1,52 @@
 import { query as q } from "faunadb";
 import { DBFactoryDocumentApi } from "~/../types/factory/factory.classes";
-import * as udf from "~/factory/api/udf";
+import * as call from "~/factory/api/call";
 import { Reference } from "../ql";
+import { DB } from "~/db";
 
 export const document: DBFactoryDocumentApi = {
-  login(name, id, password) {
+  login(this: DB, name, id, password) {
     return q.Login(q.Ref(q.Collection(name), id), {
       password,
     });
   },
-  credentials(name, id, credentials) {
-    return udf.update.credentials(name, id, credentials);
+  credentials(this: DB, name, id, credentials) {
+    return call.update.credentials.call(this, name, id, credentials);
   },
-  changePassword(name, id, password) {
-    return udf.update.credentials(name, id, { password });
+  changePassword(this: DB, name, id, password) {
+    return call.update.credentials.call(this, name, id, { password });
   },
-  get(collection, id) {
-    return udf.get.document(collection, id);
+  get(this: DB, collection, id) {
+    return call.get.document.call(this, collection, id);
   },
-  insert(collection, data, id) {
-    return udf.insert.document(collection, data, id);
+  insert(this: DB, collection, data, id) {
+    return call.insert.document.call(this, collection, data, id);
   },
-  update(collection, id, data) {
-    return udf.update.document(collection, id, data);
+  update(this: DB, collection, id, data) {
+    return call.update.document.call(this, collection, id, data);
   },
-  replace(collection, id, data) {
-    return udf.replace.document(collection, id, data);
+  replace(this: DB, collection, id, data) {
+    return call.replace.document.call(this, collection, id, data);
   },
-  upsert(collection, id, data) {
-    return udf.upsert.document(collection, id, data);
+  upsert(this: DB, collection, id, data) {
+    return call.upsert.document.call(this, collection, id, data);
   },
-  repsert(collection, id, data) {
-    return udf.repsert.document(collection, id, data);
+  repsert(this: DB, collection, id, data) {
+    return call.repsert.document.call(this, collection, id, data);
   },
-  delete(collection, id) {
-    return udf.delete.document(collection, id);
+  delete(this: DB, collection, id) {
+    return call.delete.document.call(this, collection, id);
   },
-  forget(collection, id) {
-    return udf.forget.document(collection, id);
+  forget(this: DB, collection, id) {
+    return call.forget.document.call(this, collection, id);
   },
-  expireIn(collection, id, delayInMs) {
-    return udf.expire.documentIn(collection, id, delayInMs);
+  expireIn(this: DB, collection, id, delayInMs) {
+    return call.expire.documentIn.call(this, collection, id, delayInMs);
   },
-  expireAt(collection, id, at) {
-    return udf.expire.documentAt(collection, id, at);
+  expireAt(this: DB, collection, id, at) {
+    return call.expire.documentAt.call(this, collection, id, at);
   },
-  expireNow(collection, id) {
-    return udf.expire.documentNow(collection, id);
+  expireNow(this: DB, collection, id) {
+    return call.expire.documentNow.call(this, collection, id);
   },
 };

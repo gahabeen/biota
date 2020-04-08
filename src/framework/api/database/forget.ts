@@ -12,7 +12,7 @@ export function forget(this: DB, databaseName: string) {
         {
           name: `Forget database [${databaseName}]`,
           task() {
-            return self.query(database.forget(databaseName));
+            return self.query(database.forget.call(self, databaseName));
           },
         },
       ],

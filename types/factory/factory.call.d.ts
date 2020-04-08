@@ -11,38 +11,38 @@ import {
 } from "../crud.reference";
 import { DBFactorySpecificUserApi } from "./factory.specific.user";
 
-export interface DBFactoryUDF {
-  get: DBFactoryUDFGet;
-  insert: DBFactoryUDFInsert;
-  update: DBFactoryUDFUpdate;
-  upsert: DBFactoryUDFUpsert;
-  replace: DBFactoryUDFReplace;
-  repsert: DBFactoryUDFRepsert;
-  delete: DBFactoryUDFDelete;
-  forget: DBFactoryUDFForget;
-  clean: DBFactoryUDFClean;
-  user: DBFactoryUDFUser
+export interface DBFactoryCall {
+  get: DBFactoryCallGet;
+  insert: DBFactoryCallInsert;
+  update: DBFactoryCallUpdate;
+  upsert: DBFactoryCallUpsert;
+  replace: DBFactoryCallReplace;
+  repsert: DBFactoryCallRepsert;
+  delete: DBFactoryCallDelete;
+  forget: DBFactoryCallForget;
+  clean: DBFactoryCallClean;
+  user: DBFactoryCallUser;
 }
 
-export interface DBFactoryUDFOwn {
+export interface DBFactoryCallOwn {
   document: CRUDReferenceDocument["own"];
 }
 
-export interface DBFactoryUDFAssign {
+export interface DBFactoryCallAssign {
   document: CRUDReferenceDocument["assign"];
 }
 
-export interface DBFactoryUDFUnAssign {
+export interface DBFactoryCallUnAssign {
   document: CRUDReferenceDocument["unassign"];
 }
 
-export interface DBFactoryUDFExpire {
+export interface DBFactoryCallExpire {
   documentAt: CRUDReferenceDocument["expireAt"];
   documentIn: CRUDReferenceDocument["expireIn"];
   documentNow: CRUDReferenceDocument["expireNow"];
 }
 
-export interface DBFactoryUDFGet {
+export interface DBFactoryCallGet {
   document: CRUDReferenceDocument["read"];
   // documents: CRUDReferenceDocument["readAll"];
   database: CRUDReferenceDatabase["read"];
@@ -62,7 +62,7 @@ export interface DBFactoryUDFGet {
   credentials: CRUDReferenceCredentials["readAll"];
 }
 
-export interface DBFactoryUDFInsert {
+export interface DBFactoryCallInsert {
   document: CRUDReferenceDocument["create"];
   database: CRUDReferenceDatabase["create"];
   collection: CRUDReferenceCollection["create"];
@@ -73,7 +73,7 @@ export interface DBFactoryUDFInsert {
   key: CRUDReferenceKey["create"];
 }
 
-export interface DBFactoryUDFUpdate {
+export interface DBFactoryCallUpdate {
   document: CRUDReferenceDocument["update"];
   database: CRUDReferenceDatabase["update"];
   collection: CRUDReferenceCollection["update"];
@@ -85,7 +85,7 @@ export interface DBFactoryUDFUpdate {
   credentials: CRUDReferenceCredentials["update"];
 }
 
-export interface DBFactoryUDFUpsert {
+export interface DBFactoryCallUpsert {
   document: CRUDReferenceDocument["update"];
   database: CRUDReferenceDatabase["update"];
   collection: CRUDReferenceCollection["update"];
@@ -96,7 +96,7 @@ export interface DBFactoryUDFUpsert {
   key: CRUDReferenceKey["update"];
 }
 
-export interface DBFactoryUDFReplace {
+export interface DBFactoryCallReplace {
   document: CRUDReferenceDocument["update"];
   database: CRUDReferenceDatabase["update"];
   collection: CRUDReferenceCollection["update"];
@@ -106,7 +106,7 @@ export interface DBFactoryUDFReplace {
   token: CRUDReferenceToken["update"];
   key: CRUDReferenceKey["update"];
 }
-export interface DBFactoryUDFRepsert {
+export interface DBFactoryCallRepsert {
   document: CRUDReferenceDocument["update"];
   database: CRUDReferenceDatabase["update"];
   collection: CRUDReferenceCollection["update"];
@@ -117,7 +117,7 @@ export interface DBFactoryUDFRepsert {
   key: CRUDReferenceKey["update"];
 }
 
-export interface DBFactoryUDFDelete {
+export interface DBFactoryCallDelete {
   document: CRUDReferenceDocument["delete"];
   database: CRUDReferenceDatabase["delete"];
   collection: CRUDReferenceCollection["delete"];
@@ -128,7 +128,7 @@ export interface DBFactoryUDFDelete {
   key: CRUDReferenceKey["delete"];
 }
 
-export interface DBFactoryUDFForget {
+export interface DBFactoryCallForget {
   document: CRUDReferenceDocument["delete"];
   database: CRUDReferenceDatabase["delete"];
   collection: CRUDReferenceCollection["delete"];
@@ -139,7 +139,7 @@ export interface DBFactoryUDFForget {
   key: CRUDReferenceKey["delete"];
 }
 
-export interface DBFactoryUDFClean {
+export interface DBFactoryCallClean {
   document: CRUDReferenceDocument["delete"];
   documents: CRUDReferenceDocument["cleanAll"];
   database: CRUDReferenceDatabase["delete"];
@@ -158,7 +158,7 @@ export interface DBFactoryUDFClean {
   keys: CRUDReferenceKey["cleanAll"];
 }
 
-export interface DBFactoryUDFUser {
+export interface DBFactoryCallUser {
   login: DBFactorySpecificUserApi["login"];
   register: DBFactorySpecificUserApi["register"];
   changePassword: DBFactorySpecificUserApi["changePassword"];

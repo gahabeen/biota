@@ -12,7 +12,7 @@ export function replace(this: DB, udfunctionName: string) {
         {
           name: `Replace udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.replace(udfunctionName, options));
+            return self.query(udfunction.replace.call(self, udfunctionName, options));
           },
         },
       ],

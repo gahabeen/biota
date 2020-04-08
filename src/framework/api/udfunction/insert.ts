@@ -12,7 +12,7 @@ export function insert(this: DB, udfunctionName: string) {
         {
           name: `Insert udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.insert(udfunctionName, options));
+            return self.query(udfunction.insert.call(self, udfunctionName, options));
           },
         },
       ],

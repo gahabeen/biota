@@ -47,7 +47,7 @@ export function scaffold(this: DB, collectionName: string) {
       {
         name: `Upserting collection (${collectionName})`,
         async task() {
-          return self.query(upsert.collection(collectionName, collectionOptions));
+          return self.query(upsert.collection.call(self, collectionName, collectionOptions));
         },
       },
     ];

@@ -42,7 +42,7 @@ export function index(this: DB, collectionName: string) {
                     name: `Adding privilege (read) for index ${name} on ${r}`,
                     task() {
                       return self.query(
-                        roleFactory.privilege.upsert(r, {
+                        self.role(r).privilege.upsert({
                           resource: ref,
                           actions: {
                             read: true,

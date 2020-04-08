@@ -4,5 +4,5 @@ import { upsert as upsertFQLUDF } from "~/factory/api/fql/udf/upsert";
 
 export const UpsertCollection = UDFunction({
   name: udfunctionNameNormalized("UpsertCollection"),
-  body: q.Query((identity, name, options) => upsertFQLUDF.collection(name, options)),
+  body: q.Query((identity, private_key, name, options) => upsertFQLUDF.collection(name, options)),
 });

@@ -11,7 +11,7 @@ export function clean(this: DB, udfunctionName: string) {
         {
           name: `Clean udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.clean(udfunctionName));
+            return self.query(udfunction.clean.call(self, udfunctionName));
           },
         },
       ],

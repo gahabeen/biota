@@ -2,12 +2,14 @@ import { query as q } from "faunadb";
 import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { roleNameNormalized } from "~/factory/classes/role";
 import { collectionNameNormalized } from "~/factory/classes/collection";
+import { CallIsPrivateKeyValid } from "~/framework/helpers/call_functions";
 
 export const AuthStartUserSession = UDFunction({
   name: udfunctionNameNormalized("AuthStartUserSession"),
-  body: q.Query((identity, user, password, delayInMs) =>
+  body: q.Query((identity, private_key, user, password, delayInMs) =>
     q.Let(
       {
+        allowOperation: CallIsPrivateKeyValid(null, q.Var("private_key")),
         valid: q.If(q.IsRef(q.Var("user")), q.Identify(q.Var("user"), q.Var("password")), false),
         expire_at: q.If(
           q.IsNull(q.Var("delayInMs")),
@@ -22,11 +24,11 @@ export const AuthStartUserSession = UDFunction({
             session: q.Create(q.Collection(collectionNameNormalized("user_sessions")), {
               data: {
                 _membership: {
-                  owner: q.Var("identity"),
+                  owner: q.Var("user"),
                 },
                 _activity: {
                   created_at: q.Now(),
-                  created_by: q.Var("identity"),
+                  created_by: q.Var("user"),
                   expire_at: q.Var("expire_at"),
                 },
               },

@@ -1,6 +1,6 @@
 import { DBFactoryFQLUDFClean } from "~/../types/factory/factory.fql.udf";
 import { query as q } from "faunadb";
-import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
+import { CallLogAction, CallSystemOperator, CallIsPrivateKeyValid } from "~/framework/helpers/call_functions";
 import { clean as cleanBaseFQL } from "~/factory/api/fql/base/clean";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 
@@ -12,6 +12,7 @@ export const clean: DBFactoryFQLUDFClean = {
   document(collection, id) {
     return q.Let(
       {
+
         operation: CallSystemOperator(updateBaseFQL.document(collection, id, forgotLogData)),
         doc: cleanBaseFQL.document(collection, id),
         action: CallLogAction("forget", q.Var("doc")),
@@ -30,6 +31,7 @@ export const clean: DBFactoryFQLUDFClean = {
   database(name) {
     return q.Let(
       {
+
         operation: CallSystemOperator(updateBaseFQL.database(name, { data: forgotLogData })),
         doc: cleanBaseFQL.database(name),
         action: CallLogAction("forget", q.Var("doc")),
@@ -48,6 +50,7 @@ export const clean: DBFactoryFQLUDFClean = {
   collection(name) {
     return q.Let(
       {
+
         operation: CallSystemOperator(updateBaseFQL.collection(name, { data: forgotLogData })),
         doc: cleanBaseFQL.collection(name),
         action: CallLogAction("forget", q.Var("doc")),
@@ -66,6 +69,7 @@ export const clean: DBFactoryFQLUDFClean = {
   index(name) {
     return q.Let(
       {
+
         operation: CallSystemOperator(updateBaseFQL.index(name, { data: forgotLogData })),
         doc: cleanBaseFQL.index(name),
         action: CallLogAction("forget", q.Var("doc")),
@@ -85,6 +89,7 @@ export const clean: DBFactoryFQLUDFClean = {
     return q.Let(
       {
         // #improve
+
         operation: CallSystemOperator(updateBaseFQL.udfunction(name, { data: forgotLogData })),
         doc: cleanBaseFQL.udfunction(name),
         action: CallLogAction("forget", q.Var("doc")),
@@ -122,6 +127,7 @@ export const clean: DBFactoryFQLUDFClean = {
   token(id) {
     return q.Let(
       {
+
         operation: CallSystemOperator(updateBaseFQL.token(id, { data: forgotLogData })),
         doc: cleanBaseFQL.token(id),
         action: CallLogAction("forget", q.Var("doc")),
@@ -140,6 +146,7 @@ export const clean: DBFactoryFQLUDFClean = {
   key(id) {
     return q.Let(
       {
+
         operation: CallSystemOperator(updateBaseFQL.key(id, { data: forgotLogData })),
         doc: cleanBaseFQL.key(id),
         action: CallLogAction("forget", q.Var("doc")),

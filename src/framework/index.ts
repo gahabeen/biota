@@ -17,3 +17,5 @@ export * from "./api/user";
 export * from "./api/foundation";
 export * from "./api/relation";
 // export * from "./api/import"
+
+export * from "./api/privateKey";

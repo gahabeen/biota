@@ -85,7 +85,7 @@ export interface DBFactoryIndexApi {
   cleanAll: CRUDReferenceIndex["cleanAll"];
 }
 
-export interface DBFactoryUDFunctionApi {
+export interface DBFactoryCallunctionApi {
   all: CRUDReferenceUDFunction["readAll"];
   get: CRUDReferenceUDFunction["read"];
   insert: CRUDReferenceUDFunction["create"];

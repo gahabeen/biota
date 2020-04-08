@@ -2,7 +2,7 @@ import { query as q } from "faunadb";
 import { DBFactoryFQLUDFUnAssign } from "~/../types/factory/factory.fql.udf";
 import { get as getBaseFQL } from "~/factory/api/fql/base/get";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
-import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
+import { CallLogAction, CallSystemOperator, CallIsPrivateKeyValid } from "~/framework/helpers/call_functions";
 
 let assignLogData = (assignees: any) => ({
   _membership: {
@@ -15,6 +15,7 @@ export const unassign: DBFactoryFQLUDFUnAssign = {
   document(collection, id, oldAssignee) {
     return q.Let(
       {
+
         doc: getBaseFQL.document(collection, id),
         current_assignees: q.Select(["data", "_membership", "assignees"], q.Var("doc"), []),
         assignees: q.Distinct(q.Difference(q.Var("current_assignees"), [oldAssignee])),

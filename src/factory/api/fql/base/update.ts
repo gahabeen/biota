@@ -9,20 +9,20 @@ export const update: DBFactoryFQLBaseUpdate = {
     return q.Update(q.Ref(q.Collection(collection), id), { data });
   },
   database(name, options) {
-    return q.Update(q.Database(name), options);
+    return q.Update(q.Database(name), { ...options, name });
   },
   collection(name, options) {
-    return q.Update(q.Collection(name), options);
+    return q.Update(q.Collection(name), { ...options, name });
   },
   index(name, options) {
     let { unique } = options;
     return q.Update(q.Index(name), { name, unique });
   },
   udfunction(name, options) {
-    return q.Update(q.Function(name), options);
+    return q.Update(q.Function(name), { ...options, name });
   },
   role(name, options) {
-    return q.Update(q.Role(name), options);
+    return q.Update(q.Role(name), { ...options, name });
   },
   token(id, options) {
     return q.Update(q.Ref(q.Tokens(), id), options);

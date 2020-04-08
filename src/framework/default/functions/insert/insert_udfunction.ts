@@ -4,5 +4,5 @@ import { insert as insertFQLUDF } from "~/factory/api/fql/udf/insert";
 
 export const InsertUDFunction = UDFunction({
   name: udfunctionNameNormalized("InsertUDFunction"),
-  body: q.Query((identity, name, options) => insertFQLUDF.udfunction(name, options)),
+  body: q.Query((identity, private_key, name, options) => insertFQLUDF.udfunction(name, options)),
 });

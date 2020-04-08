@@ -1,38 +1,39 @@
 import { DBFactoryDatabaseApi } from "~/../types/factory/factory.classes";
-import * as udf from "~/factory/api/udf";
+import * as call from "~/factory/api/call";
+import { DB } from "~/db";
 
 export const database: DBFactoryDatabaseApi = {
-  all() {
-    return udf.get.databases();
+  all(this: DB) {
+    return call.get.databases.call(this);
   },
-  cleanAll() {
-    return udf.clean.databases();
+  cleanAll(this: DB) {
+    return call.clean.databases.call(this);
   },
-  clean(name) {
-    return udf.clean.database(name);
+  clean(this: DB, name) {
+    return call.clean.database.call(this, name);
   },
-  get(name) {
-    return udf.get.database(name);
+  get(this: DB, name) {
+    return call.get.database.call(this, name);
   },
-  insert(name, options) {
-    return udf.insert.database(name, options);
+  insert(this: DB, name, options) {
+    return call.insert.database.call(this, name, options);
   },
-  update(name, options) {
-    return udf.update.database(name, options);
+  update(this: DB, name, options) {
+    return call.update.database.call(this, name, options);
   },
-  replace(name, options) {
-    return udf.replace.database(name, options);
+  replace(this: DB, name, options) {
+    return call.replace.database.call(this, name, options);
   },
-  upsert(name, options) {
-    return udf.upsert.database(name, options);
+  upsert(this: DB, name, options) {
+    return call.upsert.database.call(this, name, options);
   },
-  repsert(name, options) {
-    return udf.repsert.database(name, options);
+  repsert(this: DB, name, options) {
+    return call.repsert.database.call(this, name, options);
   },
-  delete(name) {
-    return udf.delete.database(name);
+  delete(this: DB, name) {
+    return call.delete.database.call(this, name);
   },
-  forget(name) {
-    return udf.forget.database(name);
+  forget(this: DB, name) {
+    return call.forget.database.call(this, name);
   },
 };

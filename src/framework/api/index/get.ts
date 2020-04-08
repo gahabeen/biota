@@ -11,7 +11,7 @@ export function get(this: DB, indexName: string) {
         {
           name: `Get (${indexName})`,
           task() {
-            return self.query(index.get(indexName));
+            return self.query(index.get.call(self, indexName));
           },
         },
       ],

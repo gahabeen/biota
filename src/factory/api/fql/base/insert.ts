@@ -5,37 +5,30 @@ import { Database } from "~/factory/classes/database";
 import { Index } from "~/factory/classes/index";
 import { Role } from "~/factory/classes/role";
 import { UDFunction } from "~/factory/classes/udfunction";
-import { nameOrOptions } from "~/helpers";
 
 export const insert: DBFactoryFQLBaseInsert = {
   document(collection, data = {}, id) {
     return q.Create(q.If(q.IsString(id), q.Ref(q.Collection(collection), id), q.Collection(collection)), { data });
   },
   database(name, options = {}) {
-    let definition = nameOrOptions(name, options);
-    return q.CreateDatabase(Database(definition));
+    return q.CreateDatabase(Database({ ...options, name }));
   },
   collection(name, options = {}) {
-    let definition = nameOrOptions(name, options);
-    return q.CreateCollection(Collection(definition));
+    return q.CreateCollection(Collection({ ...options, name }));
   },
   index(name, options = {}) {
-    let definition = nameOrOptions(name, options);
-    return q.CreateIndex(Index(definition));
+    return q.CreateIndex(Index({ ...options, name }));
   },
   udfunction(name, options = {}) {
-    let definition = nameOrOptions(name, options);
-    return q.CreateFunction(UDFunction(definition));
+    return q.CreateFunction(UDFunction({ ...options, name }));
   },
   role(name, options = {}) {
-    let definition = nameOrOptions(name, options);
-    return q.CreateRole(Role(definition));
+    return q.CreateRole(Role({ ...options, name }));
   },
   token(ref, options = {}) {
     return q.Create(q.Tokens(), { instance: ref, ...options });
   },
   key(name, options = {}) {
-    let definition = nameOrOptions(name, options);
-    return q.CreateKey(definition);
+    return q.CreateKey({ ...options, name });
   },
 };

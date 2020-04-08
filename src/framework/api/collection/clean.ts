@@ -12,7 +12,7 @@ export function clean(this: DB, collectionName: string) {
         {
           name: `Clean everything in (${collectionName})`,
           task() {
-            return self.query(collection.clean(collectionName));
+            return self.query(collection.clean.call(self, collectionName));
           },
         },
       ],

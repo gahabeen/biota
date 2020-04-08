@@ -9,7 +9,7 @@ export function cleanAll(this: DB) {
       {
         name: `Clean all udfunctions`,
         task() {
-          return self.query(udfunction.cleanAll());
+          return self.query(udfunction.cleanAll.call(self));
         },
       },
     ],

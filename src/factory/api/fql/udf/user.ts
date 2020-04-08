@@ -1,9 +1,9 @@
 import { query as q } from "faunadb";
 import { DBFactorySpecificUserApi } from "~/../types/factory/factory.specific.user";
-import * as udf from "~/factory/api/udf";
+import * as call from "~/factory/api/call";
 import { indexNameNormalized } from "~/factory/classes";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
-import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
+import { CallLogAction, CallSystemOperator } from "~/framework/helpers/call_functions";
 import { collectionNameNormalized } from "~/factory/classes/collection";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { Identity } from "../../ql";
@@ -18,7 +18,7 @@ export const user: DBFactorySpecificUserApi = {
       q.If(
         q.IsRef(q.Var("doc")),
         {
-          secret: q.Call(udfunctionNameNormalized("AuthStartUserSession"), q.Var("doc"), q.Var("doc"), password, null),
+          secret: q.Call(udfunctionNameNormalized("AuthStartUserSession"), q.Var("doc"), q.Var("private_key"), q.Var("doc"), password, null),
         },
         { secret: false }
       )
@@ -36,13 +36,13 @@ export const user: DBFactorySpecificUserApi = {
           }),
           q.Select("ref", q.Var("doc"))
         ),
-        with_credentials: udf.update.credentials(collectionNameNormalized("users"), q.Select(["ref", "id"], q.Var("doc")), { password }),
+        with_credentials: call.update.credentials(collectionNameNormalized("users"), q.Select(["ref", "id"], q.Var("doc")), { password }),
         action: CallLogAction("register", q.Var("doc")),
       },
       q.Call(udfunctionNameNormalized("UserLogin"), Identity(), email, password)
     );
   },
   changePassword(newPassword) {
-    return udf.update.credentials(q.Select("collection", q.Identity()) as string, q.Select("id", q.Identity()), { password: newPassword });
+    return call.update.credentials(q.Select("collection", q.Identity()) as string, q.Select("id", q.Identity()), { password: newPassword });
   },
 };

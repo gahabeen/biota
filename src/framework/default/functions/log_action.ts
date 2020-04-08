@@ -4,16 +4,18 @@ import { query as q } from "faunadb";
 // biota
 import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { collectionNameNormalized } from "~/factory/classes/collection";
+import { CallIsPrivateKeyValid } from "~/framework/helpers/call_functions";
+import { roleNameNormalized } from "~/factory/classes/role";
 
 export const LogAction = UDFunction({
   name: udfunctionNameNormalized("LogAction"),
   body: q.Query(
     q.Lambda(
-      ["options"],
+      ["identity", "private_key", "options"],
       q.Let(
         {
+          allowOperation: CallIsPrivateKeyValid(q.Var("identity"),q.Var("private_key")),
           document: q.Select("document", q.Var("options"), null),
-          identity: q.Select("identity", q.Var("options"), null),
           ts: q.Select("ts", q.Var("options"), null),
           name: q.Select("name", q.Var("options"), null),
         },
@@ -32,4 +34,5 @@ export const LogAction = UDFunction({
       )
     )
   ),
+  role: q.Role(roleNameNormalized("system")),
 });

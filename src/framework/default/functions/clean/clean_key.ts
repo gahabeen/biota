@@ -4,5 +4,5 @@ import { clean as cleanFQLUDF } from "~/factory/api/fql/udf/clean";
 
 export const CleanKey = UDFunction({
   name: udfunctionNameNormalized("CleanKey"),
-  body: q.Query((identity, id) => cleanFQLUDF.key(id)),
+  body: q.Query((identity, private_key, id) => cleanFQLUDF.key(id)),
 });

@@ -4,5 +4,5 @@ import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfuncti
 
 export const UserLogin = UDFunction({
   name: udfunctionNameNormalized("UserLogin"),
-  body: q.Query((identity, email, password) => userFQLUDF.login(q.Var("email") as string, q.Var("password") as string)),
+  body: q.Query((identity, private_key, email, password) => userFQLUDF.login(q.Var("email") as string, q.Var("password") as string)),
 });

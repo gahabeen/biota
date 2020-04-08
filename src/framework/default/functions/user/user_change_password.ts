@@ -4,5 +4,5 @@ import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfuncti
 
 export const UserChangePassword = UDFunction({
   name: udfunctionNameNormalized("UserChangePassword"),
-  body: q.Query((identity, password) => userFQLUDF.changePassword(q.Var("password") as string)),
+  body: q.Query((identity, private_key, password) => userFQLUDF.changePassword(q.Var("password") as string)),
 });

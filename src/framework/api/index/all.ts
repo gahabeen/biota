@@ -12,7 +12,7 @@ export function all(this: DB, indexName: string) {
         {
           name: `All indexes`,
           task() {
-            return self.query(index.all(pagination));
+            return self.query(index.all.call(self, pagination));
           },
         },
       ],

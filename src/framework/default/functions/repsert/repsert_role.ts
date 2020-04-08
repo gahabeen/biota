@@ -4,5 +4,5 @@ import { repsert as repsertFQLUDF } from "~/factory/api/fql/udf/repsert";
 
 export const RepsertRole = UDFunction({
   name: udfunctionNameNormalized("RepsertRole"),
-  body: q.Query((identity, name, options) => repsertFQLUDF.role(name, options)),
+  body: q.Query((identity, private_key, name, options) => repsertFQLUDF.role(name, options)),
 });

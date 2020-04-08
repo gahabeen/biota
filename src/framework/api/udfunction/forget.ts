@@ -12,7 +12,7 @@ export function forget(this: DB, udfunctionName: string) {
         {
           name: `Forget udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.forget(udfunctionName));
+            return self.query(udfunction.forget.call(self, udfunctionName));
           },
         },
       ],

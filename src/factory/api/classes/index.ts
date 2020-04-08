@@ -1,35 +1,36 @@
 import { DBFactoryIndexApi } from "~/../types/factory/factory.classes";
-import * as udf from "~/factory/api/udf";
+import * as call from "~/factory/api/call";
+import { DB } from "~/db";
 
 export const index: DBFactoryIndexApi = {
-  all() {
-    return udf.get.indexes();
+  all(this: DB) {
+    return call.get.indexes.call(this);
   },
-  cleanAll() {
-    return udf.clean.indexes();
+  cleanAll(this: DB) {
+    return call.clean.indexes.call(this);
   },
-  get(name) {
-    return udf.get.index(name);
+  get(this: DB, name) {
+    return call.get.index.call(this, name);
   },
-  insert(name, options) {
-    return udf.insert.index(name, options);
+  insert(this: DB, name, options) {
+    return call.insert.index.call(this, name, options);
   },
-  update(name, options) {
-    return udf.update.index(name, options);
+  update(this: DB, name, options) {
+    return call.update.index.call(this, name, options);
   },
-  replace(name, options) {
-    return udf.replace.index(name, options);
+  replace(this: DB, name, options) {
+    return call.replace.index.call(this, name, options);
   },
-  upsert(name, options) {
-    return udf.upsert.index(name, options);
+  upsert(this: DB, name, options) {
+    return call.upsert.index.call(this, name, options);
   },
-  repsert(name, options) {
-    return udf.repsert.index(name, options);
+  repsert(this: DB, name, options) {
+    return call.repsert.index.call(this, name, options);
   },
-  delete(name) {
-    return udf.delete.index(name);
+  delete(this: DB, name) {
+    return call.delete.index.call(this, name);
   },
-  forget(name) {
-    return udf.forget.index(name);
+  forget(this: DB, name) {
+    return call.forget.index.call(this, name);
   },
 };

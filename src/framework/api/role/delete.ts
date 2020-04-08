@@ -12,7 +12,7 @@ export function delete_(this: DB, roleName: string) {
         {
           name: `Delete (${id}) in (${roleName})`,
           task() {
-            return self.query(role.delete(roleName));
+            return self.query(role.delete.call(self, roleName));
           },
         },
       ],

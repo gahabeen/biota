@@ -12,7 +12,7 @@ export function get(this: DB, collectionName: string) {
         {
           name: `Get (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.get(collectionName, id));
+            return self.query(document.get.call(self, collectionName, id));
           },
         },
       ],

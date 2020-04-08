@@ -12,7 +12,7 @@ export function get(this: DB, udfunctionName: string) {
         {
           name: `Get udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.get(udfunctionName));
+            return self.query(udfunction.get.call(self, udfunctionName));
           },
         },
       ],

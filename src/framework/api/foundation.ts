@@ -9,6 +9,7 @@ import * as defaultRoles from "~/framework/api/default/roles";
 import * as defaultCollections from "~/framework/api/default/collections";
 import * as defaultIndexes from "~/framework/api/default/indexes";
 import { DBFoundationOptions } from "~/../types/db";
+import { FaunaUDFunctionOptions } from "~/../types/fauna";
 
 export async function foundation(this: DB, options: DBFoundationOptions) {
   const self = this;
@@ -24,7 +25,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       tasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
         task() {
-          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name)));
+          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name, {})));
         },
       });
     }
@@ -36,10 +37,14 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
 
   if (options.udfunctions) {
     for (let UDFunction of Object.values(defaultFunctions)) {
+      let UDFunctionDefinition = UDFunction;
+      if (typeof UDFunctionDefinition === "function") {
+        UDFunctionDefinition = (UDFunctionDefinition as any)({ privateKey: self.private_key || null });
+      }
       tasks.push({
-        name: `Upserting function: ${UDFunction.name}`,
+        name: `Upserting function: ${UDFunctionDefinition.name}`,
         task() {
-          return self.query(repsert.udfunction(UDFunction.name, UDFunction));
+          return self.query(repsert.udfunction(UDFunctionDefinition.name, UDFunctionDefinition as FaunaUDFunctionOptions));
         },
         fullError: true,
       });
@@ -47,7 +52,93 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
   }
 
   /**
-   *  Collections
+   *  Roles (functions privileges)
+   */
+
+  if (options.roles) {
+    for (let defaultRole of Object.values(defaultRoles)) {
+      tasks.push({
+        name: `Adding UDFunction privileges to role: ${defaultRole.name}`,
+        task() {
+          let functionPrivileges = defaultRole.privileges.filter((p) => {
+            let resource = (p.resource as any).toJSON() || {};
+            return resource.function;
+          });
+          return self.query(upsert.role(defaultRole.name, { privileges: functionPrivileges }));
+          // return Promise.all(functionPrivileges.map((privilege) => self.query(self.role(defaultRole.name).privilege.upsert(privilege))));
+        },
+      });
+    }
+  }
+
+  /**
+   *  Collections (creation)
+   */
+
+  if (options.collections) {
+    tasks.push({
+      name: `Upsert collection: ${defaultCollections.user_sessions.name}`,
+      task() {
+        return self.query(upsert.collection(defaultCollections.user_sessions.name, defaultCollections.user_sessions));
+      },
+    });
+
+    tasks.push({
+      name: `Upsert collection: ${defaultCollections.actions.name}`,
+      task() {
+        return self.query(upsert.collection(defaultCollections.actions.name, defaultCollections.actions));
+      },
+    });
+
+    tasks.push({
+      name: `Upsert collection: ${defaultCollections.users.name}`,
+      task() {
+        return self.query(upsert.collection(defaultCollections.users.name, defaultCollections.users));
+      },
+    });
+
+    tasks.push({
+      name: `Upsert collection: ${defaultCollections.relations.name}`,
+      task() {
+        return self.query(upsert.collection(defaultCollections.relations.name, defaultCollections.relations));
+      },
+      fullError: true,
+    });
+  }
+
+  /**
+   *  Indexes
+   */
+
+  if (options.indexes) {
+    for (let defaultIndex of Object.values(defaultIndexes)) {
+      tasks.push({
+        name: `Upserting index: ${defaultIndex.name}`,
+        task() {
+          return self.query(upsert.index(defaultIndex.name, defaultIndex));
+        },
+      });
+    }
+  }
+
+  /**
+   *  Roles
+   */
+
+  if (options.roles) {
+    for (let defaultRole of Object.values(defaultRoles)) {
+      tasks.push({
+        name: `Upserting role: ${defaultRole.name}`,
+        task() {
+          return self.query(upsert.role(defaultRole.name, defaultRole));
+        },
+        fullError: true,
+      });
+    }
+  }
+
+  /**
+   *  Collections (scaffold)
    */
 
   if (options.collections) {
@@ -132,37 +223,6 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       },
       fullError: true,
     });
-  }
-
-  /**
-   *  Indexes
-   */
-
-  if (options.indexes) {
-    for (let defaultIndex of Object.values(defaultIndexes)) {
-      tasks.push({
-        name: `Upserting index: ${defaultIndex.name}`,
-        task() {
-          return self.query(upsert.index(defaultIndex.name, defaultIndex));
-        },
-      });
-    }
-  }
-
-  /**
-   *  Roles
-   */
-
-  if (options.roles) {
-    for (let defaultRole of Object.values(defaultRoles)) {
-      tasks.push({
-        name: `Upserting role: ${defaultRole.name}`,
-        task() {
-          return self.query(upsert.role(defaultRole.name, defaultRole));
-        },
-        fullError: true,
-      });
-    }
   }
 
   return execute(tasks, {

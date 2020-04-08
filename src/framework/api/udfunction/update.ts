@@ -12,7 +12,7 @@ export function update(this: DB, udfunctionName: string) {
         {
           name: `Update udfunction [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.update(udfunctionName, options));
+            return self.query(udfunction.update.call(self, udfunctionName, options));
           },
         },
       ],

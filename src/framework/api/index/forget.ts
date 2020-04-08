@@ -6,7 +6,7 @@ import { execute } from "~/tasks";
 export function forget(this: DB, indexName: string) {
   let self = this;
 
-  return async function forgetMethod(options: FaunaIndexOptions) {
+  return async function forgetMethod() {
     return execute(
       [
         {

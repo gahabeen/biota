@@ -2,7 +2,7 @@ import { query as q } from "faunadb";
 import { DBFactoryFQLUDFInsert } from "~/../types/factory/factory.fql.udf";
 import { insert as insertBaseFQL } from "~/factory/api/fql/base/insert";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
-import { CallLogAction, CallSystemOperator } from "~/framework/helpers/WrapActionAndLog";
+import { CallLogAction, CallSystemOperator, CallIsPrivateKeyValid } from "~/framework/helpers/call_functions";
 import { DOCUMENT_RESERVED_DATA_FIELDS_OBJ } from "~/consts";
 
 let insertLogData = {
@@ -74,7 +74,6 @@ export const insert: DBFactoryFQLUDFInsert = {
     return q.Let(
       {
         doc: insertBaseFQL.role(name, options),
-        // operation: CallSystemOperator(updateBaseFQL.role(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
       q.Var("doc")

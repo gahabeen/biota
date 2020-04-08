@@ -12,7 +12,7 @@ export function repsert(this: DB, roleName: string) {
         {
           name: `Replace/Insert [${roleName}]`,
           task() {
-            return self.query(role.repsert(roleName, options));
+            return self.query(role.repsert.call(self, roleName, options));
           },
         },
       ],
