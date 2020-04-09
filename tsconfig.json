@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
+    "declaration": true,
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "esnext",
+    "target": "es5",
     "sourceMap": true,
     "allowJs": true,
     "rootDir": "src",
     "outDir": "./dist",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "~/*": ["*"]
+      "~/*": ["./src/*"]
     }
   },
   "include": ["./src/**/*", "../types/*.d.ts"],

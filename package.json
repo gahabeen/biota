@@ -15,11 +15,11 @@
   },
   "scripts": {
     "clean-dist": "rm -f -r dist",
-    "gen-js": "tsc -w",
-    "gen": "yarn run clean-dist && npm run gen-js",
+    "gen": "yarn run clean-dist && tsc -w",
     "test": "jest",
     "test-watch": "jest --watch",
-    "browser": "node bin/browserify"
+    "browser": "node bin/browserify",
+    "build": "yarn run clean-dist && tsc"
   },
   "dependencies": {
     "debug": "^4.1.1",
