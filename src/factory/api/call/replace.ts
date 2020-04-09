@@ -18,7 +18,7 @@ export const replace: DBFactoryCallReplace = {
     return q.Call(udfName("ReplaceIndex"), Identity(), this.private_key, name, options);
   },
   udfunction(this: DB, name, options) {
-    return q.Call(udfName("ReplaceFunction"), Identity(), this.private_key, name, options);
+    return q.Call(udfName("ReplaceUDFunction"), Identity(), this.private_key, name, options);
   },
   role(this: DB, name, options) {
     return q.Call(udfName("ReplaceRole"), Identity(), this.private_key, name, options);

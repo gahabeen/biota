@@ -45,6 +45,8 @@ export class DB {
   foundation: DBFrameworkFoundation;
   relation: DBFrameworkRelation;
 
+  defaults: any;
+
   privateKey: (private_key: string) => Promise<any>;
 
   constructor(options: DBOptions) {
@@ -83,5 +85,6 @@ export class DB {
     this.relation = framework.relation.bind(this);
 
     this.privateKey = framework.privateKey.bind(this);
+    this.defaults = framework.defaults;
   }
 }

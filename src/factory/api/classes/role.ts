@@ -139,10 +139,11 @@ export const role: DBFactoryRoleApi = {
           ),
           new_privilege: q.Merge(q.Var("privilege"), q.Var("same_current_privilege")),
           new_privileges: q.Append(q.Var("current_privilege_except_new"), [q.Var("new_privilege")]),
+          wrapper_new_privileges: { privileges: q.Var("new_privileges") },
         },
         // fql.base.upsert.role(name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
         // q.Var("new_privileges")
-        call.upsert.role.call(this, name, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
+        call.upsert.role.call(this, name, q.Var("wrapper_new_privileges"))
       );
     },
     delete(this: DB, name, resource) {

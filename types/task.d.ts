@@ -9,4 +9,6 @@ export interface TaskExecuteOptions {
   indent?: number,
   singleResult?: boolean
   domain?: string
+  parallel?: boolean
+  batchSize?: number
 }

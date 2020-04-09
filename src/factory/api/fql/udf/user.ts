@@ -7,6 +7,7 @@ import { CallLogAction, CallSystemOperator } from "~/framework/helpers/call_func
 import { collectionNameNormalized } from "~/factory/classes/collection";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { Identity } from "../../ql";
+import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunction";
 
 export const user: DBFactorySpecificUserApi = {
   login(email, password) {
@@ -18,7 +19,14 @@ export const user: DBFactorySpecificUserApi = {
       q.If(
         q.IsRef(q.Var("doc")),
         {
-          secret: q.Call(udfunctionNameNormalized("AuthStartUserSession"), q.Var("doc"), q.Var("private_key"), q.Var("doc"), password, null),
+          secret: q.Call(
+            udfunctionNameNormalized("AuthStartUserSession"),
+            q.Var("doc"),
+            q.Var("private_key"),
+            q.Var("doc"),
+            password,
+            null
+          ),
         },
         { secret: false }
       )
@@ -27,19 +35,39 @@ export const user: DBFactorySpecificUserApi = {
   register(email, password, data = {}) {
     return q.Let(
       {
-        doc: q.Call(udfunctionNameNormalized("InsertDocument"), Identity(), collectionNameNormalized("users"), data, null),
+        doc: q.Call(
+          udfunctionNameNormalized("InsertDocument"),
+          Identity(),
+          q.Var("private_key"),
+          collectionNameNormalized("users"),
+          data,
+          null
+        ),
         operation: CallSystemOperator(
           updateBaseFQL.document(collectionNameNormalized("user"), q.Select(["ref", "id"], q.Var("doc")), {
             _auth: {
               email: email,
             },
+            _membership: {
+              owner: q.Select("ref", q.Var("doc")),
+            },
+            _activity: {
+              created_by: q.Select("ref", q.Var("doc")),
+            },
           }),
           q.Select("ref", q.Var("doc"))
         ),
-        with_credentials: call.update.credentials(collectionNameNormalized("users"), q.Select(["ref", "id"], q.Var("doc")), { password }),
+        with_credentials: q.Call(
+          udfName("UpdateCredentials"),
+          Identity(),
+          q.Var("private_key"),
+          collectionNameNormalized("users"),
+          q.Select(["ref", "id"], q.Var("doc")),
+          { password }
+        ),
         action: CallLogAction("register", q.Var("doc")),
       },
-      q.Call(udfunctionNameNormalized("UserLogin"), Identity(), email, password)
+      q.Call(udfunctionNameNormalized("UserLogin"), Identity(), q.Var("private_key"), email, password)
     );
   },
   changePassword(newPassword) {

@@ -2,7 +2,7 @@ import { DB } from "~/db";
 import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
 import { udfunction } from "~/factory/api/classes/udfunction";
 import { execute } from "~/tasks";
-import { IsPrivateKeyValid } from "~/framework/api/default/functions";
+import { IsPrivateKeyValid } from "~/framework/api/defaults/udfunctions";
 
 export function privateKey(this: DB) {
   let self = this;

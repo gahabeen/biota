@@ -21,7 +21,7 @@ export const update: DBFactoryCallUpdate = {
     return q.Call(udfName("UpdateIndex"), Identity(), this.private_key, name, options);
   },
   udfunction(this: DB, name, options) {
-    return q.Call(udfName("UpdateFunction"), Identity(), this.private_key, name, options);
+    return q.Call(udfName("UpdateUDFunction"), Identity(), this.private_key, name, options);
   },
   role(this: DB, name, options) {
     return q.Call(udfName("UpdateRole"), Identity(), this.private_key, name, options);

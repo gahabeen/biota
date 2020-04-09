@@ -10,7 +10,7 @@ export function privilegeUpsert(this: DB, roleName: string) {
     return execute(
       [
         {
-          name: `Upsert role privilege [${roleName}] on [${privilege.resource}]`,
+          name: `Upsert role privilege for [${roleName}]`,
           task() {
             return self.query(role.privilege.upsert.call(self, roleName, privilege));
           },

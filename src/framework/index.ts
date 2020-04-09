@@ -19,3 +19,5 @@ export * from "./api/relation";
 // export * from "./api/import"
 
 export * from "./api/privateKey";
+
+export * as defaults from "./api/defaults";

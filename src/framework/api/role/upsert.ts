@@ -3,16 +3,16 @@ import { FaunaCollectionOptions, FaunaId, FaunaRoleOptions } from "~/../types/fa
 import { role } from "~/factory/api/classes/role";
 import { execute } from "~/tasks";
 
-export function upsert(this: DB, collectionName: string) {
+export function upsert(this: DB, roleName: string) {
   let self = this;
 
   return async function upsertMethod(options: FaunaRoleOptions = {}) {
     return execute(
       [
         {
-          name: `Update/Insert [${collectionName}]`,
+          name: `Update/Insert [${roleName}]`,
           task() {
-            return self.query(role.upsert.call(self, collectionName, options));
+            return self.query(role.upsert.call(self, roleName, options));
           },
         },
       ],

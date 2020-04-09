@@ -1,5 +1,0 @@
-export * as collections from "./default/collections"
-export * as rules from "./default/rules"
-export * as functions from "./default/functions"
-export * as indexes from "./default/indexes"
-export * as roles from "./default/roles"

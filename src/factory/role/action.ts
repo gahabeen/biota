@@ -11,7 +11,7 @@ import {
   is_owner,
   is_self,
   none,
-} from "~/framework/api/default/rules";
+} from "~/framework/api/defaults/rules";
 const q = fauna.query;
 
 export function Action(type: FaunaRuleAction): FaunaRuleLambda {

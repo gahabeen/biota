@@ -12,8 +12,7 @@ export function update(this: DB, data: object) {
       {
         name: `Update me`,
         async task() {
-          return self.query(document.update.call(self, collectionNameNormalized("users"), q.Select("id", Identity()), data))
-          // .then(console.log)
+          return self.query(document.update.call(self, collectionNameNormalized("users"), q.Select("id", Identity()), data));
         },
       },
     ],

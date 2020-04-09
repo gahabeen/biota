@@ -11,7 +11,7 @@ let insertLogData = {
 };
 
 export const insert: DBFactoryFQLUDFInsert = {
-  document(collection, data = {}, id) {
+  document(collection, data, id) {
     return q.Let(
       {
         safeData: q.Merge(data, DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
@@ -22,85 +22,91 @@ export const insert: DBFactoryFQLUDFInsert = {
       q.Var("operation")
     );
   },
-  database(name, options = {}) {
+  database(name, optionsExpr) {
     return q.Let(
       {
-        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
-        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
+        safeData: q.Merge(q.Select("data", optionsExpr, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(optionsExpr, { data: q.Var("safeData") }),
         doc: insertBaseFQL.database(name, q.Var("safeOptions")),
-        operation: CallSystemOperator(updateBaseFQL.database(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
-        action: CallLogAction("insert", q.Var("doc")),
-      },
-      q.Var("operation")
-    );
-  },
-  collection(name, options = {}) {
-    return q.Let(
-      {
-        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
-        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
-        doc: insertBaseFQL.collection(name, q.Var("safeOptions")),
-        operation: CallSystemOperator(updateBaseFQL.collection(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
-        action: CallLogAction("insert", q.Var("doc")),
-      },
-      q.Var("operation")
-    );
-  },
-  index(name, options = {}) {
-    return q.Let(
-      {
-        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
-        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
-        doc: insertBaseFQL.index(name, q.Var("safeOptions")),
-        operation: CallSystemOperator(updateBaseFQL.index(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
-        action: CallLogAction("insert", q.Var("doc")),
-      },
-      q.Var("operation")
-    );
-  },
-  udfunction(name, options = {}) {
-    return q.Let(
-      {
-        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
-        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
-        doc: insertBaseFQL.udfunction(name, q.Var("safeOptions")),
-        operation: CallSystemOperator(updateBaseFQL.udfunction(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
-        action: CallLogAction("insert", q.Var("doc")),
-      },
-      q.Var("operation")
-    );
-  },
-  role(name, options = {}) {
-    return q.Let(
-      {
-        doc: insertBaseFQL.role(name, options),
+        // #improve - can't do UPDATE at same time of CREATE
+        // operation: CallSystemOperator(updateBaseFQL.database(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
       q.Var("doc")
     );
   },
-  token(ref, options = {}) {
+  collection(name, optionsExpr) {
     return q.Let(
       {
-        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
-        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
-        doc: insertBaseFQL.token(ref, q.Var("safeOptions")),
-        operation: CallSystemOperator(updateBaseFQL.token(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
+        safeData: q.Merge(q.Select("data", optionsExpr, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(optionsExpr, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.collection(name, q.Var("safeOptions")),
+        // #improve - can't do UPDATE at same time of CREATE
+        // operation: CallSystemOperator(updateBaseFQL.collection(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("operation")
+      q.Var("doc")
     );
   },
-  key(name, options) {
+  index(name, optionsExpr) {
     return q.Let(
       {
-        safeData: q.Merge(q.Select("data", options, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
-        safeOptions: q.Merge(options, { data: q.Var("safeData") }),
-        doc: insertBaseFQL.key(name, q.Var("safeOptions")),
-        operation: CallSystemOperator(updateBaseFQL.key(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
+        safeData: q.Merge(q.Select("data", optionsExpr, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(optionsExpr, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.index(name, q.Var("safeOptions")),
+        // #improve - can't do UPDATE at same time of CREATE
+        // operation: CallSystemOperator(updateBaseFQL.index(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
         action: CallLogAction("insert", q.Var("doc")),
       },
-      q.Var("operation")
+      q.Var("doc")
+    );
+  },
+  udfunction(nameExpr, optionsExpr) {
+    return q.Let(
+      {
+        safeData: q.Merge(q.Select("data", optionsExpr, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(optionsExpr, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.udfunction(nameExpr, q.Var("safeOptions")),
+        // #improve - can't do UPDATE at same time of CREATE
+        // operation: CallSystemOperator(updateBaseFQL.udfunction(q.Select("name", q.Var("doc")) as string, { data: insertLogData })),
+        action: CallLogAction("insert", q.Var("doc")),
+      },
+      q.Var("doc")
+    );
+  },
+  role(name, optionsExpr) {
+    return q.Let(
+      {
+        doc: insertBaseFQL.role(name, optionsExpr),
+        action: CallLogAction("insert", q.Var("doc")),
+      },
+      q.Var("doc")
+    );
+  },
+  token(ref, optionsExpr) {
+    return q.Let(
+      {
+        safeData: q.Merge(q.Select("data", optionsExpr, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(optionsExpr, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.token(ref, q.Var("safeOptions")),
+        // #improve - can't do UPDATE at same time of CREATE
+        // operation: CallSystemOperator(updateBaseFQL.token(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
+        action: CallLogAction("insert", q.Var("doc")),
+      },
+      q.Var("doc")
+    );
+  },
+  key(name, optionsExpr) {
+    return q.Let(
+      {
+        safeData: q.Merge(q.Select("data", optionsExpr, {}), DOCUMENT_RESERVED_DATA_FIELDS_OBJ),
+        safeOptions: q.Merge(optionsExpr, { data: q.Var("safeData") }),
+        doc: insertBaseFQL.key(name, q.Var("safeOptions")),
+        // #improve - can't do UPDATE at same time of CREATE
+        // operation: CallSystemOperator(updateBaseFQL.key(q.Select(["ref", "id"], q.Var("doc")), { data: insertLogData })),
+        action: CallLogAction("insert", q.Var("doc")),
+      },
+      q.Var("doc")
     );
   },
 };

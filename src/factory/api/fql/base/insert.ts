@@ -1,34 +1,29 @@
 import { query as q } from "faunadb";
 import { DBFactoryFQLBaseInsert } from "~/../types/factory/factory.fql.base";
-import { Collection } from "~/factory/classes/collection";
-import { Database } from "~/factory/classes/database";
-import { Index } from "~/factory/classes/index";
-import { Role } from "~/factory/classes/role";
-import { UDFunction } from "~/factory/classes/udfunction";
 
 export const insert: DBFactoryFQLBaseInsert = {
-  document(collection, data = {}, id) {
+  document(collection, data, id) {
     return q.Create(q.If(q.IsString(id), q.Ref(q.Collection(collection), id), q.Collection(collection)), { data });
   },
-  database(name, options = {}) {
-    return q.CreateDatabase(Database({ ...options, name }));
+  database(nameExpr, optionsExpr) {
+    return q.CreateDatabase(q.Merge(optionsExpr, { name: nameExpr }));
   },
-  collection(name, options = {}) {
-    return q.CreateCollection(Collection({ ...options, name }));
+  collection(nameExpr, optionsExpr) {
+    return q.CreateCollection(q.Merge(optionsExpr, { name: nameExpr }));
   },
-  index(name, options = {}) {
-    return q.CreateIndex(Index({ ...options, name }));
+  index(nameExpr, optionsExpr) {
+    return q.CreateIndex(q.Merge(optionsExpr, { name: nameExpr }));
   },
-  udfunction(name, options = {}) {
-    return q.CreateFunction(UDFunction({ ...options, name }));
+  udfunction(nameExpr, optionsExpr) {
+    return q.CreateFunction(q.Merge(optionsExpr, { name: nameExpr }));
   },
-  role(name, options = {}) {
-    return q.CreateRole(Role({ ...options, name }));
+  role(nameExpr, optionsExpr) {
+    return q.CreateRole(q.Merge(optionsExpr, { name: nameExpr }));
   },
-  token(ref, options = {}) {
-    return q.Create(q.Tokens(), { instance: ref, ...options });
+  token(ref, optionsExpr) {
+    return q.Create(q.Tokens(), q.Merge(optionsExpr, { instance: ref }));
   },
-  key(name, options = {}) {
-    return q.CreateKey({ ...options, name });
+  key(nameExpr, optionsExpr) {
+    return q.CreateKey(q.Merge(optionsExpr, { name: nameExpr }));
   },
 };
