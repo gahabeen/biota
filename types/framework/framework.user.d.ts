@@ -1,4 +1,4 @@
-import { FaunaDocumentOptions } from "../fauna";
+import { FaunaDocumentOptions, FaunaPaginateOptions } from "../fauna";
 
 export interface DBFrameworkAuthConnectUrlOptions {
   client_id: string;
@@ -73,6 +73,8 @@ export interface DBFrameworkUserApi {
   replace(data: FaunaDocumentOptions["data"]): Promise<any>;
   delete(): Promise<any>;
   forget(): Promise<any>;
+
+  activity(pagination?: FaunaPaginateOptions): Promise<any>;
 
   session: DBFrameworkUserSessionApi;
   google: DBFrameworkUserAuthProviderApi;

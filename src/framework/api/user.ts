@@ -19,6 +19,7 @@ import { update } from "~/framework/api/user/update";
 import { replace } from "~/framework/api/user/replace";
 import { delete_ } from "~/framework/api/user/delete";
 import { forget } from "~/framework/api/user/forget";
+import { activity } from "~/framework/api/user/activity";
 
 export const user: DBFrameworkUserApi = {
   me,
@@ -31,6 +32,7 @@ export const user: DBFrameworkUserApi = {
   replace,
   delete: delete_,
   forget,
+  activity,
 
   session: {
     get: getSession,

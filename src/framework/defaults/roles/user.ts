@@ -1,10 +1,11 @@
 import { query as q } from "faunadb";
 import { FaunaRoleOptions } from "~/../types/fauna";
 import { collectionNameNormalized } from "~/factory/classes/collection";
-import { Privilege, Role, roleNameNormalized } from "~/factory/classes/role";
+import { Privilege, Role, roleNameNormalized, CustomPrivilege } from "~/factory/classes/role";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { has_role } from "../rules/has_role";
 import { is_document_available } from "../rules/is_document_available";
+import { Identity } from "~/factory/api/ql";
 
 export const user: FaunaRoleOptions = Role({
   name: roleNameNormalized("user"),
@@ -42,6 +43,23 @@ export const user: FaunaRoleOptions = Role({
     /**
      * Collections
      */
+
+    CustomPrivilege({
+      resource: q.Collection(collectionNameNormalized("actions")),
+      actions: {
+        read: q.Query(
+          q.Lambda(
+            "ref",
+            q.Let(
+              {
+                user: q.Select(["data", "user"], q.Get(q.Var("ref"))),
+              },
+              q.If(q.IsRef(q.Var("user")), q.Equals(q.Var("user"), Identity()), false)
+            )
+          )
+        ),
+      },
+    }),
 
     Privilege({
       resource: q.Collection(collectionNameNormalized("users")),

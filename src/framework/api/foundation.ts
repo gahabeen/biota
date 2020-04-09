@@ -29,7 +29,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       initialRoleTasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
         task() {
-          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name, {})));
+          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name, { privileges: []})));
         },
       });
     }
@@ -50,7 +50,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
    *  Functions
    */
 
-  if (false && options.udfunctions) {
+  if (options.udfunctions) {
     let initialUDFunctionsTasks = [];
     initialUDFunctionsTasks.push({
       name: `Upserting udfunction function [${defaultFunctions.InsertUDFunction.name}]`,
