@@ -19,12 +19,11 @@
     "test": "jest",
     "test-watch": "jest --watch",
     "browser": "node bin/browserify",
-    "build": "yarn run clean-dist && tsc"
+    "build": "yarn run clean-dist && ttsc"
   },
   "dependencies": {
     "debug": "^4.1.1",
     "faunadb": "^2.11.1",
-    "module-alias": "^2.2.2",
     "nanohash": "^0.0.15"
   },
   "devDependencies": {
@@ -50,16 +49,15 @@
     "tinyify": "^2.5.2",
     "ts-jest": "^25.2.1",
     "tsify": "^4.0.1",
+    "ttypescript": "^1.5.10",
     "typedoc": "^0.17.1",
     "typescript": "^3.8.3",
+    "typescript-transform-paths": "^1.1.14",
     "uglifyify": "^5.0.2",
     "yarn-run-all": "^3.1.1"
   },
   "resolutions": {
     "minimist": "^1.2.5"
-  },
-  "_moduleAliases": {
-    "~": "dist"
   },
   "aliasify": {
     "aliases": {
