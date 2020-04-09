@@ -1,54 +1,45 @@
-
 # biota
 
+![Feature requests](https://img.shields.io/badge/feature-requests-blue?style=flat-square) ![npm](https://img.shields.io/npm/v/biota?style=flat-square) ![npm](https://img.shields.io/npm/dm/biota?style=flat-square) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square)
 
-> **Biota isn't production ready**. It's api isn't fully settled yet. Breaking changes may happen!
+A simple, yet 💪, _slightly opiniated_ database framework for Fauna, written in Javascript (Typescript).
 
-> **Biota isn't hosted on NPM yet**. It'll be soon!
+> 🙃 You're on beta release. Don't get scared though, the api is pretty stable but tests need to be added to be fool-proof. (Thus, as of yet, Biota isn't production ready.)
 
-A simple *opiniated* database framework for Fauna, written in Typescript.
+> ❤️ [Check the features](https://biota.canny.io/features) and [request the ones](https://biota.canny.io/features) you would love to see in **biota**. (They arn't all listed yet!)
 
-Some of the features:
-- **document life** (expiration, assignements, ownership, etc) 
-- **document tracking** (user action history, in addition to build-in document history)
-- **search made simple** (on any field, combined, excluded, joined, **autocompleted**, etc)
-- **computed fields** (build-in fields that auto-generate from your document)
-- **hands-free relationships** (between documents, with resolvers)
-- **permission system** (fine-grained)
-- **short-code ids** (read *Xh6si* instead of *23764999364764*) 
-- **facilitated pagination**
-
-See missing features which should be part of Biota? [Let us know!](https://github.com/gahabeen/biota/issues/new)
+Getting some errors? [Let us know!](https://github.com/gahabeen/biota/issues/new)
 
 ```js
-import { Biota } from "biota"
+import { Biota } from "biota";
 ```
+
 ```js
 // 4 lines to:
-const db = new Biota({ secret: "<your-secret>"})
+const db = new Biota({ secret: "<your-secret>", private_key: "123" });
 
 // - scaffold the whole database (inc. users collection for ex)
-await db.foundation()
+await db.foundation();
 
 // - add todos collection
-await db.collection("todos").scaffold()
+await db.collection("todos").scaffold();
 
 // - add autocomplete-search on name field
-await db.collection("todos").index({field: "name", ngram: true})
+await db.collection("todos").index({ field: "name", ngram: true });
 ```
+
 ```js
 // 4 lines to:
-// - create a user
-let { ref } = await db.collection("users").insert({ nickname: "gahabeen" }, { password: "youdontknowme" })
-
-// - log a user
-const logged = await db.login(ref.id, "youdontknowme")
+// - create a user & login
+let asUser = await db.user.register("my@email.com", "password", {
+  nickname: "Georgy",
+});
 
 // - create a todo
-await logged.collection("todos").insert({ name: "Remember to star this project" })
+await asUser.collection("todos").insert({ name: "Remember to star this project" });
 
 // - query a todo with $ngram (autocomplete behavior)
-await logged.collection("todos").find({ name: { $ngram: "star" }})
+await asUser.collection("todos").find({ name: { $ngram: "star" } });
 // output: [{ ref, ts, data: { name: "Remember to star this project" } }]
 ```
 
@@ -65,42 +56,47 @@ yarn add biota // -G for global
 // or
 npm i biota // -G for global
 ```
+
 ### Import
+
 ```js
-import { Biota } from "biota"
+import { Biota } from "biota";
 // or
-const { Biota } = require("biota")
+const { Biota } = require("biota");
 ```
 
 ### Instance
 
 There are **two ways** to instantiate Biota.
 
-1. You can use a `admin/server key` (or any secret key) as a paremeter.  
+1. You can use a `admin/server key` (or any secret key) as a paremeter.
+
 ```js
 const db = new Biota({ secret: "<your-secret>"})
 // example
 await db.query( q.Create(...) )
 ```
 
-2. You can use the function `.login(id, password)` to log a user.  
+2. You can use the function `.user.login(id, password)` to log a user.
+
 ```js
 const db = new Biota()
-const logged = await db.login("123", "super_password123")
+const logged = await db.user.login("123", "super_password123")
 // example
 await logged.query( q.Create(...) )
 ```
-### Api
-Even though you can `query` your database (same as you would do with the same fauna method `query`), the main power of **Biota** lives in its [extended api](#).
 
+### Api
+
+Even though you can `query` your database (same as you would do with the same fauna method `query`), the main power of **Biota** lives in its [extended api](#).
 
 > ⏳ **Patience**: It's coming.. :)
 
 ### Helpers
 
 ```js
-const { q, factory } = require('biota')
-// q: export the query builder, same as fauna.query 
+const { q, factory, Page } = require('biota')
+// q: export the query builder, same as fauna.query
 q.If(..., true, false)
 // factory: export the factory api (helpers that wrap FQL)
 factory.create.database(name, options)
@@ -112,10 +108,9 @@ If you want to run the tests, you'll need to provide a `FAUNA_KEY_TEST=<your-tes
 
 > :warning: **Careful**: At the moment tests covering everything yet. PR welcomed 😉
 
-
 ## Built With
 
-* [fauna-db-js](https://github.com/fauna/faunadb-js) - Javascript driver for FaunaDB
+- [fauna-db-js](https://github.com/fauna/faunadb-js) - Javascript driver for FaunaDB
 
 ## Contributing
 
@@ -123,12 +118,12 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. 
-For the versions available, see the [tags on this repository](https://github.com/gahabeen/biota/tags). 
+We use [SemVer](http://semver.org/) for versioning.
+For the versions available, see the [tags on this repository](https://github.com/gahabeen/biota/tags).
 
 ## Authors
 
-* **Gabin Desserprit** *instigator*
+- **Gabin Desserprit** _instigator_
 
 See also the list of [contributors](https://github.com/gahabeen/biota/contributors) who participated in this project.
 Join us :beers:
@@ -138,7 +133,5 @@ Join us :beers:
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
-This lib wouldn't exist if I had not dug deep into Fauna FQL and got helped through the [Fauna's slack community channel](fauna-community.slack.com). In no order, I'ld like to thank, for their help and support, fauna's team (**Brecht De Rooms**, **Ben Edwards**, **Marrony Neris**, **Leo Regnier**, **Summer**, ,...) as well as other users like **Eigil Sagafos** 🙏
 
-## To bring back up (once properly set)
-![Travis (.org)](https://img.shields.io/travis/gahabeen/biota?style=flat-square) ![Code Climate coverage](https://img.shields.io/codeclimate/coverage/gahabeen/biota?style=flat-square)
+This lib wouldn't exist if I had not dug deep into Fauna FQL and got helped through the [Fauna's slack community channel](fauna-community.slack.com). In no order, I'ld like to thank, for their help and support, fauna's team (**Brecht De Rooms**, **Ben Edwards**, **Marrony Neris**, **Leo Regnier**, **Summer**, ,...) as well as other users like **Eigil Sagafos** 🙏

@@ -1,5 +1,5 @@
 // types
-import { FaunaFunctionOptions, FaunaRef, Fauna } from "~/../types/db";
+import { FaunaUDFunctionOptions, FaunaRef, Fauna } from "~/../types/fauna";
 // external
 // biota
 import { CONVENTION } from "~/consts";
@@ -11,7 +11,7 @@ export function udfunctionNameNormalized(name: string) {
   )}`;
 }
 
-export function UDFunction(fn: FaunaFunctionOptions): FaunaFunctionOptions {
+export function UDFunction(fn: FaunaUDFunctionOptions): FaunaUDFunctionOptions {
   let { name = "", body, data, role } = fn || {};
   let self = {
     name,

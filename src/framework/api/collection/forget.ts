@@ -1,23 +1,23 @@
 import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/db";
-import { collection } from "~/factory/api/collection";
+import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
+import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 
-export function forget(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function forget(this: DB, collectionName: string) {
   let self = this;
 
   return async function forgetMethod(id: FaunaId) {
     return execute(
       [
         {
-          name: `Forget (${id}) in (${collectionDefinition.name})`,
+          name: `Forget (${id}) in (${collectionName})`,
           task() {
-            return self.query(collection(collectionDefinition.name).forget(id));
-          }
-        }
+            return self.query(document.forget.call(self, collectionName, id));
+          },
+        },
       ],
       {
-        domain: "DB.collection.forget"
+        domain: "DB.collection.forget",
       }
     );
   };

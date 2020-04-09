@@ -1,10 +1,13 @@
-require('dotenv').config()
+require("dotenv").config();
 
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'node',
-  roots: ['<rootDir>/tests'],
-  moduleFileExtensions: ['js', 'd.ts', 'ts']
-  // testMatch: ['tests/**/*.test.ts']
-  // setupFiles: ['./tests/setup.ts']
-}
+  preset: "ts-jest",
+  verbose: true,
+  testEnvironment: "node",
+  roots: ["<rootDir>/tests/"],
+  moduleNameMapper: {
+    "~/(.*)$": "<rootDir>/src/$1",
+  },
+  // moduleFileExtensions: ["js", "d.ts", "ts"],
+  testMatch: ["<rootDir>/tests/**/*.test.ts"],
+};

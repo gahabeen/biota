@@ -1,16 +1,18 @@
-import * as qs from "querystring";
 import { query as q } from "faunadb";
-import { DBFrameworkCollectionSearchParams, FaunaPaginateMapper, FaunaPaginateOptions, FaunaCollectionOptions, Fauna } from "~/../types/db";
+import * as qs from "querystring";
+import { Fauna, FaunaCollectionOptions, FaunaPaginateMapper, FaunaPaginateOptions } from "~/../types/fauna";
+import { DBFrameworkCollectionSearchParams } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-import { execute } from "~/tasks";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { execute } from "~/tasks";
+import { Identity } from "~/factory/api/ql";
 
 export function parseSearchQuery(collection: string, searchQuery: object) {
   const buildQuery = (sq: Fauna.Expr) => {
-    return q.Call(udfunctionNameNormalized("SearchQuery"), [q.Collection(collection), sq]);
+    return q.Call(udfunctionNameNormalized("SearchQuery"), Identity(), q.Collection(collection), sq);
   };
 
-  const safe = (x: object) => JSON.parse(JSON.stringify(x));
+  // const safe = (x: object) => JSON.parse(JSON.stringify(x));
 
   const operators = {
     $and: (...queries: Fauna.Expr[]) => {
@@ -22,16 +24,16 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     },
     $nor: (query: Fauna.Expr, ...queries: Fauna.Expr[]) => {
       return q.Difference(buildQuery(query), ...queries.map(buildQuery));
-    }
+    },
     // $not: (source: Fauna.Expr, query: Fauna.Expr) =>
     //   q.Difference(source, query)
     // $distinct: (queries: Fauna.Expr[]) => q.Distinct(queries)
   };
 
-  const isOperator = (key: string) => Object.keys(operators).includes(key);
-  const hasOperators = (obj: object) => Object.keys(obj).some(key => Object.keys(operators).includes(key));
-  const getFirstOperator = (obj: object) => {
-    return Object.keys(obj).find(key => isOperator(key));
+  const isSystemOperator = (key: string) => Object.keys(operators).includes(key);
+  const hasSystemOperators = (obj: object) => Object.keys(obj).some((key) => Object.keys(operators).includes(key));
+  const getFirstSystemOperator = (obj: object) => {
+    return Object.keys(obj).find((key) => isSystemOperator(key));
   };
 
   // UPDATE!
@@ -39,8 +41,8 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     let reduced = {};
     const reducee = (value: any, acc: object) => {
       if (typeof value === "object") {
-        if (hasOperators(value)) {
-          let operator = getFirstOperator(value);
+        if (hasSystemOperators(value)) {
+          let operator = getFirstSystemOperator(value);
           let operatorValue = value[operator];
           let operation = operators[operator](...operatorValue);
           Object.assign(acc, operation);
@@ -71,14 +73,14 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
     return q.Documents(q.Collection(collection));
   }
 
-  if (!hasOperators(searchQuery)) {
+  if (!hasSystemOperators(searchQuery)) {
     return buildQuery(searchQuery);
   } else {
     return reducer(searchQuery);
   }
 }
 
-export function find(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function find(this: DB, collectionName: string) {
   let self = this;
 
   return async function findMethod(
@@ -89,15 +91,15 @@ export function find(this: DB, collectionDefinition: FaunaCollectionOptions) {
     return execute(
       [
         {
-          name: `Find (${qs.stringify(searchQuery).slice(0, 20)}...) in (${collectionDefinition.name})`,
+          name: `Find (${qs.stringify(searchQuery).slice(0, 20)}...) in (${collectionName})`,
           task() {
-            let paginate = q.Paginate(parseSearchQuery(collectionDefinition.name, searchQuery), paginateOptions);
+            let paginate = q.Paginate(parseSearchQuery(collectionName, searchQuery), paginateOptions);
             return self.query(mapper ? q.Map(paginate, mapper) : paginate);
-          }
-        }
+          },
+        },
       ],
       {
-        domain: "DB.collection.find"
+        domain: "DB.collection.find",
       }
     );
   };

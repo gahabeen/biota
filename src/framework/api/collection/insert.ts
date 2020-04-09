@@ -1,31 +1,23 @@
+import { FaunaId, FaunaDocumentOptions } from "~/../types/fauna";
 import { DB } from "~/db";
-import { FaunaCollectionOptions, DBFrameworkCollectionInsertOptions, Fauna } from "~/../types/db";
-import { collection } from "~/factory/api/collection";
+import { document } from "~/factory/api/classes/document";
 import { execute } from "~/tasks";
 
-export function insert(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function insert(this: DB, collectionName: string) {
   let self = this;
 
-  return async function insertMethod(data: any, options?: DBFrameworkCollectionInsertOptions) {
-    let { keepId = false } = options || {};
-    const { id, credentials } = data || {};
-
+  return async function insertMethod(data: any = {}, id: FaunaId = null) {
     return execute(
       [
         {
-          name: (keepId ? `Upserting ${id}` : `Inserting`) + ` in ${collectionDefinition.name}`,
+          name: `Insert data in [${collectionName}]`,
           task() {
-            if (keepId) {
-              if (!id) throw new Error(`Doesn't have any given id`);
-              return self.query(collection(collectionDefinition.name).upsert(data.data || {}, { id, credentials }));
-            } else {
-              return self.query(collection(collectionDefinition.name).insert(data));
-            }
-          }
-        }
+            return self.query(document.insert.call(self, collectionName, data, id));
+          },
+        },
       ],
       {
-        domain: "DB.collection.insert"
+        domain: "DB.collection.insert",
       }
     );
   };

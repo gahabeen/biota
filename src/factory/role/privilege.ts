@@ -1,30 +1,21 @@
-// types
-import {
-  FaunaRolePrivilege,
-  FaunaRolePrivilegeDefault,
-  Fauna
-} from "~/../types/db";
-// external
 import { query as q } from "faunadb";
-// biota
+import { Fauna, FaunaRolePrivilege, FaunaRolePrivilegeDefault } from "~/../types/fauna";
 import {
+  CallAction,
   CreateAction,
   DeleteAction,
-  ReadAction,
-  WriteAction,
   HistoryReadAction,
   HistoryWriteAction,
+  ReadAction,
   UnrestrictedReadAction,
-  CallAction
+  WriteAction,
 } from "./action";
 
-export function CustomPrivilege(
-  privilege: FaunaRolePrivilege
-): FaunaRolePrivilege {
+export function CustomPrivilege(privilege: FaunaRolePrivilege): FaunaRolePrivilege {
   let { resource, actions } = privilege || {};
   return {
     resource,
-    actions
+    actions,
   };
 }
 
@@ -36,9 +27,7 @@ function QueryWrapper(expr: Fauna.Expr) {
   }
 }
 
-export function Privilege(
-  privilege: FaunaRolePrivilegeDefault
-): FaunaRolePrivilege {
+export function Privilege(privilege: FaunaRolePrivilegeDefault): FaunaRolePrivilege {
   let { resource, actions = {} } = privilege || {};
 
   let processedActions = {
@@ -48,10 +37,8 @@ export function Privilege(
     write: QueryWrapper(WriteAction(actions.write)),
     history_write: QueryWrapper(HistoryWriteAction(actions.history_read)),
     history_read: QueryWrapper(HistoryReadAction(actions.history_read)),
-    unrestricted_read: QueryWrapper(
-      UnrestrictedReadAction(actions.unrestricted_read)
-    ),
-    call: QueryWrapper(CallAction(actions.call))
+    unrestricted_read: QueryWrapper(UnrestrictedReadAction(actions.unrestricted_read)),
+    call: QueryWrapper(CallAction(actions.call)),
   };
 
   let filteredActions = {};
@@ -63,7 +50,7 @@ export function Privilege(
 
   let result = {
     resource,
-    actions: filteredActions
+    actions: filteredActions,
   };
   return result;
 }

@@ -1,14 +1,9 @@
 import { DB } from "~/db";
-import {
-  FaunaPaginateMapper,
-  FaunaPaginateOptions,
-  FaunaPaginateResponse,
-  FaunaCollectionOptions,
-  DBFrameworkCollectionSearchParams
-} from "~/../types/db";
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from "~/../types/fauna";
 import { execute } from "~/tasks";
+import { DBFrameworkCollectionSearchParams } from "~/../types/framework/framework.collection";
 
-export function paginate(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function paginate(this: DB, collectionName: string) {
   let self = this;
 
   return async function* paginateMethod(
@@ -24,10 +19,10 @@ export function paginate(this: DB, collectionDefinition: FaunaCollectionOptions)
       yield execute(
         [
           {
-            name: `Paginate after ${after} in (${collectionDefinition.name})`,
+            name: `Paginate after ${after} in (${collectionName})`,
             async task() {
               return self
-                .collection(collectionDefinition.name)
+                .collection(collectionName)
                 .find(searchQuery, { ...paginateOptions, after }, mapper)
                 .then((res: FaunaPaginateResponse) => {
                   if (res.after) {
@@ -37,11 +32,11 @@ export function paginate(this: DB, collectionDefinition: FaunaCollectionOptions)
                   }
                   return res;
                 });
-            }
-          }
+            },
+          },
         ],
         {
-          domain: "DB.collection.paginate"
+          domain: "DB.collection.paginate",
         }
       );
     }

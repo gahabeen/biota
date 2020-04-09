@@ -2477,7 +2477,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"base64-js":1,"buffer":5,"ieee754":24}],6:[function(require,module,exports){
+},{"base64-js":1,"buffer":5,"ieee754":25}],6:[function(require,module,exports){
 module.exports = {
   "100": "Continue",
   "101": "Switching Protocols",
@@ -3091,6 +3091,170 @@ exports.Response = __self__.Response
 module.exports = exports
 
 },{}],8:[function(require,module,exports){
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var w = d * 7;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} [options]
+ * @throws {Error} throw an error if val is not a non-empty string or a number
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options) {
+  options = options || {};
+  var type = typeof val;
+  if (type === 'string' && val.length > 0) {
+    return parse(val);
+  } else if (type === 'number' && isFinite(val)) {
+    return options.long ? fmtLong(val) : fmtShort(val);
+  }
+  throw new Error(
+    'val is not a non-empty string or a valid number. val=' +
+      JSON.stringify(val)
+  );
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = String(str);
+  if (str.length > 100) {
+    return;
+  }
+  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
+    str
+  );
+  if (!match) {
+    return;
+  }
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'weeks':
+    case 'week':
+    case 'w':
+      return n * w;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtShort(ms) {
+  var msAbs = Math.abs(ms);
+  if (msAbs >= d) {
+    return Math.round(ms / d) + 'd';
+  }
+  if (msAbs >= h) {
+    return Math.round(ms / h) + 'h';
+  }
+  if (msAbs >= m) {
+    return Math.round(ms / m) + 'm';
+  }
+  if (msAbs >= s) {
+    return Math.round(ms / s) + 's';
+  }
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function fmtLong(ms) {
+  var msAbs = Math.abs(ms);
+  if (msAbs >= d) {
+    return plural(ms, msAbs, d, 'day');
+  }
+  if (msAbs >= h) {
+    return plural(ms, msAbs, h, 'hour');
+  }
+  if (msAbs >= m) {
+    return plural(ms, msAbs, m, 'minute');
+  }
+  if (msAbs >= s) {
+    return plural(ms, msAbs, s, 'second');
+  }
+  return ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, msAbs, n, name) {
+  var isPlural = msAbs >= n * 1.5;
+  return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
+}
+
+},{}],9:[function(require,module,exports){
 (function (process){
 /* eslint-env browser */
 
@@ -3358,7 +3522,7 @@ formatters.j = function (v) {
 };
 
 }).call(this,require('_process'))
-},{"./common":9,"_process":28}],9:[function(require,module,exports){
+},{"./common":10,"_process":28}],10:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -3626,7 +3790,7 @@ function setup(env) {
 
 module.exports = setup;
 
-},{"ms":26}],10:[function(require,module,exports){
+},{"ms":8}],11:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4151,7 +4315,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = {
   Client: require('./src/Client'),
   Expr: require('./src/Expr'),
@@ -4164,7 +4328,7 @@ module.exports = {
   query: require('./src/query'),
 }
 
-},{"./src/Client":12,"./src/Expr":13,"./src/PageHelper":14,"./src/RequestResult":15,"./src/clientLogger":18,"./src/errors":19,"./src/query":20,"./src/values":21}],12:[function(require,module,exports){
+},{"./src/Client":13,"./src/Expr":14,"./src/PageHelper":15,"./src/RequestResult":16,"./src/clientLogger":19,"./src/errors":20,"./src/query":21,"./src/values":22}],13:[function(require,module,exports){
 'use strict'
 
 var APIVersion = '2.7'
@@ -4429,7 +4593,7 @@ function responseHeadersAsObject(response) {
 
 module.exports = Client
 
-},{"./PageHelper":14,"./RequestResult":15,"./_json":16,"./_util":17,"./errors":19,"./query":20,"./values":21,"btoa-lite":4,"cross-fetch":7,"http":35,"https":23,"url-parse":55}],13:[function(require,module,exports){
+},{"./PageHelper":15,"./RequestResult":16,"./_json":17,"./_util":18,"./errors":20,"./query":21,"./values":22,"btoa-lite":4,"cross-fetch":7,"http":35,"https":24,"url-parse":55}],14:[function(require,module,exports){
 'use strict'
 
 /**
@@ -4576,7 +4740,7 @@ Expr.toString = exprToString
 
 module.exports = Expr
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict'
 
 var query = require('./query')
@@ -4848,7 +5012,7 @@ PageHelper.prototype._clone = function() {
 
 module.exports = PageHelper
 
-},{"./query":20,"object-assign":27}],15:[function(require,module,exports){
+},{"./query":21,"object-assign":27}],16:[function(require,module,exports){
 'use strict'
 
 /**
@@ -4946,7 +5110,7 @@ Object.defineProperty(RequestResult.prototype, 'timeTaken', {
 
 module.exports = RequestResult
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict'
 
 var values = require('./values')
@@ -5001,7 +5165,7 @@ module.exports = {
   parseJSON: parseJSON,
 }
 
-},{"./values":21}],17:[function(require,module,exports){
+},{"./values":22}],18:[function(require,module,exports){
 'use strict'
 
 /**
@@ -5066,7 +5230,7 @@ module.exports = {
   removeUndefinedValues: removeUndefinedValues,
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict'
 
 var json = require('./_json')
@@ -5188,7 +5352,7 @@ module.exports = {
   showRequestResult: showRequestResult,
 }
 
-},{"./_json":16}],19:[function(require,module,exports){
+},{"./_json":17}],20:[function(require,module,exports){
 'use strict'
 
 var util = require('util')
@@ -5451,7 +5615,7 @@ module.exports = {
   UnavailableError: UnavailableError,
 }
 
-},{"util":61}],20:[function(require,module,exports){
+},{"util":61}],21:[function(require,module,exports){
 'use strict'
 
 var annotate = require('fn-annotate')
@@ -8607,7 +8771,7 @@ module.exports = {
   wrap: wrap,
 }
 
-},{"./Expr":13,"./errors":19,"./values":21,"fn-annotate":22,"object-assign":27,"util-deprecate":58}],21:[function(require,module,exports){
+},{"./Expr":14,"./errors":20,"./values":22,"fn-annotate":23,"object-assign":27,"util-deprecate":58}],22:[function(require,module,exports){
 'use strict'
 
 var base64 = require('base64-js')
@@ -8980,7 +9144,7 @@ module.exports = {
   Query: Query,
 }
 
-},{"./Expr":13,"./errors":19,"base64-js":1,"util":61,"util-deprecate":58}],22:[function(require,module,exports){
+},{"./Expr":14,"./errors":20,"base64-js":1,"util":61,"util-deprecate":58}],23:[function(require,module,exports){
 'use strict';
 
 module.exports = annotate;
@@ -9038,7 +9202,7 @@ function annotate(fn) {
 
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var http = require('http')
 var url = require('url')
 
@@ -9071,7 +9235,7 @@ function validateParams (params) {
   return params
 }
 
-},{"http":35,"url":56}],24:[function(require,module,exports){
+},{"http":35,"url":56}],25:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -9157,7 +9321,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -9184,170 +9348,6 @@ if (typeof Object.create === 'function') {
       ctor.prototype.constructor = ctor
     }
   }
-}
-
-},{}],26:[function(require,module,exports){
-/**
- * Helpers.
- */
-
-var s = 1000;
-var m = s * 60;
-var h = m * 60;
-var d = h * 24;
-var w = d * 7;
-var y = d * 365.25;
-
-/**
- * Parse or format the given `val`.
- *
- * Options:
- *
- *  - `long` verbose formatting [false]
- *
- * @param {String|Number} val
- * @param {Object} [options]
- * @throws {Error} throw an error if val is not a non-empty string or a number
- * @return {String|Number}
- * @api public
- */
-
-module.exports = function(val, options) {
-  options = options || {};
-  var type = typeof val;
-  if (type === 'string' && val.length > 0) {
-    return parse(val);
-  } else if (type === 'number' && isFinite(val)) {
-    return options.long ? fmtLong(val) : fmtShort(val);
-  }
-  throw new Error(
-    'val is not a non-empty string or a valid number. val=' +
-      JSON.stringify(val)
-  );
-};
-
-/**
- * Parse the given `str` and return milliseconds.
- *
- * @param {String} str
- * @return {Number}
- * @api private
- */
-
-function parse(str) {
-  str = String(str);
-  if (str.length > 100) {
-    return;
-  }
-  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
-    str
-  );
-  if (!match) {
-    return;
-  }
-  var n = parseFloat(match[1]);
-  var type = (match[2] || 'ms').toLowerCase();
-  switch (type) {
-    case 'years':
-    case 'year':
-    case 'yrs':
-    case 'yr':
-    case 'y':
-      return n * y;
-    case 'weeks':
-    case 'week':
-    case 'w':
-      return n * w;
-    case 'days':
-    case 'day':
-    case 'd':
-      return n * d;
-    case 'hours':
-    case 'hour':
-    case 'hrs':
-    case 'hr':
-    case 'h':
-      return n * h;
-    case 'minutes':
-    case 'minute':
-    case 'mins':
-    case 'min':
-    case 'm':
-      return n * m;
-    case 'seconds':
-    case 'second':
-    case 'secs':
-    case 'sec':
-    case 's':
-      return n * s;
-    case 'milliseconds':
-    case 'millisecond':
-    case 'msecs':
-    case 'msec':
-    case 'ms':
-      return n;
-    default:
-      return undefined;
-  }
-}
-
-/**
- * Short format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtShort(ms) {
-  var msAbs = Math.abs(ms);
-  if (msAbs >= d) {
-    return Math.round(ms / d) + 'd';
-  }
-  if (msAbs >= h) {
-    return Math.round(ms / h) + 'h';
-  }
-  if (msAbs >= m) {
-    return Math.round(ms / m) + 'm';
-  }
-  if (msAbs >= s) {
-    return Math.round(ms / s) + 's';
-  }
-  return ms + 'ms';
-}
-
-/**
- * Long format for `ms`.
- *
- * @param {Number} ms
- * @return {String}
- * @api private
- */
-
-function fmtLong(ms) {
-  var msAbs = Math.abs(ms);
-  if (msAbs >= d) {
-    return plural(ms, msAbs, d, 'day');
-  }
-  if (msAbs >= h) {
-    return plural(ms, msAbs, h, 'hour');
-  }
-  if (msAbs >= m) {
-    return plural(ms, msAbs, m, 'minute');
-  }
-  if (msAbs >= s) {
-    return plural(ms, msAbs, s, 'second');
-  }
-  return ms + ' ms';
-}
-
-/**
- * Pluralization helper.
- */
-
-function plural(ms, msAbs, n, name) {
-  var isPlural = msAbs >= n * 1.5;
-  return Math.round(ms / n) + ' ' + name + (isPlural ? 's' : '');
 }
 
 },{}],27:[function(require,module,exports){
@@ -10503,7 +10503,7 @@ var unsafeHeaders = [
 ]
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./capability":36,"./response":38,"_process":28,"buffer":5,"inherits":25,"readable-stream":53}],38:[function(require,module,exports){
+},{"./capability":36,"./response":38,"_process":28,"buffer":5,"inherits":26,"readable-stream":53}],38:[function(require,module,exports){
 (function (process,global,Buffer){
 var capability = require('./capability')
 var inherits = require('inherits')
@@ -10714,7 +10714,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./capability":36,"_process":28,"buffer":5,"inherits":25,"readable-stream":53}],39:[function(require,module,exports){
+},{"./capability":36,"_process":28,"buffer":5,"inherits":26,"readable-stream":53}],39:[function(require,module,exports){
 'use strict';
 
 function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
@@ -10985,7 +10985,7 @@ Object.defineProperty(Duplex.prototype, 'destroyed', {
   }
 });
 }).call(this,require('_process'))
-},{"./_stream_readable":42,"./_stream_writable":44,"_process":28,"inherits":25}],41:[function(require,module,exports){
+},{"./_stream_readable":42,"./_stream_writable":44,"_process":28,"inherits":26}],41:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -11025,7 +11025,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":43,"inherits":25}],42:[function(require,module,exports){
+},{"./_stream_transform":43,"inherits":26}],42:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -12152,7 +12152,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":39,"./_stream_duplex":40,"./internal/streams/async_iterator":45,"./internal/streams/buffer_list":46,"./internal/streams/destroy":47,"./internal/streams/from":49,"./internal/streams/state":51,"./internal/streams/stream":52,"_process":28,"buffer":5,"events":10,"inherits":25,"string_decoder/":54,"util":2}],43:[function(require,module,exports){
+},{"../errors":39,"./_stream_duplex":40,"./internal/streams/async_iterator":45,"./internal/streams/buffer_list":46,"./internal/streams/destroy":47,"./internal/streams/from":49,"./internal/streams/state":51,"./internal/streams/stream":52,"_process":28,"buffer":5,"events":11,"inherits":26,"string_decoder/":54,"util":2}],43:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -12354,7 +12354,7 @@ function done(stream, er, data) {
   if (stream._transformState.transforming) throw new ERR_TRANSFORM_ALREADY_TRANSFORMING();
   return stream.push(null);
 }
-},{"../errors":39,"./_stream_duplex":40,"inherits":25}],44:[function(require,module,exports){
+},{"../errors":39,"./_stream_duplex":40,"inherits":26}],44:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -13054,7 +13054,7 @@ Writable.prototype._destroy = function (err, cb) {
   cb(err);
 };
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../errors":39,"./_stream_duplex":40,"./internal/streams/destroy":47,"./internal/streams/state":51,"./internal/streams/stream":52,"_process":28,"buffer":5,"inherits":25,"util-deprecate":58}],45:[function(require,module,exports){
+},{"../errors":39,"./_stream_duplex":40,"./internal/streams/destroy":47,"./internal/streams/state":51,"./internal/streams/stream":52,"_process":28,"buffer":5,"inherits":26,"util-deprecate":58}],45:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -13822,7 +13822,7 @@ module.exports = {
 },{"../../../errors":39}],52:[function(require,module,exports){
 module.exports = require('events').EventEmitter;
 
-},{"events":10}],53:[function(require,module,exports){
+},{"events":11}],53:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = exports;
 exports.Readable = exports;
@@ -16062,7 +16062,7 @@ Object.assign(window, { Biota: db_1.DB, BiotaQ: faunadb_1.query, BiotaFactory, B
 Object.assign(global, { Biota: db_1.DB, BiotaQ: faunadb_1.query, BiotaFactory, BiotaPage: page_1.Page });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./db":65,"./page":154,"faunadb":11,"~/factory":80}],64:[function(require,module,exports){
+},{"./db":65,"./page":154,"faunadb":12,"~/factory":80}],64:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SIMPLE_SEPARATOR = "_";
@@ -16073,6 +16073,16 @@ exports.CONVENTION = {
     INDEX_PREFIX: "biota.",
     COLLECTION_PREFIX: "biota.",
     UDFUNCTION_PREFIX: "biota."
+};
+exports.OAUTH2 = {
+    GITHUB: {
+        AUTHORIZE: "https://github.com/login/oauth/authorize",
+        ACCESS_TOKEN: "https://github.com/login/oauth/access_token"
+    },
+    GOOGLE: {
+        AUTHORIZE: "https://accounts.google.com/o/oauth2/v2/auth",
+        ACCESS_TOKEN: "https://www.googleapis.com/oauth2/v4/token"
+    }
 };
 
 },{}],65:[function(require,module,exports){
@@ -16119,7 +16129,7 @@ class DB {
 }
 exports.DB = DB;
 
-},{"debug":8,"faunadb":11,"~/framework":152,"~/tasks":155}],66:[function(require,module,exports){
+},{"debug":9,"faunadb":12,"~/framework":152,"~/tasks":155}],66:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16191,7 +16201,7 @@ function collection(name = undefined) {
 }
 exports.collection = collection;
 
-},{"faunadb":11,"~/factory/api/ql":70}],67:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/ql":70}],67:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16237,7 +16247,7 @@ exports.create = {
     }
 };
 
-},{"faunadb":11,"~/factory/api/ql":70,"~/factory/classes/collection":75,"~/factory/classes/database":76,"~/factory/classes/index":77,"~/factory/classes/role":78,"~/factory/classes/udfunction":79,"~/helpers":153}],68:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/ql":70,"~/factory/classes/collection":75,"~/factory/classes/database":76,"~/factory/classes/index":77,"~/factory/classes/role":78,"~/factory/classes/udfunction":79,"~/helpers":153}],68:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16266,7 +16276,7 @@ exports.forget = {
     }
 };
 
-},{"faunadb":11}],69:[function(require,module,exports){
+},{"faunadb":12}],69:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16298,7 +16308,7 @@ exports.get = {
     }
 };
 
-},{"faunadb":11}],70:[function(require,module,exports){
+},{"faunadb":12}],70:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -16340,7 +16350,7 @@ exports.replace = {
     }
 };
 
-},{"faunadb":11}],72:[function(require,module,exports){
+},{"faunadb":12}],72:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16380,7 +16390,7 @@ exports.repsert = {
     }
 };
 
-},{"faunadb":11,"~/factory/api/create":67,"~/factory/api/replace":71,"~/helpers":153}],73:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/create":67,"~/factory/api/replace":71,"~/helpers":153}],73:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16442,7 +16452,7 @@ exports.update = {
     }
 };
 
-},{"faunadb":11,"~/helpers":153}],74:[function(require,module,exports){
+},{"faunadb":12,"~/helpers":153}],74:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16482,7 +16492,7 @@ exports.upsert = {
     }
 };
 
-},{"faunadb":11,"~/factory/api/create":67,"~/factory/api/update":73,"~/helpers":153}],75:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/create":67,"~/factory/api/update":73,"~/helpers":153}],75:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // biota
@@ -16614,7 +16624,7 @@ function SearchIndex(collection, depth = 10, fields) {
 }
 exports.SearchIndex = SearchIndex;
 
-},{"faunadb":11}],78:[function(require,module,exports){
+},{"faunadb":12}],78:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -16704,7 +16714,7 @@ function Identity() {
 }
 exports.Identity = Identity;
 
-},{"faunadb":11}],83:[function(require,module,exports){
+},{"faunadb":12}],83:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16725,7 +16735,7 @@ function Ref(collectionOrRef, id) {
 }
 exports.Ref = Ref;
 
-},{"faunadb":11}],84:[function(require,module,exports){
+},{"faunadb":12}],84:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16733,7 +16743,7 @@ const faunadb_1 = require("faunadb");
 // Harvested from https://github.com/shiftx/faunadb-fql-lib/blob/master/src/functions/StringSplit.ts
 exports.StringSplit = (string, delimiter = ".") => faunadb_1.query.If(faunadb_1.query.Not(faunadb_1.query.IsString(string)), faunadb_1.query.Abort("SplitString only accept strings"), faunadb_1.query.Map(faunadb_1.query.FindStrRegex(string, faunadb_1.query.Concat(["[^\\", delimiter, "]+"])), faunadb_1.query.Lambda("res", faunadb_1.query.Select(["data"], faunadb_1.query.Var("res")))));
 
-},{"faunadb":11}],85:[function(require,module,exports){
+},{"faunadb":12}],85:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16857,7 +16867,7 @@ function CallAction(actions) {
 }
 exports.CallAction = CallAction;
 
-},{"faunadb":11,"~/factory/rule":87,"~/framework/api/default/rules":108,"~/framework/helpers/wrapDoc":151}],86:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87,"~/framework/api/default/rules":108,"~/framework/helpers/wrapDoc":151}],86:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -16905,7 +16915,7 @@ function Privilege(privilege) {
 }
 exports.Privilege = Privilege;
 
-},{"./action":85,"faunadb":11}],87:[function(require,module,exports){
+},{"./action":85,"faunadb":12}],87:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // External
@@ -16929,7 +16939,7 @@ function Rules(rules) {
 }
 exports.Rules = Rules;
 
-},{"faunadb":11}],88:[function(require,module,exports){
+},{"faunadb":12}],88:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const collection_1 = require("~/factory/classes/collection");
@@ -17287,7 +17297,7 @@ function field(collectionDefinition) {
 }
 exports.field = field;
 
-},{"faunadb":11,"~/factory/api/upsert":74,"~/factory/classes/index":77,"~/helpers":153,"~/tasks":155}],92:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/upsert":74,"~/factory/classes/index":77,"~/helpers":153,"~/tasks":155}],92:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const qs = require("querystring");
@@ -17383,7 +17393,7 @@ function find(collectionDefinition) {
 }
 exports.find = find;
 
-},{"faunadb":11,"querystring":31,"~/factory/classes/udfunction":79,"~/tasks":155}],93:[function(require,module,exports){
+},{"faunadb":12,"querystring":31,"~/factory/classes/udfunction":79,"~/tasks":155}],93:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const collection_1 = require("~/factory/api/collection");
@@ -17575,7 +17585,7 @@ function insertBatch(collectionDefinition) {
 }
 exports.insertBatch = insertBatch;
 
-},{"faunadb":11,"~/factory/api/collection":66,"~/helpers":153,"~/tasks":155}],98:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/collection":66,"~/helpers":153,"~/tasks":155}],98:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tasks_1 = require("~/tasks");
@@ -17991,7 +18001,7 @@ async function foundation(options) {
 }
 exports.foundation = foundation;
 
-},{"faunadb":11,"~/factory/api/create":67,"~/factory/api/repsert":72,"~/factory/api/upsert":74,"~/framework/api/default/collections":104,"~/framework/api/default/functions":105,"~/framework/api/default/indexes":106,"~/framework/api/default/roles":107,"~/tasks":155}],110:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/create":67,"~/factory/api/repsert":72,"~/factory/api/upsert":74,"~/framework/api/default/collections":104,"~/framework/api/default/functions":105,"~/framework/api/default/indexes":106,"~/framework/api/default/roles":107,"~/tasks":155}],110:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18045,7 +18055,7 @@ function* paginate(paginateQuery, paginateOptions = {}) {
 }
 exports.paginate = paginate;
 
-},{"faunadb":11,"~/tasks":155}],112:[function(require,module,exports){
+},{"faunadb":12,"~/tasks":155}],112:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 async function query(fqlQuery) {
@@ -18212,7 +18222,7 @@ exports.Archive = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "at"], WrapActionAndLog_1.WrapActionAndLog("archive", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.archive() }))))
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],118:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],118:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18225,7 +18235,7 @@ exports.Reverse = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["arr"], faunadb_1.query.Reduce(faunadb_1.query.Lambda(["reversed", "item"], faunadb_1.query.Prepend(faunadb_1.query.Var("item"), faunadb_1.query.Var("reversed"))), [], faunadb_1.query.Var("arr"))))
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79}],119:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79}],119:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18240,7 +18250,7 @@ exports.Assign = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "data"], WrapActionAndLog_1.WrapActionAndLog("assign", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.assign() }))))
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],120:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],120:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18260,7 +18270,7 @@ exports.ChangePassword = udfunction_1.UDFunction({
     })))),
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],121:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],121:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18275,7 +18285,7 @@ exports.Delete = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "at"], WrapActionAndLog_1.WrapActionAndLog("delete", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.delete() })))),
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],122:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],122:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18290,7 +18300,7 @@ exports.Expire = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "at"], WrapActionAndLog_1.WrapActionAndLog("expire", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.expire() }))))
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],123:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],123:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18313,7 +18323,7 @@ exports.FindIndex = udfunction_1.UDFunction({
     role: faunadb_1.query.Role("system")
 });
 
-},{"faunadb":11,"~/factory/classes/index":77,"~/factory/classes/udfunction":79}],124:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/index":77,"~/factory/classes/udfunction":79}],124:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18327,7 +18337,7 @@ exports.Forget = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "at"], WrapActionAndLog_1.WrapActionAndLog("forget", faunadb_1.query.Delete(faunadb_1.query.Var("ref"))))),
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148}],125:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148}],125:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18342,7 +18352,7 @@ exports.Insert = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "collectionRef", "data"], WrapActionAndLog_1.WrapActionAndLog("insert", faunadb_1.query.Create(faunadb_1.query.Var("collectionRef"), { data: logData_1.logData.insert() }))))
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],126:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],126:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18363,7 +18373,7 @@ exports.LogAction = udfunction_1.UDFunction({
     })))
 });
 
-},{"faunadb":11,"~/factory/classes/collection":75,"~/factory/classes/udfunction":79}],127:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/collection":75,"~/factory/classes/udfunction":79}],127:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18378,7 +18388,7 @@ exports.Own = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "data"], WrapActionAndLog_1.WrapActionAndLog("own", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.own() })))),
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],128:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],128:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18399,7 +18409,7 @@ exports.Relations = udfunction_1.UDFunction({
     }, faunadb_1.query.If(faunadb_1.query.Not(faunadb_1.query.IsEmpty(faunadb_1.query.Var("relations"))), faunadb_1.query.Var("relations"), [])), faunadb_1.query.Abort("Ref doesn't exists"))))
 });
 
-},{"faunadb":11,"~/factory/classes/collection":75,"~/factory/classes/udfunction":79}],129:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/collection":75,"~/factory/classes/udfunction":79}],129:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18414,7 +18424,7 @@ exports.Replace = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "data"], WrapActionAndLog_1.WrapActionAndLog("replace", faunadb_1.query.Do(faunadb_1.query.Replace(faunadb_1.query.Var("ref"), { data: faunadb_1.query.Var("data") }), faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.replace() }))))),
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],130:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],130:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18452,7 +18462,7 @@ exports.SearchQuery = udfunction_1.UDFunction({
     ], " "))))))
 });
 
-},{"faunadb":11,"~/factory/classes/index":77,"~/factory/classes/udfunction":79,"~/framework/helpers/path":150}],131:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/index":77,"~/factory/classes/udfunction":79,"~/framework/helpers/path":150}],131:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18467,7 +18477,7 @@ exports.Update = udfunction_1.UDFunction({
     body: faunadb_1.query.Query(faunadb_1.query.Lambda(["userRef", "ref", "data"], WrapActionAndLog_1.WrapActionAndLog("update", faunadb_1.query.Update(faunadb_1.query.Var("ref"), { data: logData_1.logData.update() })))),
 });
 
-},{"faunadb":11,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],132:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/udfunction":79,"~/framework/helpers/WrapActionAndLog":148,"~/framework/helpers/logData":149}],132:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18499,7 +18509,7 @@ exports.indexes__by__resource = index_1.Index({
     ]
 });
 
-},{"faunadb":11,"~/factory/classes/index":77}],133:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/index":77}],133:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18528,7 +18538,7 @@ exports.indexes__by__terms = index_1.Index({
     ]
 });
 
-},{"faunadb":11,"~/factory/classes/index":77}],134:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/index":77}],134:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // imports
@@ -18565,7 +18575,7 @@ exports.system = {
     ]
 };
 
-},{"faunadb":11,"~/factory/classes/index":77,"~/factory/classes/role":78,"~/factory/classes/udfunction":79}],135:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/index":77,"~/factory/classes/role":78,"~/factory/classes/udfunction":79}],135:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // imports
@@ -18604,7 +18614,7 @@ exports.user = role_1.Role({
     ]
 });
 
-},{"faunadb":11,"~/factory/classes/role":78,"~/factory/classes/udfunction":79,"~/framework/default/rules/has_role":138,"~/framework/helpers/wrapDoc":151}],136:[function(require,module,exports){
+},{"faunadb":12,"~/factory/classes/role":78,"~/factory/classes/udfunction":79,"~/framework/default/rules/has_role":138,"~/framework/helpers/wrapDoc":151}],136:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18640,7 +18650,7 @@ exports.has_role = rule_1.RuleBuilder({
     query: (role) => faunadb_1.query.GT(faunadb_1.query.Filter(faunadb_1.query.Select(["access", "roles"], faunadb_1.query.Var("doc"), []), faunadb_1.query.Lambda(["role"], faunadb_1.query.Equals(faunadb_1.query.Role(role), faunadb_1.query.Var("role")))), 0)
 });
 
-},{"faunadb":11,"~/factory/rule":87}],139:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87}],139:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18664,7 +18674,7 @@ exports.is_assignee = rule_1.Rule({
     query: faunadb_1.query.Equals(faunadb_1.query.Select(["activity", "assignees"], faunadb_1.query.Var("doc"), null), faunadb_1.query.Identity())
 });
 
-},{"faunadb":11,"~/factory/rule":87}],141:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87}],141:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18682,7 +18692,7 @@ exports.is_document_available = rule_1.Rule({
     }, faunadb_1.query.If(faunadb_1.query.LTE(faunadb_1.query.Var("deleted_at"), faunadb_1.query.Var("archived_at"), faunadb_1.query.Var("expired_at")), faunadb_1.query.Var("deleted_at"), faunadb_1.query.If(faunadb_1.query.LTE(faunadb_1.query.Var("archived_at"), faunadb_1.query.Var("expired_at"), faunadb_1.query.Var("deleted_at")), faunadb_1.query.Var("archived_at"), faunadb_1.query.Var("expired_at"))))
 });
 
-},{"faunadb":11,"~/consts":64,"~/factory/rule":87}],142:[function(require,module,exports){
+},{"faunadb":12,"~/consts":64,"~/factory/rule":87}],142:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18695,7 +18705,7 @@ exports.is_first_argument_identity = rule_1.Rule({
     query: faunadb_1.query.Lambda("args", faunadb_1.query.Equals(faunadb_1.query.Select(0, faunadb_1.query.Var("args"), null), faunadb_1.query.Identity()))
 });
 
-},{"faunadb":11,"~/factory/rule":87}],143:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87}],143:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18708,7 +18718,7 @@ exports.is_not_assignee = rule_1.Rule({
     query: faunadb_1.query.Not(faunadb_1.query.Equals(faunadb_1.query.Select(["activity", "assignees"], faunadb_1.query.Var("doc"), null), faunadb_1.query.Identity()))
 });
 
-},{"faunadb":11,"~/factory/rule":87}],144:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87}],144:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18721,7 +18731,7 @@ exports.is_not_owner = rule_1.Rule({
     query: faunadb_1.query.Not(faunadb_1.query.Equals(faunadb_1.query.Select(["activity", "owner"], faunadb_1.query.Var("doc"), null), faunadb_1.query.Identity()))
 });
 
-},{"faunadb":11,"~/factory/rule":87}],145:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87}],145:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18734,7 +18744,7 @@ exports.is_owner = rule_1.Rule({
     query: faunadb_1.query.Equals(faunadb_1.query.Select(["activity", "owner"], faunadb_1.query.Var("doc"), null), faunadb_1.query.Identity())
 });
 
-},{"faunadb":11,"~/factory/rule":87}],146:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87}],146:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18747,7 +18757,7 @@ exports.is_self = rule_1.Rule({
     query: faunadb_1.query.Equals(faunadb_1.query.Var("ref"), faunadb_1.query.Identity())
 });
 
-},{"faunadb":11,"~/factory/rule":87}],147:[function(require,module,exports){
+},{"faunadb":12,"~/factory/rule":87}],147:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18777,7 +18787,7 @@ exports.WrapActionAndLog = (action, fql) => {
     });
 };
 
-},{"faunadb":11,"~/factory/api/ql":70,"~/factory/classes/udfunction":79}],149:[function(require,module,exports){
+},{"faunadb":12,"~/factory/api/ql":70,"~/factory/classes/udfunction":79}],149:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18851,7 +18861,7 @@ exports.logData = {
     }
 };
 
-},{"faunadb":11}],150:[function(require,module,exports){
+},{"faunadb":12}],150:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // types
@@ -18870,7 +18880,7 @@ function pathString(path) {
 }
 exports.pathString = pathString;
 
-},{"faunadb":11,"~/factory/ql/string_split":84}],151:[function(require,module,exports){
+},{"faunadb":12,"~/factory/ql/string_split":84}],151:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // external
@@ -18882,7 +18892,7 @@ function wrapDoc(refVar, fql) {
 }
 exports.wrapDoc = wrapDoc;
 
-},{"faunadb":11}],152:[function(require,module,exports){
+},{"faunadb":12}],152:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -19031,4 +19041,4 @@ async function execute(tasks, options) {
 }
 exports.execute = execute;
 
-},{"debug":8}]},{},[63]);
+},{"debug":9}]},{},[63]);

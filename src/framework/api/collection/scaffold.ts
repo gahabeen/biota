@@ -1,81 +1,125 @@
+import { FaunaCollectionOptions } from "~/../types/fauna";
+import { DBFrameworkCollectionScaffoldOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-import { FaunaCollectionOptions, DBFrameworkCollectionScaffoldOptions } from "~/../types/db";
-import { upsert } from "~/factory";
-import { fieldDefinition } from "./field";
+import { query as q } from "faunadb";
+import { upsert } from "~/factory/api/fql/base";
+import { roleNameNormalized, Privilege } from "~/factory/classes/role";
 import { execute } from "~/tasks";
 
-export function scaffold(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function scaffold(this: DB, collectionName: string) {
   let self = this;
 
-  return async function scaffoldMethod(options: DBFrameworkCollectionScaffoldOptions = {}) {
+  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: DBFrameworkCollectionScaffoldOptions = {}) {
+    let defaultRoles = options.roles || ["biota.user"];
     let defaultSearchable = [
       "~ref",
       "~ts",
-      "access.roles",
-      "access.owner",
-      "access.assignees",
-      "activity.assigned_by",
-      // "activity.assigned_at",
-      "activity.owner_changed_by",
-      // "activity.owner_changed_at",
-      "activity.credentials_changed_by",
-      // "activity.credentials_changed_at",
-      "activity.created_by",
-      // "activity.created_at",
-      "activity.updated_by",
-      // "activity.updated_at",
-      "activity.replaced_by",
-      // "activity.replaced_at",
-      "activity.expired_by",
-      // "activity.expired_at",
-      "activity.deleted_by",
-      // "activity.deleted_at",
-      "activity.archived_by",
-      // "activity.archived_at",
-      "activity.hidden_by"
-      // "activity.hidden_at"
+      "_auth.providers.provider",
+      "_auth.providers.id",
+      "_membership.owner",
+      "_membership.roles",
+      "_membership.owner",
+      "_membership.assignees",
+      "_activity.assigned_by",
+      // "_activity.assigned_at",
+      "_activity.owner_changed_by",
+      // "_activity.owner_changed_at",
+      "_activity.credentials_changed_by",
+      // "_activity.credentials_changed_at",
+      "_activity.created_by",
+      // "_activity.created_at",
+      "_activity.updated_by",
+      // "_activity.updated_at",
+      "_activity.replaced_by",
+      // "_activity.replaced_at",
+      "_activity.expired_by",
+      // "_activity.expired_at",
+      "_activity.deleted_by",
+      // "_activity.deleted_at",
+      "_activity.archived_by",
+      // "_activity.archived_at",
+      "_activity.hidden_by",
+      // "_activity.hidden_at"
     ];
 
     let { index = defaultSearchable, compute = [], field = [] } = options || {};
 
     let tasks = [
       {
-        name: `Upserting collection (${collectionDefinition.name})`,
+        name: `Upserting collection (${collectionName})`,
         async task() {
-          return self.query(upsert.collection(collectionDefinition));
-        }
-      }
+          return self.query(upsert.collection.call(self, collectionName, collectionOptions));
+        },
+      },
     ];
 
     for (let indexField of index) {
       tasks.push({
-        name: `Upserting index field (${indexField}) on (${collectionDefinition.name})`,
+        name: `Upserting index field (${indexField}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionDefinition.name).index(indexField, { role: "user" });
-        }
+          return self.collection(collectionName).index(indexField, { role: roleNameNormalized("user") });
+        },
       });
     }
 
     for (let computeField of compute) {
       tasks.push({
-        name: `Upserting viewable field (${computeField.field}) on (${collectionDefinition.name})`,
+        name: `Upserting viewable field (${computeField.field}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionDefinition.name).compute(computeField, { role: "user" });
-        }
+          return self.collection(collectionName).compute(computeField, { role: roleNameNormalized("user") });
+        },
       });
     }
 
     for (let fieldField of field) {
       tasks.push({
-        name: `Upserting viewable field (${fieldField.field}) on (${collectionDefinition.name})`,
+        name: `Upserting viewable field (${fieldField.field}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionDefinition.name).field(fieldField);
-        }
+          return self.collection(collectionName).field(fieldField);
+        },
       });
     }
 
+    for (let role of defaultRoles) {
+      tasks.push({
+        name: `Adding collection ${collectionName} to [${role}] role`,
+        async task() {
+          return self.role(role).privilege.upsert(
+            Privilege({
+              resource: q.Collection(collectionName),
+              actions: {
+                create: "all",
+                read: ["self", "owner", "assignee"],
+                write: ["self", "owner", "assignee"],
+                delete: "owner",
+              },
+            })
+          );
+        },
+      });
+    }
+
+    tasks.push({
+      name: `Adding collection ${collectionName} to [system] role`,
+      async task() {
+        return self.role(roleNameNormalized("system")).privilege.upsert(
+          Privilege({
+            resource: q.Collection(collectionName),
+            actions: {
+              create: "all",
+              read: "all",
+              history_read: "all",
+              history_write: "all",
+              write: "all",
+              delete: "all",
+            },
+          })
+        );
+      },
+    });
+
     return execute(tasks, {
-      domain: "DB.collection.scaffold"
+      domain: "DB.collection.scaffold",
     });
   };
 }

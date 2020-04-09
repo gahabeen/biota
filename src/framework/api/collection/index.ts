@@ -1,12 +1,14 @@
-import { DBFrameworkCollectionIndexOptions, FaunaCollectionOptions, DBFrameworkCollectionFieldOptions } from "~/../types/db";
-import { update } from "~/factory";
-import { execute } from "~/tasks";
+import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
+import { role as roleFactory } from "~/factory/api/classes";
+import { execute } from "~/tasks";
+import { q } from "~/index";
+import { delay } from "~/helpers/delay";
 
-export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
+export function index(this: DB, collectionName: string) {
   let self = this;
 
-  return async function indexMethod(field: string | DBFrameworkCollectionFieldOptions, options: DBFrameworkCollectionIndexOptions = {}) {
+  return async function indexMethod(field: string | DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
     let { role, roles, maxLength } = options;
     let roleList = role || roles;
     if (!Array.isArray(roleList)) roleList = [role as string];
@@ -16,7 +18,7 @@ export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
       field: null,
       action: "index",
       ngram: false,
-      ngramMax: maxLength
+      ngramMax: maxLength,
     };
 
     if (typeof field === "string") {
@@ -26,48 +28,46 @@ export function index(this: DB, collectionDefinition: FaunaCollectionOptions) {
     }
 
     tasks.push({
-      name: `Adding index field ${definition.field} on ${collectionDefinition.name}`,
+      name: `Adding index field ${definition.field} on ${collectionName}`,
       async task() {
         return self
-          .collection(collectionDefinition.name)
+          .collection(collectionName)
           .field(definition)
           .then(async (indexes: any) => {
             for (let index of indexes) {
               let { ref, name } = index || {};
-
               if (name && role) {
                 let subTasks = [];
                 for (let r of roleList) {
                   subTasks.push({
                     name: `Adding privilege (read) for index ${name} on ${r}`,
-                    task() {
+                    async task() {
+                      await delay(300);
                       return self.query(
-                        update.role(r, {
-                          privileges: [
-                            {
-                              resource: ref,
-                              actions: {
-                                read: true,
-                                history_read: true
-                              }
-                            }
-                          ]
+                        self.role(r).privilege.upsert({
+                          resource: ref,
+                          actions: {
+                            read: true,
+                            history_read: true,
+                          },
                         })
                       );
                     },
-                    fullError: true
+                    fullError: true,
                   });
                 }
-                await execute(subTasks);
+                await execute(subTasks, {
+                  domain: "DB.collection.index",
+                });
               }
             }
             return indexes;
           });
-      }
+      },
     });
 
     return execute(tasks, {
-      domain: "DB.collection.index"
+      domain: "DB.collection.index",
     });
   };
 }

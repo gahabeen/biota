@@ -1,4 +1,11 @@
 src
 bin
+tests
+types
+node_modules
+.env
+playground
+yarn-error.log
+dist
+examples
 docs
-test

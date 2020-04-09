@@ -1,9 +1,9 @@
-import { Fauna, DBFrameworkRelationDefinition } from "~/../types/db";
+import { DBFrameworkRelationDefinition } from "~/../types/framework/framework.collection";
 // external
 import { DB } from "~/db";
 // biota
 import { collectionNamePlural, collectionNameNormalized } from "~/factory/classes/collection";
-import { create } from "~/factory/api/create";
+import { insert } from "~/factory/api/fql/base/insert";
 import { name } from "~/helpers";
 import { execute } from "~/tasks";
 
@@ -14,13 +14,13 @@ export function relation(this: DB, relationName?: string) {
     name: relationName,
     // Does the relation implies deep destruction/delete
     destructive: false,
-    parts: []
+    parts: [],
   };
 
   async function buildRelation() {
     if (!definition.name) definition.name = name([""]);
 
-    let relations = definition.parts.map(p => p.relation);
+    let relations = definition.parts.map((p) => p.relation);
     let firstRelation = definition.parts[0];
     let secondRelation = definition.parts[1];
 
@@ -45,10 +45,10 @@ export function relation(this: DB, relationName?: string) {
 
         return self.collection(collectionNameNormalized("relations")).insert({
           data: {
-            relations: {}
-          }
+            relations: {},
+          },
         });
-      }
+      },
     });
 
     // one-to-one
@@ -63,52 +63,54 @@ export function relation(this: DB, relationName?: string) {
       throw new Error(`Relation ${name} isn't right`);
     }
 
-    return execute(tasks);
+    return execute(tasks, {
+      domain: "DB.relation"
+    });
   }
 
   let firstApi = {
-    many: function(collection: string, path: string = "~ref") {
+    many: function (collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "many",
         collection: collectionNamePlural(collection),
-        path
+        path,
       });
       return secondApi;
     },
-    one: function(collection: string, path: string = "~ref") {
+    one: function (collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "one",
         collection: collectionNamePlural(collection),
-        path
+        path,
       });
       return secondApi;
-    }
+    },
   };
 
   let secondMethods = {
-    many: function(collection: string, path: string = "~ref") {
+    many: function (collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "many",
         collection: collectionNamePlural(collection),
-        path
+        path,
       });
       return buildRelation();
     },
-    one: function(collection: string, path: string = "~ref") {
+    one: function (collection: string, path: string = "~ref") {
       definition.parts.push({
         relation: "one",
         collection: collectionNamePlural(collection),
-        path
+        path,
       });
       return buildRelation();
-    }
+    },
   };
 
   let secondApi = {
     connects: secondMethods,
     can: {
-      have: secondMethods
-    }
+      have: secondMethods,
+    },
   };
 
   return firstApi;
