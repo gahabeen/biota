@@ -22,6 +22,7 @@
     "build": "yarn run clean-dist && ttsc"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "debug": "^4.1.1",
     "faunadb": "^2.11.1",
     "nanohash": "^0.0.15"
@@ -33,7 +34,6 @@
     "@types/listr": "^0.14.2",
     "@types/node": "^13.7.6",
     "aliasify": "^2.1.0",
-    "axios": "^0.19.2",
     "browserify": "^16.5.1",
     "delay": "^4.3.0",
     "dotenv": "^8.2.0",
