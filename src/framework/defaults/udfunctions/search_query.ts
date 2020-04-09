@@ -9,7 +9,7 @@ export const SearchQuery = UDFunction({
   name: udfunctionNameNormalized("SearchQuery"),
   body: q.Query(
     q.Lambda(
-      ["resource", "search_terms"],
+      ["identity", "resource", "search_terms"],
       q.Let(
         {
           searchTerms: q.ToArray(q.Var("search_terms")),
@@ -22,16 +22,17 @@ export const SearchQuery = UDFunction({
                 q.If(
                   q.Contains("$computed", q.Var("value")),
                   [
-                    q.Call(udfunctionNameNormalized("FindIndex"), [q.Var("resource"), [q.Concat(["binding:", q.Var("field")])]]),
+                    q.Call(udfunctionNameNormalized("FindIndex"), q.Var("identity"), q.Var("resource"), [
+                      q.Concat(["binding:", q.Var("field")]),
+                    ]),
                     q.Select("$computed", q.Var("value"), null),
                     q.Concat(["binding:", pathString(q.Var("field"))]),
                   ],
                   q.If(
                     q.Contains("$ngram", q.Var("value")),
                     [
-                      q.Call(udfunctionNameNormalized("FindIndex"), [
-                        q.Var("resource"),
-                        [q.Concat(["binding:", "ngram:", q.Var("field")])],
+                      q.Call(udfunctionNameNormalized("FindIndex"), q.Var("identity"), q.Var("resource"), [
+                        q.Concat(["binding:", "ngram:", q.Var("field")]),
                       ]),
                       q.LowerCase(q.ToString(q.Select("$ngram", q.Var("value"), ""))),
                       q.Concat(["ngram:", pathString(q.Var("field"))]),
@@ -40,7 +41,9 @@ export const SearchQuery = UDFunction({
                   )
                 ),
                 [
-                  q.Call(udfunctionNameNormalized("FindIndex"), [q.Var("resource"), [q.Concat(["term:", pathString(q.Var("field"))])]]),
+                  q.Call(udfunctionNameNormalized("FindIndex"), q.Var("identity"), q.Var("resource"), [
+                    q.Concat(["term:", pathString(q.Var("field"))]),
+                  ]),
                   q.Var("value"),
                   q.Var("field"),
                 ]

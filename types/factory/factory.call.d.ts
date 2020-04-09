@@ -160,6 +160,7 @@ export interface DBFactoryCallClean {
 
 export interface DBFactoryCallUser {
   login: DBFactorySpecificUserApi["login"];
+  logout: DBFactorySpecificUserApi["logout"];
   register: DBFactorySpecificUserApi["register"];
   changePassword: DBFactorySpecificUserApi["changePassword"];
 }

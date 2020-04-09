@@ -20,6 +20,7 @@ export * from "~/framework/defaults/udfunctions/auth/auth_start_user_session";
 
 // user
 export * from "~/framework/defaults/udfunctions/user/user_login";
+export * from "~/framework/defaults/udfunctions/user/user_logout";
 export * from "~/framework/defaults/udfunctions/user/user_register";
 export * from "~/framework/defaults/udfunctions/user/user_change_password";
 

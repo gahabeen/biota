@@ -13,10 +13,13 @@ export const is_document_available = Rule({
       forgotten_at: q.Select(["data", "_activity", "forgotten_at"], q.Var("doc"), q.ToTime(TS_2500_YEARS)),
       expired_at: q.Select(["data", "_activity", "expired_at"], q.Var("doc"), q.ToTime(TS_2500_YEARS)),
     },
-    q.If(
-      q.LTE(q.Var("deleted_at"), q.Var("forgotten_at"), q.Var("expired_at")),
-      q.Var("deleted_at"),
-      q.If(q.LTE(q.Var("forgotten_at"), q.Var("expired_at"), q.Var("deleted_at")), q.Var("forgotten_at"), q.Var("expired_at"))
+    q.GTE(
+      q.If(
+        q.LTE(q.Var("deleted_at"), q.Var("forgotten_at"), q.Var("expired_at")),
+        q.Var("deleted_at"),
+        q.If(q.LTE(q.Var("forgotten_at"), q.Var("expired_at"), q.Var("deleted_at")), q.Var("forgotten_at"), q.Var("expired_at"))
+      ),
+      q.Now()
     )
   ),
 });

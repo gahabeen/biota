@@ -102,7 +102,7 @@ export interface FaunaUDFunctionOptions {
 
 export interface FaunaRoleOptions {
   name?: string;
-  membership?: FaunaRoleMembership;
+  membership?: FaunaRoleMembership | FaunaRoleMembership[];
   privileges?: FaunaRolePrivilege[];
 }
 

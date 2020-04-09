@@ -3,34 +3,37 @@ import { FaunaRoleOptions } from "~/../types/fauna";
 import { collectionNameNormalized } from "~/factory/classes/collection";
 import { Privilege, Role, roleNameNormalized } from "~/factory/classes/role";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { has_role } from "../rules/has_role";
+import { is_document_available } from "../rules/is_document_available";
 
 export const user: FaunaRoleOptions = Role({
   name: roleNameNormalized("user"),
-  membership: {
-    resource: q.Collection(collectionNameNormalized("user_sessions")),
-    predicate: q.Query(
-      q.Lambda(
-        "ref",
-        q.Let(
-          {
-            session: q.Get(q.Var("ref")),
-            is_valid: q.GTE(q.Select(["data", "_activity", "expire_at"], q.Var("session"), q.ToTime(0)), q.Now()),
-          },
-          q.Var("is_valid")
-          // q.If(
-          //   q.Var("is_valid"),
-          //   q.Let(
-          //     {
-          //       user: q.Get(q.Select(["data", "_membership", "owner"], q.Var("session"), null)),
-          //     },
-          //     has_role(q.Var("user"), roleNameNormalized("user"))
-          //   ),
-          //   false
-          // )
+  membership: [
+    {
+      resource: q.Collection(collectionNameNormalized("user_sessions")),
+      predicate: q.Query(
+        q.Lambda(
+          "ref",
+          q.Let(
+            {
+              doc: q.Get(q.Var("ref")),
+              is_valid: is_document_available,
+            },
+            q.If(
+              q.Var("is_valid"),
+              q.Let(
+                {
+                  user: q.Get(q.Select(["data", "_membership", "owner"], q.Var("doc"), null)),
+                },
+                has_role(q.Var("user"), roleNameNormalized("user"))
+              ),
+              false
+            )
+          )
         )
-      )
-    ),
-  },
+      ),
+    },
+  ],
   privileges: [
     /**
      * Indexes
@@ -43,8 +46,8 @@ export const user: FaunaRoleOptions = Role({
     Privilege({
       resource: q.Collection(collectionNameNormalized("users")),
       actions: {
-        read: "own",
-        write: ["own", "assignee"], // , "secured_fields"
+        read: ["self", "owner", "assignee"],
+        write: ["self", "owner", "assignee"],
         // history_read: "self_own",
         // history_write: "self_own",
       },
@@ -52,7 +55,10 @@ export const user: FaunaRoleOptions = Role({
 
     Privilege({
       resource: q.Collection(collectionNameNormalized("user_sessions")),
-      actions: { read: "self", write: ["own", "assignee"] }, // , "secured_fields"
+      actions: {
+        read: ["self", "owner", "assignee"],
+        write: ["self", "owner", "assignee"],
+      }, // , "secured_fields"
     }),
 
     /**

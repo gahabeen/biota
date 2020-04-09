@@ -1,6 +1,7 @@
 import { query as q } from "faunadb";
 import { collectionNameNormalized } from "~/factory/classes/collection";
 import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
+import { Identity } from "~/factory/api/ql";
 
 export const Relations = UDFunction({
   name: udfunctionNameNormalized("Relations"),
@@ -13,12 +14,9 @@ export const Relations = UDFunction({
           {
             relations: q.Map(
               q.Paginate(
-                q.Call(udfunctionNameNormalized("SearchQuery"), [
-                  q.Collection(collectionNameNormalized("relations")),
-                  {
-                    "parts.collection": q.Select("collection", q.Var("ref"), null),
-                  },
-                ]),
+                q.Call(udfunctionNameNormalized("SearchQuery"), Identity(), q.Collection(collectionNameNormalized("relations")), {
+                  "parts.collection": q.Select("collection", q.Var("ref"), null),
+                }),
                 { size: 1000 }
               ),
               (x) => q.Get(x)

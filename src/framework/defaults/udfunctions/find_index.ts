@@ -7,7 +7,7 @@ export const FindIndex = UDFunction({
   name: udfunctionNameNormalized("FindIndex"),
   body: q.Query(
     q.Lambda(
-      ["resource", "terms_fields"],
+      ["identity", "resource", "terms_fields"],
       q.Let(
         {
           indexes: q.Paginate(

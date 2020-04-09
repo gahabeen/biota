@@ -11,7 +11,7 @@ export async function expireAt(this: DB, at:any) {
       {
         name: `Expire session at [${at}]`,
         task() {
-          return self.query(document.expireAt(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), at));
+          return self.query(document.expireAt.call(self, collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), at));
         },
       },
     ],

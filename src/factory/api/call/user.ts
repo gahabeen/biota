@@ -8,6 +8,9 @@ export const user: DBFactoryCallUser = {
   login(this: DB, email, password) {
     return q.Call(udfName("UserLogin"), Identity(), this.private_key, email, password);
   },
+  logout(this: DB, everywhere) {
+    return q.Call(udfName("UserLogout"), Identity(), this.private_key, everywhere);
+  },
   register(this: DB, email, password, data = {}) {
     return q.Call(udfName("UserRegister"), Identity(), this.private_key, email, password, data);
   },

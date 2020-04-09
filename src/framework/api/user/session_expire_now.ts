@@ -11,7 +11,7 @@ export async function expireNow(this: DB) {
       {
         name: `Expire session now`,
         task() {
-          return self.query(document.expireNow(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
+          return self.query(document.expireNow.call(self, collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
         },
       },
     ],

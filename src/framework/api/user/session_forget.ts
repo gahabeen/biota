@@ -11,7 +11,7 @@ export async function forget(this: DB) {
       {
         name: `Forget session`,
         task() {
-          return self.query(document.forget(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
+          return self.query(document.forget.call(self, collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
         },
       },
     ],

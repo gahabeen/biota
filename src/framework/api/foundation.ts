@@ -1,6 +1,7 @@
 import { DB } from "~/db";
 import { query as q } from "faunadb";
 import { execute } from "~/tasks";
+import { role as roleFQLBase } from "~/factory/api/fql/base/role";
 import { insert } from "~/factory/api/fql/base/insert";
 import { upsert } from "~/factory/api/fql/base/upsert";
 import { repsert } from "~/factory/api/fql/base/repsert";
@@ -49,7 +50,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
    *  Functions
    */
 
-  if (options.udfunctions) {
+  if (false && options.udfunctions) {
     let initialUDFunctionsTasks = [];
     initialUDFunctionsTasks.push({
       name: `Upserting udfunction function [${defaultFunctions.InsertUDFunction.name}]`,
@@ -101,8 +102,8 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       otherUDFunctionsTasks.push({
         name: `Upserting function: ${UDFunctionDefinition.name}`,
         task() {
-          return self.udfunction(UDFunctionDefinition.name).repsert(UDFunctionDefinition);
-          // return self.query(repsert.udfunction(UDFunctionDefinition.name, UDFunctionDefinition as FaunaUDFunctionOptions));
+          // return self.udfunction(UDFunctionDefinition.name).repsert(UDFunctionDefinition);
+          return self.query(repsert.udfunction(UDFunctionDefinition.name, UDFunctionDefinition as FaunaUDFunctionOptions));
         },
         fullError: true,
       });
@@ -232,13 +233,26 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
   if (options.roles) {
     let rolesTasks = [];
     for (let defaultRole of Object.values(defaultRoles)) {
-      rolesTasks.push({
-        name: `Upserting role: ${defaultRole.name}`,
-        task() {
-          return self.query(upsert.role(defaultRole.name, defaultRole));
-        },
-        fullError: true,
-      });
+      for (let membership of (defaultRole.membership as []) || []) {
+        rolesTasks.push({
+          name: `Upserting role membership: ${defaultRole.name}`,
+          async task() {
+            await delay(300);
+            await self.query(roleFQLBase.membership.upsert(defaultRole.name, membership));
+            // return self.role(defaultRole.name).membership.upsert(membership);
+          },
+        });
+      }
+      for (let privilege of defaultRole.privileges || []) {
+        rolesTasks.push({
+          name: `Upserting role privilege: ${defaultRole.name}`,
+          async task() {
+            await delay(300);
+            await self.query(roleFQLBase.privileges.upsert(defaultRole.name, privilege));
+            // return self.role(defaultRole.name).privilege.upsert(privilege);
+          },
+        });
+      }
     }
     tasks.push({
       name: "Roles",
@@ -261,7 +275,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     collectionsTasks.push({
       name: `Scaffold collection: ${defaultCollections.user_sessions.name}`,
       task() {
-        return self.collection(defaultCollections.user_sessions.name).scaffold(defaultCollections.user_sessions);
+        return self.collection(defaultCollections.user_sessions.name).scaffold(defaultCollections.user_sessions, { roles: [] });
       },
     });
 
@@ -269,6 +283,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: `Scaffold collection: ${defaultCollections.actions.name}`,
       task() {
         return self.collection(defaultCollections.actions.name).scaffold(defaultCollections.actions, {
+          roles: [],
           index: [
             "document",
             "ts",
@@ -300,7 +315,9 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     collectionsTasks.push({
       name: `Scaffold collection: ${defaultCollections.users.name}`,
       task() {
-        return self.collection(defaultCollections.users.name).scaffold(defaultCollections.users);
+        return self.collection(defaultCollections.users.name).scaffold(defaultCollections.users, {
+          roles: [],
+        });
       },
     });
 
@@ -364,10 +381,17 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
         name: `Adding function ${UDFunctionDefinition.name} to [user] role`,
         async task() {
           await delay(300);
-          return self.role(roleNameNormalized("user")).privilege.upsert({
-            resource: q.Function(UDFunctionDefinition.name),
-            actions: { call: true },
-          });
+
+          return self.query(
+            roleFQLBase.privileges.upsert(roleNameNormalized("user"), {
+              resource: q.Function(UDFunctionDefinition.name),
+              actions: { call: true },
+            })
+          );
+          // return self.role(roleNameNormalized("user")).privilege.upsert({
+          //   resource: q.Function(UDFunctionDefinition.name),
+          //   actions: { call: true },
+          // });
         },
         fullError: true,
       });
@@ -376,10 +400,16 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
         name: `Adding function ${UDFunctionDefinition.name} to [system] role`,
         async task() {
           await delay(300);
-          return self.role(roleNameNormalized("system")).privilege.upsert({
-            resource: q.Function(UDFunctionDefinition.name),
-            actions: { call: true },
-          });
+          return self.query(
+            roleFQLBase.privileges.upsert(roleNameNormalized("system"), {
+              resource: q.Function(UDFunctionDefinition.name),
+              actions: { call: true },
+            })
+          );
+          // return self.role(roleNameNormalized("system")).privilege.upsert({
+          //   resource: q.Function(UDFunctionDefinition.name),
+          //   actions: { call: true },
+          // });
         },
         fullError: true,
       });

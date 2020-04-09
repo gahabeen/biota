@@ -6,9 +6,7 @@ import { CallLogAction, CallSystemOperator } from "~/framework/helpers/call_func
 
 let deleteLogData = {
   _activity: {
-    deleted_by: {
-      _activity: { deleted_by: q.Var("identity"), deleted_at: q.Now() },
-    },
+    deleted_by: q.Var("identity"),
     deleted_at: q.Now(),
   },
 };

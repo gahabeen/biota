@@ -3,6 +3,7 @@ import { DB } from "~/db";
 import { role as roleFactory } from "~/factory/api/classes";
 import { execute } from "~/tasks";
 import { q } from "~/index";
+import { delay } from "~/helpers/delay";
 
 export function index(this: DB, collectionName: string) {
   let self = this;
@@ -40,7 +41,8 @@ export function index(this: DB, collectionName: string) {
                 for (let r of roleList) {
                   subTasks.push({
                     name: `Adding privilege (read) for index ${name} on ${r}`,
-                    task() {
+                    async task() {
+                      await delay(300);
                       return self.query(
                         self.role(r).privilege.upsert({
                           resource: ref,

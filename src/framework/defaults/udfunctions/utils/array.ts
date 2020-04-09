@@ -7,16 +7,6 @@ import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfuncti
 export const Reverse = UDFunction({
   name: udfunctionNameNormalized("Array.Reverse"),
   body: q.Query(
-    q.Lambda(
-      ["arr"],
-      q.Reduce(
-        q.Lambda(
-          ["reversed", "item"],
-          q.Prepend(q.Var("item"), q.Var("reversed"))
-        ),
-        [],
-        q.Var("arr")
-      )
-    )
-  )
+    q.Lambda(["identity", "arr"], q.Reduce(q.Lambda(["reversed", "item"], q.Prepend(q.Var("item"), q.Var("reversed"))), [], q.Var("arr")))
+  ),
 });

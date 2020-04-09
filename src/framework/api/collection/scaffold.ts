@@ -1,24 +1,25 @@
 import { FaunaCollectionOptions } from "~/../types/fauna";
 import { DBFrameworkCollectionScaffoldOptions } from "~/../types/framework/framework.collection";
 import { DB } from "~/db";
-// import { upsert } from "~/factory/api/udf";
+import { query as q } from "faunadb";
 import { upsert } from "~/factory/api/fql/base";
-import { roleNameNormalized } from "~/factory/classes/role";
+import { roleNameNormalized, Privilege } from "~/factory/classes/role";
 import { execute } from "~/tasks";
 
 export function scaffold(this: DB, collectionName: string) {
   let self = this;
 
-  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options?: DBFrameworkCollectionScaffoldOptions) {
+  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: DBFrameworkCollectionScaffoldOptions = {}) {
+    let defaultRoles = options.roles || ["biota.user"];
     let defaultSearchable = [
       "~ref",
       "~ts",
       "_auth.providers.provider",
       "_auth.providers.id",
-      "_access.owner",
-      "_access.roles",
-      "_access.owner",
-      "_access.assignees",
+      "_membership.owner",
+      "_membership.roles",
+      "_membership.owner",
+      "_membership.assignees",
       "_activity.assigned_by",
       // "_activity.assigned_at",
       "_activity.owner_changed_by",
@@ -78,6 +79,44 @@ export function scaffold(this: DB, collectionName: string) {
         },
       });
     }
+
+    for (let role of defaultRoles) {
+      tasks.push({
+        name: `Adding collection ${collectionName} to [${role}] role`,
+        async task() {
+          return self.role(role).privilege.upsert(
+            Privilege({
+              resource: q.Collection(collectionName),
+              actions: {
+                create: "all",
+                read: ["self", "owner", "assignee"],
+                write: ["self", "owner", "assignee"],
+                delete: "owner",
+              },
+            })
+          );
+        },
+      });
+    }
+
+    tasks.push({
+      name: `Adding collection ${collectionName} to [system] role`,
+      async task() {
+        return self.role(roleNameNormalized("system")).privilege.upsert(
+          Privilege({
+            resource: q.Collection(collectionName),
+            actions: {
+              create: "all",
+              read: "all",
+              history_read: "all",
+              history_write: "all",
+              write: "all",
+              delete: "all",
+            },
+          })
+        );
+      },
+    });
 
     return execute(tasks, {
       domain: "DB.collection.scaffold",

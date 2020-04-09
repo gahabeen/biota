@@ -11,7 +11,7 @@ export async function replace(this: DB, data = {}) {
       {
         name: `Replace session data`,
         task() {
-          return self.query(document.replace(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), data));
+          return self.query(document.replace.call(self, collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), data));
         },
       },
     ],

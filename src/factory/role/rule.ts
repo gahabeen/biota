@@ -13,7 +13,7 @@ export function Rule(rule: FaunaRule): FaunaRuleLambda {
 
 export function Rules(rules: FaunaRule[]) {
   if (rules.length > 1) {
-    return q.And(...rules);
+    return q.Or(...rules);
   } else {
     return rules[0];
   }

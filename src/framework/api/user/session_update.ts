@@ -11,7 +11,7 @@ export async function update(this: DB, data = {}) {
       {
         name: `Update session data`,
         task() {
-          return self.query(document.update(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), data));
+          return self.query(document.update.call(self, collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), data));
         },
       },
     ],

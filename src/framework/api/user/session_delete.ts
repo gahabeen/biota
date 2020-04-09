@@ -11,7 +11,7 @@ export async function delete_(this: DB) {
       {
         name: `Delete session`,
         task() {
-          return self.query(document.delete(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
+          return self.query(document.delete.call(self, collectionNameNormalized("user_sessions"), q.Select("id", q.Identity())));
         },
       },
     ],

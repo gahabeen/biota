@@ -8,6 +8,7 @@ import { collectionNameNormalized } from "~/factory/classes/collection";
 import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
 import { Identity } from "../../ql";
 import { udfunctionNameNormalized as udfName } from "~/factory/classes/udfunction";
+import { PAGINATION_SIZE_MAX } from "~/consts";
 
 export const user: DBFactorySpecificUserApi = {
   login(email, password) {
@@ -32,6 +33,40 @@ export const user: DBFactorySpecificUserApi = {
       )
     );
   },
+  logout(everywhere) {
+    return q.If(
+      q.HasIdentity(),
+      q.If(
+        everywhere,
+        q.Map(
+          q.Paginate(
+            q.Call(udfunctionNameNormalized("SearchQuery"), Identity(), q.Collection(collectionNameNormalized("user_sessions")), {
+              "_membership.owner": Identity(),
+            }),
+            { size: PAGINATION_SIZE_MAX }
+          ),
+          q.Lambda(
+            ["session"],
+            q.Call(
+              udfunctionNameNormalized("DeleteDocument"),
+              Identity(),
+              q.Var("private_key"),
+              collectionNameNormalized("user_sessions"),
+              q.Select("id", q.Var("session"))
+            )
+          )
+        ),
+        q.Call(
+          udfunctionNameNormalized("DeleteDocument"),
+          Identity(),
+          q.Var("private_key"),
+          collectionNameNormalized("user_sessions"),
+          q.Select("id", q.Identity())
+        )
+      ),
+      false
+    );
+  },
   register(email, password, data = {}) {
     return q.Let(
       {
@@ -50,6 +85,7 @@ export const user: DBFactorySpecificUserApi = {
             },
             _membership: {
               owner: q.Select("ref", q.Var("doc")),
+              roles: ["biota.user"],
             },
             _activity: {
               created_by: q.Select("ref", q.Var("doc")),

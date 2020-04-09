@@ -11,7 +11,7 @@ export async function expireIn(this: DB, delayInMs: number = 3600) {
       {
         name: `Expire session in [${delayInMs}]ms`,
         task() {
-          return self.query(document.expireIn(collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), delayInMs));
+          return self.query(document.expireIn.call(self, collectionNameNormalized("user_sessions"), q.Select("id", q.Identity()), delayInMs));
         },
       },
     ],

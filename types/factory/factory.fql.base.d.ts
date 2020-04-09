@@ -9,6 +9,9 @@ import {
   CRUDReferenceKey,
   CRUDReferenceCredentials,
 } from "../crud.reference";
+import { FaunaRoleMembership, FaunaRolePrivilege, FaunaRef } from "../fauna";
+import { Expr } from "faunadb";
+import { DBFactorySpecificRoleMembershipApi, DBFactorySpecificRolePrivilegeApi } from "./factory.specific.role";
 
 export interface DBFactoryFQLBase {
   get: DBFactoryFQLBaseGet;
@@ -136,4 +139,23 @@ export interface DBFactoryFQLBaseClean {
   tokens: CRUDReferenceToken["cleanAll"];
   key: CRUDReferenceKey["delete"];
   keys: CRUDReferenceKey["cleanAll"];
+}
+
+export interface DBFactoryFQLBaseRoleMembership {
+  distinct(name: string, membership: FaunaRoleMembership): FaunaRoleMembership[] | Expr;
+  difference(name: string, resource: FaunaRef): FaunaRoleMembership[] | Expr;
+  upsert: DBFactorySpecificRoleMembershipApi["upsert"];
+  delete: DBFactorySpecificRoleMembershipApi["delete"];
+}
+
+export interface DBFactoryFQLBaseRolePrivilege {
+  distinct(name: string, privilege: FaunaRolePrivilege): FaunaRolePrivilege[] | Expr;
+  difference(name: string, resource: FaunaRef): FaunaRolePrivilege[] | Expr;
+  upsert: DBFactorySpecificRolePrivilegeApi["upsert"];
+  delete: DBFactorySpecificRolePrivilegeApi["delete"];
+}
+
+export interface DBFactoryFQLBaseRole {
+  membership: DBFactoryFQLBaseRoleMembership;
+  privileges: DBFactoryFQLBaseRolePrivilege;
 }

@@ -5,10 +5,11 @@ import { DBFrameworkCollectionSearchParams } from "~/../types/framework/framewor
 import { DB } from "~/db";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { execute } from "~/tasks";
+import { Identity } from "~/factory/api/ql";
 
 export function parseSearchQuery(collection: string, searchQuery: object) {
   const buildQuery = (sq: Fauna.Expr) => {
-    return q.Call(udfunctionNameNormalized("SearchQuery"), [q.Collection(collection), sq]);
+    return q.Call(udfunctionNameNormalized("SearchQuery"), Identity(), q.Collection(collection), sq);
   };
 
   // const safe = (x: object) => JSON.parse(JSON.stringify(x));

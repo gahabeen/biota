@@ -18,11 +18,14 @@ export interface DBFrameworkCollectionApi {
 
   // custom crud
   find: (searchQuery?: DBFrameworkCollectionSearchParams, pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper) => Promise<any>;
+  findAll(pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper): Promise<any>;
   paginate: (
     searchTerms?: DBFrameworkCollectionSearchParams,
     pagination?: FaunaPaginateOptions,
     mapper?: FaunaPaginateMapper
   ) => AsyncGenerator<any, any, any>;
+  paginateAll(pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper): Promise<any>;
+
   // basic crud
   get: (id: FaunaId) => Promise<any>;
   // #bug recreate the options type!
@@ -56,6 +59,7 @@ export interface DBFrameworkCollectionScaffoldOptions {
   searchable?: string[];
   viewable?: DBFrameworkCollectionValueOptions[];
   fields?: DBFrameworkCollectionFieldOptions[];
+  roles?: string[];
 }
 
 export interface DBFrameworkCollectionInsertBatchOptions {
