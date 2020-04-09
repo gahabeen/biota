@@ -1,6 +1,6 @@
 {
   "name": "biota",
-  "version": "0.1.1",
+  "version": "0.0.11",
   "description": "bringing flora to fauna",
   "main": "dist/index.js",
   "types": "dist/types.d.ts",
