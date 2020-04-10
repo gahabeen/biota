@@ -8,8 +8,8 @@ import {
 } from "~/../types/framework/framework.user";
 import { OAUTH2 } from "~/consts";
 import { authenticate } from "~/framework/api/user/auth/authenticate";
-import * as qs from "querystring";
 import axios from "axios";
+import * as qs from "~/helpers/querystring";
 
 export const google = {
   connectUrl: function (options?: DBFrameworkAuthConnectUrlOptions) {

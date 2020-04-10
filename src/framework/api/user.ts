@@ -3,6 +3,7 @@ import { changePassword } from "~/framework/api/user/changePassword";
 import { googleLoginUrl } from "~/framework/api/user/google_loginUrl";
 import { googleRegisterUrl } from "~/framework/api/user/google_registerUrl";
 import { googleSyncUrl } from "~/framework/api/user/google_syncUrl";
+import { googleAuthenticate } from "~/framework/api/user/google_authenticate";
 import { login } from "~/framework/api/user/login";
 import { logout } from "~/framework/api/user/logout";
 import { me } from "~/framework/api/user/me";
@@ -48,9 +49,7 @@ export const user: DBFrameworkUserApi = {
     loginUrl: googleLoginUrl,
     registerUrl: googleRegisterUrl,
     syncUrl: googleSyncUrl,
-    server: {
-      async authenticate() {},
-    },
+    authenticate: googleAuthenticate,
   },
   github: {
     async loginUrl() {
@@ -62,8 +61,6 @@ export const user: DBFrameworkUserApi = {
     async syncUrl() {
       return "";
     },
-    server: {
-      async authenticate() {},
-    },
+    async authenticate() {},
   },
 };

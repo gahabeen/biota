@@ -13,14 +13,15 @@ export async function googleSyncUrl(this: DB, options: DBFrameworkAuthConnectUrl
         name: `Sync url for Google`,
         async task() {
           // client_id && redirect_uri required
+          const { state = {} } = options || {};
           return self.query(q.HasIdentity()).then((hasIdentity) => {
             if (hasIdentity && self.secret) {
               const { iv, encrypted } = encrypt(self.secret, self.private_key || "");
               return google.connectUrl({
                 ...options,
                 state: {
-                  ...(typeof options.state === "object" ? options.state : {}),
-                  action: "register",
+                  ...state,
+                  scenario: "register",
                   user: encrypted,
                   iv: iv,
                 },

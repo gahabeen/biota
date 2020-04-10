@@ -39,16 +39,12 @@ export interface DBFrameworkAuthGetIdOptions {
   access_token: string;
 }
 
-export interface DBFrameworkUserAuthProviderServerApi {
-  authenticate(): Promise<any>;
-}
-
 export interface DBFrameworkUserAuthProviderApi {
   loginUrl(options: DBFrameworkAuthConnectUrlOptions): Promise<string>;
   registerUrl(options: DBFrameworkAuthConnectUrlOptions): Promise<string>;
   syncUrl(options: DBFrameworkAuthConnectUrlOptions): Promise<string>;
   // unsync(): Promise<any>;
-  server: DBFrameworkUserAuthProviderServerApi;
+  authenticate(options: DBFrameworkAuthAuthenticateOptions): Promise<any>;
 }
 
 export interface DBFrameworkUserSessionApi {

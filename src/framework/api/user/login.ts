@@ -11,8 +11,9 @@ export async function login(this: DB, email: string, password: string) {
         task() {
           return self.query(userCALL.login.call(self, email, password)).then(({ secret }) => {
             if (secret) {
-              self.secret = secret;
-              return new DB({ secret });
+              let newSelf = new DB({ secret, private_key: self.private_key });
+              newSelf.secret = secret;
+              return newSelf;
             } else return self;
           });
         },
