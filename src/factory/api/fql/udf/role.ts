@@ -13,8 +13,13 @@ export const role: DBFactorySpecificRoleApi = {
         membership: roleFQLBase.membership.distinct(nameExpr, membership),
       });
     },
+    repsert(this: DB, nameExpr, membership) {
+      return q.Call(udfunctionNameNormalized("RepsertRole"), Identity(), q.Var("private_key"), nameExpr, {
+        membership: roleFQLBase.membership.distinct(nameExpr, membership),
+      });
+    },
     delete(this: DB, nameExpr, resource) {
-      return q.Call(udfunctionNameNormalized("UpsertRole"), Identity(), q.Var("private_key"), nameExpr, {
+      return q.Call(udfunctionNameNormalized("RepsertRole"), Identity(), q.Var("private_key"), nameExpr, {
         membership: roleFQLBase.membership.difference(nameExpr, resource),
       });
     },
@@ -27,8 +32,14 @@ export const role: DBFactorySpecificRoleApi = {
       });
       // fql.base.upsert.role(nameExpr, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
     },
+    repsert(this: DB, nameExpr, privilege) {
+      return q.Call(udfunctionNameNormalized("RepsertRole"), Identity(), q.Var("private_key"), nameExpr, {
+        privileges: roleFQLBase.privileges.distinct(nameExpr, privilege),
+      });
+      // fql.base.upsert.role(nameExpr, { privileges: q.Var("new_privileges") as FaunaRolePrivilege[] })
+    },
     delete(this: DB, nameExpr, resource) {
-      return q.Call(udfunctionNameNormalized("UpsertRole"), Identity(), q.Var("private_key"), nameExpr, {
+      return q.Call(udfunctionNameNormalized("RepsertRole"), Identity(), q.Var("private_key"), nameExpr, {
         privileges: roleFQLBase.privileges.difference(nameExpr, resource),
       });
     },

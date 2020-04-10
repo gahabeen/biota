@@ -145,6 +145,7 @@ export interface DBFactoryFQLBaseRoleMembership {
   distinct(name: string, membership: FaunaRoleMembership): FaunaRoleMembership[] | Expr;
   difference(name: string, resource: FaunaRef): FaunaRoleMembership[] | Expr;
   upsert: DBFactorySpecificRoleMembershipApi["upsert"];
+  repsert: DBFactorySpecificRoleMembershipApi["repsert"];
   delete: DBFactorySpecificRoleMembershipApi["delete"];
 }
 
@@ -152,6 +153,7 @@ export interface DBFactoryFQLBaseRolePrivilege {
   distinct(name: string, privilege: FaunaRolePrivilege): FaunaRolePrivilege[] | Expr;
   difference(name: string, resource: FaunaRef): FaunaRolePrivilege[] | Expr;
   upsert: DBFactorySpecificRolePrivilegeApi["upsert"];
+  repsert: DBFactorySpecificRolePrivilegeApi["repsert"];
   delete: DBFactorySpecificRolePrivilegeApi["delete"];
 }
 

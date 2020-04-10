@@ -10,6 +10,7 @@ import {
   CRUDReferenceCredentials,
 } from "../crud.reference";
 import { DBFactorySpecificUserApi } from "./factory.specific.user";
+import { DBFactorySpecificRoleApi, DBFactorySpecificRoleMembershipApi, DBFactorySpecificRolePrivilegeApi } from "./factory.specific.role";
 
 export interface DBFactoryCall {
   get: DBFactoryCallGet;
@@ -163,4 +164,21 @@ export interface DBFactoryCallUser {
   logout: DBFactorySpecificUserApi["logout"];
   register: DBFactorySpecificUserApi["register"];
   changePassword: DBFactorySpecificUserApi["changePassword"];
+}
+
+export interface DBFactoryCallMembership {
+  upsert: DBFactorySpecificRoleMembershipApi["upsert"];
+  repsert: DBFactorySpecificRoleMembershipApi["repsert"];
+  delete: DBFactorySpecificRoleMembershipApi["delete"];
+}
+
+export interface DBFactoryCallPrivilege {
+  upsert: DBFactorySpecificRolePrivilegeApi["upsert"];
+  repsert: DBFactorySpecificRolePrivilegeApi["repsert"];
+  delete: DBFactorySpecificRolePrivilegeApi["delete"];
+}
+
+export interface DBFactoryCallRole {
+  membership: DBFactoryCallMembership;
+  privilege: DBFactoryCallPrivilege;
 }

@@ -1,6 +1,7 @@
 import { query as q } from "faunadb";
 import { DBFactoryFQLBaseRole } from "~/../types/factory/factory.fql.base";
 import { upsert as upsertFQLBase } from "~/factory/api/fql/base/upsert";
+import { repsert as repsertFQLBase } from "~/factory/api/fql/base/repsert";
 import { udfunctionNameNormalized } from "~/factory/classes/udfunction";
 import { FaunaRolePrivilege } from "~/../types/fauna";
 
@@ -25,7 +26,7 @@ export const role: DBFactoryFQLBaseRole = {
             q.Var("current_membership"),
             q.Lambda("cm", q.Not(q.Equals(q.Select("resource", q.Var("cm")), q.Var("membership_resource"))))
           ),
-          new_membership: q.Merge(q.Var("same_current_membership"), q.Var("membership")),
+          new_membership: q.Merge(q.Select(0, q.Var("same_current_membership"), {}), q.Var("membership")),
           new_membership_array: q.Append(q.Var("current_membership_except_new"), [q.Var("new_membership")]),
         },
         q.Var("new_membership_array")
@@ -51,6 +52,11 @@ export const role: DBFactoryFQLBaseRole = {
     },
     upsert(nameExpr, membership) {
       return upsertFQLBase.role(nameExpr, {
+        membership: role.membership.distinct(nameExpr, membership),
+      });
+    },
+    repsert(nameExpr, membership) {
+      return repsertFQLBase.role(nameExpr, {
         membership: role.membership.distinct(nameExpr, membership),
       });
     },
@@ -81,7 +87,7 @@ export const role: DBFactoryFQLBaseRole = {
             q.Var("current_privilege"),
             q.Lambda("cm", q.Not(q.Equals(q.Select("resource", q.Var("cm")), q.Var("privilege_resource"))))
           ),
-          new_privilege: q.Merge(q.Var("same_current_privilege"), q.Var("privilege")),
+          new_privilege: q.Merge(q.Select(0, q.Var("same_current_privilege"), {}), q.Var("privilege")),
           new_privileges: q.Append(q.Var("current_privilege_except_new"), [q.Var("new_privilege")]),
         },
         q.Var("new_privileges")
@@ -107,6 +113,11 @@ export const role: DBFactoryFQLBaseRole = {
     },
     upsert(nameExpr, privilege) {
       return upsertFQLBase.role(nameExpr, {
+        privileges: role.privileges.distinct(nameExpr, privilege) as FaunaRolePrivilege[],
+      });
+    },
+    repsert(nameExpr, privilege) {
+      return repsertFQLBase.role(nameExpr, {
         privileges: role.privileges.distinct(nameExpr, privilege) as FaunaRolePrivilege[],
       });
     },

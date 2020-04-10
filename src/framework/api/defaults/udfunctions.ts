@@ -12,6 +12,8 @@ export * from "~/framework/defaults/udfunctions/search_query";
 // classes
 export * from "~/framework/defaults/udfunctions/classes/role/role_upsert_privilege";
 export * from "~/framework/defaults/udfunctions/classes/role/role_upsert_membership";
+export * from "~/framework/defaults/udfunctions/classes/role/role_repsert_privilege";
+export * from "~/framework/defaults/udfunctions/classes/role/role_repsert_membership";
 export * from "~/framework/defaults/udfunctions/classes/role/role_delete_privilege";
 export * from "~/framework/defaults/udfunctions/classes/role/role_delete_membership";
 

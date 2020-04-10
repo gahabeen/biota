@@ -12,3 +12,4 @@ export * from "./call/assign";
 export * from "./call/own";
 export * from "./call/expire";
 export * from "./call/user";
+export * from "./call/role";

@@ -9,8 +9,10 @@ import { update } from "~/framework/api/role/update";
 import { upsert } from "~/framework/api/role/upsert";
 import { insert } from "~/framework/api/role/insert";
 import { membershipUpsert } from "~/framework/api/role/membership_upsert";
+import { membershipRepsert } from "~/framework/api/role/membership_repsert";
 import { membershipDelete } from "~/framework/api/role/membership_delete";
 import { privilegeUpsert } from "~/framework/api/role/privilege_upsert";
+import { privilegeRepsert } from "~/framework/api/role/privilege_repsert";
 import { privilegeDelete } from "~/framework/api/role/privilege_delete";
 
 export function role(roleName: string): DBFrameworkRoleApi {
@@ -32,10 +34,12 @@ export function role(roleName: string): DBFrameworkRoleApi {
     forget: forget.call(self, roleName),
     membership: {
       upsert: membershipUpsert.call(self, roleName),
+      repsert: membershipRepsert.call(self, roleName),
       delete: membershipDelete.call(self, roleName),
     },
     privilege: {
       upsert: privilegeUpsert.call(self, roleName),
+      repsert: privilegeRepsert.call(self, roleName),
       delete: privilegeDelete.call(self, roleName),
     },
     async changes() {},

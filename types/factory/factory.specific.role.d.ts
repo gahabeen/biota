@@ -3,11 +3,13 @@ import { FaunaId, FaunaDocumentOptions, FaunaRoleMembership, FaunaRef, FaunaRole
 
 export interface DBFactorySpecificRoleMembershipApi {
   upsert: (name: string, membership: FaunaRoleMembership) => Expr;
+  repsert: (name: string, membership: FaunaRoleMembership) => Expr;
   delete: (name: string, resource: FaunaRef) => Expr;
 }
 
 export interface DBFactorySpecificRolePrivilegeApi {
   upsert: (name: string, membership: FaunaRolePrivilege) => Expr;
+  repsert: (name: string, membership: FaunaRolePrivilege) => Expr;
   delete: (name: string, resource: FaunaRef) => Expr;
 }
 
