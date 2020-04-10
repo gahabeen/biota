@@ -9,6 +9,6 @@ export const is_assignee = Rule({
       raw_assignees: q.Select(["data", "_activity", "assignees"], q.Var("doc"), []),
       assignees: q.If(q.IsArray(q.Var("raw_assignees")), q.Var("raw_assignees"), []),
     },
-    q.IsEmpty(q.Filter(q.Var("assignees"), q.Lambda("assignee", q.Equals(q.Var("assignee"), Identity()))))
+    q.Not(q.IsEmpty(q.Filter(q.Var("assignees"), q.Lambda("assignee", q.Equals(q.Var("assignee"), Identity())))))
   ),
 });
