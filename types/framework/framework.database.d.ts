@@ -1,4 +1,4 @@
-import { FaunaPaginateOptions, FaunaDocumentCredentials } from "../fauna";
+import { FaunaPaginateOptions } from "../fauna";
 
 export interface DBFrameworkDatabaseApi {
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;

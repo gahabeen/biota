@@ -1,6 +1,6 @@
 # biota
 
-![Feature requests](https://img.shields.io/badge/feature-requests-blue?style=flat-square) ![npm](https://img.shields.io/npm/v/biota?style=flat-square) ![npm](https://img.shields.io/npm/dm/biota?style=flat-square) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square)
+[![Roadmap](https://img.shields.io/badge/project-roadmap-violet?style=flat-square)](https://biota.canny.io) [![Feature requests](https://img.shields.io/badge/feature-requests-blue?style=flat-square)](https://biota.canny.io/features) [![npm](https://img.shields.io/npm/v/biota?style=flat-square)](https://www.npmjs.com/package/biota) [![npm](https://img.shields.io/npm/dm/biota?style=flat-square)](https://www.npmjs.com/package/biota) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square)
 
 A simple, yet 💪, _slightly opiniated_ database framework for Fauna, written in Javascript (Typescript).
 
