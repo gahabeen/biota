@@ -53,32 +53,32 @@ export function scaffold(this: DB, collectionName: string) {
       },
     ];
 
-    // for (let indexField of index) {
-    //   tasks.push({
-    //     name: `Upserting index field (${indexField}) on (${collectionName})`,
-    //     async task() {
-    //       return self.collection(collectionName).index(indexField, { role: roleNameNormalized("user") });
-    //     },
-    //   });
-    // }
+    for (let indexField of index) {
+      tasks.push({
+        name: `Upserting index field (${indexField}) on (${collectionName})`,
+        async task() {
+          return self.collection(collectionName).index(indexField, { role: roleNameNormalized("user") });
+        },
+      });
+    }
 
-    // for (let computeField of compute) {
-    //   tasks.push({
-    //     name: `Upserting viewable field (${computeField.field}) on (${collectionName})`,
-    //     async task() {
-    //       return self.collection(collectionName).compute(computeField, { role: roleNameNormalized("user") });
-    //     },
-    //   });
-    // }
+    for (let computeField of compute) {
+      tasks.push({
+        name: `Upserting viewable field (${computeField.field}) on (${collectionName})`,
+        async task() {
+          return self.collection(collectionName).compute(computeField, { role: roleNameNormalized("user") });
+        },
+      });
+    }
 
-    // for (let fieldField of field) {
-    //   tasks.push({
-    //     name: `Upserting viewable field (${fieldField.field}) on (${collectionName})`,
-    //     async task() {
-    //       return self.collection(collectionName).field(fieldField);
-    //     },
-    //   });
-    // }
+    for (let fieldField of field) {
+      tasks.push({
+        name: `Upserting viewable field (${fieldField.field}) on (${collectionName})`,
+        async task() {
+          return self.collection(collectionName).field(fieldField);
+        },
+      });
+    }
 
     for (let role of defaultRoles) {
       tasks.push({
@@ -94,30 +94,30 @@ export function scaffold(this: DB, collectionName: string) {
                 delete: "owner",
               },
             })
-          )
+          );
           // .then(res => console.log(JSON.stringify(res.privileges[0], null, 2)))
         },
       });
     }
 
-    // tasks.push({
-    //   name: `Adding collection ${collectionName} to [system] role`,
-    //   async task() {
-    //     return self.role(roleNameNormalized("system")).privilege.upsert(
-    //       Privilege({
-    //         resource: q.Collection(collectionName),
-    //         actions: {
-    //           create: "all",
-    //           read: "all",
-    //           history_read: "all",
-    //           history_write: "all",
-    //           write: "all",
-    //           delete: "all",
-    //         },
-    //       })
-    //     );
-    //   },
-    // });
+    tasks.push({
+      name: `Adding collection ${collectionName} to [system] role`,
+      async task() {
+        return self.role(roleNameNormalized("system")).privilege.upsert(
+          Privilege({
+            resource: q.Collection(collectionName),
+            actions: {
+              create: "all",
+              read: "all",
+              history_read: "all",
+              history_write: "all",
+              write: "all",
+              delete: "all",
+            },
+          })
+        );
+      },
+    });
 
     return execute(tasks, {
       domain: "DB.collection.scaffold",

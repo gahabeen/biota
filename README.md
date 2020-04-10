@@ -1,7 +1,7 @@
 # biota
 
-[![Roadmap](https://img.shields.io/badge/project-roadmap-violet?style=flat-square)](https://biota.canny.io) [![Feature requests](https://img.shields.io/badge/feature-requests-blue?style=flat-square)](https://biota.canny.io/features) [![npm](https://img.shields.io/npm/v/biota?style=flat-square)](https://www.npmjs.com/package/biota) [![npm](https://img.shields.io/npm/dm/biota?style=flat-square)](https://www.npmjs.com/package/biota) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square)
-
+[![Roadmap](https://img.shields.io/badge/project-roadmap-violet?style=flat-square)](https://biota.canny.io) [![Feature requests](https://img.shields.io/badge/feature-requests-blue?style=flat-square)](https://biota.canny.io/features) [![npm](https://img.shields.io/npm/v/biota?style=flat-square)](https://www.npmjs.com/package/biota) [![npm](https://img.shields.io/npm/dm/biota?style=flat-square)](https://www.npmjs.com/package/biota) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/biota?style=flat-square)
+ 
 A simple, yet 💪, _slightly opiniated_ database framework for Fauna, written in Javascript (Typescript).
 
 > 🙃 You're on beta release. Don't get scared though, the api is pretty stable but tests need to be added to be fool-proof. (Thus, as of yet, Biota isn't production ready.)

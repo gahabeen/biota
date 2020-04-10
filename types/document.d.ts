@@ -47,7 +47,4 @@ export interface DocumentActivity {
 
   forgotten_by?: FaunaRef;
   forgotten_at?: FaunaTime;
-
-  archived_by?: FaunaRef;
-  archived_at?: FaunaTime;
 }
