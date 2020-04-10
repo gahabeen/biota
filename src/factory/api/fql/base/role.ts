@@ -25,7 +25,7 @@ export const role: DBFactoryFQLBaseRole = {
             q.Var("current_membership"),
             q.Lambda("cm", q.Not(q.Equals(q.Select("resource", q.Var("cm")), q.Var("membership_resource"))))
           ),
-          new_membership: q.Merge(q.Var("membership"), q.Var("same_current_membership")),
+          new_membership: q.Merge(q.Var("same_current_membership"), q.Var("membership")),
           new_membership_array: q.Append(q.Var("current_membership_except_new"), [q.Var("new_membership")]),
         },
         q.Var("new_membership_array")
@@ -81,7 +81,7 @@ export const role: DBFactoryFQLBaseRole = {
             q.Var("current_privilege"),
             q.Lambda("cm", q.Not(q.Equals(q.Select("resource", q.Var("cm")), q.Var("privilege_resource"))))
           ),
-          new_privilege: q.Merge(q.Var("privilege"), q.Var("same_current_privilege")),
+          new_privilege: q.Merge(q.Var("same_current_privilege"), q.Var("privilege")),
           new_privileges: q.Append(q.Var("current_privilege_except_new"), [q.Var("new_privilege")]),
         },
         q.Var("new_privileges")

@@ -10,6 +10,7 @@ import {
   is_owned_by,
   is_owner,
   is_self,
+  is_document_available,
   none,
 } from "~/framework/api/defaults/rules";
 const q = fauna.query;
@@ -69,7 +70,7 @@ export function ReadAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleActi
       {
         doc: q.Get(q.Var("ref")),
       },
-      prepareRules(actions)
+      q.And(is_document_available, prepareRules(actions))
     )
   );
 }
@@ -86,7 +87,7 @@ export function WriteAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAct
       {
         doc: q.Var("newDoc"),
       },
-      prepareRules(actions)
+      q.And(is_document_available, prepareRules(actions))
     )
   );
 }
@@ -112,7 +113,7 @@ export function DeleteAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAc
 export function HistoryReadAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]): FaunaRuleLambda {
   actions = processActions(actions);
   if (typeof actions === "boolean") return actions;
-  return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, prepareRules(actions)));
+  return q.Lambda(["ref"], q.Let({ doc: q.Get(q.Var("ref")) }, q.And(is_document_available, prepareRules(actions))));
 }
 
 export function HistoryWriteAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]): FaunaRuleLambda {
@@ -121,7 +122,7 @@ export function HistoryWriteAction(actions: FaunaRuleAction | Fauna.Expr | Fauna
     // are_rights_not_changed
   ]);
   if (typeof actions === "boolean") return actions;
-  return q.Lambda(["ref", "ts", "action", "doc"], prepareRules(actions));
+  return q.Lambda(["ref", "ts", "action", "doc"], q.And(is_document_available, prepareRules(actions)));
 }
 
 export function UnrestrictedReadAction(actions: FaunaRuleAction | Fauna.Expr | FaunaRuleAction[] | Fauna.Expr[]): FaunaRuleLambda {

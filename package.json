@@ -15,7 +15,7 @@
   },
   "scripts": {
     "clean-dist": "rm -f -r dist",
-    "gen": "yarn run clean-dist && tsc -w",
+    "gen": "yarn run clean-dist && ttsc -w",
     "test": "jest",
     "test-watch": "jest --watch",
     "browser": "node bin/browserify",
