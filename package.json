@@ -14,12 +14,14 @@
     "name": "Gabin Desserprit"
   },
   "scripts": {
-    "clean-dist": "rm -f -r dist",
-    "gen": "yarn run clean-dist && ttsc -w",
+    "doc": "typedoc src",
     "test": "jest",
-    "test-watch": "jest --watch",
-    "browser": "node bin/browserify",
-    "build": "yarn run clean-dist && ttsc"
+    "testw": "jest --watch",
+    "build": "ttsc",
+    "buildw": "ttsc -w",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "build-browser": "node bin/browserify"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -46,9 +48,12 @@
     "nyc": "^15.0.0",
     "open": "^7.0.3",
     "pathmodify": "^0.5.0",
+    "prettier": "^2.0.4",
     "tinyify": "^2.5.2",
     "ts-jest": "^25.2.1",
     "tsify": "^4.0.1",
+    "tslint": "^6.1.1",
+    "tslint-config-prettier": "^1.18.0",
     "ttypescript": "^1.5.10",
     "typedoc": "^0.17.1",
     "typescript": "^3.8.3",

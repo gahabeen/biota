@@ -1,18 +1,18 @@
-import { DB } from "~/db";
-import { query as q } from "faunadb";
-import { execute } from "~/tasks";
-import { role as roleFQLBase } from "~/factory/api/fql/base/role";
-import { insert } from "~/factory/api/fql/base/insert";
-import { upsert } from "~/factory/api/fql/base/upsert";
-import { repsert } from "~/factory/api/fql/base/repsert";
-import * as defaultFunctions from "~/framework/api/defaults/udfunctions";
-import * as defaultRoles from "~/framework/api/defaults/roles";
-import * as defaultCollections from "~/framework/api/defaults/collections";
-import * as defaultIndexes from "~/framework/api/defaults/indexes";
-import { DBFoundationOptions } from "~/../types/db";
-import { FaunaUDFunctionOptions } from "~/../types/fauna";
-import { roleNameNormalized } from "~/factory/classes/role";
-import { delay } from "~/helpers/delay";
+import { DB } from '~/db';
+import { query as q } from 'faunadb';
+import { execute } from '~/tasks';
+import { role as roleFQLBase } from '~/factory/api/fql/base/role';
+import { insert } from '~/factory/api/fql/base/insert';
+import { upsert } from '~/factory/api/fql/base/upsert';
+import { repsert } from '~/factory/api/fql/base/repsert';
+import * as defaultFunctions from '~/framework/api/defaults/udfunctions';
+import * as defaultRoles from '~/framework/api/defaults/roles';
+import * as defaultCollections from '~/framework/api/defaults/collections';
+import * as defaultIndexes from '~/framework/api/defaults/indexes';
+import { DBFoundationOptions } from '~/../types/db';
+import { FaunaUDFunctionOptions } from '~/../types/fauna';
+import { roleNameNormalized } from '~/factory/classes/role';
+import { delay } from '~/helpers/delay';
 
 export async function foundation(this: DB, options: DBFoundationOptions) {
   const self = this;
@@ -29,16 +29,16 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       initialRoleTasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
         task() {
-          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name, { privileges: []})));
+          return self.query(q.If(q.Exists(q.Role(defaultRole.name)), null, insert.role(defaultRole.name, { privileges: [] })));
         },
       });
     }
 
     tasks.push({
-      name: "Initial roles",
+      name: 'Initial roles',
       async task() {
         return execute(initialRoleTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -56,7 +56,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: `Upserting udfunction function [${defaultFunctions.InsertUDFunction.name}]`,
       task() {
         return self.query(
-          repsert.udfunction(defaultFunctions.InsertUDFunction.name, defaultFunctions.InsertUDFunction as FaunaUDFunctionOptions)
+          repsert.udfunction(defaultFunctions.InsertUDFunction.name, defaultFunctions.InsertUDFunction as FaunaUDFunctionOptions),
         );
       },
       fullError: true,
@@ -66,7 +66,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: `Upserting udfunction function [${defaultFunctions.UpdateUDFunction.name}]`,
       task() {
         return self.query(
-          repsert.udfunction(defaultFunctions.UpdateUDFunction.name, defaultFunctions.UpdateUDFunction as FaunaUDFunctionOptions)
+          repsert.udfunction(defaultFunctions.UpdateUDFunction.name, defaultFunctions.UpdateUDFunction as FaunaUDFunctionOptions),
         );
       },
       fullError: true,
@@ -76,17 +76,17 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: `Upserting udfunction function [${defaultFunctions.ReplaceUDFunction.name}]`,
       task() {
         return self.query(
-          repsert.udfunction(defaultFunctions.ReplaceUDFunction.name, defaultFunctions.ReplaceUDFunction as FaunaUDFunctionOptions)
+          repsert.udfunction(defaultFunctions.ReplaceUDFunction.name, defaultFunctions.ReplaceUDFunction as FaunaUDFunctionOptions),
         );
       },
       fullError: true,
     });
 
     tasks.push({
-      name: "Initial UDFunctions",
+      name: 'Initial UDFunctions',
       async task() {
         return execute(initialUDFunctionsTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -96,7 +96,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     let otherUDFunctionsTasks = [];
     for (let UDFunction of Object.values(defaultFunctions)) {
       let UDFunctionDefinition = UDFunction;
-      if (typeof UDFunctionDefinition === "function") {
+      if (typeof UDFunctionDefinition === 'function') {
         UDFunctionDefinition = (UDFunctionDefinition as any)({ privateKey: self.private_key || null });
       }
       otherUDFunctionsTasks.push({
@@ -109,10 +109,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       });
     }
     tasks.push({
-      name: "Other UDFunctions",
+      name: 'Other UDFunctions',
       async task() {
         return execute(otherUDFunctionsTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -141,10 +141,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     }
 
     tasks.push({
-      name: "Initial Roles",
+      name: 'Initial Roles',
       async task() {
         return execute(intialRolesTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -188,10 +188,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     });
 
     tasks.push({
-      name: "Initial Collections",
+      name: 'Initial Collections',
       async task() {
         return execute(collectionsTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -215,10 +215,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     }
 
     tasks.push({
-      name: "Indexes",
+      name: 'Indexes',
       async task() {
         return execute(indexesTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -255,10 +255,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       }
     }
     tasks.push({
-      name: "Roles",
+      name: 'Roles',
       async task() {
         return execute(rolesTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -285,26 +285,26 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
         return self.collection(defaultCollections.actions.name).scaffold(defaultCollections.actions, {
           roles: [],
           index: [
-            "document",
-            "ts",
-            "user",
-            "name",
+            'document',
+            'ts',
+            'user',
+            'name',
             {
-              field: "collection",
-              binding: q.Query(q.Lambda("doc", q.Select(["data", "document", "collection"], q.Var("doc"), null))),
+              field: 'collection',
+              binding: q.Query(q.Lambda('doc', q.Select(['data', 'document', 'collection'], q.Var('doc'), null))),
             },
             {
-              field: "at",
+              field: 'at',
               binding: q.Query(
                 q.Lambda(
-                  "doc",
+                  'doc',
                   q.Let(
                     {
-                      ts: q.Select("ts", q.Var("doc"), null),
+                      ts: q.Select('ts', q.Var('doc'), null),
                     },
-                    q.If(q.IsTimestamp(q.Var("ts")), q.ToTime(q.Var("ts")), null)
-                  )
-                )
+                    q.If(q.IsTimestamp(q.Var('ts')), q.ToTime(q.Var('ts')), null),
+                  ),
+                ),
               ),
             },
           ],
@@ -358,10 +358,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     });
 
     tasks.push({
-      name: "Collections",
+      name: 'Collections',
       async task() {
         return execute(collectionsTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -373,7 +373,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
     let udfunctionsTasks = [];
     for (let UDFunction of Object.values(defaultFunctions)) {
       let UDFunctionDefinition = UDFunction;
-      if (typeof UDFunctionDefinition === "function") {
+      if (typeof UDFunctionDefinition === 'function') {
         UDFunctionDefinition = (UDFunctionDefinition as any)({ privateKey: self.private_key || null });
       }
 
@@ -383,10 +383,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
           await delay(300);
 
           return self.query(
-            roleFQLBase.privileges.upsert(roleNameNormalized("user"), {
+            roleFQLBase.privileges.upsert(roleNameNormalized('user'), {
               resource: q.Function(UDFunctionDefinition.name),
               actions: { call: true },
-            })
+            }),
           );
           // return self.role(roleNameNormalized("user")).privilege.upsert({
           //   resource: q.Function(UDFunctionDefinition.name),
@@ -401,10 +401,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
         async task() {
           await delay(300);
           return self.query(
-            roleFQLBase.privileges.upsert(roleNameNormalized("system"), {
+            roleFQLBase.privileges.upsert(roleNameNormalized('system'), {
               resource: q.Function(UDFunctionDefinition.name),
               actions: { call: true },
-            })
+            }),
           );
           // return self.role(roleNameNormalized("system")).privilege.upsert({
           //   resource: q.Function(UDFunctionDefinition.name),
@@ -415,10 +415,10 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       });
     }
     tasks.push({
-      name: "UDFunctions on Roles",
+      name: 'UDFunctions on Roles',
       async task() {
         return execute(udfunctionsTasks, {
-          domain: "DB.foundation",
+          domain: 'DB.foundation',
           parallel: false,
           indent: 2,
         });
@@ -427,6 +427,6 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
   }
 
   return execute(tasks, {
-    domain: "DB.foundation",
+    domain: 'DB.foundation',
   });
 }
