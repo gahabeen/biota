@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { index } from "~/factory/api/classes/index";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { index } from '~/factory/api/classes/index';
+import { execute } from '~/tasks';
 
 export function get(this: DB, indexName: string) {
-  let self = this;
+  const self = this;
 
   return async function getMethod() {
     return execute(
@@ -16,8 +16,8 @@ export function get(this: DB, indexName: string) {
         },
       ],
       {
-        domain: "DB.index.get",
-      }
+        domain: 'DB.index.get',
+      },
     );
   };
 }

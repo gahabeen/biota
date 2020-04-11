@@ -1,14 +1,14 @@
-import { DBFrameworkRelationDefinition } from "~/../types/framework/framework.collection";
+import { DBFrameworkRelationDefinition } from '~/../types/framework/framework.collection';
 // external
-import { DB } from "~/db";
+import { DB } from '~/db';
 // biota
-import { collectionNamePlural, collectionNameNormalized } from "~/factory/classes/collection";
-import { insert } from "~/factory/api/fql/base/insert";
-import { name } from "~/helpers";
-import { execute } from "~/tasks";
+import { collectionNamePlural, collectionNameNormalized } from '~/factory/classes/collection';
+import { insert } from '~/factory/api/fql/base/insert';
+import { name } from '~/helpers';
+import { execute } from '~/tasks';
 
 export function relation(this: DB, relationName?: string) {
-  let self = this;
+  const self = this;
 
   let definition: DBFrameworkRelationDefinition = {
     name: relationName,
@@ -18,7 +18,7 @@ export function relation(this: DB, relationName?: string) {
   };
 
   async function buildRelation() {
-    if (!definition.name) definition.name = name([""]);
+    if (!definition.name) definition.name = name(['']);
 
     let relations = definition.parts.map((p) => p.relation);
     let firstRelation = definition.parts[0];
@@ -43,7 +43,7 @@ export function relation(this: DB, relationName?: string) {
         //   ]
         // });
 
-        return self.collection(collectionNameNormalized("relations")).insert({
+        return self.collection(collectionNameNormalized('relations')).insert({
           data: {
             relations: {},
           },
@@ -52,34 +52,34 @@ export function relation(this: DB, relationName?: string) {
     });
 
     // one-to-one
-    if (relations.includes("one") && !relations.includes("many")) {
+    if (relations.includes('one') && !relations.includes('many')) {
     }
     // many-to-one / one-to-many
-    else if (relations.includes("one") && relations.includes("many")) {
+    else if (relations.includes('one') && relations.includes('many')) {
     }
     // many-to-many
-    else if (relations.includes("many") && !relations.includes("one")) {
+    else if (relations.includes('many') && !relations.includes('one')) {
     } else {
       throw new Error(`Relation ${name} isn't right`);
     }
 
     return execute(tasks, {
-      domain: "DB.relation"
+      domain: 'DB.relation',
     });
   }
 
   let firstApi = {
-    many: function (collection: string, path: string = "~ref") {
+    many: function (collection: string, path: string = '~ref') {
       definition.parts.push({
-        relation: "many",
+        relation: 'many',
         collection: collectionNamePlural(collection),
         path,
       });
       return secondApi;
     },
-    one: function (collection: string, path: string = "~ref") {
+    one: function (collection: string, path: string = '~ref') {
       definition.parts.push({
-        relation: "one",
+        relation: 'one',
         collection: collectionNamePlural(collection),
         path,
       });
@@ -88,17 +88,17 @@ export function relation(this: DB, relationName?: string) {
   };
 
   let secondMethods = {
-    many: function (collection: string, path: string = "~ref") {
+    many: function (collection: string, path: string = '~ref') {
       definition.parts.push({
-        relation: "many",
+        relation: 'many',
         collection: collectionNamePlural(collection),
         path,
       });
       return buildRelation();
     },
-    one: function (collection: string, path: string = "~ref") {
+    one: function (collection: string, path: string = '~ref') {
       definition.parts.push({
-        relation: "one",
+        relation: 'one',
         collection: collectionNamePlural(collection),
         path,
       });

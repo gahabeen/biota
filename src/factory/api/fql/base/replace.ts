@@ -1,5 +1,5 @@
-import { DBFactoryFQLBaseReplace } from "~/../types/factory/factory.fql.base";
-import { query as q } from "faunadb";
+import { DBFactoryFQLBaseReplace } from '~/../types/factory/factory.fql.base';
+import { query as q } from 'faunadb';
 
 export const replace: DBFactoryFQLBaseReplace = {
   document(collection, id, data = {}) {

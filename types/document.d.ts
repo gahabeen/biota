@@ -1,12 +1,41 @@
-import { FaunaRef, FaunaTime } from "./fauna";
+import { FaunaRef, FaunaTime } from './fauna';
 
 export interface DocumentGroup {
   _name: string;
 }
 
+export interface DocumentAuthAccountProfile {
+  email?: string;
+}
+
+export interface OpenIDUserInfo {
+  sub: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  middle_name?: string;
+  nickname?: string;
+  preferred_username?: string;
+  profile?: string;
+  picture?: string;
+  website?: string;
+  email?: string;
+  email_verified?: boolean;
+  gender?: string;
+  birthdate?: string;
+  zoneinfo?: string;
+  locale?: string;
+  phone_number?: string;
+  phone_number_verified?: boolean;
+  address?: JSON;
+  updated_at?: number;
+}
+
 export interface DocumentAuthAccount {
   provider: string;
   id: string;
+  profile?: DocumentAuthAccountProfile;
+  userInfo?: OpenIDUserInfo;
 }
 
 export interface DocumentAuth {

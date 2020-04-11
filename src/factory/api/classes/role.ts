@@ -1,9 +1,9 @@
-import { query as q } from "faunadb";
-import { DBFactoryRoleApi } from "~/../types/factory/factory.classes";
-import { FaunaRolePrivilege } from "~/../types/fauna";
-import { DB } from "~/db";
-import * as call from "~/factory/api/call";
-import * as fql from "~/factory/api/fql";
+import { query as q } from 'faunadb';
+import { DBFactoryRoleApi } from '~/../types/factory/factory.classes';
+import { FaunaRolePrivilege } from '~/../types/fauna';
+import { DB } from '~/db';
+import * as call from '~/factory/api/call';
+import * as fql from '~/factory/api/fql';
 
 export const role: DBFactoryRoleApi = {
   all(this: DB) {

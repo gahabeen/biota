@@ -1,5 +1,5 @@
-import { query as q } from "faunadb";
-import { Fauna, FaunaRolePrivilege, FaunaRolePrivilegeDefault } from "~/../types/fauna";
+import { query as q } from 'faunadb';
+import { Fauna, FaunaRolePrivilege, FaunaRolePrivilegeDefault } from '~/../types/fauna';
 import {
   CallAction,
   CreateAction,
@@ -9,7 +9,7 @@ import {
   ReadAction,
   UnrestrictedReadAction,
   WriteAction,
-} from "./action";
+} from './action';
 
 export function CustomPrivilege(privilege: FaunaRolePrivilege): FaunaRolePrivilege {
   let { resource, actions } = privilege || {};
@@ -20,7 +20,7 @@ export function CustomPrivilege(privilege: FaunaRolePrivilege): FaunaRolePrivile
 }
 
 function QueryWrapper(expr: Fauna.Expr) {
-  if (typeof expr === "boolean") {
+  if (typeof expr === 'boolean') {
     return expr;
   } else {
     return q.Query(expr);

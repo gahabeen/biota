@@ -1,6 +1,6 @@
-import { DBFactoryTokenApi } from "~/../types/factory/factory.classes";
-import * as call from "~/factory/api/call";
-import { DB } from "~/db";
+import { DBFactoryTokenApi } from '~/../types/factory/factory.classes';
+import * as call from '~/factory/api/call';
+import { DB } from '~/db';
 
 export const token: DBFactoryTokenApi = {
   all(this: DB) {

@@ -9,8 +9,8 @@ export var stringify = function (a: { [x: string]: any }) {
   r20 = /%20/g;
   add = function (key: string | number | boolean, value: string | number | boolean) {
     // If value is a function, invoke it and return its value
-    value = typeof value == "function" ? (value as any)() : value == null ? "" : value;
-    s[s.length] = encodeURIComponent(key) + "=" + encodeURIComponent(value);
+    value = typeof value == 'function' ? (value as any)() : value == null ? '' : value;
+    s[s.length] = encodeURIComponent(key) + '=' + encodeURIComponent(value);
   };
   if (a instanceof Array) {
     for (name in a) {
@@ -21,7 +21,7 @@ export var stringify = function (a: { [x: string]: any }) {
       buildParams(prefix, a[prefix], add);
     }
   }
-  output = s.join("&").replace(r20, "+");
+  output = s.join('&').replace(r20, '+');
   return output;
 };
 
@@ -33,13 +33,13 @@ function buildParams(prefix: string, obj: string | any[], add: (arg0: any, arg1:
       if (rbracket.test(prefix)) {
         add(prefix, obj[i]);
       } else {
-        buildParams(prefix + "[" + (typeof obj[i] === "object" ? i : "") + "]", obj[i], add);
+        buildParams(prefix + '[' + (typeof obj[i] === 'object' ? i : '') + ']', obj[i], add);
       }
     }
-  } else if (typeof obj == "object") {
+  } else if (typeof obj == 'object') {
     // Serialize object item.
     for (name in obj as any) {
-      buildParams(prefix + "[" + name + "]", obj[name], add);
+      buildParams(prefix + '[' + name + ']', obj[name], add);
     }
   } else {
     // Serialize scalar item.

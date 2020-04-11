@@ -1,5 +1,5 @@
-import { DBFactoryFQLBaseForget } from "~/../types/factory/factory.fql.base";
-import { query as q } from "faunadb";
+import { DBFactoryFQLBaseForget } from '~/../types/factory/factory.fql.base';
+import { query as q } from 'faunadb';
 
 export const forget: DBFactoryFQLBaseForget = {
   document(collection, id) {

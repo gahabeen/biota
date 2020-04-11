@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
-import { role } from "~/factory/api/classes/role";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
+import { role } from '~/factory/api/classes/role';
+import { execute } from '~/tasks';
 
 export function get(this: DB, roleName: string) {
-  let self = this;
+  const self = this;
 
   return async function getMethod() {
     return execute(
@@ -17,8 +17,8 @@ export function get(this: DB, roleName: string) {
         },
       ],
       {
-        domain: "DB.role.get",
-      }
+        domain: 'DB.role.get',
+      },
     );
   };
 }

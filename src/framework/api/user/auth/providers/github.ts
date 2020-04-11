@@ -5,15 +5,15 @@ import {
   DBFrameworkAuthTokenInfoOptions,
   DBFrameworkAuthUserInfoOptions,
   DBFrameworkAuthGetIdOptions,
-} from "~/../types/framework/framework.user";
-import { OAUTH2 } from "~/consts";
-import { authenticate } from "~/framework/api/user/auth/authenticate";
-import * as qs from "querystring";
-import axios from "axios";
+} from '~/../types/framework/framework.user';
+import { OAUTH2 } from '~/consts';
+import { authenticate } from '~/framework/api/user/auth/authenticate';
+import * as qs from 'querystring';
+import axios from 'axios';
 
 export const github = {
   connectUrl: function (options?: DBFrameworkAuthConnectUrlOptions) {
-    let { client_id, scope = "read:user user:email", redirect_uri, state = {} } = options || {};
+    let { client_id, scope = 'read:user user:email', redirect_uri, state = {} } = options || {};
     let url = OAUTH2.GITHUB.AUTHORIZE;
     let query: DBFrameworkAuthConnectUrlOptions = {
       client_id,

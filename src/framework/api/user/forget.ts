@@ -1,23 +1,23 @@
-import { query as q } from "faunadb";
-import { FaunaId } from "~/../types/fauna";
-import { DB } from "~/db";
-import { Identity } from "~/factory/api/ql";
-import { collectionNameNormalized } from "~/factory/classes/collection";
-import { execute } from "~/tasks";
+import { query as q } from 'faunadb';
+import { FaunaId } from '~/../types/fauna';
+import { DB } from '~/db';
+import { Identity } from '~/factory/api/ql';
+import { collectionNameNormalized } from '~/factory/classes/collection';
+import { execute } from '~/tasks';
 
 export function forget(this: DB) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
         name: `Forget me`,
         task() {
-          return self.document(collectionNameNormalized("users"), q.Select("id", Identity())).forget();
+          return self.document(collectionNameNormalized('users'), q.Select('id', Identity())).forget();
         },
       },
     ],
     {
-      domain: "DB.user.forget",
-    }
+      domain: 'DB.user.forget',
+    },
   );
 }

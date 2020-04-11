@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
-import { role } from "~/factory/api/classes/role";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
+import { role } from '~/factory/api/classes/role';
+import { execute } from '~/tasks';
 
 export function delete_(this: DB, roleName: string) {
-  let self = this;
+  const self = this;
 
   return async function deleteMethod(id: FaunaId) {
     return execute(
@@ -17,8 +17,8 @@ export function delete_(this: DB, roleName: string) {
         },
       ],
       {
-        domain: "DB.role.delete",
-      }
+        domain: 'DB.role.delete',
+      },
     );
   };
 }

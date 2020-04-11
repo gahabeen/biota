@@ -1,10 +1,10 @@
-import { FaunaIndexOptions } from "~/../types/fauna";
-import { DB } from "~/db";
-import { index } from "~/factory/api/classes/index";
-import { execute } from "~/tasks";
+import { FaunaIndexOptions } from '~/../types/fauna';
+import { DB } from '~/db';
+import { index } from '~/factory/api/classes/index';
+import { execute } from '~/tasks';
 
 export function forget(this: DB, indexName: string) {
-  let self = this;
+  const self = this;
 
   return async function forgetMethod() {
     return execute(
@@ -17,8 +17,8 @@ export function forget(this: DB, indexName: string) {
         },
       ],
       {
-        domain: "DB.index.forget",
-      }
+        domain: 'DB.index.forget',
+      },
     );
   };
 }

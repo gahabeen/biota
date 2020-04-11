@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { execute } from "~/tasks";
-import { query as q } from "faunadb";
-import { user as userCALL } from "~/factory/api/call/user";
+import { DB } from '~/db';
+import { execute } from '~/tasks';
+import { query as q } from 'faunadb';
+import { user as userCALL } from '~/factory/api/call/user';
 
 export async function logout(this: DB, everywhere: boolean = false) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -15,7 +15,7 @@ export async function logout(this: DB, everywhere: boolean = false) {
       },
     ],
     {
-      domain: "DB.user.logout",
-    }
+      domain: 'DB.user.logout',
+    },
   );
 }

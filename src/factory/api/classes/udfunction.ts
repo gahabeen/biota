@@ -1,6 +1,6 @@
-import { DBFactoryCallunctionApi } from "~/../types/factory/factory.classes";
-import * as call from "~/factory/api/call";
-import { DB } from "~/db";
+import { DBFactoryCallunctionApi } from '~/../types/factory/factory.classes';
+import * as call from '~/factory/api/call';
+import { DB } from '~/db';
 
 export const udfunction: DBFactoryCallunctionApi = {
   all(this: DB) {

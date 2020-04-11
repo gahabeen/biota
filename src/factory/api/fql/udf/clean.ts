@@ -1,23 +1,22 @@
-import { DBFactoryFQLUDFClean } from "~/../types/factory/factory.fql.udf";
-import { query as q } from "faunadb";
-import { CallLogAction, CallSystemOperator, CallIsPrivateKeyValid } from "~/framework/helpers/call_functions";
-import { clean as cleanBaseFQL } from "~/factory/api/fql/base/clean";
-import { update as updateBaseFQL } from "~/factory/api/fql/base/update";
+import { DBFactoryFQLUDFClean } from '~/../types/factory/factory.fql.udf';
+import { query as q } from 'faunadb';
+import { CallLogAction, CallSystemOperator, CallIsPrivateKeyValid } from '~/framework/helpers/call_functions';
+import { clean as cleanBaseFQL } from '~/factory/api/fql/base/clean';
+import { update as updateBaseFQL } from '~/factory/api/fql/base/update';
 
 let forgotLogData = {
-  _activity: { forgotten_by: q.Var("identity"), forgotten_at: q.Now() },
+  _activity: { forgotten_by: q.Var('identity'), forgotten_at: q.Now() },
 };
 
 export const clean: DBFactoryFQLUDFClean = {
   document(collection, id) {
     return q.Let(
       {
-
         operation: CallSystemOperator(updateBaseFQL.document(collection, id, forgotLogData)),
         doc: cleanBaseFQL.document(collection, id),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   documents(collection) {
@@ -25,18 +24,17 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.documents(collection),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   database(name) {
     return q.Let(
       {
-
         operation: CallSystemOperator(updateBaseFQL.database(name, { data: forgotLogData })),
         doc: cleanBaseFQL.database(name),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   databases() {
@@ -44,18 +42,17 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.databases(),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   collection(name) {
     return q.Let(
       {
-
         operation: CallSystemOperator(updateBaseFQL.collection(name, { data: forgotLogData })),
         doc: cleanBaseFQL.collection(name),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   collections() {
@@ -63,18 +60,17 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.collections(),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   index(name) {
     return q.Let(
       {
-
         operation: CallSystemOperator(updateBaseFQL.index(name, { data: forgotLogData })),
         doc: cleanBaseFQL.index(name),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   indexes() {
@@ -82,7 +78,7 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.indexes(),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   udfunction(name) {
@@ -92,9 +88,9 @@ export const clean: DBFactoryFQLUDFClean = {
 
         operation: CallSystemOperator(updateBaseFQL.udfunction(name, { data: forgotLogData })),
         doc: cleanBaseFQL.udfunction(name),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   udfunctions() {
@@ -102,7 +98,7 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.udfunctions(),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   role(name) {
@@ -111,9 +107,9 @@ export const clean: DBFactoryFQLUDFClean = {
         // #improve
         // operation: CallSystemOperator(updateBaseFQL.role(name, { data: forgotLogData })),
         doc: cleanBaseFQL.role(name),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   roles() {
@@ -121,18 +117,17 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.roles(),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   token(id) {
     return q.Let(
       {
-
         operation: CallSystemOperator(updateBaseFQL.token(id, { data: forgotLogData })),
         doc: cleanBaseFQL.token(id),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   tokens() {
@@ -140,18 +135,17 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.tokens(),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   key(id) {
     return q.Let(
       {
-
         operation: CallSystemOperator(updateBaseFQL.key(id, { data: forgotLogData })),
         doc: cleanBaseFQL.key(id),
-        action: CallLogAction("forget", q.Var("doc")),
+        action: CallLogAction('forget', q.Var('doc')),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   keys() {
@@ -159,7 +153,7 @@ export const clean: DBFactoryFQLUDFClean = {
       {
         doc: cleanBaseFQL.keys(),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
 };

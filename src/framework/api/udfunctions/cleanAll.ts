@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { udfunction } from "~/factory/api/classes/udfunction";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { udfunction } from '~/factory/api/classes/udfunction';
+import { execute } from '~/tasks';
 
 export function cleanAll(this: DB) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -14,7 +14,7 @@ export function cleanAll(this: DB) {
       },
     ],
     {
-      domain: "DB.udfunctions.cleanAll",
-    }
+      domain: 'DB.udfunctions.cleanAll',
+    },
   );
 }

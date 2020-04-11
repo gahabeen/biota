@@ -1,10 +1,10 @@
-import { FaunaDatabaseOptions } from "~/../types/fauna";
-import { DB } from "~/db";
-import { database } from "~/factory/api/classes/database";
-import { execute } from "~/tasks";
+import { FaunaDatabaseOptions } from '~/../types/fauna';
+import { DB } from '~/db';
+import { database } from '~/factory/api/classes/database';
+import { execute } from '~/tasks';
 
 export function update(this: DB, databaseName: string) {
-  let self = this;
+  const self = this;
 
   return async function updateMethod(options: FaunaDatabaseOptions = {}) {
     return execute(
@@ -17,8 +17,8 @@ export function update(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: "DB.database.update",
-      }
+        domain: 'DB.database.update',
+      },
     );
   };
 }

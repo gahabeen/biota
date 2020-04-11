@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { user as userCALL } from "~/factory/api/call/user";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { user as userCALL } from '~/factory/api/call/user';
+import { execute } from '~/tasks';
 
 export async function changePassword(this: DB, newPassword: string) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -14,7 +14,7 @@ export async function changePassword(this: DB, newPassword: string) {
       },
     ],
     {
-      domain: "DB.user.login",
-    }
+      domain: 'DB.user.login',
+    },
   );
 }

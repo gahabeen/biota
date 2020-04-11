@@ -1,6 +1,6 @@
-import { DBFactoryDatabaseApi } from "~/../types/factory/factory.classes";
-import * as call from "~/factory/api/call";
-import { DB } from "~/db";
+import { DBFactoryDatabaseApi } from '~/../types/factory/factory.classes';
+import * as call from '~/factory/api/call';
+import { DB } from '~/db';
 
 export const database: DBFactoryDatabaseApi = {
   all(this: DB) {

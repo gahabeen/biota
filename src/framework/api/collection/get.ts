@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
-import { document } from "~/factory/api/classes/document";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
+import { document } from '~/factory/api/classes/document';
+import { execute } from '~/tasks';
 
 export function get(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function getMethod(id: FaunaId) {
     return execute(
@@ -17,8 +17,8 @@ export function get(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: "DB.collection.get",
-      }
+        domain: 'DB.collection.get',
+      },
     );
   };
 }

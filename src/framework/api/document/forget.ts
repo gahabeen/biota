@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
-import { document } from "~/factory/api/classes/document";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
+import { document } from '~/factory/api/classes/document';
+import { execute } from '~/tasks';
 
 export function forget(this: DB, collectionName: string, id: FaunaId) {
-  let self = this;
+  const self = this;
 
   return async function forgetMethod() {
     return execute(
@@ -17,8 +17,8 @@ export function forget(this: DB, collectionName: string, id: FaunaId) {
         },
       ],
       {
-        domain: "DB.document.forget",
-      }
+        domain: 'DB.document.forget',
+      },
     );
   };
 }

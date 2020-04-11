@@ -1,6 +1,6 @@
-import { DBFactoryFQLUDFGet } from "~/../types/factory/factory.fql.udf";
-import { query as q } from "faunadb";
-import { get as getBaseFQL } from "~/factory/api/fql/base/get";
+import { DBFactoryFQLUDFGet } from '~/../types/factory/factory.fql.udf';
+import { query as q } from 'faunadb';
+import { get as getBaseFQL } from '~/factory/api/fql/base/get';
 
 export const get: DBFactoryFQLUDFGet = {
   document(collection, id) {
@@ -8,7 +8,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.document(collection, id),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   collection(name) {
@@ -16,7 +16,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.collection(name),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   collections(options) {
@@ -24,7 +24,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.collections(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   database(name) {
@@ -32,7 +32,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.database(name),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   databases(options) {
@@ -40,7 +40,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.databases(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   index(name) {
@@ -48,7 +48,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.index(name),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   indexes(options) {
@@ -56,7 +56,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.indexes(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   udfunction(name) {
@@ -64,7 +64,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.udfunction(name),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   udfunctions(options) {
@@ -72,7 +72,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.udfunctions(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   role(name) {
@@ -80,7 +80,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.role(name),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   roles(options) {
@@ -88,7 +88,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.roles(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   key(id) {
@@ -96,7 +96,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.key(id),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   keys(options) {
@@ -104,7 +104,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.keys(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   token(id) {
@@ -112,7 +112,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.token(id),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   tokens(options) {
@@ -120,7 +120,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.tokens(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
   credentials(options) {
@@ -128,7 +128,7 @@ export const get: DBFactoryFQLUDFGet = {
       {
         doc: getBaseFQL.credentials(options),
       },
-      q.Var("doc")
+      q.Var('doc'),
     );
   },
 };

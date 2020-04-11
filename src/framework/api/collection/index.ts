@@ -1,12 +1,12 @@
-import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from "~/../types/framework/framework.collection";
-import { DB } from "~/db";
-import { role as roleFactory } from "~/factory/api/classes";
-import { execute } from "~/tasks";
-import { q } from "~/index";
-import { delay } from "~/helpers/delay";
+import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from '~/../types/framework/framework.collection';
+import { DB } from '~/db';
+import { role as roleFactory } from '~/factory/api/classes';
+import { execute } from '~/tasks';
+import { q } from '~/index';
+import { delay } from '~/helpers/delay';
 
 export function index(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function indexMethod(field: string | DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
     let { role, roles, maxLength } = options;
@@ -16,14 +16,14 @@ export function index(this: DB, collectionName: string) {
 
     let definition: DBFrameworkCollectionFieldOptions = {
       field: null,
-      action: "index",
+      action: 'index',
       ngram: false,
       ngramMax: maxLength,
     };
 
-    if (typeof field === "string") {
+    if (typeof field === 'string') {
       definition.field = field;
-    } else if (typeof field === "object") {
+    } else if (typeof field === 'object') {
       Object.assign(definition, field);
     }
 
@@ -50,14 +50,14 @@ export function index(this: DB, collectionName: string) {
                             read: true,
                             history_read: true,
                           },
-                        })
+                        }),
                       );
                     },
                     fullError: true,
                   });
                 }
                 await execute(subTasks, {
-                  domain: "DB.collection.index",
+                  domain: 'DB.collection.index',
                 });
               }
             }
@@ -67,7 +67,7 @@ export function index(this: DB, collectionName: string) {
     });
 
     return execute(tasks, {
-      domain: "DB.collection.index",
+      domain: 'DB.collection.index',
     });
   };
 }

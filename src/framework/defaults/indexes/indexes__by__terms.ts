@@ -1,9 +1,9 @@
 // types
 // external
-import * as fauna from 'faunadb'
-const q = fauna.query
+import * as fauna from 'faunadb';
+const q = fauna.query;
 // biota
-import { Index, indexNameNormalized } from "~/factory/classes/index"
+import { Index, indexNameNormalized } from '~/factory/classes/index';
 
 export const indexes__by__terms = Index({
   name: indexNameNormalized('indexes__by__terms'),
@@ -20,22 +20,22 @@ export const indexes__by__terms = Index({
               q.If(
                 q.Contains('binding', q.Var('term')),
                 q.Concat(['binding:', q.Select('binding', q.Var('term'), '')], ''),
-                q.Concat(['term:', q.Concat(q.Select('field', q.Var('term'), []), '.')], '')
-              )
-            )
-          )
-        )
-      )
-    }
+                q.Concat(['term:', q.Concat(q.Select('field', q.Var('term'), []), '.')], ''),
+              ),
+            ),
+          ),
+        ),
+      ),
+    },
   },
   terms: [
     {
-      binding: 'terms'
-    }
+      binding: 'terms',
+    },
   ],
   values: [
     {
-      field: ['ref']
-    }
-  ]
-})
+      field: ['ref'],
+    },
+  ],
+});

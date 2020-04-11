@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { collection } from "~/factory/api/classes/collection";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { collection } from '~/factory/api/classes/collection';
+import { execute } from '~/tasks';
 
 export function cleanAll(this: DB) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -14,7 +14,7 @@ export function cleanAll(this: DB) {
       },
     ],
     {
-      domain: "DB.collections.cleanAll",
-    }
+      domain: 'DB.collections.cleanAll',
+    },
   );
 }

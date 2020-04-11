@@ -1,10 +1,10 @@
-import { FaunaDatabaseOptions } from "~/../types/fauna";
-import { DB } from "~/db";
-import { database } from "~/factory/api/classes/database";
-import { execute } from "~/tasks";
+import { FaunaDatabaseOptions } from '~/../types/fauna';
+import { DB } from '~/db';
+import { database } from '~/factory/api/classes/database';
+import { execute } from '~/tasks';
 
 export function upsert(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function upsertMethod(options: FaunaDatabaseOptions = {}) {
     return execute(
@@ -17,8 +17,8 @@ export function upsert(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: "DB.collection.upsert",
-      }
+        domain: 'DB.collection.upsert',
+      },
     );
   };
 }

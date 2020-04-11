@@ -1,15 +1,15 @@
-import { query as q } from "faunadb";
-import { DBFactoryCallUpsert } from "~/../types/factory/factory.call";
-import { DB } from "~/db";
-import { insert } from "~/factory/api/call/insert";
-import { update } from "~/factory/api/call/update";
+import { query as q } from 'faunadb';
+import { DBFactoryCallUpsert } from '~/../types/factory/factory.call';
+import { DB } from '~/db';
+import { insert } from '~/factory/api/call/insert';
+import { update } from '~/factory/api/call/update';
 
 export const upsert: DBFactoryCallUpsert = {
   document(this: DB, collection, id, data) {
     return q.If(
       q.Exists(q.Ref(q.Collection(collection), id)),
       update.document.call(this, collection, id, data),
-      insert.document.call(this, collection, data, id)
+      insert.document.call(this, collection, data, id),
     );
   },
   database(this: DB, name, options) {

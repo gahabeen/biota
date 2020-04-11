@@ -1,10 +1,10 @@
-import { FaunaRoleMembership } from "~/../types/fauna";
-import { DB } from "~/db";
-import { role } from "~/factory/api/classes/role";
-import { execute } from "~/tasks";
+import { FaunaRoleMembership } from '~/../types/fauna';
+import { DB } from '~/db';
+import { role } from '~/factory/api/classes/role';
+import { execute } from '~/tasks';
 
 export function membershipRepsert(this: DB, roleName: string) {
-  let self = this;
+  const self = this;
 
   return async function membershipRepsertMethod(membership: FaunaRoleMembership = {}) {
     return execute(
@@ -17,8 +17,8 @@ export function membershipRepsert(this: DB, roleName: string) {
         },
       ],
       {
-        domain: "DB.role.membership.repsert",
-      }
+        domain: 'DB.role.membership.repsert',
+      },
     );
   };
 }

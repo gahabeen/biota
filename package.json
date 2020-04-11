@@ -1,7 +1,8 @@
 {
   "name": "biota",
   "version": "0.1.16",
-  "description": "bringing flora to fauna",
+  "description": "a simple, yet powerful, framework for faunadb",
+  "homepage": ".",
   "main": "dist/index.js",
   "types": "dist/types.d.ts",
   "license": "MIT",
@@ -38,6 +39,7 @@
     "aliasify": "^2.1.0",
     "browserify": "^16.5.1",
     "delay": "^4.3.0",
+    "docs-ts": "^0.4.0",
     "dotenv": "^8.2.0",
     "fastify": "^2.13.0",
     "fastify-cookie": "^3.6.0",

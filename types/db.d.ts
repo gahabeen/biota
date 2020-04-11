@@ -38,7 +38,9 @@ export interface UserRights {
 
 export type ActionName =
   | "register"
+  | "register_failed"
   | "login"
+  | "login_failed"
   | "insert"
   | "update"
   | "replace"

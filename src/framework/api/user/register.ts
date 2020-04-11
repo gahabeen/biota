@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { user as userCALL } from "~/factory/api/call/user";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { user as userCALL } from '~/factory/api/call/user';
+import { execute } from '~/tasks';
 
 export async function register(this: DB, email: string, password: string, data: object = {}) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -18,7 +18,7 @@ export async function register(this: DB, email: string, password: string, data: 
       },
     ],
     {
-      domain: "DB.user.register",
-    }
+      domain: 'DB.user.register',
+    },
   );
 }

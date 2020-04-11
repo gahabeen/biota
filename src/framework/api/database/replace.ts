@@ -1,10 +1,10 @@
-import { FaunaDatabaseOptions } from "~/../types/fauna";
-import { DB } from "~/db";
-import { database } from "~/factory/api/classes/database";
-import { execute } from "~/tasks";
+import { FaunaDatabaseOptions } from '~/../types/fauna';
+import { DB } from '~/db';
+import { database } from '~/factory/api/classes/database';
+import { execute } from '~/tasks';
 
 export function replace(this: DB, databaseName: string) {
-  let self = this;
+  const self = this;
 
   return async function replaceMethod(options: FaunaDatabaseOptions = {}) {
     return execute(
@@ -17,8 +17,8 @@ export function replace(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: "DB.database.replace",
-      }
+        domain: 'DB.database.replace',
+      },
     );
   };
 }

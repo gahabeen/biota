@@ -1,10 +1,10 @@
-import { FaunaId } from "~/../types/fauna";
-import { DB } from "~/db";
-import { collection } from "~/factory/api/classes/collection";
-import { execute } from "~/tasks";
+import { FaunaId } from '~/../types/fauna';
+import { DB } from '~/db';
+import { collection } from '~/factory/api/classes/collection';
+import { execute } from '~/tasks';
 
 export function clean(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function cleanMethod() {
     return execute(
@@ -17,8 +17,8 @@ export function clean(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: "DB.collection.clean",
-      }
+        domain: 'DB.collection.clean',
+      },
     );
   };
 }

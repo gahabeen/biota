@@ -1,11 +1,15 @@
-import { query as q } from "faunadb";
-import { DBFactoryFQLBaseUpsert } from "~/../types/factory/factory.fql.base";
-import { insert } from "~/factory/api/fql/base/insert";
-import { update } from "~/factory/api/fql/base/update";
+import { query as q } from 'faunadb';
+import { DBFactoryFQLBaseUpsert } from '~/../types/factory/factory.fql.base';
+import { insert } from '~/factory/api/fql/base/insert';
+import { update } from '~/factory/api/fql/base/update';
 
 export const upsert: DBFactoryFQLBaseUpsert = {
   document(collection, id, options = {}) {
-    return q.If(q.Exists(q.Database(name)), update.document(collection, id, options), insert.document(collection, options, id));
+    return q.If(
+      q.Exists(q.Ref(q.Collection(collection), id)),
+      update.document(collection, id, options),
+      insert.document(collection, options, id),
+    );
   },
   database(name, options = {}) {
     return q.If(q.Exists(q.Database(name)), update.database(name, options), insert.database(name, options));

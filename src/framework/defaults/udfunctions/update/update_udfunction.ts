@@ -1,10 +1,10 @@
-import { query as q } from "faunadb";
-import { UDFunction, udfunctionNameNormalized } from "~/factory/classes/udfunction";
-import { update as updateFQLUDF } from "~/factory/api/fql/udf/update";
+import { query as q } from 'faunadb';
+import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { update as updateFQLUDF } from '~/factory/api/fql/udf/update';
 
 export const UpdateUDFunction = UDFunction({
-  name: udfunctionNameNormalized("UpdateUDFunction"),
+  name: udfunctionNameNormalized('UpdateUDFunction'),
   body: q.Query(
-    q.Lambda(["identity", "private_key", "name", "options"], updateFQLUDF.udfunction(q.Var("name") as any, q.Var("options") as any))
+    q.Lambda(['identity', 'private_key', 'name', 'options'], updateFQLUDF.udfunction(q.Var('name') as any, q.Var('options') as any)),
   ),
 });

@@ -1,5 +1,5 @@
 export const user = {
-  name: "user",
+  name: 'user',
   collections: {
     todos: {
       // doc

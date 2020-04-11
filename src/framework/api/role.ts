@@ -1,25 +1,25 @@
-import { DBFrameworkRoleApi } from "~/../types/framework/framework.role";
-import { activity } from "~/framework/api/role/activity";
-import { delete_ } from "~/framework/api/role/delete";
-import { forget } from "~/framework/api/role/forget";
-import { get } from "~/framework/api/role/get";
-import { replace } from "~/framework/api/role/replace";
-import { repsert } from "~/framework/api/role/repsert";
-import { update } from "~/framework/api/role/update";
-import { upsert } from "~/framework/api/role/upsert";
-import { insert } from "~/framework/api/role/insert";
-import { membershipUpsert } from "~/framework/api/role/membership_upsert";
-import { membershipRepsert } from "~/framework/api/role/membership_repsert";
-import { membershipDelete } from "~/framework/api/role/membership_delete";
-import { privilegeUpsert } from "~/framework/api/role/privilege_upsert";
-import { privilegeRepsert } from "~/framework/api/role/privilege_repsert";
-import { privilegeDelete } from "~/framework/api/role/privilege_delete";
+import { DBFrameworkRoleApi } from '~/../types/framework/framework.role';
+import { activity } from '~/framework/api/role/activity';
+import { delete_ } from '~/framework/api/role/delete';
+import { forget } from '~/framework/api/role/forget';
+import { get } from '~/framework/api/role/get';
+import { replace } from '~/framework/api/role/replace';
+import { repsert } from '~/framework/api/role/repsert';
+import { update } from '~/framework/api/role/update';
+import { upsert } from '~/framework/api/role/upsert';
+import { insert } from '~/framework/api/role/insert';
+import { membershipUpsert } from '~/framework/api/role/membership_upsert';
+import { membershipRepsert } from '~/framework/api/role/membership_repsert';
+import { membershipDelete } from '~/framework/api/role/membership_delete';
+import { privilegeUpsert } from '~/framework/api/role/privilege_upsert';
+import { privilegeRepsert } from '~/framework/api/role/privilege_repsert';
+import { privilegeDelete } from '~/framework/api/role/privilege_delete';
 
 export function role(roleName: string): DBFrameworkRoleApi {
-  let self = this;
+  const self = this;
 
   if (!roleName) {
-    throw new Error("biota.role() - no valid collection or id");
+    throw new Error('biota.role() - no valid collection or id');
   }
 
   return {

@@ -1,6 +1,6 @@
-import { DBFrameworkCollectionsApi } from "~/../types/framework/framework.collections";
+import { DBFrameworkCollectionsApi } from '~/../types/framework/framework.collections';
 
-import { cleanAll } from "~/framework/api/collections/cleanAll";
+import { cleanAll } from '~/framework/api/collections/cleanAll';
 
 export const collections: DBFrameworkCollectionsApi = {
   cleanAll,

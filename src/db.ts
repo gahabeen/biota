@@ -1,19 +1,19 @@
-import * as fauna from "faunadb";
-import { Fauna, FaunaId } from "~/../types/fauna";
-import * as framework from "~/framework";
-import { DBFrameworkCollectionApi, DBFrameworkFoundation, DBFrameworkRelation } from "../types/framework/framework.collection";
-import { DBFrameworkCollectionsApi } from "../types/framework/framework.collections";
-import { DBFrameworkDatabaseApi } from "../types/framework/framework.database";
-import { DBFrameworkDatabasesApi } from "../types/framework/framework.databases";
-import { DBFrameworkDocumentApi } from "../types/framework/framework.document";
-import { DBFrameworkIndexApi } from "../types/framework/framework.index";
-import { DBFrameworkIndexesApi } from "../types/framework/framework.indexes";
-import { DBFrameworkRoleApi } from "../types/framework/framework.role";
-import { DBFrameworkRolesApi } from "../types/framework/framework.roles";
-import { DBFrameworkUDFunctionApi } from "../types/framework/framework.udfunction";
-import { DBFrameworkUDFunctionsApi } from "../types/framework/framework.udfunctions";
-import { DBFrameworkUserApi } from "../types/framework/framework.user";
-import { bindSubFunctions } from "./helpers";
+import * as fauna from 'faunadb';
+import { Fauna, FaunaId } from '~/../types/fauna';
+import * as framework from '~/framework';
+import { DBFrameworkCollectionApi, DBFrameworkFoundation, DBFrameworkRelation } from '../types/framework/framework.collection';
+import { DBFrameworkCollectionsApi } from '../types/framework/framework.collections';
+import { DBFrameworkDatabaseApi } from '../types/framework/framework.database';
+import { DBFrameworkDatabasesApi } from '../types/framework/framework.databases';
+import { DBFrameworkDocumentApi } from '../types/framework/framework.document';
+import { DBFrameworkIndexApi } from '../types/framework/framework.index';
+import { DBFrameworkIndexesApi } from '../types/framework/framework.indexes';
+import { DBFrameworkRoleApi } from '../types/framework/framework.role';
+import { DBFrameworkRolesApi } from '../types/framework/framework.roles';
+import { DBFrameworkUDFunctionApi } from '../types/framework/framework.udfunction';
+import { DBFrameworkUDFunctionsApi } from '../types/framework/framework.udfunctions';
+import { DBFrameworkUserApi } from '../types/framework/framework.user';
+import { bindSubFunctions } from './helpers';
 
 interface DBOptions {
   secret: string;
@@ -64,22 +64,22 @@ export class DB {
     this.document = framework.document.bind(this);
 
     this.user = framework.user;
-    bindSubFunctions(this, "user");
+    bindSubFunctions(this, 'user');
     this.collection = framework.collection.bind(this);
     this.collections = framework.collections;
-    bindSubFunctions(this, "collections");
+    bindSubFunctions(this, 'collections');
     this.index = framework.index.bind(this);
     this.indexes = framework.indexes;
-    bindSubFunctions(this, "indexes");
+    bindSubFunctions(this, 'indexes');
     this.role = framework.role.bind(this);
     this.roles = framework.roles;
-    bindSubFunctions(this, "roles");
+    bindSubFunctions(this, 'roles');
     this.database = framework.database.bind(this);
     this.databases = framework.databases;
-    bindSubFunctions(this, "databases");
+    bindSubFunctions(this, 'databases');
     this.udfunction = framework.udfunction.bind(this);
     this.udfunctions = framework.udfunctions;
-    bindSubFunctions(this, "udfunctions");
+    bindSubFunctions(this, 'udfunctions');
 
     this.foundation = framework.foundation.bind(this);
     this.relation = framework.relation.bind(this);

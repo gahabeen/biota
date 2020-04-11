@@ -8,10 +8,11 @@ import {
   CRUDReferenceToken,
   CRUDReferenceKey,
   CRUDReferenceCredentials,
-} from "../crud.reference";
-import { FaunaRoleMembership, FaunaRolePrivilege, FaunaRef } from "../fauna";
-import { Expr } from "faunadb";
-import { DBFactorySpecificRoleMembershipApi, DBFactorySpecificRolePrivilegeApi } from "./factory.specific.role";
+} from '../crud.reference';
+import { FaunaRoleMembership, FaunaRolePrivilege, FaunaRef } from '../fauna';
+import { Expr } from 'faunadb';
+import { DBFactorySpecificRoleMembershipApi, DBFactorySpecificRolePrivilegeApi } from './factory.specific.role';
+import { DocumentAuthAccount } from 'types/document';
 
 export interface DBFactoryFQLBase {
   get: DBFactoryFQLBaseGet;
@@ -26,138 +27,154 @@ export interface DBFactoryFQLBase {
 }
 
 export interface DBFactoryFQLBaseGet {
-  document: CRUDReferenceDocument["read"];
+  document: CRUDReferenceDocument['read'];
   // documents: CRUDReferenceDocument["readAll"];
-  database: CRUDReferenceDatabase["read"];
-  databases: CRUDReferenceDatabase["readAll"];
-  collection: CRUDReferenceCollection["read"];
-  collections: CRUDReferenceCollection["readAll"];
-  index: CRUDReferenceIndex["read"];
-  indexes: CRUDReferenceIndex["readAll"];
-  udfunction: CRUDReferenceUDFunction["read"];
-  udfunctions: CRUDReferenceUDFunction["readAll"];
-  role: CRUDReferenceRole["read"];
-  roles: CRUDReferenceRole["readAll"];
-  token: CRUDReferenceToken["read"];
-  tokens: CRUDReferenceToken["readAll"];
-  key: CRUDReferenceKey["read"];
-  keys: CRUDReferenceKey["readAll"];
-  credentials: CRUDReferenceCredentials["readAll"];
+  database: CRUDReferenceDatabase['read'];
+  databases: CRUDReferenceDatabase['readAll'];
+  collection: CRUDReferenceCollection['read'];
+  collections: CRUDReferenceCollection['readAll'];
+  index: CRUDReferenceIndex['read'];
+  indexes: CRUDReferenceIndex['readAll'];
+  udfunction: CRUDReferenceUDFunction['read'];
+  udfunctions: CRUDReferenceUDFunction['readAll'];
+  role: CRUDReferenceRole['read'];
+  roles: CRUDReferenceRole['readAll'];
+  token: CRUDReferenceToken['read'];
+  tokens: CRUDReferenceToken['readAll'];
+  key: CRUDReferenceKey['read'];
+  keys: CRUDReferenceKey['readAll'];
+  credentials: CRUDReferenceCredentials['readAll'];
 }
 
 export interface DBFactoryFQLBaseInsert {
-  document: CRUDReferenceDocument["create"];
-  database: CRUDReferenceDatabase["create"];
-  collection: CRUDReferenceCollection["create"];
-  index: CRUDReferenceIndex["create"];
-  udfunction: CRUDReferenceUDFunction["create"];
-  role: CRUDReferenceRole["create"];
-  token: CRUDReferenceToken["create"];
-  key: CRUDReferenceKey["create"];
+  document: CRUDReferenceDocument['create'];
+  database: CRUDReferenceDatabase['create'];
+  collection: CRUDReferenceCollection['create'];
+  index: CRUDReferenceIndex['create'];
+  udfunction: CRUDReferenceUDFunction['create'];
+  role: CRUDReferenceRole['create'];
+  token: CRUDReferenceToken['create'];
+  key: CRUDReferenceKey['create'];
 }
 
 export interface DBFactoryFQLBaseUpdate {
-  document: CRUDReferenceDocument["update"];
-  database: CRUDReferenceDatabase["update"];
-  collection: CRUDReferenceCollection["update"];
-  index: CRUDReferenceIndex["update"];
-  udfunction: CRUDReferenceUDFunction["update"];
-  role: CRUDReferenceRole["update"];
-  token: CRUDReferenceToken["update"];
-  key: CRUDReferenceKey["update"];
-  credentials: CRUDReferenceCredentials["update"];
+  document: CRUDReferenceDocument['update'];
+  database: CRUDReferenceDatabase['update'];
+  collection: CRUDReferenceCollection['update'];
+  index: CRUDReferenceIndex['update'];
+  udfunction: CRUDReferenceUDFunction['update'];
+  role: CRUDReferenceRole['update'];
+  token: CRUDReferenceToken['update'];
+  key: CRUDReferenceKey['update'];
+  credentials: CRUDReferenceCredentials['update'];
 }
 
 export interface DBFactoryFQLBaseUpsert {
-  document: CRUDReferenceDocument["upsert"];
-  database: CRUDReferenceDatabase["upsert"];
-  collection: CRUDReferenceCollection["upsert"];
-  index: CRUDReferenceIndex["upsert"];
-  udfunction: CRUDReferenceUDFunction["upsert"];
-  role: CRUDReferenceRole["upsert"];
-  token: CRUDReferenceToken["upsert"];
-  key: CRUDReferenceKey["upsert"];
+  document: CRUDReferenceDocument['upsert'];
+  database: CRUDReferenceDatabase['upsert'];
+  collection: CRUDReferenceCollection['upsert'];
+  index: CRUDReferenceIndex['upsert'];
+  udfunction: CRUDReferenceUDFunction['upsert'];
+  role: CRUDReferenceRole['upsert'];
+  token: CRUDReferenceToken['upsert'];
+  key: CRUDReferenceKey['upsert'];
 }
 
 export interface DBFactoryFQLBaseReplace {
-  document: CRUDReferenceDocument["update"];
-  database: CRUDReferenceDatabase["update"];
-  collection: CRUDReferenceCollection["update"];
-  index: CRUDReferenceIndex["update"];
-  udfunction: CRUDReferenceUDFunction["update"];
-  role: CRUDReferenceRole["update"];
-  token: CRUDReferenceToken["update"];
-  key: CRUDReferenceKey["update"];
+  document: CRUDReferenceDocument['update'];
+  database: CRUDReferenceDatabase['update'];
+  collection: CRUDReferenceCollection['update'];
+  index: CRUDReferenceIndex['update'];
+  udfunction: CRUDReferenceUDFunction['update'];
+  role: CRUDReferenceRole['update'];
+  token: CRUDReferenceToken['update'];
+  key: CRUDReferenceKey['update'];
 }
 export interface DBFactoryFQLBaseRepsert {
-  document: CRUDReferenceDocument["update"];
-  database: CRUDReferenceDatabase["update"];
-  collection: CRUDReferenceCollection["update"];
-  index: CRUDReferenceIndex["update"];
-  udfunction: CRUDReferenceUDFunction["update"];
-  role: CRUDReferenceRole["update"];
-  token: CRUDReferenceToken["update"];
-  key: CRUDReferenceKey["update"];
+  document: CRUDReferenceDocument['update'];
+  database: CRUDReferenceDatabase['update'];
+  collection: CRUDReferenceCollection['update'];
+  index: CRUDReferenceIndex['update'];
+  udfunction: CRUDReferenceUDFunction['update'];
+  role: CRUDReferenceRole['update'];
+  token: CRUDReferenceToken['update'];
+  key: CRUDReferenceKey['update'];
 }
 
 export interface DBFactoryFQLBaseDelete {
-  document: CRUDReferenceDocument["delete"];
-  database: CRUDReferenceDatabase["delete"];
-  collection: CRUDReferenceCollection["delete"];
-  index: CRUDReferenceIndex["delete"];
-  udfunction: CRUDReferenceUDFunction["delete"];
-  role: CRUDReferenceRole["delete"];
-  token: CRUDReferenceToken["delete"];
-  key: CRUDReferenceKey["delete"];
+  document: CRUDReferenceDocument['delete'];
+  database: CRUDReferenceDatabase['delete'];
+  collection: CRUDReferenceCollection['delete'];
+  index: CRUDReferenceIndex['delete'];
+  udfunction: CRUDReferenceUDFunction['delete'];
+  role: CRUDReferenceRole['delete'];
+  token: CRUDReferenceToken['delete'];
+  key: CRUDReferenceKey['delete'];
 }
 
 export interface DBFactoryFQLBaseForget {
-  document: CRUDReferenceDocument["delete"];
-  database: CRUDReferenceDatabase["delete"];
-  collection: CRUDReferenceCollection["delete"];
-  index: CRUDReferenceIndex["delete"];
-  udfunction: CRUDReferenceUDFunction["delete"];
-  role: CRUDReferenceRole["delete"];
-  token: CRUDReferenceToken["delete"];
-  key: CRUDReferenceKey["delete"];
+  document: CRUDReferenceDocument['delete'];
+  database: CRUDReferenceDatabase['delete'];
+  collection: CRUDReferenceCollection['delete'];
+  index: CRUDReferenceIndex['delete'];
+  udfunction: CRUDReferenceUDFunction['delete'];
+  role: CRUDReferenceRole['delete'];
+  token: CRUDReferenceToken['delete'];
+  key: CRUDReferenceKey['delete'];
 }
 
 export interface DBFactoryFQLBaseClean {
-  document: CRUDReferenceDocument["delete"];
-  documents: CRUDReferenceDocument["cleanAll"];
-  database: CRUDReferenceDatabase["delete"];
-  databases: CRUDReferenceDatabase["cleanAll"];
-  collection: CRUDReferenceCollection["delete"];
-  collections: CRUDReferenceCollection["cleanAll"];
-  index: CRUDReferenceIndex["delete"];
-  indexes: CRUDReferenceIndex["cleanAll"];
-  udfunction: CRUDReferenceUDFunction["delete"];
-  udfunctions: CRUDReferenceUDFunction["cleanAll"];
-  role: CRUDReferenceRole["delete"];
-  roles: CRUDReferenceRole["cleanAll"];
-  token: CRUDReferenceToken["delete"];
-  tokens: CRUDReferenceToken["cleanAll"];
-  key: CRUDReferenceKey["delete"];
-  keys: CRUDReferenceKey["cleanAll"];
+  document: CRUDReferenceDocument['delete'];
+  documents: CRUDReferenceDocument['cleanAll'];
+  database: CRUDReferenceDatabase['delete'];
+  databases: CRUDReferenceDatabase['cleanAll'];
+  collection: CRUDReferenceCollection['delete'];
+  collections: CRUDReferenceCollection['cleanAll'];
+  index: CRUDReferenceIndex['delete'];
+  indexes: CRUDReferenceIndex['cleanAll'];
+  udfunction: CRUDReferenceUDFunction['delete'];
+  udfunctions: CRUDReferenceUDFunction['cleanAll'];
+  role: CRUDReferenceRole['delete'];
+  roles: CRUDReferenceRole['cleanAll'];
+  token: CRUDReferenceToken['delete'];
+  tokens: CRUDReferenceToken['cleanAll'];
+  key: CRUDReferenceKey['delete'];
+  keys: CRUDReferenceKey['cleanAll'];
 }
 
 export interface DBFactoryFQLBaseRoleMembership {
   distinct(name: string, membership: FaunaRoleMembership): FaunaRoleMembership[] | Expr;
   difference(name: string, resource: FaunaRef): FaunaRoleMembership[] | Expr;
-  upsert: DBFactorySpecificRoleMembershipApi["upsert"];
-  repsert: DBFactorySpecificRoleMembershipApi["repsert"];
-  delete: DBFactorySpecificRoleMembershipApi["delete"];
+  upsert: DBFactorySpecificRoleMembershipApi['upsert'];
+  repsert: DBFactorySpecificRoleMembershipApi['repsert'];
+  delete: DBFactorySpecificRoleMembershipApi['delete'];
 }
 
 export interface DBFactoryFQLBaseRolePrivilege {
   distinct(name: string, privilege: FaunaRolePrivilege): FaunaRolePrivilege[] | Expr;
   difference(name: string, resource: FaunaRef): FaunaRolePrivilege[] | Expr;
-  upsert: DBFactorySpecificRolePrivilegeApi["upsert"];
-  repsert: DBFactorySpecificRolePrivilegeApi["repsert"];
-  delete: DBFactorySpecificRolePrivilegeApi["delete"];
+  upsert: DBFactorySpecificRolePrivilegeApi['upsert'];
+  repsert: DBFactorySpecificRolePrivilegeApi['repsert'];
+  delete: DBFactorySpecificRolePrivilegeApi['delete'];
 }
 
 export interface DBFactoryFQLBaseRole {
   membership: DBFactoryFQLBaseRoleMembership;
   privileges: DBFactoryFQLBaseRolePrivilege;
+}
+
+export interface DBFactoryFQLBaseUserAuthAccount {
+  distinct(collection: string, id: string, account: DocumentAuthAccount): Expr;
+  difference(collection: string, id: string, provider: string, accountId: string): Expr;
+  upsert(collection: string, id: string, account: DocumentAuthAccount): Expr;
+  repsert(collection: string, id: string, account: DocumentAuthAccount): Expr;
+  delete(collection: string, id: string, provider: string, accountId: string): Expr;
+}
+
+export interface DBFactoryFQLBaseUserAuth {
+  account: DBFactoryFQLBaseUserAuthAccount;
+}
+
+export interface DBFactoryFQLBaseUser {
+  auth: DBFactoryFQLBaseUserAuth;
 }

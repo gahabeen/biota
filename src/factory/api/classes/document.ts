@@ -1,7 +1,7 @@
-import { query as q } from "faunadb";
-import { DBFactoryDocumentApi } from "~/../types/factory/factory.classes";
-import { DB } from "~/db";
-import * as call from "~/factory/api/call";
+import { query as q } from 'faunadb';
+import { DBFactoryDocumentApi } from '~/../types/factory/factory.classes';
+import { DB } from '~/db';
+import * as call from '~/factory/api/call';
 
 export const document: DBFactoryDocumentApi = {
   login(this: DB, name, id, password) {

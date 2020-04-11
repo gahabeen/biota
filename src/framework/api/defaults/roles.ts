@@ -1,2 +1,2 @@
-export * from "~/framework/defaults/roles/user";
-export * from "~/framework/defaults/roles/system";
+export * from '~/framework/defaults/roles/user';
+export * from '~/framework/defaults/roles/system';

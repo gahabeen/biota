@@ -1,14 +1,11 @@
-import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse } from "~/../types/fauna";
-import { DB } from "~/db";
-import { execute } from "~/tasks";
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse } from '~/../types/fauna';
+import { DB } from '~/db';
+import { execute } from '~/tasks';
 
 export function paginateAll(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
-  return async function* paginateAllMethod(
-    paginateOptions: FaunaPaginateOptions = {},
-    mapper: FaunaPaginateMapper
-  ) {
+  return async function* paginateAllMethod(paginateOptions: FaunaPaginateOptions = {}, mapper: FaunaPaginateMapper) {
     let firstRequest = true;
     let after: any;
 
@@ -34,8 +31,8 @@ export function paginateAll(this: DB, collectionName: string) {
           },
         ],
         {
-          domain: "DB.collection.paginateAll",
-        }
+          domain: 'DB.collection.paginateAll',
+        },
       );
     }
   };

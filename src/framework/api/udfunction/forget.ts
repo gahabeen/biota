@@ -1,10 +1,10 @@
-import { FaunaId } from "~/../types/fauna";
-import { DB } from "~/db";
-import { udfunction } from "~/factory/api/classes/udfunction";
-import { execute } from "~/tasks";
+import { FaunaId } from '~/../types/fauna';
+import { DB } from '~/db';
+import { udfunction } from '~/factory/api/classes/udfunction';
+import { execute } from '~/tasks';
 
 export function forget(this: DB, udfunctionName: string) {
-  let self = this;
+  const self = this;
 
   return async function forgetMethod() {
     return execute(
@@ -17,8 +17,8 @@ export function forget(this: DB, udfunctionName: string) {
         },
       ],
       {
-        domain: "DB.udfunction.forget",
-      }
+        domain: 'DB.udfunction.forget',
+      },
     );
   };
 }

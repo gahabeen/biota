@@ -1,19 +1,19 @@
-import { DBFrameworkUDFunctionApi } from "~/../types/framework/framework.udfunction";
-import { activity } from "~/framework/api/udfunction/activity";
-import { delete_ } from "~/framework/api/udfunction/delete";
-import { forget } from "~/framework/api/udfunction/forget";
-import { get } from "~/framework/api/udfunction/get";
-import { replace } from "~/framework/api/udfunction/replace";
-import { repsert } from "~/framework/api/udfunction/repsert";
-import { update } from "~/framework/api/udfunction/update";
-import { upsert } from "~/framework/api/udfunction/upsert";
-import { FaunaId } from "~/../types/fauna";
+import { DBFrameworkUDFunctionApi } from '~/../types/framework/framework.udfunction';
+import { activity } from '~/framework/api/udfunction/activity';
+import { delete_ } from '~/framework/api/udfunction/delete';
+import { forget } from '~/framework/api/udfunction/forget';
+import { get } from '~/framework/api/udfunction/get';
+import { replace } from '~/framework/api/udfunction/replace';
+import { repsert } from '~/framework/api/udfunction/repsert';
+import { update } from '~/framework/api/udfunction/update';
+import { upsert } from '~/framework/api/udfunction/upsert';
+import { FaunaId } from '~/../types/fauna';
 
 export function udfunction(collectionName: string): DBFrameworkUDFunctionApi {
-  let self = this;
+  const self = this;
 
   if (!collectionName) {
-    throw new Error("biota.udfunction() - no valid collection or id");
+    throw new Error('biota.udfunction() - no valid collection or id');
   }
 
   return {

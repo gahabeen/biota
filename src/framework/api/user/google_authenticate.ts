@@ -1,36 +1,47 @@
-import { DBFrameworkAuthAuthenticateOptions, DBFrameworkAuthAuthenticateResponse } from "~/../types/framework/framework.user";
-import { DB } from "~/db";
-import { google } from "~/framework/api/user/auth/providers/google";
-import { execute } from "~/tasks";
-import { decrypt } from "~/framework/helpers/crypto";
+import { DBFrameworkAuthAuthenticateOptions, DBFrameworkUserAuthProviderDataApi } from '~/../types/framework/framework.user';
+import { DB } from '~/db';
+import { google } from '~/framework/api/user/auth/providers/google';
+import { execute } from '~/tasks';
+import { parseOpenIDUserInfo } from './auth/openid';
 
-export async function googleAuthenticate(this: DB, options: DBFrameworkAuthAuthenticateOptions): Promise<any> {
-  let self = this;
+export async function googleAuthenticate(
+  this: DB,
+  options: DBFrameworkAuthAuthenticateOptions,
+  data?: DBFrameworkUserAuthProviderDataApi,
+): Promise<any> {
+  const self = this;
   return execute(
     [
       {
         name: `Authenticate through Google`,
         async task() {
-          let { access_token, state } = await google.authenticate(options);
-          let { scenario, user, iv } = state as any;
-          // #improve
+          const { access_token } = await google.authenticate(options);
+          const { state } = data || {};
+          const { scenario, key, iv } = state || {};
           if (access_token) {
-            if (scenario === "register") {
-            } else {
-              if (user) {
-                let secret = decrypt(user, iv, self.private_key);
-              }
-            }
+            const userInfo = await google.userInfo({ access_token }).then(parseOpenIDUserInfo)
+            return self.user.registerWithAuthAccount({
+              provider: 'google',
+              id: userInfo.sub,
+              userInfo,
+            });
+            // if (scenario === 'register') {
 
-            // const asUser = new DB({ secret });
-            let userInfo = await google.userInfo({ access_token });
-            let tokenInfo = await google.tokenInfo({ access_token });
+            // } else if (scenario === 'login') {
+            // } else if (scenario === 'sync') {
+            //   // if (user) {
+            //   //   let secret = decrypt(user, iv, self.private_key);
+            //   // }
+            // }
+
+            //   // const asUser = new DB({ secret });
+            //   let tokenInfo = await google.tokenInfo({ access_token });
           }
         },
       },
     ],
     {
-      domain: "DB.user.google.loginUrl",
-    }
+      domain: 'DB.user.google.googleAuthenticate',
+    },
   );
 }

@@ -1,6 +1,6 @@
-import * as call from "~/factory/api/call";
-import { DBFactoryCollectionApi } from "~/../types/factory/factory.classes";
-import { DB } from "~/db";
+import * as call from '~/factory/api/call';
+import { DBFactoryCollectionApi } from '~/../types/factory/factory.classes';
+import { DB } from '~/db';
 
 export const collection: DBFactoryCollectionApi = {
   all(this: DB) {

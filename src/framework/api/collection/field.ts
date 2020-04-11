@@ -1,11 +1,11 @@
-import { query as q } from "faunadb";
-import { FaunaCollectionOptions, FaunaIndexOptions, FaunaIndexTerm, FaunaIndexValue } from "~/../types/fauna";
-import { DBFrameworkCollectionFieldOptions } from "~/../types/framework/framework.collection";
-import { DB } from "~/db";
-import { upsert } from "~/factory/api/fql/base/upsert";
-import { Index, indexNameNormalized, NGramOnField } from "~/factory/classes/index";
-import * as helpers from "~/helpers";
-import { execute } from "~/tasks";
+import { query as q } from 'faunadb';
+import { FaunaCollectionOptions, FaunaIndexOptions, FaunaIndexTerm, FaunaIndexValue } from '~/../types/fauna';
+import { DBFrameworkCollectionFieldOptions } from '~/../types/framework/framework.collection';
+import { DB } from '~/db';
+import { upsert } from '~/factory/api/fql/base/upsert';
+import { Index, indexNameNormalized, NGramOnField } from '~/factory/classes/index';
+import * as helpers from '~/helpers';
+import { execute } from '~/tasks';
 
 export function fieldDefinition(field: string | DBFrameworkCollectionFieldOptions) {
   let definition: DBFrameworkCollectionFieldOptions = {
@@ -28,17 +28,17 @@ export function fieldDefinition(field: string | DBFrameworkCollectionFieldOption
     permissions: undefined,
   };
 
-  if (typeof field === "string") {
+  if (typeof field === 'string') {
     definition.name = field;
     definition.field = field;
-  } else if (typeof field === "object") {
+  } else if (typeof field === 'object') {
     Object.assign(definition, field);
   }
   return definition;
 }
 
 export function field(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function fieldMethod(field: string | DBFrameworkCollectionFieldOptions) {
     let definition: DBFrameworkCollectionFieldOptions = fieldDefinition(field);
@@ -64,7 +64,7 @@ export function field(this: DB, collectionName: string) {
 
     const buildTerm = ({ field, binding, reverse }: { field?: any; binding?: any; reverse?: boolean }, fields = {}) => {
       if (binding) {
-        let bindingName = helpers.stringPath(field || "cursor");
+        let bindingName = helpers.stringPath(field || 'cursor');
         fields[bindingName] = binding;
         return { binding: bindingName, reverse };
       } else if (field) {
@@ -76,14 +76,14 @@ export function field(this: DB, collectionName: string) {
     };
 
     // for search
-    if (definition.action === "index") {
+    if (definition.action === 'index') {
       if (definition.field) {
         index.terms = [
           buildTerm({ field: definition.field, binding: definition.binding, reverse: definition.reverse }, index.source.fields),
         ];
       } else if (definition.inputs.length > 0) {
         index.terms = (definition.inputs as FaunaIndexTerm[]).map((input: string | FaunaIndexTerm) => {
-          if (typeof input === "string") {
+          if (typeof input === 'string') {
             return buildTerm({ field: input }, index.source.fields);
           } else if (input.binding) {
             return buildTerm({ field: input.field, binding: input.binding, reverse: input.reverse }, index.source.fields);
@@ -94,17 +94,17 @@ export function field(this: DB, collectionName: string) {
       } else {
         index.terms = [
           {
-            field: ["ref"],
+            field: ['ref'],
           },
         ];
       }
 
       if (definition.outputs.length > 0) {
         index.values = (definition.outputs as FaunaIndexValue[]).map((input: string | FaunaIndexValue) => {
-          if (typeof input === "string") {
+          if (typeof input === 'string') {
             return buildTerm({ field: input }, index.source.fields);
           } else if (input.binding) {
-            let bindingName = helpers.stringPath(input.field) || "cursor";
+            let bindingName = helpers.stringPath(input.field) || 'cursor';
             index.source.fields[helpers.stringPath(bindingName)] = input.binding;
             return buildTerm({ field: input.field, binding: input.binding, reverse: input.reverse }, index.source.fields);
           } else if (input.field) {
@@ -114,13 +114,13 @@ export function field(this: DB, collectionName: string) {
       } else {
         index.values = [
           {
-            field: ["ref"],
+            field: ['ref'],
           },
         ];
       }
 
       index.name = indexNameNormalized(
-        helpers.name([collectionName, "search", "on", helpers.stringPath(definition.name || definition.field)])
+        helpers.name([collectionName, 'search', 'on', helpers.stringPath(definition.name || definition.field)]),
       );
 
       // if (definition.field === "at") {
@@ -132,21 +132,21 @@ export function field(this: DB, collectionName: string) {
           throw new Error(`Can't produce an ngram index with ${index.terms.length} terms`);
         }
 
-        let fieldName = "";
+        let fieldName = '';
         try {
           fieldName = helpers.stringPath(definition.field || index.terms[0].field);
         } catch (error) {
           throw new Error(`Couldn't find a correct field name`);
         }
 
-        let ngramFieldName = "ngram:" + fieldName;
+        let ngramFieldName = 'ngram:' + fieldName;
         let ngramIndex: FaunaIndexOptions = {
-          name: indexNameNormalized(helpers.name([collectionName, "ngram", "on", helpers.stringPath(fieldName)])),
+          name: indexNameNormalized(helpers.name([collectionName, 'ngram', 'on', helpers.stringPath(fieldName)])),
           source: {
             collection: q.Collection(collectionName),
             fields: {
               [ngramFieldName]: q.Query(
-                q.Lambda("instance", q.Distinct(NGramOnField(definition.ngramMax, helpers.path(definition.field))))
+                q.Lambda('instance', q.Distinct(NGramOnField(definition.ngramMax, helpers.path(definition.field)))),
               ),
             },
           },
@@ -176,13 +176,13 @@ export function field(this: DB, collectionName: string) {
       }
     }
     // for value
-    else if (definition.action === "compute") {
+    else if (definition.action === 'compute') {
       const fieldOrName = definition.field || definition.name;
       index.source.fields[fieldOrName] = definition.binding;
 
       let indexByBinding = {
         ...index,
-        name: indexNameNormalized(helpers.name([collectionName, "compute", "on", helpers.stringPath(fieldOrName)])),
+        name: indexNameNormalized(helpers.name([collectionName, 'compute', 'on', helpers.stringPath(fieldOrName)])),
         values: [
           {
             binding: fieldOrName,
@@ -190,7 +190,7 @@ export function field(this: DB, collectionName: string) {
         ],
         terms: [
           {
-            field: ["ref"],
+            field: ['ref'],
           },
         ],
       };
@@ -230,7 +230,7 @@ export function field(this: DB, collectionName: string) {
     // console.log("definition", definition);
 
     return execute(tasks, {
-      domain: "DB.collection.field",
+      domain: 'DB.collection.field',
       singleResult: false,
     });
   };

@@ -1,10 +1,10 @@
-import { FaunaId, FaunaDocumentOptions, FaunaDatabaseOptions } from "~/../types/fauna";
-import { DB } from "~/db";
-import { database } from "~/factory/api/classes/database";
-import { execute } from "~/tasks";
+import { FaunaId, FaunaDocumentOptions, FaunaDatabaseOptions } from '~/../types/fauna';
+import { DB } from '~/db';
+import { database } from '~/factory/api/classes/database';
+import { execute } from '~/tasks';
 
 export function insert(this: DB, databaseName: string) {
-  let self = this;
+  const self = this;
 
   return async function insertMethod(options: FaunaDatabaseOptions = {}) {
     return execute(
@@ -17,8 +17,8 @@ export function insert(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: "DB.database.insert",
-      }
+        domain: 'DB.database.insert',
+      },
     );
   };
 }

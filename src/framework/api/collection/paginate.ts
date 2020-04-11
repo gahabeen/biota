@@ -1,15 +1,15 @@
-import { DB } from "~/db";
-import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from "~/../types/fauna";
-import { execute } from "~/tasks";
-import { DBFrameworkCollectionSearchParams } from "~/../types/framework/framework.collection";
+import { DB } from '~/db';
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from '~/../types/fauna';
+import { execute } from '~/tasks';
+import { DBFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
 
 export function paginate(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function* paginateMethod(
     searchQuery: DBFrameworkCollectionSearchParams,
     paginateOptions: FaunaPaginateOptions = {},
-    mapper: FaunaPaginateMapper
+    mapper: FaunaPaginateMapper,
   ) {
     let firstRequest = true;
     let after: any;
@@ -36,8 +36,8 @@ export function paginate(this: DB, collectionName: string) {
           },
         ],
         {
-          domain: "DB.collection.paginate",
-        }
+          domain: 'DB.collection.paginate',
+        },
       );
     }
   };

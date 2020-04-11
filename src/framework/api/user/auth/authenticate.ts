@@ -1,13 +1,23 @@
-import { DBFrameworkAuthAuthenticateResponse } from "~/../types/framework/framework.user";
-import * as qs from "querystring";
-import axios from "axios";
+import { DBFrameworkAuthAuthenticateResponse } from '~/../types/framework/framework.user';
+import * as qs from 'querystring';
+import axios from 'axios';
 
-export async function authenticate(url: string, data: object): Promise<DBFrameworkAuthAuthenticateResponse> {
-  return axios.post(url, data).then(({ data }) => {
-    if (typeof data === "string") {
-      return qs.parse(data);
-    } else {
-      return data;
-    }
-  }) as Promise<DBFrameworkAuthAuthenticateResponse>;
+export async function authenticate(url: string, query: object): Promise<DBFrameworkAuthAuthenticateResponse> {
+  const queryParams = new URLSearchParams();
+  for (const key of Object.keys(query)) {
+    queryParams.append(key, query[key]);
+  }
+  return axios
+    .post(url, queryParams, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    })
+    .then(({ data }) => {
+      if (typeof data === 'string') {
+        return qs.parse(data);
+      } else {
+        return data;
+      }
+    }) as Promise<DBFrameworkAuthAuthenticateResponse>;
 }

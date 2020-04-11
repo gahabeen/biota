@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { database } from "~/factory/api/classes/database";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { database } from '~/factory/api/classes/database';
+import { execute } from '~/tasks';
 
 export function clean(this: DB, databaseName: string) {
-  let self = this;
+  const self = this;
 
   return async function cleanMethod() {
     return execute(
@@ -16,8 +16,8 @@ export function clean(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: "DB.database.clean",
-      }
+        domain: 'DB.database.clean',
+      },
     );
   };
 }

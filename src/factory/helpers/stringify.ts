@@ -1,12 +1,12 @@
-import { values, Expr } from "faunadb";
+import { values, Expr } from 'faunadb';
 
 const ctors = {
-  classes: "Class",
-  collections: "Collection",
-  indexes: "Index",
-  databases: "Database",
-  keys: "Key",
-  roles: "Role",
+  classes: 'Class',
+  collections: 'Collection',
+  indexes: 'Index',
+  databases: 'Database',
+  keys: 'Key',
+  roles: 'Role',
 };
 
 const parseRef = (obj) => {
@@ -15,7 +15,7 @@ const parseRef = (obj) => {
   } else if (obj instanceof values.Ref) {
     return obj;
   } else {
-    const ref = "@ref" in obj ? obj["@ref"] : obj;
+    const ref = '@ref' in obj ? obj['@ref'] : obj;
     return new values.Ref(ref.id, parseRef(ref.collection), parseRef(ref.database));
   }
 };
@@ -27,13 +27,13 @@ const renderRef = (obj) => {
     const ctor = ctors[obj.collection.id];
     if (ctor !== undefined) {
       if (obj.database !== undefined) args.push(renderRef(obj.database));
-      args = (args.join(", ") as unknown) as string[];
+      args = (args.join(', ') as unknown) as string[];
       return `${ctor}(${args})`;
     }
   }
 
   if (obj.collection !== undefined) args = [renderRef(obj.collection)].concat(args);
-  args = (args.join(", ") as unknown) as string[];
+  args = (args.join(', ') as unknown) as string[];
   return `Ref(${args})`;
 };
 
@@ -48,20 +48,20 @@ const renderSpecialType = (type) => {
     return null;
   }
 
-  if (typeof type === "object" && !Array.isArray(type)) {
+  if (typeof type === 'object' && !Array.isArray(type)) {
     const keys = Object.keys(type);
 
     switch (keys[0]) {
-      case "@ref":
+      case '@ref':
         return renderRef(parseRef(type));
-      case "@ts":
-        return renderSpecialType(new values.FaunaTime(type["@ts"]));
-      case "@date":
-        return renderSpecialType(new values.FaunaDate(type["@date"]));
-      case "@code":
-        return type["@code"];
-      case "@query":
-        return renderSpecialType(new values.Query(type["@query"]));
+      case '@ts':
+        return renderSpecialType(new values.FaunaTime(type['@ts']));
+      case '@date':
+        return renderSpecialType(new values.FaunaDate(type['@date']));
+      case '@code':
+        return type['@code'];
+      case '@query':
+        return renderSpecialType(new values.Query(type['@query']));
       default:
         return null;
     }
@@ -79,14 +79,14 @@ export const stringify = (obj) => {
       const parsed = renderSpecialType(value);
 
       if (parsed) {
-        const placeHolder = "$$dash_replacement_$" + replacements.length + "$$";
+        const placeHolder = '$$dash_replacement_$' + replacements.length + '$$';
         replacements.push(parsed);
         return placeHolder;
       }
 
       return value;
     },
-    2
+    2,
   );
 
   replacements.forEach((replace, index) => {
@@ -94,7 +94,7 @@ export const stringify = (obj) => {
   });
 
   if (string) {
-    string = string.replace(/\(null\)/g, "()");
+    string = string.replace(/\(null\)/g, '()');
   }
 
   return string;

@@ -1,11 +1,11 @@
-import { FaunaRoleOptions } from "~/../types/fauna";
-import { CONVENTION } from "~/consts";
+import { FaunaRoleOptions } from '~/../types/fauna';
+import { CONVENTION } from '~/consts';
 
-export * from "../role/action";
-export * from "../role/privilege";
+export * from '../role/action';
+export * from '../role/privilege';
 
 export function roleNameNormalized(name: string) {
-  return `${CONVENTION.ROLE_PREFIX}${name.replace(CONVENTION.ROLE_PREFIX, "")}`;
+  return `${CONVENTION.ROLE_PREFIX}${name.replace(CONVENTION.ROLE_PREFIX, '')}`;
 }
 
 export function Role(role: FaunaRoleOptions): FaunaRoleOptions {

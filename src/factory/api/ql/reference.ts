@@ -1,7 +1,7 @@
 // types
-import { ReferenceBuilder, Fauna } from "~/../types/db";
+import { ReferenceBuilder, Fauna } from '~/../types/db';
 // external
-import * as fauna from "faunadb";
+import * as fauna from 'faunadb';
 const q = fauna.query;
 
 export function Reference({ collection, id, ref }: ReferenceBuilder = {}) {
@@ -9,8 +9,8 @@ export function Reference({ collection, id, ref }: ReferenceBuilder = {}) {
 }
 
 export function Ref(collectionOrRef: Fauna.Expr | string, id?: string | number) {
-  if (typeof collectionOrRef === "string") {
-    const [collection, withId] = collectionOrRef.split("/");
+  if (typeof collectionOrRef === 'string') {
+    const [collection, withId] = collectionOrRef.split('/');
     return q.Ref(q.Collection(collection), withId);
   } else {
     return q.Ref(collectionOrRef);

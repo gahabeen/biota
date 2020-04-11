@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { execute } from "~/tasks";
-import { google } from "~/framework/api/user/auth/providers/google";
-import { DBFrameworkAuthConnectUrlOptions } from "~/../types/framework/framework.user";
+import { DB } from '~/db';
+import { execute } from '~/tasks';
+import { google } from '~/framework/api/user/auth/providers/google';
+import { DBFrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
 
 export async function googleRegisterUrl(this: DB, options: DBFrameworkAuthConnectUrlOptions): Promise<string> {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -16,14 +16,14 @@ export async function googleRegisterUrl(this: DB, options: DBFrameworkAuthConnec
             ...options,
             state: {
               ...state,
-              scenario: "register",
+              scenario: 'register',
             },
           });
         },
       },
     ],
     {
-      domain: "DB.user.google.loginUrl",
-    }
+      domain: 'DB.user.google.registerUrl',
+    },
   );
 }

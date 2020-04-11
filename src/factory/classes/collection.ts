@@ -1,18 +1,18 @@
 // types
-import { FaunaCollectionOptions } from "~/../types/fauna";
+import { FaunaCollectionOptions } from '~/../types/fauna';
 // biota
-import { CONVENTION } from "~/consts";
+import { CONVENTION } from '~/consts';
 
 export function collectionNameNormalized(name: string) {
-  return `${CONVENTION.COLLECTION_PREFIX}${collectionNamePlural(name.replace(CONVENTION.COLLECTION_PREFIX, ""))}`;
+  return `${CONVENTION.COLLECTION_PREFIX}${collectionNamePlural(name.replace(CONVENTION.COLLECTION_PREFIX, ''))}`;
 }
 
 export function collectionNameSingular(name: string) {
-  return name.endsWith("s") ? name.slice(-1) : name;
+  return name.endsWith('s') ? name.slice(-1) : name;
 }
 
 export function collectionNamePlural(name: string) {
-  return !name.endsWith("s") ? name + "s" : name;
+  return !name.endsWith('s') ? name + 's' : name;
 }
 
 export function Collection(collection: FaunaCollectionOptions): FaunaCollectionOptions {

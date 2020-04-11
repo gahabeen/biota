@@ -1,11 +1,11 @@
-import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from "~/../types/framework/framework.collection";
-import { DB } from "~/db";
-import { role as roleFactory } from "~/factory/api/classes";
-import { execute } from "~/tasks";
-import { delay } from "~/helpers/delay";
+import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from '~/../types/framework/framework.collection';
+import { DB } from '~/db';
+import { role as roleFactory } from '~/factory/api/classes';
+import { execute } from '~/tasks';
+import { delay } from '~/helpers/delay';
 
 export function compute(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function computeMethod(field: DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
     let { role, roles } = options;
@@ -18,7 +18,7 @@ export function compute(this: DB, collectionName: string) {
       async task() {
         return self
           .collection(collectionName)
-          .field({ ...field, action: "compute" })
+          .field({ ...field, action: 'compute' })
           .then(async (indexes: any) => {
             for (let index of indexes) {
               let { ref, name } = index || {};
@@ -36,13 +36,13 @@ export function compute(this: DB, collectionName: string) {
                             read: true,
                             history_read: true,
                           },
-                        })
+                        }),
                       );
                     },
                   });
                 }
                 await execute(subTasks, {
-                  domain: "DB.collection.compute",
+                  domain: 'DB.collection.compute',
                 });
               }
             }
@@ -52,7 +52,7 @@ export function compute(this: DB, collectionName: string) {
     });
 
     return execute(tasks, {
-      domain: "DB.collection.compute",
+      domain: 'DB.collection.compute',
     });
   };
 }

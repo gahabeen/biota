@@ -1,12 +1,12 @@
-import { DB } from "~/db";
-import { execute } from "~/tasks";
-import { google } from "~/framework/api/user/auth/providers/google";
-import { DBFrameworkAuthConnectUrlOptions } from "~/../types/framework/framework.user";
-import { query as q } from "faunadb";
-import { encrypt } from "~/framework/helpers/crypto";
+import { DB } from '~/db';
+import { execute } from '~/tasks';
+import { google } from '~/framework/api/user/auth/providers/google';
+import { DBFrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
+import { query as q } from 'faunadb';
+import { encrypt } from '~/framework/helpers/crypto';
 
 export async function googleSyncUrl(this: DB, options: DBFrameworkAuthConnectUrlOptions): Promise<string> {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -16,12 +16,12 @@ export async function googleSyncUrl(this: DB, options: DBFrameworkAuthConnectUrl
           const { state = {} } = options || {};
           return self.query(q.HasIdentity()).then((hasIdentity) => {
             if (hasIdentity && self.secret) {
-              const { iv, encrypted } = encrypt(self.secret, self.private_key || "");
+              const { iv, encrypted } = encrypt(self.secret, self.private_key || '');
               return google.connectUrl({
                 ...options,
                 state: {
                   ...state,
-                  scenario: "register",
+                  scenario: 'register',
                   user: encrypted,
                   iv: iv,
                 },
@@ -36,7 +36,7 @@ export async function googleSyncUrl(this: DB, options: DBFrameworkAuthConnectUrl
       },
     ],
     {
-      domain: "DB.user.google.loginUrl",
-    }
+      domain: 'DB.user.google.syncUrl',
+    },
   );
 }

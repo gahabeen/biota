@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { role } from "~/factory/api/classes/role";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { role } from '~/factory/api/classes/role';
+import { execute } from '~/tasks';
 
 export function cleanAll(this: DB) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -14,7 +14,7 @@ export function cleanAll(this: DB) {
       },
     ],
     {
-      domain: "DB.roles.cleanAll",
-    }
+      domain: 'DB.roles.cleanAll',
+    },
   );
 }

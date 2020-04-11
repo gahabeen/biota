@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId, FaunaRoleOptions } from "~/../types/fauna";
-import { role } from "~/factory/api/classes/role";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { FaunaCollectionOptions, FaunaId, FaunaRoleOptions } from '~/../types/fauna';
+import { role } from '~/factory/api/classes/role';
+import { execute } from '~/tasks';
 
 export function upsert(this: DB, roleName: string) {
-  let self = this;
+  const self = this;
 
   return async function upsertMethod(options: FaunaRoleOptions = {}) {
     return execute(
@@ -17,8 +17,8 @@ export function upsert(this: DB, roleName: string) {
         },
       ],
       {
-        domain: "DB.collection.upsert",
-      }
+        domain: 'DB.collection.upsert',
+      },
     );
   };
 }

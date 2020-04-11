@@ -1,5 +1,5 @@
-import { query as q } from "faunadb";
-import { DBFactoryFQLBaseInsert } from "~/../types/factory/factory.fql.base";
+import { query as q } from 'faunadb';
+import { DBFactoryFQLBaseInsert } from '~/../types/factory/factory.fql.base';
 
 export const insert: DBFactoryFQLBaseInsert = {
   document(collection, data, id) {

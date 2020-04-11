@@ -1,9 +1,9 @@
-import { DB } from "~/db";
-import { execute } from "~/tasks";
-import { query as q } from "faunadb"
+import { DB } from '~/db';
+import { execute } from '~/tasks';
+import { query as q } from 'faunadb';
 
 export async function get(this: DB) {
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -14,8 +14,7 @@ export async function get(this: DB) {
       },
     ],
     {
-      domain: "DB.user.session.get",
-    }
+      domain: 'DB.user.session.get',
+    },
   );
 }
-

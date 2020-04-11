@@ -17,14 +17,14 @@ import { delay } from '~/helpers/delay';
 export async function foundation(this: DB, options: DBFoundationOptions) {
   const self = this;
   options = { roles: true, udfunctions: true, collections: true, indexes: true, ...options };
-  let tasks = [];
+  const tasks = [];
 
   /**
    *  Roles (base)
    */
 
   if (options.roles) {
-    let initialRoleTasks = [];
+    const initialRoleTasks = [];
     for (let defaultRole of Object.values(defaultRoles)) {
       initialRoleTasks.push({
         name: `Creating (base) role: ${defaultRole.name}`,
@@ -157,7 +157,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
    */
 
   if (options.collections) {
-    let collectionsTasks = [];
+    const collectionsTasks = [];
     collectionsTasks.push({
       name: `Upsert collection: ${defaultCollections.user_sessions.name}`,
       task() {

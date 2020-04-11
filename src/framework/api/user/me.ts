@@ -1,11 +1,10 @@
-import { DB } from "~/db";
-import { execute } from "~/tasks";
-import { q } from "~/index";
-import { Identity } from "~/factory/api/ql";
+import { DB } from '~/db';
+import { execute } from '~/tasks';
+import { q } from '~/index';
+import { Identity } from '~/factory/api/ql';
 
 export async function me(this: DB) {
-
-  let self = this;
+  const self = this;
   return execute(
     [
       {
@@ -16,7 +15,7 @@ export async function me(this: DB) {
       },
     ],
     {
-      domain: "DB.user.me",
-    }
+      domain: 'DB.user.me',
+    },
   );
 }

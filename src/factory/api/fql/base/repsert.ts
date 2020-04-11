@@ -1,14 +1,14 @@
-import { query as q } from "faunadb";
-import { DBFactoryFQLBaseRepsert } from "~/../types/factory/factory.fql.base";
-import { insert } from "~/factory/api/fql/base/insert";
-import { replace } from "~/factory/api/fql/base/replace";
+import { query as q } from 'faunadb';
+import { DBFactoryFQLBaseRepsert } from '~/../types/factory/factory.fql.base';
+import { insert } from '~/factory/api/fql/base/insert';
+import { replace } from '~/factory/api/fql/base/replace';
 
 export const repsert: DBFactoryFQLBaseRepsert = {
   document(collection, id, data = {}) {
     return q.If(
       q.Exists(q.Ref(q.Collection(collection), id)),
       replace.document(collection, id, data),
-      insert.document(collection, data, id)
+      insert.document(collection, data, id),
     );
   },
   database(name, options = {}) {

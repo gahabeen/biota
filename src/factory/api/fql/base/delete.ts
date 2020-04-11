@@ -1,5 +1,5 @@
-import { DBFactoryFQLBaseDelete } from "~/../types/factory/factory.fql.base";
-import { get } from "~/factory/api/fql/base/get";
+import { DBFactoryFQLBaseDelete } from '~/../types/factory/factory.fql.base';
+import { get } from '~/factory/api/fql/base/get';
 
 export const delete_: DBFactoryFQLBaseDelete = {
   document(collection, id) {

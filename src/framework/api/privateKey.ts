@@ -1,11 +1,11 @@
-import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId } from "~/../types/fauna";
-import { udfunction } from "~/factory/api/classes/udfunction";
-import { execute } from "~/tasks";
-import { IsPrivateKeyValid } from "~/framework/api/defaults/udfunctions";
+import { DB } from '~/db';
+import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
+import { udfunction } from '~/factory/api/classes/udfunction';
+import { execute } from '~/tasks';
+import { IsPrivateKeyValid } from '~/framework/api/defaults/udfunctions';
 
 export function privateKey(this: DB) {
-  let self = this;
+  const self = this;
 
   return async function privateKeyMethod(private_key: string) {
     return execute(
@@ -22,8 +22,8 @@ export function privateKey(this: DB) {
         },
       ],
       {
-        domain: "DB.privateKey",
-      }
+        domain: 'DB.privateKey',
+      },
     );
   };
 }

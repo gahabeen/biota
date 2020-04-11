@@ -1,10 +1,10 @@
-import { FaunaUDFunctionOptions } from "~/../types/fauna";
-import { DB } from "~/db";
-import { udfunction } from "~/factory/api/classes/udfunction";
-import { execute } from "~/tasks";
+import { FaunaUDFunctionOptions } from '~/../types/fauna';
+import { DB } from '~/db';
+import { udfunction } from '~/factory/api/classes/udfunction';
+import { execute } from '~/tasks';
 
 export function upsert(this: DB, collectionName: string) {
-  let self = this;
+  const self = this;
 
   return async function upsertMethod(options: FaunaUDFunctionOptions = {}) {
     return execute(
@@ -17,8 +17,8 @@ export function upsert(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: "DB.collection.upsert",
-      }
+        domain: 'DB.collection.upsert',
+      },
     );
   };
 }

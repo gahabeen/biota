@@ -1,10 +1,10 @@
-import { DB } from "~/db";
-import { FaunaCollectionOptions, FaunaId, FaunaRoleMembership, FaunaRef } from "~/../types/fauna";
-import { role } from "~/factory/api/classes/role";
-import { execute } from "~/tasks";
+import { DB } from '~/db';
+import { FaunaCollectionOptions, FaunaId, FaunaRoleMembership, FaunaRef } from '~/../types/fauna';
+import { role } from '~/factory/api/classes/role';
+import { execute } from '~/tasks';
 
 export function membershipDelete(this: DB, roleName: string) {
-  let self = this;
+  const self = this;
 
   return async function membershipDeleteMethod(resource: FaunaRef) {
     return execute(
@@ -17,8 +17,8 @@ export function membershipDelete(this: DB, roleName: string) {
         },
       ],
       {
-        domain: "DB.role.membership.delete",
-      }
+        domain: 'DB.role.membership.delete',
+      },
     );
   };
 }
