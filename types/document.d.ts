@@ -55,6 +55,11 @@ export interface DocumentValidity {
 }
 
 export type DocumentActionName =
+| "register"
+| "login"
+| "login_fail"
+| "logout"
+| "logout_everywhere"
 | "insert"
 | "update"
 | "replace"

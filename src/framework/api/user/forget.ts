@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FaunaId } from '~/../types/fauna';
 import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { BiotaCollectionName } from '~/factory/classes/collection';
 import { execute } from '~/tasks';
 
 export function forget(this: Biota) {
@@ -12,7 +12,7 @@ export function forget(this: Biota) {
       {
         name: `Forget me`,
         task() {
-          return self.document(collectionNameNormalized('users'), q.Select('id', Identity())).forget();
+          return self.document(BiotaCollectionName('users'), q.Select('id', Identity())).forget();
         },
       },
     ],

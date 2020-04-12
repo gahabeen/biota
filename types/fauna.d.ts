@@ -182,5 +182,8 @@ export type FaunaRef =
     }
   | Fauna.Expr;
 
+export type FaunaStringArray = Fauna.Expr;
 export type FaunaString = string | Fauna.Expr;
 export type FaunaNumber = number | Fauna.Expr;
+export type FaunaObject = object | Fauna.Expr;
+export type FaunaBoolean = boolean | Fauna.Expr;

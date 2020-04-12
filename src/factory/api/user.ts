@@ -1,181 +1,138 @@
 import { query as q } from 'faunadb';
 import { FactoryContext } from 'types/factory/factory.context';
 import { FactoryUser } from '~/../types/factory/factory.user';
+import { PAGINATION_SIZE_MAX } from '~/consts';
 import { document } from '~/factory/api/document';
-import { collectionNameNormalized } from '../classes/collection';
-import * as helpers from '~/helpers';
+import { indexes } from '~/factory/api/indexes';
+import { action } from '~/factory/api/action';
+import { users } from '~/factory/api/users';
+import { userSession } from '~/factory/api/userSession';
+import { credential } from '~/factory/api/credential';
+import { BiotaCollectionName } from '../constructors/collection';
+import { ContextProp } from '../constructors/context';
+import { ThrowError } from '../constructors/error';
+import { BiotaRoleName } from '../constructors/role';
+import { BiotaFunctionName, CallUDFunction } from '../constructors/udfunction';
+import { ContextExtend } from './ql';
+import { BiotaIndexName } from '../constructors';
 
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (contextExpr): FactoryUser {
   // tslint:disable-next-line: only-arrow-functions
   return (idOrRef) => {
-    const userApi = user(contextExpr);
-    const ref = q.If(q.IsDoc(idOrRef), idOrRef, q.Ref(q.Collection(collectionNameNormalized('users')), idOrRef));
+    const ref = q.If(q.IsDoc(idOrRef), idOrRef, q.Ref(q.Collection(BiotaCollectionName('users')), idOrRef));
+    const offline = ContextProp(contextExpr, 'offline');
 
     return {
       ...document(contextExpr)(ref),
       login(email, password) {
-        return {};
-        // return q.Let(
-        //   {
-        //     doc: q.Select(0, q.Paginate(q.Match(q.Index(indexNameNormalized('users__by__email')), email)), {}),
-        //     logged: q.If(
-        //       q.IsRef(q.Var('doc')),
-        //       {
-        //         secret: q.Call(
-        //           udfunctionNameNormalized('AuthStartUserSession'),
-        //           q.Var('doc'),
-        //           q.Var('private_key'),
-        //           q.Var('doc'),
-        //           password,
-        //           null,
-        //         ),
-        //       },
-        //       { secret: false },
-        //     ),
-        //   },
-        //   q.If(
-        //     q.IsString(q.Select('secret', q.Var('logged'))),
-        //     q.Let(
-        //       {
-        //         action: CallLogAction('login', q.Var('doc')),
-        //       },
-        //       q.Var('logged'),
-        //     ),
-        //     q.Let(
-        //       {
-        //         action: CallLogAction('login_failed', q.Var('doc')),
-        //       },
-        //       q.Var('logged'),
-        //     ),
-        //   ),
-        // );
-      },
-      loginWithAuthAccount(account) {
-        return {};
-        // return q.Let(
-        //   {
-        //     accountValid: q.If(
-        //       q.And(q.IsString(q.Select('id', account, null)), q.IsString(q.Select('provider', account, null))),
-        //       true,
-        //       q.Abort("Auth Account isn't valid"),
-        //     ),
-        //     doc: q.Select(
-        //       0,
-        //       q.Paginate(
-        //         q.Match(q.Index(indexNameNormalized('users__by__auth_account')), [
-        //           q.Select('provider', account, null),
-        //           q.Select('id', account, null),
-        //         ]),
-        //       ),
-        //       {},
-        //     ),
-        //     logged: q.If(
-        //       q.IsRef(q.Var('doc')),
-        //       {
-        //         secret: q.Call(
-        //           udfunctionNameNormalized('AuthStartUserSession'),
-        //           q.Var('doc'),
-        //           q.Var('private_key'),
-        //           q.Var('doc'),
-        //           // password,
-        //           null,
-        //         ),
-        //       },
-        //       { secret: false },
-        //     ),
-        //   },
-        //   q.If(
-        //     q.IsString(q.Select('secret', q.Var('logged'))),
-        //     q.Let(
-        //       {
-        //         action: CallLogAction('login', q.Var('doc')),
-        //       },
-        //       q.Var('logged'),
-        //     ),
-        //     q.Let(
-        //       {
-        //         action: CallLogAction('login_failed', q.Var('doc')),
-        //       },
-        //       q.Var('logged'),
-        //     ),
-        //   ),
-        // );
+        // #improve: add expirationDuration
+        const ctx = ContextExtend(contextExpr, 'factory.user.login');
+        return q.If(
+          offline,
+          q.Let(
+            {
+              user: users(ctx).getByAuthEmail(email),
+              userIsValid: q.If(q.IsDoc(q.Var('user')), true, ThrowError(ctx, "Could'nt find the user", { email })),
+              identified_user: q.Identify(ContextProp(ctx, 'identity'), password),
+              is_identified_user: q.If(q.Var('identified_user'), true, ThrowError(ctx, 'User email or password is wrong')),
+              session: userSession(ctx)().start(q.Var('user'), null), // #improve: add expirationDuration
+              action: action(ctx)('login', q.Var('user')).dispatch(),
+            },
+            q.Var('session'),
+          ),
+          CallUDFunction('UserLogin', contextExpr, { email, password }),
+        );
       },
       logout(everywhere) {
-        return {};
-        // return q.If(
-        //   q.HasIdentity(),
-        //   q.If(
-        //     everywhere,
-        //     q.Map(
-        //       q.Paginate(
-        //         q.Call(udfunctionNameNormalized('SearchQuery'), Identity(), q.Collection(collectionNameNormalized('user_sessions')), {
-        //           '_membership.owner': Identity(),
-        //         }),
-        //         { size: PAGINATION_SIZE_MAX },
-        //       ),
-        //       q.Lambda(
-        //         ['session'],
-        //         q.Call(
-        //           udfunctionNameNormalized('DeleteDocument'),
-        //           Identity(),
-        //           q.Var('private_key'),
-        //           collectionNameNormalized('user_sessions'),
-        //           q.Select('id', q.Var('session')),
-        //         ),
-        //       ),
-        //     ),
-        //     q.Call(
-        //       udfunctionNameNormalized('DeleteDocument'),
-        //       Identity(),
-        //       q.Var('private_key'),
-        //       collectionNameNormalized('user_sessions'),
-        //       q.Select('id', q.Identity()),
-        //     ),
-        //   ),
-        //   false,
-        // );
+        const ctx = ContextExtend(contextExpr, 'factory.user.logout');
+        return q.If(
+          offline,
+          q.If(
+            q.Or(ContextProp(ctx, 'hasSession'), ContextProp(ctx, 'hasIdentity')),
+            q.If(
+              everywhere,
+              q.Let(
+                {
+                  logging_out: q.Map(
+                    q.Paginate(
+                      indexes(ctx).searchQuery(q.Collection(BiotaCollectionName('user_sessions')), {
+                        '_membership.owner': ContextProp(ctx, 'identity'),
+                      }),
+                      { size: PAGINATION_SIZE_MAX },
+                    ),
+                    q.Lambda(['session'], document(ctx)(q.Var('session')).delete()),
+                  ),
+                  action: action(ctx)('logout_everywhere', q.Var('user')).dispatch(),
+                },
+                q.Var('logging_out'),
+              ),
+              q.Let(
+                {
+                  logging_out: document(ctx)(ContextProp(ctx, 'hasSession')).delete(),
+                  action: action(ctx)('logout', q.Var('user')).dispatch(),
+                },
+                q.Var('logging_out'),
+              ),
+            ),
+            ThrowError(ctx, 'Context has no identity or session', ctx),
+          ),
+          q.Call(BiotaFunctionName('UserLogout'), ContextExtend(contextExpr, 'udf.UserLogout'), { everywhere }),
+        );
       },
-      register(email, password, data = {}) {
-        return {};
-        // return q.Let(
-        //   {
-        //     doc: q.Call(
-        //       udfunctionNameNormalized('InsertDocument'),
-        //       Identity(),
-        //       q.Var('private_key'),
-        //       collectionNameNormalized('users'),
-        //       data,
-        //       null,
-        //     ),
-        //     operation: CallSystemOperator(
-        //       updateBaseFQL.document(collectionNameNormalized('users'), q.Select(['ref', 'id'], q.Var('doc')), {
-        //         _auth: {
-        //           email,
-        //         },
-        //         _membership: {
-        //           owner: q.Select('ref', q.Var('doc')),
-        //           roles: ['biota.user'],
-        //         },
-        //         _activity: {
-        //           created_by: q.Select('ref', q.Var('doc')),
-        //         },
-        //       }),
-        //       q.Select('ref', q.Var('doc')),
-        //     ),
-        //     with_credentials: q.Call(
-        //       udfName('UpdateCredentials'),
-        //       Identity(),
-        //       q.Var('private_key'),
-        //       collectionNameNormalized('users'),
-        //       q.Select(['ref', 'id'], q.Var('doc')),
-        //       { password },
-        //     ),
-        //     action: CallLogAction('register', q.Var('doc')),
-        //   },
-        //   q.Call(udfunctionNameNormalized('UserLogin'), Identity(), q.Var('private_key'), email, password),
-        // );
+      register(email, password, data) {
+        const ctx = ContextExtend(contextExpr, 'factory.user.register');
+        return q.If(
+          offline,
+          q.Let(
+            {
+              user: user(ctx)().insert(data),
+              user_email: user(ctx)(q.Var('user')).auth.email.set(email),
+              user_owner: user(ctx)(q.Var('user')).membership.owner.set(q.Var('users')),
+              user_user_role: user(ctx)(q.Var('user'))
+                .membership.role(q.Role(BiotaRoleName('user')))
+                .set(),
+              user_credentials: credential(ctx)(q.Var('user')).insert(password),
+              session: userSession(ctx)().start(q.Var('user'), password),
+              action: action(ctx)('register', q.Var('user')).dispatch(),
+            },
+            q.Var('session'),
+          ),
+          q.Call(BiotaFunctionName('UserRegister'), ContextExtend(contextExpr, 'udf.UserRegister'), { email, password, data }),
+        );
+      },
+      changePassword(currentPassword, password) {
+        const ctx = ContextExtend(contextExpr, 'factory.user.changePassword');
+        return q.If(
+          offline,
+          q.If(
+            ContextProp(ctx, 'hasIdentity'),
+            credential(ctx)(ContextProp(ctx, 'identity')).update(currentPassword, password),
+            ThrowError(ctx, "Can't change password without identity", { identity: ContextProp(ctx, 'identity') }),
+          ),
+          CallUDFunction('UserChangePassword', contextExpr, { password }),
+        );
+      },
+      loginWithAuthAccount(account) {
+        // #improve: add expirationDuration
+        const ctx = ContextExtend(contextExpr, 'factory.user.loginWithAuthAccount');
+        return q.If(
+          offline,
+          q.Let(
+            {
+              accountValid: q.If(
+                q.And(q.IsString(q.Select('id', account, null)), q.IsString(q.Select('provider', account, null))),
+                true,
+                ThrowError(ctx, "Auth Account isn't valid", { account }),
+              ),
+              user: users(ctx).getByAuthAccount(account),
+              userIsValid: q.If(q.IsDoc(q.Var('user')), true, ThrowError(ctx, "Could'nt find the user", { account })),
+              session: userSession(ctx)().start(q.Var('user'), null), // #improve: add expirationDuration
+            },
+            q.Var('session'),
+          ),
+          CallUDFunction('UserLoginWithAuthAccount', contextExpr, { account }),
+        );
       },
       registerWithAuthAccount(account) {
         return {};
@@ -183,22 +140,22 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
         //   {
         //     account,
         //     doc: q.Call(
-        //       udfunctionNameNormalized('InsertDocument'),
+        //       BiotaFunctionName('InsertDocument'),
         //       Identity(),
         //       q.Var('private_key'),
-        //       collectionNameNormalized('users'),
+        //       BiotaCollectionName('users'),
         //       {},
         //       null,
         //     ),
         //     upsert_auth_account: q.Call(
-        //       udfunctionNameNormalized('UserAuthAccountUpsert'),
+        //       BiotaFunctionName('UserAuthAccountUpsert'),
         //       Identity(),
         //       q.Var('private_key'),
         //       q.Select(['ref', 'id'], q.Var('doc'), null),
         //       q.Var('account'),
         //     ),
         //     operation: CallSystemOperator(
-        //       updateBaseFQL.document(collectionNameNormalized('users'), q.Select(['ref', 'id'], q.Var('doc')), {
+        //       updateBaseFQL.document(BiotaCollectionName('users'), q.Select(['ref', 'id'], q.Var('doc')), {
         //         _membership: {
         //           owner: q.Select('ref', q.Var('doc')),
         //           roles: ['biota.user'],
@@ -211,21 +168,17 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
         //     ),
         //     action: CallLogAction('register', q.Var('doc')),
         //   },
-        //   q.Call(udfunctionNameNormalized('UserLoginWithAuthAccount'), Identity(), q.Var('private_key'), q.Var('account')),
+        //   q.Call(BiotaFunctionName('UserLoginWithAuthAccount'), Identity(), q.Var('private_key'), q.Var('account')),
         // );
       },
-      changePassword(newPassword) {
-        return {};
-        // return call.update.credentials(q.Select('collection', q.Identity()) as string, q.Select('id', q.Identity()), {
-        //   password: newPassword,
-        // });
-      },
+
       auth: {
         email: {
           set(email) {
+            const ctx = ContextExtend(contextExpr, 'factory.user.auth.email.set');
             return q.If(
               q.IsString(email),
-              userApi(ref).upsert({
+              user(ctx)(ref).upsert({
                 _auth: {
                   email,
                 },
@@ -234,7 +187,8 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             );
           },
           remove() {
-            return userApi(ref).upsert({
+            const ctx = ContextExtend(contextExpr, 'factory.user.auth.email.remove');
+            return user(ctx)(ref).upsert({
               _auth: {
                 email: null,
               },
@@ -292,92 +246,21 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             );
           },
           set(account) {
-            return userApi(ref).upsert({
+            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.set');
+            return user(ctx)(ref).upsert({
               _auth: {
-                accounts: userApi(ref).auth.accounts.distinct(account),
+                accounts: user(ctx)(ref).auth.accounts.distinct(account),
               },
             });
           },
           remove(provider, accountId) {
-            return userApi(ref).upsert({
+            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.remove');
+            return user(ctx)(ref).upsert({
               _auth: {
-                accounts: userApi(ref).auth.accounts.difference(provider, accountId),
+                accounts: user(ctx)(ref).auth.accounts.difference(provider, accountId),
               },
             });
           },
-        },
-      },
-      membership: {
-        role(roleOrRef) {
-          const roleRef = q.If(q.IsRole(roleOrRef), roleOrRef, q.Role(roleOrRef));
-          return {
-            distinct() {
-              return q.Distinct(q.Union(q.Select(helpers.path('_membership.roles'), q.Get(ref), []), [roleRef]));
-            },
-            difference() {
-              return q.Difference(q.Select(helpers.path('_membership.roles'), q.Get(ref), []), [roleRef]);
-            },
-            set() {
-              return userApi(ref).upsert({
-                _membership: {
-                  roles: userApi(ref).membership.role(roleRef).distinct(),
-                },
-              });
-            },
-            remove() {
-              return userApi(ref).upsert({
-                _membership: {
-                  roles: userApi(ref).membership.role(roleRef).difference(),
-                },
-              });
-            },
-          };
-        },
-        owner: {
-          // tslint:disable-next-line: no-shadowed-variable
-          set(user) {
-            return q.If(
-              q.IsDoc(user),
-              userApi(ref).upsert({
-                _membership: {
-                  owner: user,
-                },
-              }),
-              false,
-            );
-          },
-          remove() {
-            return userApi(ref).upsert({
-              _membership: {
-                owner: null,
-              },
-            });
-          },
-        },
-        assignee(assignee) {
-          const assigneeRef = q.If(q.IsDoc(assignee), assignee, null);
-          return {
-            distinct() {
-              return q.Distinct(q.Union(q.Select(helpers.path('_membership.assignees'), q.Get(ref), []), [assigneeRef]));
-            },
-            difference() {
-              return q.Difference(q.Select(helpers.path('_membership.assignees'), q.Get(ref), []), [assigneeRef]);
-            },
-            set() {
-              return userApi(ref).upsert({
-                _membership: {
-                  assignees: userApi(ref).membership.role(assigneeRef).distinct(),
-                },
-              });
-            },
-            remove() {
-              return userApi(ref).upsert({
-                _membership: {
-                  assignees: userApi(ref).membership.role(assigneeRef).difference(),
-                },
-              });
-            },
-          };
         },
       },
     };

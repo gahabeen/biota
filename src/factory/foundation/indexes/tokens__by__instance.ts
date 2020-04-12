@@ -1,9 +1,9 @@
 import { query as q } from 'faunadb';
-import { Index, indexNameNormalized } from '~/factory/classes/index';
+import { Index, BiotaIndexName } from '~/factory/classes/index';
 
 // tslint:disable-next-line: variable-name
 export const tokens__by__instance = Index({
-  name: indexNameNormalized('tokens__by__instance'),
+  name: BiotaIndexName('tokens__by__instance'),
   source: {
     collection: q.Tokens(),
   },

@@ -1,10 +1,10 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
-import { indexNameNormalized } from '~/factory/classes/index';
-import { roleNameNormalized } from '~/factory/classes/role';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
+import { BiotaIndexName } from '~/factory/classes/index';
+import { BiotaRoleName } from '~/factory/classes/role';
 
 export const FindIndex = UDFunction({
-  name: udfunctionNameNormalized('FindIndex'),
+  name: BiotaFunctionName('FindIndex'),
   body: q.Query(
     q.Lambda(
       ['identity', 'resource', 'terms_fields'],
@@ -12,11 +12,11 @@ export const FindIndex = UDFunction({
         {
           indexes: q.Paginate(
             q.Intersection(
-              q.Match(q.Index(indexNameNormalized('indexes__by__resource')), [q.Var('resource')]),
+              q.Match(q.Index(BiotaIndexName('indexes__by__resource')), [q.Var('resource')]),
               q.Union(
                 q.Map(
                   q.Var('terms_fields'),
-                  q.Lambda(['field'], q.Match(q.Index(indexNameNormalized('indexes__by__terms')), [q.Var('field')])),
+                  q.Lambda(['field'], q.Match(q.Index(BiotaIndexName('indexes__by__terms')), [q.Var('field')])),
                 ),
               ),
             ),
@@ -31,5 +31,5 @@ export const FindIndex = UDFunction({
       ),
     ),
   ),
-  role: q.Role(roleNameNormalized('system')),
+  role: q.Role(BiotaRoleName('system')),
 });

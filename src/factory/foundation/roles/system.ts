@@ -1,12 +1,12 @@
 import { query as q } from 'faunadb';
 import { FaunaRoleOptions } from '~/../types/fauna';
-import { indexNameNormalized } from '~/factory/classes/index';
-import { Privilege, roleNameNormalized } from '~/factory/classes/role';
-import { udfunctionNameNormalized } from '~/factory/classes/udfunction';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { BiotaIndexName } from '~/factory/classes/index';
+import { Privilege, BiotaRoleName } from '~/factory/classes/role';
+import { BiotaFunctionName } from '~/factory/classes/udfunction';
+import { BiotaCollectionName } from '~/factory/classes/collection';
 
 export const system: FaunaRoleOptions = {
-  name: roleNameNormalized('system'),
+  name: BiotaRoleName('system'),
   privileges: [
     /**
      * Collections
@@ -18,17 +18,17 @@ export const system: FaunaRoleOptions = {
     }),
 
     Privilege({
-      resource: q.Collection(collectionNameNormalized('users')),
+      resource: q.Collection(BiotaCollectionName('users')),
       actions: { create: 'all', read: 'all', write: 'all', delete: 'all' },
     }),
 
     Privilege({
-      resource: q.Collection(collectionNameNormalized('actions')),
+      resource: q.Collection(BiotaCollectionName('actions')),
       actions: { create: 'all', read: 'all', write: 'all', delete: 'all' },
     }),
 
     Privilege({
-      resource: q.Collection(collectionNameNormalized('user_sessions')),
+      resource: q.Collection(BiotaCollectionName('user_sessions')),
       actions: { create: 'all', read: 'all', write: 'all', delete: 'all' },
     }),
 
@@ -42,12 +42,12 @@ export const system: FaunaRoleOptions = {
      */
 
     Privilege({
-      resource: q.Index(indexNameNormalized('indexes__by__resource')),
+      resource: q.Index(BiotaIndexName('indexes__by__resource')),
       actions: { read: 'all', unrestricted_read: 'all' },
     }),
 
     Privilege({
-      resource: q.Index(indexNameNormalized('indexes__by__terms')),
+      resource: q.Index(BiotaIndexName('indexes__by__terms')),
       actions: { read: 'all', unrestricted_read: 'all' },
     }),
 
@@ -56,12 +56,12 @@ export const system: FaunaRoleOptions = {
      */
 
     Privilege({
-      resource: q.Function(udfunctionNameNormalized('FindIndex')),
+      resource: q.Function(BiotaFunctionName('FindIndex')),
       actions: { call: 'all' },
     }),
 
     Privilege({
-      resource: q.Function(udfunctionNameNormalized('IsPrivateKeyValid')),
+      resource: q.Function(BiotaFunctionName('IsPrivateKeyValid')),
       actions: { call: 'all' },
     }),
   ],

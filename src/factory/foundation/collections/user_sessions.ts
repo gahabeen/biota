@@ -1,7 +1,7 @@
-import { Collection, collectionNameNormalized } from '~/factory/classes/collection';
+import { Collection, BiotaCollectionName } from '~/factory/classes/collection';
 
 export const user_sessions = Collection({
-  name: collectionNameNormalized('user_sessions'),
+  name: BiotaCollectionName('user_sessions'),
   history_days: 0,
   ttl_days: null,
 });

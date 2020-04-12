@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { Fauna, FaunaIndexOptions } from '~/../types/fauna';
 
-export function indexNameNormalized(name: string) {
+export function BiotaIndexName(name: string) {
   return `biota.${name.replace('biota.', '')}`;
 }
 

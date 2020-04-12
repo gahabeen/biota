@@ -3,7 +3,7 @@ import { FaunaCollectionOptions } from '~/../types/fauna';
 // biota
 import { CONVENTION } from '~/consts';
 
-export function collectionNameNormalized(name: string) {
+export function BiotaCollectionName(name: string) {
   return `${CONVENTION.COLLECTION_PREFIX}${collectionNamePlural(name.replace(CONVENTION.COLLECTION_PREFIX, ''))}`;
 }
 

@@ -65,6 +65,79 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
         });
       },
 
+      membership: {
+        role(roleOrRef) {
+          const roleRef = q.If(q.IsRole(roleOrRef), roleOrRef, q.Role(roleOrRef));
+          return {
+            distinct() {
+              return q.Distinct(q.Union(q.Select(helpers.path('_membership.roles'), q.Get(ref), []), [roleRef]));
+            },
+            difference() {
+              return q.Difference(q.Select(helpers.path('_membership.roles'), q.Get(ref), []), [roleRef]);
+            },
+            set() {
+              return documentApi(ref).upsert({
+                _membership: {
+                  roles: documentApi(ref).membership.role(roleRef).distinct(),
+                },
+              });
+            },
+            remove() {
+              return documentApi(ref).upsert({
+                _membership: {
+                  roles: documentApi(ref).membership.role(roleRef).difference(),
+                },
+              });
+            },
+          };
+        },
+        owner: {
+          // tslint:disable-next-line: no-shadowed-variable
+          set(user) {
+            return q.If(
+              q.IsDoc(user),
+              documentApi(ref).upsert({
+                _membership: {
+                  owner: user,
+                },
+              }),
+              false,
+            );
+          },
+          remove() {
+            return documentApi(ref).upsert({
+              _membership: {
+                owner: null,
+              },
+            });
+          },
+        },
+        assignee(assignee) {
+          const assigneeRef = q.If(q.IsDoc(assignee), assignee, null);
+          return {
+            distinct() {
+              return q.Distinct(q.Union(q.Select(helpers.path('_membership.assignees'), q.Get(ref), []), [assigneeRef]));
+            },
+            difference() {
+              return q.Difference(q.Select(helpers.path('_membership.assignees'), q.Get(ref), []), [assigneeRef]);
+            },
+            set() {
+              return documentApi(ref).upsert({
+                _membership: {
+                  assignees: documentApi(ref).membership.role(assigneeRef).distinct(),
+                },
+              });
+            },
+            remove() {
+              return documentApi(ref).upsert({
+                _membership: {
+                  assignees: documentApi(ref).membership.role(assigneeRef).difference(),
+                },
+              });
+            },
+          };
+        },
+      },
       validity: {
         delete() {
           return documentApi(ref).upsert({

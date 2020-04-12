@@ -1,9 +1,9 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
 import { update as updateFQLUDF } from '~/factory/api/fql/udf/update';
 
 export const UpdateCredentials = UDFunction({
-  name: udfunctionNameNormalized('UpdateCredentials'),
+  name: BiotaFunctionName('UpdateCredentials'),
   body: q.Query(
     q.Lambda(
       ['identity', 'private_key', 'collection', 'id', 'credentials'],

@@ -11,7 +11,7 @@ import * as defaultCollections from '~/framework/api/defaults/collections';
 import * as defaultIndexes from '~/framework/api/defaults/indexes';
 import { BiotaFoundationOptions } from '~/../types/db';
 import { FaunaUDFunctionOptions } from '~/../types/fauna';
-import { roleNameNormalized } from '~/factory/classes/role';
+import { BiotaRoleName } from '~/factory/classes/role';
 import { delay } from '~/helpers/delay';
 
 export async function foundation(this: Biota, options: BiotaFoundationOptions) {
@@ -383,12 +383,12 @@ export async function foundation(this: Biota, options: BiotaFoundationOptions) {
           await delay(300);
 
           return self.query(
-            roleFQLBase.privileges.upsert(roleNameNormalized('user'), {
+            roleFQLBase.privileges.upsert(BiotaRoleName('user'), {
               resource: q.Function(UDFunctionDefinition.name),
               actions: { call: true },
             }),
           );
-          // return self.role(roleNameNormalized("user")).privilege.upsert({
+          // return self.role(BiotaRoleName("user")).privilege.upsert({
           //   resource: q.Function(UDFunctionDefinition.name),
           //   actions: { call: true },
           // });
@@ -401,12 +401,12 @@ export async function foundation(this: Biota, options: BiotaFoundationOptions) {
         async task() {
           await delay(300);
           return self.query(
-            roleFQLBase.privileges.upsert(roleNameNormalized('system'), {
+            roleFQLBase.privileges.upsert(BiotaRoleName('system'), {
               resource: q.Function(UDFunctionDefinition.name),
               actions: { call: true },
             }),
           );
-          // return self.role(roleNameNormalized("system")).privilege.upsert({
+          // return self.role(BiotaRoleName("system")).privilege.upsert({
           //   resource: q.Function(UDFunctionDefinition.name),
           //   actions: { call: true },
           // });

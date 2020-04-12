@@ -1,9 +1,9 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
 
 export const IsPrivateKeyValid = ({ privateKey }: any = {}) =>
   UDFunction({
-    name: udfunctionNameNormalized('IsPrivateKeyValid'),
+    name: BiotaFunctionName('IsPrivateKeyValid'),
     body: q.Query(
       q.Lambda(
         ['identity', 'private_key'],

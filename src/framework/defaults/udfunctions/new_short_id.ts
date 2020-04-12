@@ -1,8 +1,8 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
 
 export const NewShortId = UDFunction({
-  name: udfunctionNameNormalized('NewShortId'),
+  name: BiotaFunctionName('NewShortId'),
   body: q.Query((identity, collectionRef, shortids) =>
     q.Let(
       {

@@ -2,7 +2,7 @@ import { BiotaFrameworkRelationDefinition } from '~/../types/framework/framework
 // external
 import { Biota } from '~/biota';
 // biota
-import { collectionNamePlural, collectionNameNormalized } from '~/factory/classes/collection';
+import { collectionNamePlural, BiotaCollectionName } from '~/factory/classes/collection';
 import { insert } from '~/factory/api/fql/base/insert';
 import { name } from '~/helpers';
 import { execute } from '~/tasks';
@@ -28,7 +28,7 @@ export function relation(this: Biota, relationName?: string) {
 
     tasks.push({
       async task() {
-        // let existingRelations = await self.collection(collectionNameNormalized("relations")).find({
+        // let existingRelations = await self.collection(BiotaCollectionName("relations")).find({
         //   $and: [
         //     {
         //       "parts.collection": firstRelation.collection,
@@ -43,7 +43,7 @@ export function relation(this: Biota, relationName?: string) {
         //   ]
         // });
 
-        return self.collection(collectionNameNormalized('relations')).insert({
+        return self.collection(BiotaCollectionName('relations')).insert({
           data: {
             relations: {},
           },

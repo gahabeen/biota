@@ -1,14 +1,18 @@
-import { FaunaRef } from '../fauna';
+import { FaunaRef, FaunaString, FaunaBoolean } from '../fauna';
 import { Expr } from 'faunadb';
 
-export type FactoryContext<T> = (context?: FactoryContextOptions) => T;
+export type FactoryContext<T> = (context?: FactoryContextDefinition) => T;
 
-export type FactoryContextOptions =
+export type FactoryContextDefinition =
   | {
-      identity: string | Expr;
-      session: string | Expr;
-      parentUDFunction: string | FaunaRef | Expr;
-      usersIndex: FaunaRef;
-      userSessionsIndex: FaunaRef;
+      identity?: FaunaRef;
+      session?: FaunaRef;
+      callstack?: FaunaString;
+      offline?: FaunaBoolean;
+      hasIdentity?: FaunaBoolean;
+      hasSession?: FaunaBoolean;
+      logActions?: FaunaBoolean;
+      annotateDocuments?: FaunaBoolean;
+      skipErrors?: FaunaBoolean;
     }
   | Expr;

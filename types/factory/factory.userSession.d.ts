@@ -1,6 +1,9 @@
 import { Expr } from 'faunadb';
-import { FaunaString, FaunaRef } from 'types/fauna';
+import { FaunaString, FaunaRef, FaunaNumber } from 'types/fauna';
+import { FactoryDocumentApi } from './factory.document';
 
-export type FactoryUserSession = (idOrRefOrUser: FaunaString | FaunaRef) => FactoryUserSessionApi;
+export type FactoryUserSession = (idOrRef?: FaunaString | FaunaRef) => FactoryUserSessionApi;
 
-export interface FactoryUserSessionApi {}
+export interface FactoryUserSessionApi extends FactoryDocumentApi {
+  start(user: FaunaRef, expireAt: FaunaNumber): Expr;
+}

@@ -1,10 +1,10 @@
 import { query as q } from 'faunadb';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { BiotaCollectionName } from '~/factory/classes/collection';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
 import { Identity } from '~/factory/api/ql';
 
 export const Relations = UDFunction({
-  name: udfunctionNameNormalized('Relations'),
+  name: BiotaFunctionName('Relations'),
   body: q.Query(
     q.Lambda(
       ['identity', 'private_key', 'ref'],
@@ -14,7 +14,7 @@ export const Relations = UDFunction({
           {
             relations: q.Map(
               q.Paginate(
-                q.Call(udfunctionNameNormalized('SearchQuery'), Identity(), q.Collection(collectionNameNormalized('relations')), {
+                q.Call(BiotaFunctionName('SearchQuery'), Identity(), q.Collection(BiotaCollectionName('relations')), {
                   'parts.collection': q.Select('collection', q.Var('ref'), null),
                 }),
                 { size: 1000 },

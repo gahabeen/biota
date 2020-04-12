@@ -3,7 +3,7 @@ import { FaunaCollectionOptions, FaunaIndexOptions, FaunaIndexTerm, FaunaIndexVa
 import { BiotaFrameworkCollectionFieldOptions } from '~/../types/framework/framework.collection';
 import { Biota } from '~/biota';
 import { upsert } from '~/factory/api/fql/base/upsert';
-import { Index, indexNameNormalized, NGramOnField } from '~/factory/classes/index';
+import { Index, BiotaIndexName, NGramOnField } from '~/factory/classes/index';
 import * as helpers from '~/helpers';
 import { execute } from '~/tasks';
 
@@ -119,7 +119,7 @@ export function field(this: Biota, collectionName: string) {
         ];
       }
 
-      index.name = indexNameNormalized(
+      index.name = BiotaIndexName(
         helpers.name([collectionName, 'search', 'on', helpers.stringPath(definition.name || definition.field)]),
       );
 
@@ -141,7 +141,7 @@ export function field(this: Biota, collectionName: string) {
 
         let ngramFieldName = 'ngram:' + fieldName;
         let ngramIndex: FaunaIndexOptions = {
-          name: indexNameNormalized(helpers.name([collectionName, 'ngram', 'on', helpers.stringPath(fieldName)])),
+          name: BiotaIndexName(helpers.name([collectionName, 'ngram', 'on', helpers.stringPath(fieldName)])),
           source: {
             collection: q.Collection(collectionName),
             fields: {
@@ -182,7 +182,7 @@ export function field(this: Biota, collectionName: string) {
 
       let indexByBinding = {
         ...index,
-        name: indexNameNormalized(helpers.name([collectionName, 'compute', 'on', helpers.stringPath(fieldOrName)])),
+        name: BiotaIndexName(helpers.name([collectionName, 'compute', 'on', helpers.stringPath(fieldOrName)])),
         values: [
           {
             binding: fieldOrName,
@@ -204,7 +204,7 @@ export function field(this: Biota, collectionName: string) {
 
       // let indexByRef = {
       //   ...index,
-      //   name: indexNameNormalized(
+      //   name: BiotaIndexName(
       //     helpers.name([collectionName, "computed", "as", helpers.stringPath(definition.name || definition.field)])
       //   ),
       //   values: [

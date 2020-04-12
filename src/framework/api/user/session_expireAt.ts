@@ -2,7 +2,7 @@ import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 import { document } from '~/factory/api/classes/document';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { BiotaCollectionName } from '~/factory/classes/collection';
 
 export async function expireAt(this: Biota, at: any) {
   const self = this;
@@ -11,7 +11,7 @@ export async function expireAt(this: Biota, at: any) {
       {
         name: `Expire session at [${at}]`,
         task() {
-          return self.query(document.expireAt.call(self, collectionNameNormalized('user_sessions'), q.Select('id', q.Identity()), at));
+          return self.query(document.expireAt.call(self, BiotaCollectionName('user_sessions'), q.Select('id', q.Identity()), at));
         },
       },
     ],

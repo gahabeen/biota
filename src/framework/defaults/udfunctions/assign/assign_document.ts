@@ -1,9 +1,9 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
 import { assign as assignFQLUDF } from '~/factory/api/fql/udf/assign';
 
 export const AssignDocument = UDFunction({
-  name: udfunctionNameNormalized('AssignDocument'),
+  name: BiotaFunctionName('AssignDocument'),
   body: q.Query(
     q.Lambda(
       ['identity', 'private_key', 'collection', 'id', 'newAssignee'],

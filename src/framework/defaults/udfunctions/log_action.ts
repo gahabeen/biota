@@ -2,13 +2,13 @@
 // external
 import { query as q } from 'faunadb';
 // biota
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
+import { BiotaCollectionName } from '~/factory/classes/collection';
 import { CallIsPrivateKeyValid } from '~/framework/helpers/call_functions';
-import { roleNameNormalized } from '~/factory/classes/role';
+import { BiotaRoleName } from '~/factory/classes/role';
 
 export const LogAction = UDFunction({
-  name: udfunctionNameNormalized('LogAction'),
+  name: BiotaFunctionName('LogAction'),
   body: q.Query(
     q.Lambda(
       ['identity', 'private_key', 'options'],
@@ -21,7 +21,7 @@ export const LogAction = UDFunction({
         },
         q.If(
           q.IsRef(q.Var('document')),
-          q.Create(q.Collection(collectionNameNormalized('actions')), {
+          q.Create(q.Collection(BiotaCollectionName('actions')), {
             data: {
               document: q.Var('document'),
               ts: q.Var('ts'),
@@ -34,5 +34,5 @@ export const LogAction = UDFunction({
       ),
     ),
   ),
-  role: q.Role(roleNameNormalized('system')),
+  role: q.Role(BiotaRoleName('system')),
 });

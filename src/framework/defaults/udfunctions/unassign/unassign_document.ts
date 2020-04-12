@@ -1,9 +1,9 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
 import { unassign as unassignFQLUDF } from '~/factory/api/fql/udf/unassign';
 
 export const UnAssignDocument = UDFunction({
-  name: udfunctionNameNormalized('UnAssignDocument'),
+  name: BiotaFunctionName('UnAssignDocument'),
   body: q.Query(
     q.Lambda(
       ['identity', 'private_key', 'collection', 'id', 'oldAssignee'],

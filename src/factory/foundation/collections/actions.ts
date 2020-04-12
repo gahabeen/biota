@@ -1,10 +1,10 @@
 // types
 // external
 // biota
-import { Collection, collectionNameNormalized } from '~/factory/classes/collection';
+import { Collection, BiotaCollectionName } from '~/factory/classes/collection';
 
 export const actions = Collection({
-  name: collectionNameNormalized('actions'),
+  name: BiotaCollectionName('actions'),
   history_days: null,
   ttl_days: null,
 });

@@ -2,11 +2,11 @@
 // external
 import { query as q } from 'faunadb';
 // biota
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
 import { pathString } from '~/framework/helpers/path';
 
 export const SearchQuery = UDFunction({
-  name: udfunctionNameNormalized('SearchQuery'),
+  name: BiotaFunctionName('SearchQuery'),
   body: q.Query(
     q.Lambda(
       ['identity', 'resource', 'search_terms'],
@@ -22,7 +22,7 @@ export const SearchQuery = UDFunction({
                 q.If(
                   q.Contains('$computed', q.Var('value')),
                   [
-                    q.Call(udfunctionNameNormalized('FindIndex'), q.Var('identity'), q.Var('resource'), [
+                    q.Call(BiotaFunctionName('FindIndex'), q.Var('identity'), q.Var('resource'), [
                       q.Concat(['binding:', q.Var('field')]),
                     ]),
                     q.Select('$computed', q.Var('value'), null),
@@ -31,7 +31,7 @@ export const SearchQuery = UDFunction({
                   q.If(
                     q.Contains('$ngram', q.Var('value')),
                     [
-                      q.Call(udfunctionNameNormalized('FindIndex'), q.Var('identity'), q.Var('resource'), [
+                      q.Call(BiotaFunctionName('FindIndex'), q.Var('identity'), q.Var('resource'), [
                         q.Concat(['binding:', 'ngram:', q.Var('field')]),
                       ]),
                       q.LowerCase(q.ToString(q.Select('$ngram', q.Var('value'), ''))),
@@ -41,7 +41,7 @@ export const SearchQuery = UDFunction({
                   ),
                 ),
                 [
-                  q.Call(udfunctionNameNormalized('FindIndex'), q.Var('identity'), q.Var('resource'), [
+                  q.Call(BiotaFunctionName('FindIndex'), q.Var('identity'), q.Var('resource'), [
                     q.Concat(['term:', pathString(q.Var('field'))]),
                   ]),
                   q.Var('value'),

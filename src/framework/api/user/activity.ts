@@ -1,7 +1,7 @@
 import { FaunaPaginateOptions } from '~/../types/fauna';
 import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { BiotaCollectionName } from '~/factory/classes/collection';
 import { execute } from '~/tasks';
 
 export async function activity(this: Biota, pagination: FaunaPaginateOptions = {}) {
@@ -11,7 +11,7 @@ export async function activity(this: Biota, pagination: FaunaPaginateOptions = {
       {
         name: `User activity`,
         async task() {
-          return self.collection(collectionNameNormalized('actions')).find(
+          return self.collection(BiotaCollectionName('actions')).find(
             {
               user: Identity(),
             },

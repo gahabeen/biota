@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FaunaPaginateOptions } from '~/../types/fauna';
 import { Biota } from '~/biota';
 import { execute } from '~/tasks';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { BiotaCollectionName } from '~/factory/classes/collection';
 
 export function activity(this: Biota, collectionName: string) {
   const self = this;
@@ -13,7 +13,7 @@ export function activity(this: Biota, collectionName: string) {
         {
           name: `Activity for (${collectionName})`,
           async task() {
-            return self.collection(collectionNameNormalized('actions')).find(
+            return self.collection(BiotaCollectionName('actions')).find(
               {
                 collection: {
                   $computed: q.Collection(collectionName),

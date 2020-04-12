@@ -1,17 +1,17 @@
 import { query as q } from 'faunadb';
 import { FaunaRoleOptions } from '~/../types/fauna';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { Privilege, Role, roleNameNormalized, CustomPrivilege } from '~/factory/classes/role';
-import { udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { BiotaCollectionName } from '~/factory/classes/collection';
+import { Privilege, Role, BiotaRoleName, CustomPrivilege } from '~/factory/classes/role';
+import { BiotaFunctionName } from '~/factory/classes/udfunction';
 import { has_role } from '../rules/has_role';
 import { is_document_available } from '../rules/is_document_available';
 import { Identity } from '~/factory/api/ql';
 
 export const user: FaunaRoleOptions = Role({
-  name: roleNameNormalized('user'),
+  name: BiotaRoleName('user'),
   membership: [
     {
-      resource: q.Collection(collectionNameNormalized('user_sessions')),
+      resource: q.Collection(BiotaCollectionName('user_sessions')),
       predicate: q.Query(
         q.Lambda(
           'ref',
@@ -26,7 +26,7 @@ export const user: FaunaRoleOptions = Role({
                 {
                   user: q.Get(q.Select(['data', '_membership', 'owner'], q.Var('doc'), null)),
                 },
-                has_role(q.Var('user'), roleNameNormalized('user')),
+                has_role(q.Var('user'), BiotaRoleName('user')),
               ),
               false,
             ),
@@ -45,7 +45,7 @@ export const user: FaunaRoleOptions = Role({
      */
 
     CustomPrivilege({
-      resource: q.Collection(collectionNameNormalized('actions')),
+      resource: q.Collection(BiotaCollectionName('actions')),
       actions: {
         read: q.Query(
           q.Lambda(
@@ -62,7 +62,7 @@ export const user: FaunaRoleOptions = Role({
     }),
 
     Privilege({
-      resource: q.Collection(collectionNameNormalized('users')),
+      resource: q.Collection(BiotaCollectionName('users')),
       actions: {
         read: ['self', 'owner', 'assignee'],
         write: ['self', 'owner', 'assignee'],
@@ -72,7 +72,7 @@ export const user: FaunaRoleOptions = Role({
     }),
 
     Privilege({
-      resource: q.Collection(collectionNameNormalized('user_sessions')),
+      resource: q.Collection(BiotaCollectionName('user_sessions')),
       actions: {
         read: ['self', 'owner', 'assignee'],
         write: ['self', 'owner', 'assignee'],
@@ -84,7 +84,7 @@ export const user: FaunaRoleOptions = Role({
      */
 
     Privilege({
-      resource: q.Function(udfunctionNameNormalized('SearchQuery')),
+      resource: q.Function(BiotaFunctionName('SearchQuery')),
       actions: { call: 'all' },
     }),
   ],

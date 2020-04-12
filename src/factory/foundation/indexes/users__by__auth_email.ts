@@ -3,17 +3,14 @@ import { Index, BiotaIndexName } from '~/factory/classes/index';
 import { BiotaCollectionName } from '~/factory/classes/collection';
 
 // tslint:disable-next-line: variable-name
-export const users__by__auth_account = Index({
-  name: BiotaIndexName('users__by__auth_account'),
+export const users__by__auth_email = Index({
+  name: BiotaIndexName('users__by__auth_email'),
   source: {
     collection: q.Collection(BiotaCollectionName('users')),
   },
   terms: [
     {
-      field: ['data', '_auth', 'accounts', 'provider'],
-    },
-    {
-      field: ['data', '_auth', 'accounts', 'id'],
+      field: ['data', '_auth', 'email'],
     },
   ],
   unique: true,

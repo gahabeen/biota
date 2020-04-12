@@ -3,7 +3,7 @@ import { BiotaFrameworkCollectionScaffoldOptions } from '~/../types/framework/fr
 import { Biota } from '~/biota';
 import { query as q } from 'faunadb';
 import { upsert } from '~/factory/api/fql/base';
-import { roleNameNormalized, Privilege } from '~/factory/classes/role';
+import { BiotaRoleName, Privilege } from '~/factory/classes/role';
 import { execute } from '~/tasks';
 
 export function scaffold(this: Biota, collectionName: string) {
@@ -57,7 +57,7 @@ export function scaffold(this: Biota, collectionName: string) {
       tasks.push({
         name: `Upserting index field (${indexField}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionName).index(indexField, { role: roleNameNormalized('user') });
+          return self.collection(collectionName).index(indexField, { role: BiotaRoleName('user') });
         },
       });
     }
@@ -66,7 +66,7 @@ export function scaffold(this: Biota, collectionName: string) {
       tasks.push({
         name: `Upserting viewable field (${computeField.field}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionName).compute(computeField, { role: roleNameNormalized('user') });
+          return self.collection(collectionName).compute(computeField, { role: BiotaRoleName('user') });
         },
       });
     }
@@ -103,7 +103,7 @@ export function scaffold(this: Biota, collectionName: string) {
     tasks.push({
       name: `Adding collection ${collectionName} to [system] role`,
       async task() {
-        return self.role(roleNameNormalized('system')).privilege.upsert(
+        return self.role(BiotaRoleName('system')).privilege.upsert(
           Privilege({
             resource: q.Collection(collectionName),
             actions: {

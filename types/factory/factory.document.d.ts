@@ -9,6 +9,35 @@ export interface FactoryDocumentValidityApi {
   restore(): Expr;
 }
 
+export type FactoryDocumentMembershipAssignee = (assignee: FaunaRef) => FactoryDocumentMembershipAssigneeApi;
+
+export interface FactoryDocumentMembershipAssigneeApi {
+  distinct(): Expr;
+  difference(): Expr;
+  set(): Expr;
+  remove(): Expr;
+}
+
+export interface FactoryDocumentMembershipOwnerApi {
+  set(idOrRef: string | FaunaRef): Expr;
+  remove(idOrRef: string | FaunaRef): Expr;
+}
+
+export type FactoryDocumentMembershipRole = (roleOrRef: string | FaunaRef) => FactoryDocumentMembershipRoleApi;
+
+export interface FactoryDocumentMembershipRoleApi {
+  distinct(): Expr;
+  difference(): Expr;
+  set(): Expr;
+  remove(): Expr;
+}
+
+export interface FactoryDocumentMembershipApi {
+  role: FactoryDocumentMembershipRole;
+  owner: FactoryDocumentMembershipOwnerApi;
+  assignee: FactoryDocumentMembershipAssignee;
+}
+
 export interface FactoryDocumentApi {
   get(): Expr;
   insert(data: FaunaData): Expr;
@@ -23,4 +52,5 @@ export interface FactoryDocumentApi {
   expireIn(delay: number | Expr): Expr;
   expireNow(): Expr;
   validity: FactoryDocumentValidityApi;
+  membership: FactoryDocumentMembershipApi;
 }

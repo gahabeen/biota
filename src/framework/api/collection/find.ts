@@ -3,13 +3,13 @@ import * as qs from 'querystring';
 import { Fauna, FaunaCollectionOptions, FaunaPaginateMapper, FaunaPaginateOptions } from '~/../types/fauna';
 import { BiotaFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
 import { Biota } from '~/biota';
-import { udfunctionNameNormalized } from '~/factory/classes/udfunction';
+import { BiotaFunctionName } from '~/factory/classes/udfunction';
 import { execute } from '~/tasks';
 import { Identity } from '~/factory/api/ql';
 
 export function parseSearchQuery(collection: string, searchQuery: object) {
   const buildQuery = (sq: Fauna.Expr) => {
-    return q.Call(udfunctionNameNormalized('SearchQuery'), Identity(), q.Collection(collection), sq);
+    return q.Call(BiotaFunctionName('SearchQuery'), Identity(), q.Collection(collection), sq);
   };
 
   // const safe = (x: object) => JSON.parse(JSON.stringify(x));

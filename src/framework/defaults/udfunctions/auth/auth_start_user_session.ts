@@ -1,11 +1,11 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
-import { roleNameNormalized } from '~/factory/classes/role';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
+import { BiotaRoleName } from '~/factory/classes/role';
+import { BiotaCollectionName } from '~/factory/classes/collection';
 import { CallIsPrivateKeyValid } from '~/framework/helpers/call_functions';
 
 export const AuthStartUserSession = UDFunction({
-  name: udfunctionNameNormalized('AuthStartUserSession'),
+  name: BiotaFunctionName('AuthStartUserSession'),
   body: q.Query(
     q.Lambda(
       ['identity', 'private_key', 'user', 'delayInMs'], // 'password',
@@ -23,7 +23,7 @@ export const AuthStartUserSession = UDFunction({
         //   q.Var('valid'),
         q.Let(
           {
-            session: q.Create(q.Collection(collectionNameNormalized('user_sessions')), {
+            session: q.Create(q.Collection(BiotaCollectionName('user_sessions')), {
               data: {
                 _membership: {
                   owner: q.Var('user'),
@@ -44,5 +44,5 @@ export const AuthStartUserSession = UDFunction({
       ),
     ),
   ),
-  role: q.Role(roleNameNormalized('system')),
+  role: q.Role(BiotaRoleName('system')),
 });

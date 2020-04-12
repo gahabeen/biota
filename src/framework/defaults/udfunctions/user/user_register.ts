@@ -1,10 +1,10 @@
 import { query as q } from 'faunadb';
-import { UDFunction, udfunctionNameNormalized } from '~/factory/classes/udfunction';
-import { roleNameNormalized } from '~/factory/classes/role';
+import { UDFunction, BiotaFunctionName } from '~/factory/classes/udfunction';
+import { BiotaRoleName } from '~/factory/classes/role';
 import { user as userFQLUDF } from '~/factory/api/fql/udf/user';
 
 export const UserRegister = UDFunction({
-  name: udfunctionNameNormalized('UserRegister'),
+  name: BiotaFunctionName('UserRegister'),
   body: q.Query(
     q.Lambda(
       ['identity', 'private_key', 'email', 'password', 'data'],
