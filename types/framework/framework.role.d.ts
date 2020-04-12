@@ -1,19 +1,19 @@
 import { FaunaPaginateOptions, FaunaDocumentCredentials, FaunaRoleMembership, FaunaRef, FaunaRolePrivilege } from "../fauna";
 import { Expr } from "faunadb";
 
-export interface DBFrameworkRoleMembershipApi {
+export interface BiotaFrameworkRoleMembershipApi {
   upsert: (membership: FaunaRoleMembership) => Promise<any>;
   repsert: (membership: FaunaRoleMembership) => Promise<any>;
   delete: (resource: FaunaRef) => Promise<any>;
 }
 
-export interface DBFrameworkRolePrivilegeApi {
+export interface BiotaFrameworkRolePrivilegeApi {
   upsert: (privilege: FaunaRolePrivilege) => Promise<any>;
   repsert: (privilege: FaunaRolePrivilege) => Promise<any>;
   delete: (resource: FaunaRef) =>Promise<any>;
 }
 
-export interface DBFrameworkRoleApi {
+export interface BiotaFrameworkRoleApi {
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;
   get: () => Promise<any>;
   insert: (options: object) => Promise<any>;
@@ -23,7 +23,7 @@ export interface DBFrameworkRoleApi {
   upsert: (options: object) => Promise<any>;
   delete: () => Promise<any>;
   forget: () => Promise<any>;
-  membership: DBFrameworkRoleMembershipApi;
-  privilege: DBFrameworkRolePrivilegeApi;
+  membership: BiotaFrameworkRoleMembershipApi;
+  privilege: BiotaFrameworkRolePrivilegeApi;
   changes: () => Promise<any>;
 }

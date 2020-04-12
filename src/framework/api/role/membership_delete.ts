@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId, FaunaRoleMembership, FaunaRef } from '~/../types/fauna';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function membershipDelete(this: DB, roleName: string) {
+export function membershipDelete(this: Biota, roleName: string) {
   const self = this;
 
   return async function membershipDeleteMethod(resource: FaunaRef) {
@@ -17,7 +17,7 @@ export function membershipDelete(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.membership.delete',
+        domain: 'Biota.role.membership.delete',
       },
     );
   };

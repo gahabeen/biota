@@ -1,4 +1,4 @@
-import { DBFrameworkDocumentApi } from '~/../types/framework/framework.document';
+import { BiotaFrameworkDocumentApi } from '~/../types/framework/framework.document';
 import { activity } from '~/framework/api/document/activity';
 import { delete_ } from '~/framework/api/document/delete';
 import { forget } from '~/framework/api/document/forget';
@@ -9,7 +9,7 @@ import { update } from '~/framework/api/document/update';
 import { upsert } from '~/framework/api/document/upsert';
 import { FaunaId } from '~/../types/fauna';
 
-export function document(collectionName: string, id: FaunaId): DBFrameworkDocumentApi {
+export function document(collectionName: string, id: FaunaId): BiotaFrameworkDocumentApi {
   const self = this;
 
   if (!(collectionName && id)) {

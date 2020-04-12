@@ -1,8 +1,8 @@
 import { query as q } from 'faunadb';
 import * as qs from 'querystring';
 import { Fauna, FaunaCollectionOptions, FaunaPaginateMapper, FaunaPaginateOptions } from '~/../types/fauna';
-import { DBFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
+import { BiotaFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { udfunctionNameNormalized } from '~/factory/classes/udfunction';
 import { execute } from '~/tasks';
 import { Identity } from '~/factory/api/ql';
@@ -80,11 +80,11 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
   }
 }
 
-export function find(this: DB, collectionName: string) {
+export function find(this: Biota, collectionName: string) {
   const self = this;
 
   return async function findMethod(
-    searchQuery: DBFrameworkCollectionSearchParams,
+    searchQuery: BiotaFrameworkCollectionSearchParams,
     paginateOptions: FaunaPaginateOptions = {},
     mapper: FaunaPaginateMapper = q.Lambda('x', q.Get(q.Var('x'))),
   ) {
@@ -99,7 +99,7 @@ export function find(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: 'DB.collection.find',
+        domain: 'Biota.collection.find',
       },
     );
   };

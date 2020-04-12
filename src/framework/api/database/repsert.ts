@@ -1,9 +1,9 @@
 import { FaunaDatabaseOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { database } from '~/factory/api/classes/database';
 import { execute } from '~/tasks';
 
-export function repsert(this: DB, databaseName: string) {
+export function repsert(this: Biota, databaseName: string) {
   const self = this;
 
   return async function repsertMethod(options: FaunaDatabaseOptions = {}) {
@@ -17,7 +17,7 @@ export function repsert(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: 'DB.database.repsert',
+        domain: 'Biota.database.repsert',
       },
     );
   };

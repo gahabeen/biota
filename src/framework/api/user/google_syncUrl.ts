@@ -1,11 +1,11 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { google } from '~/framework/api/user/auth/providers/google';
-import { DBFrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
+import { BiotaFrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
 import { query as q } from 'faunadb';
 import { encrypt } from '~/framework/helpers/crypto';
 
-export async function googleSyncUrl(this: DB, options: DBFrameworkAuthConnectUrlOptions): Promise<string> {
+export async function googleSyncUrl(this: Biota, options: BiotaFrameworkAuthConnectUrlOptions): Promise<string> {
   const self = this;
   return execute(
     [
@@ -36,7 +36,7 @@ export async function googleSyncUrl(this: DB, options: DBFrameworkAuthConnectUrl
       },
     ],
     {
-      domain: 'DB.user.google.syncUrl',
+      domain: 'Biota.user.google.syncUrl',
     },
   );
 }

@@ -1,9 +1,9 @@
 import { FaunaId, FaunaDocumentOptions, FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function insert(this: DB, roleName: string) {
+export function insert(this: Biota, roleName: string) {
   const self = this;
 
   return async function insertMethod(options: FaunaRoleOptions = {}) {
@@ -17,7 +17,7 @@ export function insert(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.insert',
+        domain: 'Biota.role.insert',
       },
     );
   };

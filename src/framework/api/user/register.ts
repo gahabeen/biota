@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { user as userCALL } from '~/factory/api/call/user';
 import { execute } from '~/tasks';
 
-export async function register(this: DB, email: string, password: string, data: object = {}) {
+export async function register(this: Biota, email: string, password: string, data: object = {}) {
   const self = this;
   return execute(
     [
@@ -11,14 +11,14 @@ export async function register(this: DB, email: string, password: string, data: 
         task() {
           return self.query(userCALL.register.call(self, email, password, data)).then((res) => {
             let { secret } = res;
-            if (secret) return new DB({ secret });
+            if (secret) return new Biota({ secret });
             else return self;
           });
         },
       },
     ],
     {
-      domain: 'DB.user.register',
+      domain: 'Biota.user.register',
     },
   );
 }

@@ -1,4 +1,4 @@
-import { DBFrameworkRoleApi } from '~/../types/framework/framework.role';
+import { BiotaFrameworkRoleApi } from '~/../types/framework/framework.role';
 import { activity } from '~/framework/api/role/activity';
 import { delete_ } from '~/framework/api/role/delete';
 import { forget } from '~/framework/api/role/forget';
@@ -15,7 +15,7 @@ import { privilegeUpsert } from '~/framework/api/role/privilege_upsert';
 import { privilegeRepsert } from '~/framework/api/role/privilege_repsert';
 import { privilegeDelete } from '~/framework/api/role/privilege_delete';
 
-export function role(roleName: string): DBFrameworkRoleApi {
+export function role(roleName: string): BiotaFrameworkRoleApi {
   const self = this;
 
   if (!roleName) {

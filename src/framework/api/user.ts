@@ -1,4 +1,4 @@
-import { DBFrameworkUserApi } from '~/../types/framework/framework.user';
+import { BiotaFrameworkUserApi } from '~/../types/framework/framework.user';
 import { changePassword } from '~/framework/api/user/changePassword';
 import { googleLoginUrl } from '~/framework/api/user/google_loginUrl';
 import { googleRegisterUrl } from '~/framework/api/user/google_registerUrl';
@@ -24,7 +24,7 @@ import { delete_ } from '~/framework/api/user/delete';
 import { forget } from '~/framework/api/user/forget';
 import { activity } from '~/framework/api/user/activity';
 
-export const user: DBFrameworkUserApi = {
+export const user: BiotaFrameworkUserApi = {
   me,
   login,
   loginWithAuthAccount,

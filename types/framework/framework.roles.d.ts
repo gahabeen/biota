@@ -1,3 +1,3 @@
-export interface DBFrameworkRolesApi {
+export interface BiotaFrameworkRolesApi {
   cleanAll: () => Promise<any>;
 }

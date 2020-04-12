@@ -1,13 +1,13 @@
-import { DBFrameworkAuthAuthenticateOptions, DBFrameworkUserAuthProviderDataApi } from '~/../types/framework/framework.user';
-import { DB } from '~/db';
+import { BiotaFrameworkAuthAuthenticateOptions, BiotaFrameworkUserAuthProviderDataApi } from '~/../types/framework/framework.user';
+import { Biota } from '~/biota';
 import { google } from '~/framework/api/user/auth/providers/google';
 import { execute } from '~/tasks';
 import { parseOpenIDUserInfo } from './auth/openid';
 
 export async function googleAuthenticate(
-  this: DB,
-  options: DBFrameworkAuthAuthenticateOptions,
-  data?: DBFrameworkUserAuthProviderDataApi,
+  this: Biota,
+  options: BiotaFrameworkAuthAuthenticateOptions,
+  data?: BiotaFrameworkUserAuthProviderDataApi,
 ): Promise<any> {
   const self = this;
   return execute(
@@ -34,14 +34,14 @@ export async function googleAuthenticate(
             //   // }
             // }
 
-            //   // const asUser = new DB({ secret });
+            //   // const asUser = new Biota({ secret });
             //   let tokenInfo = await google.tokenInfo({ access_token });
           }
         },
       },
     ],
     {
-      domain: 'DB.user.google.googleAuthenticate',
+      domain: 'Biota.user.google.googleAuthenticate',
     },
   );
 }

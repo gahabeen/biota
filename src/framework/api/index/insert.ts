@@ -1,9 +1,9 @@
 import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { index } from '~/factory/api/classes/index';
 import { execute } from '~/tasks';
 
-export function insert(this: DB, indexName: string) {
+export function insert(this: Biota, indexName: string) {
   const self = this;
 
   return async function insertMethod(options: FaunaIndexOptions) {
@@ -17,7 +17,7 @@ export function insert(this: DB, indexName: string) {
         },
       ],
       {
-        domain: 'DB.index.insert',
+        domain: 'Biota.index.insert',
       },
     );
   };

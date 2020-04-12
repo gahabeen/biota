@@ -1,9 +1,9 @@
 import { FaunaId, FaunaDocumentOptions, FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { udfunction } from '~/factory/api/classes/udfunction';
 import { execute } from '~/tasks';
 
-export function insert(this: DB, udfunctionName: string) {
+export function insert(this: Biota, udfunctionName: string) {
   const self = this;
 
   return async function insertMethod(options: FaunaRoleOptions = {}) {
@@ -17,7 +17,7 @@ export function insert(this: DB, udfunctionName: string) {
         },
       ],
       {
-        domain: 'DB.udfunction.insert',
+        domain: 'Biota.udfunction.insert',
       },
     );
   };

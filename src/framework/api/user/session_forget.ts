@@ -1,10 +1,10 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 import { document } from '~/factory/api/classes/document';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 
-export async function forget(this: DB) {
+export async function forget(this: Biota) {
   const self = this;
   return execute(
     [
@@ -16,7 +16,7 @@ export async function forget(this: DB) {
       },
     ],
     {
-      domain: 'DB.user.session.forget',
+      domain: 'Biota.user.session.forget',
     },
   );
 }

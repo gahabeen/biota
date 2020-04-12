@@ -3,7 +3,7 @@ import { DocumentAuthAccount } from 'types/document';
 
 // see https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
 
-export interface DBFrameworkAuthConnectUrlOptions {
+export interface BiotaFrameworkAuthConnectUrlOptions {
   client_id: string;
   redirect_uri?: string;
   access_type?: string;
@@ -13,11 +13,11 @@ export interface DBFrameworkAuthConnectUrlOptions {
   state?: any;
 }
 
-export interface DBFrameworkAuthGithubConnectResponse {
+export interface BiotaFrameworkAuthGithubConnectResponse {
   code: string;
 }
 
-export interface DBFrameworkAuthAuthenticateOptions {
+export interface BiotaFrameworkAuthAuthenticateOptions {
   client_id: string;
   client_secret: string;
   code: string;
@@ -25,43 +25,43 @@ export interface DBFrameworkAuthAuthenticateOptions {
   grant_type?: string;
 }
 
-export interface DBFrameworkAuthAuthenticateResponse {
+export interface BiotaFrameworkAuthAuthenticateResponse {
   access_token: string;
   state: string;
 }
 
-export interface DBFrameworkAuthTokenInfoOptions {
+export interface BiotaFrameworkAuthTokenInfoOptions {
   access_token: string;
 }
 
-export interface DBFrameworkAuthUserInfoOptions {
+export interface BiotaFrameworkAuthUserInfoOptions {
   access_token: string;
 }
 
-export interface DBFrameworkAuthGetIdOptions {
+export interface BiotaFrameworkAuthGetIdOptions {
   access_token: string;
 }
 
-export interface DBFrameworkUserAuthProviderDataStateApi {
+export interface BiotaFrameworkUserAuthProviderDataStateApi {
   scenario?: string;
   key?: string;
   iv?: string;
   [field: string]: any;
 }
 
-export interface DBFrameworkUserAuthProviderDataApi {
-  state?: DBFrameworkUserAuthProviderDataStateApi;
+export interface BiotaFrameworkUserAuthProviderDataApi {
+  state?: BiotaFrameworkUserAuthProviderDataStateApi;
 }
 
-export interface DBFrameworkUserAuthProviderApi {
-  loginUrl(options: DBFrameworkAuthConnectUrlOptions): Promise<string>;
-  registerUrl(options: DBFrameworkAuthConnectUrlOptions): Promise<string>;
-  syncUrl(options: DBFrameworkAuthConnectUrlOptions): Promise<string>;
-  authenticate(options: DBFrameworkAuthAuthenticateOptions, data?: DBFrameworkUserAuthProviderDataApi): Promise<any>;
+export interface BiotaFrameworkUserAuthProviderApi {
+  loginUrl(options: BiotaFrameworkAuthConnectUrlOptions): Promise<string>;
+  registerUrl(options: BiotaFrameworkAuthConnectUrlOptions): Promise<string>;
+  syncUrl(options: BiotaFrameworkAuthConnectUrlOptions): Promise<string>;
+  authenticate(options: BiotaFrameworkAuthAuthenticateOptions, data?: BiotaFrameworkUserAuthProviderDataApi): Promise<any>;
   // unsync(): Promise<any>;
 }
 
-export interface DBFrameworkUserSessionApi {
+export interface BiotaFrameworkUserSessionApi {
   get(): Promise<any>;
   expireNow(): Promise<any>;
   expireIn(delayInMs: number): Promise<any>;
@@ -72,7 +72,7 @@ export interface DBFrameworkUserSessionApi {
   forget(): Promise<any>;
 }
 
-export interface DBFrameworkUserApi {
+export interface BiotaFrameworkUserApi {
   me(): Promise<any>;
   login(email: string, password: string): Promise<any>;
   loginWithAuthAccount(account: DocumentAuthAccount): Promise<any>;
@@ -88,7 +88,7 @@ export interface DBFrameworkUserApi {
 
   activity(pagination?: FaunaPaginateOptions): Promise<any>;
 
-  session: DBFrameworkUserSessionApi;
-  google: DBFrameworkUserAuthProviderApi;
-  github?: DBFrameworkUserAuthProviderApi;
+  session: BiotaFrameworkUserSessionApi;
+  google: BiotaFrameworkUserAuthProviderApi;
+  github?: BiotaFrameworkUserAuthProviderApi;
 }

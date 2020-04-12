@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId, FaunaRoleMembership, FaunaRef } from '~/../types/fauna';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function privilegeDelete(this: DB, roleName: string) {
+export function privilegeDelete(this: Biota, roleName: string) {
   const self = this;
 
   return async function privilegeDeleteMethod(resource: FaunaRef) {
@@ -17,7 +17,7 @@ export function privilegeDelete(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.privilege.delete',
+        domain: 'Biota.role.privilege.delete',
       },
     );
   };

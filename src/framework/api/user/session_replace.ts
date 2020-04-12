@@ -1,10 +1,10 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 import { document } from '~/factory/api/classes/document';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 
-export async function replace(this: DB, data = {}) {
+export async function replace(this: Biota, data = {}) {
   const self = this;
   return execute(
     [
@@ -16,7 +16,7 @@ export async function replace(this: DB, data = {}) {
       },
     ],
     {
-      domain: 'DB.user.session.replace',
+      domain: 'Biota.user.session.replace',
     },
   );
 }

@@ -1,9 +1,9 @@
 import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { collection } from '~/factory/api/classes/collection';
 import { execute } from '~/tasks';
 
-export function clean(this: DB, collectionName: string) {
+export function clean(this: Biota, collectionName: string) {
   const self = this;
 
   return async function cleanMethod() {
@@ -17,7 +17,7 @@ export function clean(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: 'DB.collection.clean',
+        domain: 'Biota.collection.clean',
       },
     );
   };

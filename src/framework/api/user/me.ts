@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { q } from '~/index';
 import { Identity } from '~/factory/api/ql';
 
-export async function me(this: DB) {
+export async function me(this: Biota) {
   const self = this;
   return execute(
     [
@@ -15,7 +15,7 @@ export async function me(this: DB) {
       },
     ],
     {
-      domain: 'DB.user.me',
+      domain: 'Biota.user.me',
     },
   );
 }

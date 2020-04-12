@@ -1,4 +1,4 @@
-import { DBFrameworkUDFunctionApi } from '~/../types/framework/framework.udfunction';
+import { BiotaFrameworkUDFunctionApi } from '~/../types/framework/framework.udfunction';
 import { activity } from '~/framework/api/udfunction/activity';
 import { delete_ } from '~/framework/api/udfunction/delete';
 import { forget } from '~/framework/api/udfunction/forget';
@@ -9,7 +9,7 @@ import { update } from '~/framework/api/udfunction/update';
 import { upsert } from '~/framework/api/udfunction/upsert';
 import { FaunaId } from '~/../types/fauna';
 
-export function udfunction(collectionName: string): DBFrameworkUDFunctionApi {
+export function udfunction(collectionName: string): BiotaFrameworkUDFunctionApi {
   const self = this;
 
   if (!collectionName) {

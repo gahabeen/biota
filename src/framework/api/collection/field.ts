@@ -1,14 +1,14 @@
 import { query as q } from 'faunadb';
 import { FaunaCollectionOptions, FaunaIndexOptions, FaunaIndexTerm, FaunaIndexValue } from '~/../types/fauna';
-import { DBFrameworkCollectionFieldOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
+import { BiotaFrameworkCollectionFieldOptions } from '~/../types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { upsert } from '~/factory/api/fql/base/upsert';
 import { Index, indexNameNormalized, NGramOnField } from '~/factory/classes/index';
 import * as helpers from '~/helpers';
 import { execute } from '~/tasks';
 
-export function fieldDefinition(field: string | DBFrameworkCollectionFieldOptions) {
-  let definition: DBFrameworkCollectionFieldOptions = {
+export function fieldDefinition(field: string | BiotaFrameworkCollectionFieldOptions) {
+  let definition: BiotaFrameworkCollectionFieldOptions = {
     inputs: [],
     outputs: [],
     // if one field
@@ -37,11 +37,11 @@ export function fieldDefinition(field: string | DBFrameworkCollectionFieldOption
   return definition;
 }
 
-export function field(this: DB, collectionName: string) {
+export function field(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function fieldMethod(field: string | DBFrameworkCollectionFieldOptions) {
-    let definition: DBFrameworkCollectionFieldOptions = fieldDefinition(field);
+  return async function fieldMethod(field: string | BiotaFrameworkCollectionFieldOptions) {
+    let definition: BiotaFrameworkCollectionFieldOptions = fieldDefinition(field);
 
     let index: FaunaIndexOptions = Index({
       source: {
@@ -230,7 +230,7 @@ export function field(this: DB, collectionName: string) {
     // console.log("definition", definition);
 
     return execute(tasks, {
-      domain: 'DB.collection.field',
+      domain: 'Biota.collection.field',
       singleResult: false,
     });
   };

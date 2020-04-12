@@ -1,4 +1,4 @@
-import { DB as Biota } from './db';
+import { Biota as Biota } from './biota';
 import { query as BiotaQ } from 'faunadb';
 import * as BiotaFactory from '~/factory';
 import { Page as BiotaPage } from './page';

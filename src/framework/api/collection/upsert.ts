@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
 import { document } from '~/factory/api/classes/document';
 import { execute } from '~/tasks';
 
-export function upsert(this: DB, collectionName: string) {
+export function upsert(this: Biota, collectionName: string) {
   const self = this;
 
   return async function upsertMethod(id: FaunaId, data: object) {
@@ -17,7 +17,7 @@ export function upsert(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: 'DB.collection.upsert',
+        domain: 'Biota.collection.upsert',
       },
     );
   };

@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
 import { document } from '~/factory/api/classes/document';
 import { execute } from '~/tasks';
 
-export function get(this: DB, collectionName: string) {
+export function get(this: Biota, collectionName: string) {
   const self = this;
 
   return async function getMethod(id: FaunaId) {
@@ -17,7 +17,7 @@ export function get(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: 'DB.collection.get',
+        domain: 'Biota.collection.get',
       },
     );
   };

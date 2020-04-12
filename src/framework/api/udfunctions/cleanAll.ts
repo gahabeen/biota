@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { udfunction } from '~/factory/api/classes/udfunction';
 import { execute } from '~/tasks';
 
-export function cleanAll(this: DB) {
+export function cleanAll(this: Biota) {
   const self = this;
   return execute(
     [
@@ -14,7 +14,7 @@ export function cleanAll(this: DB) {
       },
     ],
     {
-      domain: 'DB.udfunctions.cleanAll',
+      domain: 'Biota.udfunctions.cleanAll',
     },
   );
 }

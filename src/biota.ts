@@ -1,27 +1,27 @@
 import * as fauna from 'faunadb';
 import { Fauna, FaunaId } from '~/../types/fauna';
 import * as framework from '~/framework';
-import { DBFrameworkCollectionApi, DBFrameworkFoundation, DBFrameworkRelation } from '../types/framework/framework.collection';
-import { DBFrameworkCollectionsApi } from '../types/framework/framework.collections';
-import { DBFrameworkDatabaseApi } from '../types/framework/framework.database';
-import { DBFrameworkDatabasesApi } from '../types/framework/framework.databases';
-import { DBFrameworkDocumentApi } from '../types/framework/framework.document';
-import { DBFrameworkIndexApi } from '../types/framework/framework.index';
-import { DBFrameworkIndexesApi } from '../types/framework/framework.indexes';
-import { DBFrameworkRoleApi } from '../types/framework/framework.role';
-import { DBFrameworkRolesApi } from '../types/framework/framework.roles';
-import { DBFrameworkUDFunctionApi } from '../types/framework/framework.udfunction';
-import { DBFrameworkUDFunctionsApi } from '../types/framework/framework.udfunctions';
-import { DBFrameworkUserApi } from '../types/framework/framework.user';
+import { BiotaFrameworkCollectionApi, BiotaFrameworkFoundation, BiotaFrameworkRelation } from '../types/framework/framework.collection';
+import { BiotaFrameworkCollectionsApi } from '../types/framework/framework.collections';
+import { BiotaFrameworkDatabaseApi } from '../types/framework/framework.database';
+import { BiotaFrameworkDatabasesApi } from '../types/framework/framework.databases';
+import { BiotaFrameworkDocumentApi } from '../types/framework/framework.document';
+import { BiotaFrameworkIndexApi } from '../types/framework/framework.index';
+import { BiotaFrameworkIndexesApi } from '../types/framework/framework.indexes';
+import { BiotaFrameworkRoleApi } from '../types/framework/framework.role';
+import { BiotaFrameworkRolesApi } from '../types/framework/framework.roles';
+import { BiotaFrameworkUDFunctionApi } from '../types/framework/framework.udfunction';
+import { BiotaFrameworkUDFunctionsApi } from '../types/framework/framework.udfunctions';
+import { BiotaFrameworkUserApi } from '../types/framework/framework.user';
 import { bindSubFunctions } from './helpers';
 
-interface DBOptions {
+interface BiotaOptions {
   secret: string;
   debug?: boolean;
   private_key?: string;
 }
 
-export class DB {
+export class Biota {
   client: Fauna.Client;
   private_key: string;
   secret: string;
@@ -29,27 +29,27 @@ export class DB {
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
-  document?: (collectionName: string, id: FaunaId) => DBFrameworkDocumentApi;
-  user?: DBFrameworkUserApi;
-  collection?: (name: string) => DBFrameworkCollectionApi;
-  collections?: DBFrameworkCollectionsApi;
-  index?: (name: string) => DBFrameworkIndexApi;
-  indexes?: DBFrameworkIndexesApi;
-  role?: (name: string) => DBFrameworkRoleApi;
-  roles?: DBFrameworkRolesApi;
-  database?: (name: string) => DBFrameworkDatabaseApi;
-  databases?: DBFrameworkDatabasesApi;
-  udfunction?: (name: string) => DBFrameworkUDFunctionApi;
-  udfunctions?: DBFrameworkUDFunctionsApi;
+  document?: (collectionName: string, id: FaunaId) => BiotaFrameworkDocumentApi;
+  user?: BiotaFrameworkUserApi;
+  collection?: (name: string) => BiotaFrameworkCollectionApi;
+  collections?: BiotaFrameworkCollectionsApi;
+  index?: (name: string) => BiotaFrameworkIndexApi;
+  indexes?: BiotaFrameworkIndexesApi;
+  role?: (name: string) => BiotaFrameworkRoleApi;
+  roles?: BiotaFrameworkRolesApi;
+  database?: (name: string) => BiotaFrameworkDatabaseApi;
+  databases?: BiotaFrameworkDatabasesApi;
+  udfunction?: (name: string) => BiotaFrameworkUDFunctionApi;
+  udfunctions?: BiotaFrameworkUDFunctionsApi;
 
-  foundation: DBFrameworkFoundation;
-  relation: DBFrameworkRelation;
+  foundation: BiotaFrameworkFoundation;
+  relation: BiotaFrameworkRelation;
 
   defaults: any;
 
   privateKey: (private_key: string) => Promise<any>;
 
-  constructor(options: DBOptions) {
+  constructor(options: BiotaOptions) {
     let { secret, debug, private_key } = options || {};
 
     this.secret = secret;

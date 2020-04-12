@@ -1,9 +1,9 @@
 import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { index } from '~/factory/api/classes/index';
 import { execute } from '~/tasks';
 
-export function delete_(this: DB, indexName: string) {
+export function delete_(this: Biota, indexName: string) {
   const self = this;
 
   return async function deleteMethod() {
@@ -17,7 +17,7 @@ export function delete_(this: DB, indexName: string) {
         },
       ],
       {
-        domain: 'DB.index.delete',
+        domain: 'Biota.index.delete',
       },
     );
   };

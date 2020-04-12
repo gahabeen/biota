@@ -1,4 +1,23 @@
 export * as ql from './api/ql';
-export * from './api/classes';
-export * as fql from './api/fql';
-export * as udf from './api/call';
+export * as foundation from './api/foundation';
+
+export * from './api/action';
+export * from './api/collection';
+export * from './api/collections';
+export * from './api/credential';
+export * from './api/credentials';
+export * from './api/database';
+export * from './api/databases';
+export * from './api/document';
+export * from './api/index';
+export * from './api/indexes';
+export * from './api/key';
+export * from './api/keys';
+export * from './api/role';
+export * from './api/roles';
+export * from './api/token';
+export * from './api/tokens';
+export * from './api/udfunction';
+export * from './api/udfunctions';
+export * from './api/user';
+export * from './api/userSession';

@@ -1,6 +1,6 @@
 import { FaunaIndexOptions } from "../fauna";
 
-export interface DBFrameworkIndexApi {
+export interface BiotaFrameworkIndexApi {
   get: () => Promise<any>;
   insert: (options?: FaunaIndexOptions) => Promise<any>;
   replace: (options?: FaunaIndexOptions) => Promise<any>;

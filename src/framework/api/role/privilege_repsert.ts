@@ -1,9 +1,9 @@
 import { FaunaRolePrivilege } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function privilegeRepsert(this: DB, roleName: string) {
+export function privilegeRepsert(this: Biota, roleName: string) {
   const self = this;
 
   return async function privilegeRepsertMethod(privilege: FaunaRolePrivilege = {}) {
@@ -17,7 +17,7 @@ export function privilegeRepsert(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.privilege.repsert',
+        domain: 'Biota.role.privilege.repsert',
       },
     );
   };

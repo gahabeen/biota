@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { database } from '~/factory/api/classes/database';
 import { execute } from '~/tasks';
 
-export function clean(this: DB, databaseName: string) {
+export function clean(this: Biota, databaseName: string) {
   const self = this;
 
   return async function cleanMethod() {
@@ -16,7 +16,7 @@ export function clean(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: 'DB.database.clean',
+        domain: 'Biota.database.clean',
       },
     );
   };

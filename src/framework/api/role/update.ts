@@ -1,9 +1,9 @@
 import { FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function update(this: DB, roleName: string) {
+export function update(this: Biota, roleName: string) {
   const self = this;
 
   return async function updateMethod(options: FaunaRoleOptions = {}) {
@@ -17,7 +17,7 @@ export function update(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.update',
+        domain: 'Biota.role.update',
       },
     );
   };

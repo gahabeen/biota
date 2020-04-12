@@ -1,9 +1,9 @@
 import { FaunaPaginateOptions, FaunaPaginateMapper } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 
-export function findAll(this: DB, collectionName: string) {
+export function findAll(this: Biota, collectionName: string) {
   const self = this;
 
   return async function findAllMethod(pagination: FaunaPaginateOptions = {}, mapper: FaunaPaginateMapper = (x) => q.Get(x)) {
@@ -17,7 +17,7 @@ export function findAll(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: 'DB.collection.findAll',
+        domain: 'Biota.collection.findAll',
       },
     );
   };

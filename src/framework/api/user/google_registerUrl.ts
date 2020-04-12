@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { google } from '~/framework/api/user/auth/providers/google';
-import { DBFrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
+import { BiotaFrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
 
-export async function googleRegisterUrl(this: DB, options: DBFrameworkAuthConnectUrlOptions): Promise<string> {
+export async function googleRegisterUrl(this: Biota, options: BiotaFrameworkAuthConnectUrlOptions): Promise<string> {
   const self = this;
   return execute(
     [
@@ -23,7 +23,7 @@ export async function googleRegisterUrl(this: DB, options: DBFrameworkAuthConnec
       },
     ],
     {
-      domain: 'DB.user.google.registerUrl',
+      domain: 'Biota.user.google.registerUrl',
     },
   );
 }

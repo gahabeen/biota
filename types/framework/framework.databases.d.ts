@@ -1,3 +1,3 @@
-export interface DBFrameworkDatabasesApi {
+export interface BiotaFrameworkDatabasesApi {
   cleanAll: () => Promise<any>;
 }

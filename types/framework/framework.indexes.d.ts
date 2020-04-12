@@ -1,3 +1,3 @@
-export interface DBFrameworkIndexesApi {
+export interface BiotaFrameworkIndexesApi {
   cleanAll: () => Promise<any>;
 }

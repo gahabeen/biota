@@ -1,9 +1,9 @@
 import { FaunaRoleMembership } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function membershipRepsert(this: DB, roleName: string) {
+export function membershipRepsert(this: Biota, roleName: string) {
   const self = this;
 
   return async function membershipRepsertMethod(membership: FaunaRoleMembership = {}) {
@@ -17,7 +17,7 @@ export function membershipRepsert(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.membership.repsert',
+        domain: 'Biota.role.membership.repsert',
       },
     );
   };

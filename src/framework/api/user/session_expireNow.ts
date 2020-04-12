@@ -1,10 +1,10 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 import { document } from '~/factory/api/classes/document';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 
-export async function expireNow(this: DB) {
+export async function expireNow(this: Biota) {
   const self = this;
   return execute(
     [
@@ -16,7 +16,7 @@ export async function expireNow(this: DB) {
       },
     ],
     {
-      domain: 'DB.user.session.expireNow',
+      domain: 'Biota.user.session.expireNow',
     },
   );
 }

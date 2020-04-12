@@ -9,18 +9,18 @@ import {
   FaunaIndexTerm,
 } from "../fauna";
 
-export interface DBFrameworkCollectionApi {
+export interface BiotaFrameworkCollectionApi {
   // builder
-  scaffold: (collectionDefinition: FaunaCollectionOptions, options?: DBFrameworkCollectionScaffoldOptions) => Promise<any>;
-  field: (field: string | DBFrameworkCollectionFieldOptions) => Promise<any>;
-  index: (field: string | DBFrameworkCollectionFieldOptions, options?: DBFrameworkIndexOptions) => Promise<any>;
-  compute: (field: DBFrameworkCollectionFieldOptions, options?: DBFrameworkIndexOptions) => Promise<any>;
+  scaffold: (collectionDefinition: FaunaCollectionOptions, options?: BiotaFrameworkCollectionScaffoldOptions) => Promise<any>;
+  field: (field: string | BiotaFrameworkCollectionFieldOptions) => Promise<any>;
+  index: (field: string | BiotaFrameworkCollectionFieldOptions, options?: BiotaFrameworkIndexOptions) => Promise<any>;
+  compute: (field: BiotaFrameworkCollectionFieldOptions, options?: BiotaFrameworkIndexOptions) => Promise<any>;
 
   // custom crud
-  find: (searchQuery?: DBFrameworkCollectionSearchParams, pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper) => Promise<any>;
+  find: (searchQuery?: BiotaFrameworkCollectionSearchParams, pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper) => Promise<any>;
   findAll(pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper): Promise<any>;
   paginate: (
-    searchTerms?: DBFrameworkCollectionSearchParams,
+    searchTerms?: BiotaFrameworkCollectionSearchParams,
     pagination?: FaunaPaginateOptions,
     mapper?: FaunaPaginateMapper
   ) => AsyncGenerator<any, any, any>;
@@ -29,8 +29,8 @@ export interface DBFrameworkCollectionApi {
   // basic crud
   get: (id: FaunaId) => Promise<any>;
   // #bug recreate the options type!
-  insert: (data: object) => Promise<any>; // options?: DBFactoryCollectionCreationOptions
-  insertBatch: (data: object[], options: DBFrameworkCollectionInsertBatchOptions) => Promise<any>;
+  insert: (data: object) => Promise<any>; // options?: BiotaFactoryCollectionCreationOptions
+  insertBatch: (data: object[], options: BiotaFrameworkCollectionInsertBatchOptions) => Promise<any>;
   replace: (id: FaunaId, data: object) => Promise<any>;
   update: (id: FaunaId, data: object) => Promise<any>;
   repsert: (id: FaunaId, data: object) => Promise<any>;
@@ -42,32 +42,32 @@ export interface DBFrameworkCollectionApi {
   changes: () => Promise<any>;
 }
 
-export type DBFrameworkRelationPartRelation = "many" | "one";
+export type BiotaFrameworkRelationPartRelation = "many" | "one";
 
-export interface DBFrameworkIndexOptions {
+export interface BiotaFrameworkIndexOptions {
   role?: string | string[];
   roles?: string[];
   maxLength?: number;
 }
 
-export interface DBFrameworkDocument {
+export interface BiotaFrameworkDocument {
   get: () => Promise<any>;
   view: (field: string | string[]) => Promise<any>;
 }
 
-export interface DBFrameworkCollectionScaffoldOptions {
+export interface BiotaFrameworkCollectionScaffoldOptions {
   searchable?: string[];
-  viewable?: DBFrameworkCollectionValueOptions[];
-  fields?: DBFrameworkCollectionFieldOptions[];
+  viewable?: BiotaFrameworkCollectionValueOptions[];
+  fields?: BiotaFrameworkCollectionFieldOptions[];
   roles?: string[];
 }
 
-export interface DBFrameworkCollectionInsertBatchOptions {
+export interface BiotaFrameworkCollectionInsertBatchOptions {
   batchSize?: number;
   keepId?: boolean;
 }
 
-export interface DBFrameworkCollectionValueOptions {
+export interface BiotaFrameworkCollectionValueOptions {
   field?: string;
   binding?: Fauna.Expr;
   values?: FaunaIndexValue[];
@@ -76,7 +76,7 @@ export interface DBFrameworkCollectionValueOptions {
   data?: any;
 }
 
-export interface DBFrameworkCollectionFieldOptions {
+export interface BiotaFrameworkCollectionFieldOptions {
   name?: string;
   field?: string;
   values?: FaunaIndexValue[];
@@ -92,46 +92,46 @@ export interface DBFrameworkCollectionFieldOptions {
   data?: any;
 }
 
-export interface DBFrameworkCollectionSearchParams {
+export interface BiotaFrameworkCollectionSearchParams {
   [path: string]: any;
 }
 
-export interface DBFrameworkFoundation {}
+export interface BiotaFrameworkFoundation {}
 
-export interface DBFrameworkRelationDefinition {
+export interface BiotaFrameworkRelationDefinition {
   name: string;
-  parts: DBFrameworkRelationPart[];
+  parts: BiotaFrameworkRelationPart[];
   destructive?: boolean;
 }
 
-export interface DBFrameworkRelationPart {
-  relation: DBFrameworkRelationPartRelation;
+export interface BiotaFrameworkRelationPart {
+  relation: BiotaFrameworkRelationPartRelation;
   collection: string;
   path: string;
 }
 
-export interface DBFrameworkRelation {}
+export interface BiotaFrameworkRelation {}
 
-export type DBFrameworkCollectionFieldOptionsAction = "compute" | "index";
+export type BiotaFrameworkCollectionFieldOptionsAction = "compute" | "index";
 
-export interface DBFrameworkIndexOptions {
+export interface BiotaFrameworkIndexOptions {
   role?: string | string[];
   roles?: string[];
   maxLength?: number;
 }
 
-export interface DBFrameworkDocument {
+export interface BiotaFrameworkDocument {
   get: () => Promise<any>;
   view: (field: string | string[]) => Promise<any>;
 }
 
-export interface DBFrameworkCollectionScaffoldOptions {
-  index?: (string | DBFrameworkCollectionFieldOptions)[];
-  compute?: DBFrameworkCollectionFieldOptions[];
-  field?: DBFrameworkCollectionFieldOptions[];
+export interface BiotaFrameworkCollectionScaffoldOptions {
+  index?: (string | BiotaFrameworkCollectionFieldOptions)[];
+  compute?: BiotaFrameworkCollectionFieldOptions[];
+  field?: BiotaFrameworkCollectionFieldOptions[];
 }
 
-export interface DBFrameworkCollectionFieldOptions {
+export interface BiotaFrameworkCollectionFieldOptions {
   field?: string;
   binding?: Fauna.Expr;
   inputs?: string[] | FaunaIndexTerm[];
@@ -139,7 +139,7 @@ export interface DBFrameworkCollectionFieldOptions {
 
   name?: string;
   // view
-  action?: DBFrameworkCollectionFieldOptionsAction;
+  action?: BiotaFrameworkCollectionFieldOptionsAction;
   // search
   ngram?: boolean;
   ngramMin?: number;
@@ -153,18 +153,18 @@ export interface DBFrameworkCollectionFieldOptions {
   data?: any;
 }
 
-export interface DBFrameworkFoundation {}
+export interface BiotaFrameworkFoundation {}
 
-export interface DBFrameworkRelationDefinition {
+export interface BiotaFrameworkRelationDefinition {
   name: string;
-  parts: DBFrameworkRelationPart[];
+  parts: BiotaFrameworkRelationPart[];
   destructive?: boolean;
 }
 
-export interface DBFrameworkRelationPart {
-  relation: DBFrameworkRelationPartRelation;
+export interface BiotaFrameworkRelationPart {
+  relation: BiotaFrameworkRelationPartRelation;
   collection: string;
   path: string;
 }
 
-export interface DBFrameworkRelation {}
+export interface BiotaFrameworkRelation {}

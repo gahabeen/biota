@@ -1,13 +1,13 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from '~/../types/fauna';
 import { execute } from '~/tasks';
-import { DBFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
+import { BiotaFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
 
-export function paginate(this: DB, collectionName: string) {
+export function paginate(this: Biota, collectionName: string) {
   const self = this;
 
   return async function* paginateMethod(
-    searchQuery: DBFrameworkCollectionSearchParams,
+    searchQuery: BiotaFrameworkCollectionSearchParams,
     paginateOptions: FaunaPaginateOptions = {},
     mapper: FaunaPaginateMapper,
   ) {
@@ -36,7 +36,7 @@ export function paginate(this: DB, collectionName: string) {
           },
         ],
         {
-          domain: 'DB.collection.paginate',
+          domain: 'Biota.collection.paginate',
         },
       );
     }

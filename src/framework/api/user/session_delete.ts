@@ -1,10 +1,10 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 import { document } from '~/factory/api/classes/document';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 
-export async function delete_(this: DB) {
+export async function delete_(this: Biota) {
   const self = this;
   return execute(
     [
@@ -16,7 +16,7 @@ export async function delete_(this: DB) {
       },
     ],
     {
-      domain: 'DB.user.session.delete',
+      domain: 'Biota.user.session.delete',
     },
   );
 }

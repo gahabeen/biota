@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function clean(this: DB, roleName: string) {
+export function clean(this: Biota, roleName: string) {
   const self = this;
 
   return async function cleanMethod() {
@@ -16,7 +16,7 @@ export function clean(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.clean',
+        domain: 'Biota.role.clean',
       },
     );
   };

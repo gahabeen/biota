@@ -1,11 +1,11 @@
 import { query as q } from 'faunadb';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { document } from '~/factory/api/classes/document';
 import { Identity } from '~/factory/api/ql';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 import { execute } from '~/tasks';
 
-export function update(this: DB, data: object) {
+export function update(this: Biota, data: object) {
   const self = this;
   return execute(
     [
@@ -17,7 +17,7 @@ export function update(this: DB, data: object) {
       },
     ],
     {
-      domain: 'DB.user.update',
+      domain: 'Biota.user.update',
     },
   );
 }

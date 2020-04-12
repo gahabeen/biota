@@ -1,20 +1,20 @@
-import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
+import { BiotaFrameworkCollectionFieldOptions, BiotaFrameworkIndexOptions } from '~/../types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { role as roleFactory } from '~/factory/api/classes';
 import { execute } from '~/tasks';
 import { q } from '~/index';
 import { delay } from '~/helpers/delay';
 
-export function index(this: DB, collectionName: string) {
+export function index(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function indexMethod(field: string | DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
+  return async function indexMethod(field: string | BiotaFrameworkCollectionFieldOptions, options: BiotaFrameworkIndexOptions = {}) {
     let { role, roles, maxLength } = options;
     let roleList = role || roles;
     if (!Array.isArray(roleList)) roleList = [role as string];
     let tasks = [];
 
-    let definition: DBFrameworkCollectionFieldOptions = {
+    let definition: BiotaFrameworkCollectionFieldOptions = {
       field: null,
       action: 'index',
       ngram: false,
@@ -57,7 +57,7 @@ export function index(this: DB, collectionName: string) {
                   });
                 }
                 await execute(subTasks, {
-                  domain: 'DB.collection.index',
+                  domain: 'Biota.collection.index',
                 });
               }
             }
@@ -67,7 +67,7 @@ export function index(this: DB, collectionName: string) {
     });
 
     return execute(tasks, {
-      domain: 'DB.collection.index',
+      domain: 'Biota.collection.index',
     });
   };
 }

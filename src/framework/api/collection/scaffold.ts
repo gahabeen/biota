@@ -1,15 +1,15 @@
 import { FaunaCollectionOptions } from '~/../types/fauna';
-import { DBFrameworkCollectionScaffoldOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
+import { BiotaFrameworkCollectionScaffoldOptions } from '~/../types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { query as q } from 'faunadb';
 import { upsert } from '~/factory/api/fql/base';
 import { roleNameNormalized, Privilege } from '~/factory/classes/role';
 import { execute } from '~/tasks';
 
-export function scaffold(this: DB, collectionName: string) {
+export function scaffold(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: DBFrameworkCollectionScaffoldOptions = {}) {
+  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: BiotaFrameworkCollectionScaffoldOptions = {}) {
     let defaultRoles = options.roles || ['biota.user'];
     let defaultSearchable = [
       '~ref',
@@ -120,7 +120,7 @@ export function scaffold(this: DB, collectionName: string) {
     });
 
     return execute(tasks, {
-      domain: 'DB.collection.scaffold',
+      domain: 'Biota.collection.scaffold',
     });
   };
 }

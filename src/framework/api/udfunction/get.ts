@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
 import { udfunction } from '~/factory/api/classes/udfunction';
 import { execute } from '~/tasks';
 
-export function get(this: DB, udfunctionName: string) {
+export function get(this: Biota, udfunctionName: string) {
   const self = this;
 
   return async function getMethod() {
@@ -17,7 +17,7 @@ export function get(this: DB, udfunctionName: string) {
         },
       ],
       {
-        domain: 'DB.udfunction.get',
+        domain: 'Biota.udfunction.get',
       },
     );
   };

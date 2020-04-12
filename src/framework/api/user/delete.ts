@@ -1,11 +1,11 @@
 import { query as q } from 'faunadb';
 import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 import { execute } from '~/tasks';
 
-export function delete_(this: DB) {
+export function delete_(this: Biota) {
   const self = this;
   return execute(
     [
@@ -17,7 +17,7 @@ export function delete_(this: DB) {
       },
     ],
     {
-      domain: 'DB.user.delete',
+      domain: 'Biota.user.delete',
     },
   );
 }

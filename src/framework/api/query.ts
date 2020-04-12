@@ -1,8 +1,8 @@
 import { Fauna } from '~/../types/db';
 // external
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 
-export async function query(this: DB, fqlQuery: Fauna.Expr) {
+export async function query(this: Biota, fqlQuery: Fauna.Expr) {
   return this.client.query(fqlQuery).then((res) => {
     // console.log(res);
     return res;

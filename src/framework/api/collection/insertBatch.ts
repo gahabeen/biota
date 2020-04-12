@@ -1,15 +1,15 @@
 import { query as q } from 'faunadb';
 import { Fauna, FaunaCollectionOptions } from '~/../types/fauna';
-import { DBFrameworkCollectionInsertBatchOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
+import { BiotaFrameworkCollectionInsertBatchOptions } from '~/../types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { document } from '~/factory/api/classes/document';
 import * as helpers from '~/helpers';
 import { execute } from '~/tasks';
 
-export function insertBatch(this: DB, collectionName: string) {
+export function insertBatch(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function insertBatchMethod(data: object[], options: DBFrameworkCollectionInsertBatchOptions = {}) {
+  return async function insertBatchMethod(data: object[], options: BiotaFrameworkCollectionInsertBatchOptions = {}) {
     let { batchSize = 50, keepId = false } = options;
     let items = data;
     if (!Array.isArray(items)) items = [items];
@@ -47,7 +47,7 @@ export function insertBatch(this: DB, collectionName: string) {
       });
     }
     return execute(tasks, {
-      domain: 'DB.collection.insertBatch',
+      domain: 'Biota.collection.insertBatch',
     });
   };
 }

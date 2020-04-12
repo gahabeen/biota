@@ -1,8 +1,8 @@
 import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 
-export function paginateAll(this: DB, collectionName: string) {
+export function paginateAll(this: Biota, collectionName: string) {
   const self = this;
 
   return async function* paginateAllMethod(paginateOptions: FaunaPaginateOptions = {}, mapper: FaunaPaginateMapper) {
@@ -31,7 +31,7 @@ export function paginateAll(this: DB, collectionName: string) {
           },
         ],
         {
-          domain: 'DB.collection.paginateAll',
+          domain: 'Biota.collection.paginateAll',
         },
       );
     }

@@ -1,5 +1,5 @@
-import { DBFrameworkCollectionApi } from "./framework/framework.collection";
+import { BiotaFrameworkCollectionApi } from "./framework/framework.collection";
 
-export interface DBFramework {
-  collection: DBFrameworkCollection;
+export interface BiotaFramework {
+  collection: BiotaFrameworkCollection;
 }

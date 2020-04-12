@@ -1,9 +1,9 @@
 import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { index } from '~/factory/api/classes/index';
 import { execute } from '~/tasks';
 
-export function replace(this: DB, indexName: string) {
+export function replace(this: Biota, indexName: string) {
   const self = this;
 
   return async function replaceMethod(options: FaunaIndexOptions) {
@@ -17,7 +17,7 @@ export function replace(this: DB, indexName: string) {
         },
       ],
       {
-        domain: 'DB.index.replace',
+        domain: 'Biota.index.replace',
       },
     );
   };

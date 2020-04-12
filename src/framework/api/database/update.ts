@@ -1,9 +1,9 @@
 import { FaunaDatabaseOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { database } from '~/factory/api/classes/database';
 import { execute } from '~/tasks';
 
-export function update(this: DB, databaseName: string) {
+export function update(this: Biota, databaseName: string) {
   const self = this;
 
   return async function updateMethod(options: FaunaDatabaseOptions = {}) {
@@ -17,7 +17,7 @@ export function update(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: 'DB.database.update',
+        domain: 'Biota.database.update',
       },
     );
   };

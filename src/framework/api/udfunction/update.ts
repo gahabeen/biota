@@ -1,9 +1,9 @@
 import { FaunaUDFunctionOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { udfunction } from '~/factory/api/classes/udfunction';
 import { execute } from '~/tasks';
 
-export function update(this: DB, udfunctionName: string) {
+export function update(this: Biota, udfunctionName: string) {
   const self = this;
 
   return async function updateMethod(options: FaunaUDFunctionOptions = {}) {
@@ -17,7 +17,7 @@ export function update(this: DB, udfunctionName: string) {
         },
       ],
       {
-        domain: 'DB.udfunction.update',
+        domain: 'Biota.udfunction.update',
       },
     );
   };

@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
 import { document } from '~/factory/api/classes/document';
 import { execute } from '~/tasks';
 
-export function update(this: DB, collectionName: string, id: FaunaId) {
+export function update(this: Biota, collectionName: string, id: FaunaId) {
   const self = this;
 
   return async function updateMethod(data: object) {
@@ -17,7 +17,7 @@ export function update(this: DB, collectionName: string, id: FaunaId) {
         },
       ],
       {
-        domain: 'DB.document.update',
+        domain: 'Biota.document.update',
       },
     );
   };

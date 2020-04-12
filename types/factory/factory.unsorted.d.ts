@@ -1,22 +1,22 @@
 import { PromiseFn, Fn, Fauna } from "../db";
 import { FaunaRef } from "../fauna";
 
-export interface DBFactoryFqlWrapper {
+export interface BiotaFactoryFqlWrapper {
   fql?: object;
   query?: PromiseFn<any>;
   then?: PromiseFn<any>;
 }
 
-export interface DBFactoryFqlWrapperOptions {
+export interface BiotaFactoryFqlWrapperOptions {
   then: PromiseFn<any>;
 }
 
-export interface DBFactoryQL {
+export interface BiotaFactoryQL {
   Batch: Fn<any>;
   Ref: Fn<FaunaRef>;
 }
 
-export interface DBFactoryScaffoldOptions {
+export interface BiotaFactoryScaffoldOptions {
   collections?: any[];
   indexes?: any[];
   roles?: any[];
@@ -24,31 +24,31 @@ export interface DBFactoryScaffoldOptions {
   documents?: any[];
 }
 
-export interface DBFactoryScaffold {
+export interface BiotaFactoryScaffold {
   collection?: Fn<Fauna.Expr>;
-  collections?: DBFactoryScaffoldCollections;
-  indexes?: DBFactoryScaffoldIndexes;
-  functions?: DBFactoryScaffoldFunctions;
-  roles?: DBFactoryScaffoldRoles;
+  collections?: BiotaFactoryScaffoldCollections;
+  indexes?: BiotaFactoryScaffoldIndexes;
+  functions?: BiotaFactoryScaffoldFunctions;
+  roles?: BiotaFactoryScaffoldRoles;
 }
 
-export interface DBFactoryScaffoldCollections {
+export interface BiotaFactoryScaffoldCollections {
   defaults?: Fn<Fauna.Expr>;
   users?: Fn<Fauna.Expr>;
   activities?: Fn<Fauna.Expr>;
 }
 
-export interface DBFactoryScaffoldIndexes {
+export interface BiotaFactoryScaffoldIndexes {
   defaults?: Fn<Fauna.Expr>;
   for?: Fn<Fauna.Expr>;
 }
 
-export interface DBFactoryScaffoldFunctions {
+export interface BiotaFactoryScaffoldFunctions {
   defaults?: Fn<Fauna.Expr>;
   for?: Fn<Fauna.Expr>;
 }
 
-export interface DBFactoryScaffoldRoles {
+export interface BiotaFactoryScaffoldRoles {
   defaults?: Fn<Fauna.Expr>;
   for?: Fn<Fauna.Expr>;
 }

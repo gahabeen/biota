@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { index } from '~/factory/api/classes/index';
 import { execute } from '~/tasks';
 import { FaunaPaginateOptions } from '~/../types/fauna';
 
-export function all(this: DB, indexName: string) {
+export function all(this: Biota, indexName: string) {
   const self = this;
 
   return async function allMethod(pagination: FaunaPaginateOptions = {}) {
@@ -17,7 +17,7 @@ export function all(this: DB, indexName: string) {
         },
       ],
       {
-        domain: 'DB.index.all',
+        domain: 'Biota.index.all',
       },
     );
   };

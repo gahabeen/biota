@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 import { user as userCALL } from '~/factory/api/call/user';
 
-export async function logout(this: DB, everywhere: boolean = false) {
+export async function logout(this: Biota, everywhere: boolean = false) {
   const self = this;
   return execute(
     [
@@ -15,7 +15,7 @@ export async function logout(this: DB, everywhere: boolean = false) {
       },
     ],
     {
-      domain: 'DB.user.logout',
+      domain: 'Biota.user.logout',
     },
   );
 }

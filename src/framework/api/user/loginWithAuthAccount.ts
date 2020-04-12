@@ -1,9 +1,9 @@
 import { DocumentAuthAccount } from 'types/document';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { user } from '~/factory/api/call/user';
 import { execute } from '~/tasks';
 
-export function loginWithAuthAccount(this: DB, account: DocumentAuthAccount) {
+export function loginWithAuthAccount(this: Biota, account: DocumentAuthAccount) {
   const self = this;
   return execute(
     [
@@ -15,7 +15,7 @@ export function loginWithAuthAccount(this: DB, account: DocumentAuthAccount) {
       },
     ],
     {
-      domain: 'DB.user.loginWithAuthAccount',
+      domain: 'Biota.user.loginWithAuthAccount',
     },
   );
 }

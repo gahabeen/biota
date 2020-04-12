@@ -1,9 +1,9 @@
 import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { index } from '~/factory/api/classes/index';
 import { execute } from '~/tasks';
 
-export function forget(this: DB, indexName: string) {
+export function forget(this: Biota, indexName: string) {
   const self = this;
 
   return async function forgetMethod() {
@@ -17,7 +17,7 @@ export function forget(this: DB, indexName: string) {
         },
       ],
       {
-        domain: 'DB.index.forget',
+        domain: 'Biota.index.forget',
       },
     );
   };

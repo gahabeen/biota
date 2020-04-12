@@ -1,16 +1,16 @@
-import { DBFrameworkRelationDefinition } from '~/../types/framework/framework.collection';
+import { BiotaFrameworkRelationDefinition } from '~/../types/framework/framework.collection';
 // external
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 // biota
 import { collectionNamePlural, collectionNameNormalized } from '~/factory/classes/collection';
 import { insert } from '~/factory/api/fql/base/insert';
 import { name } from '~/helpers';
 import { execute } from '~/tasks';
 
-export function relation(this: DB, relationName?: string) {
+export function relation(this: Biota, relationName?: string) {
   const self = this;
 
-  let definition: DBFrameworkRelationDefinition = {
+  let definition: BiotaFrameworkRelationDefinition = {
     name: relationName,
     // Does the relation implies deep destruction/delete
     destructive: false,
@@ -64,7 +64,7 @@ export function relation(this: DB, relationName?: string) {
     }
 
     return execute(tasks, {
-      domain: 'DB.relation',
+      domain: 'Biota.relation',
     });
   }
 

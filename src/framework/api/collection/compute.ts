@@ -1,13 +1,13 @@
-import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
+import { BiotaFrameworkCollectionFieldOptions, BiotaFrameworkIndexOptions } from '~/../types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { role as roleFactory } from '~/factory/api/classes';
 import { execute } from '~/tasks';
 import { delay } from '~/helpers/delay';
 
-export function compute(this: DB, collectionName: string) {
+export function compute(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function computeMethod(field: DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
+  return async function computeMethod(field: BiotaFrameworkCollectionFieldOptions, options: BiotaFrameworkIndexOptions = {}) {
     let { role, roles } = options;
     let roleList = role || roles;
     if (!Array.isArray(roleList)) roleList = [role as string];
@@ -42,7 +42,7 @@ export function compute(this: DB, collectionName: string) {
                   });
                 }
                 await execute(subTasks, {
-                  domain: 'DB.collection.compute',
+                  domain: 'Biota.collection.compute',
                 });
               }
             }
@@ -52,7 +52,7 @@ export function compute(this: DB, collectionName: string) {
     });
 
     return execute(tasks, {
-      domain: 'DB.collection.compute',
+      domain: 'Biota.collection.compute',
     });
   };
 }

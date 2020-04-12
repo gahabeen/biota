@@ -1,4 +1,4 @@
-import { DBFrameworkCollectionApi } from '~/../types/framework/framework.collection';
+import { BiotaFrameworkCollectionApi } from '~/../types/framework/framework.collection';
 import { activity } from '~/framework/api/collection/activity';
 import { compute } from '~/framework/api/collection/compute';
 import { delete_ } from '~/framework/api/collection/delete';
@@ -19,7 +19,7 @@ import { update } from '~/framework/api/collection/update';
 import { upsert } from '~/framework/api/collection/upsert';
 import { clean } from '~/framework/api/collection/clean';
 
-export function collection(collectionName: string): DBFrameworkCollectionApi {
+export function collection(collectionName: string): BiotaFrameworkCollectionApi {
   const self = this;
 
   if (!collectionName) {

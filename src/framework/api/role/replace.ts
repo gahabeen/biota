@@ -1,9 +1,9 @@
 import { FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function replace(this: DB, roleName: string) {
+export function replace(this: Biota, roleName: string) {
   const self = this;
 
   return async function replaceMethod(options: FaunaRoleOptions = {}) {
@@ -17,7 +17,7 @@ export function replace(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.replace',
+        domain: 'Biota.role.replace',
       },
     );
   };

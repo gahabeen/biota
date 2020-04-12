@@ -1,11 +1,11 @@
 import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 
-export function replace(this: DB, data: object) {
+export function replace(this: Biota, data: object) {
   const self = this;
   return execute(
     [
@@ -17,7 +17,7 @@ export function replace(this: DB, data: object) {
       },
     ],
     {
-      domain: 'DB.user.replace',
+      domain: 'Biota.user.replace',
     },
   );
 }

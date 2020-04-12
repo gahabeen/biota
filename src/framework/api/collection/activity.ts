@@ -1,10 +1,10 @@
 import { query as q } from 'faunadb';
 import { FaunaPaginateOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { collectionNameNormalized } from '~/factory/classes/collection';
 
-export function activity(this: DB, collectionName: string) {
+export function activity(this: Biota, collectionName: string) {
   const self = this;
 
   return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
@@ -25,7 +25,7 @@ export function activity(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: 'DB.collection.activity',
+        domain: 'Biota.collection.activity',
       },
     );
   };

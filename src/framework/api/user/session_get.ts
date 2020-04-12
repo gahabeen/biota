@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { execute } from '~/tasks';
 import { query as q } from 'faunadb';
 
-export async function get(this: DB) {
+export async function get(this: Biota) {
   const self = this;
   return execute(
     [
@@ -14,7 +14,7 @@ export async function get(this: DB) {
       },
     ],
     {
-      domain: 'DB.user.session.get',
+      domain: 'Biota.user.session.get',
     },
   );
 }

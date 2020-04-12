@@ -1,10 +1,10 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
 import { udfunction } from '~/factory/api/classes/udfunction';
 import { execute } from '~/tasks';
 import { IsPrivateKeyValid } from '~/framework/api/defaults/udfunctions';
 
-export function privateKey(this: DB) {
+export function privateKey(this: Biota) {
   const self = this;
 
   return async function privateKeyMethod(private_key: string) {
@@ -22,7 +22,7 @@ export function privateKey(this: DB) {
         },
       ],
       {
-        domain: 'DB.privateKey',
+        domain: 'Biota.privateKey',
       },
     );
   };

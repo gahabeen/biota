@@ -1,9 +1,9 @@
 import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { index } from '~/factory/api/classes/index';
 import { execute } from '~/tasks';
 
-export function upsert(this: DB, indexName: string) {
+export function upsert(this: Biota, indexName: string) {
   const self = this;
 
   return async function upsertMethod(options: FaunaIndexOptions) {
@@ -17,7 +17,7 @@ export function upsert(this: DB, indexName: string) {
         },
       ],
       {
-        domain: 'DB.index.upsert',
+        domain: 'Biota.index.upsert',
       },
     );
   };

@@ -1,6 +1,6 @@
 import { FaunaPaginateOptions } from "../fauna";
 
-export interface DBFrameworkDatabaseApi {
+export interface BiotaFrameworkDatabaseApi {
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;
   get: () => Promise<any>;
   replace: (options: object) => Promise<any>;

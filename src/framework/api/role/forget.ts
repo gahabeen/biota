@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
 import { role } from '~/factory/api/classes/role';
 import { execute } from '~/tasks';
 
-export function forget(this: DB, roleName: string) {
+export function forget(this: Biota, roleName: string) {
   const self = this;
 
   return async function forgetMethod(id: FaunaId) {
@@ -17,7 +17,7 @@ export function forget(this: DB, roleName: string) {
         },
       ],
       {
-        domain: 'DB.role.forget',
+        domain: 'Biota.role.forget',
       },
     );
   };

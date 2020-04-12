@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { user as userCALL } from '~/factory/api/call/user';
 import { execute } from '~/tasks';
 
-export async function login(this: DB, email: string, password: string) {
+export async function login(this: Biota, email: string, password: string) {
   const self = this;
   return execute(
     [
@@ -11,7 +11,7 @@ export async function login(this: DB, email: string, password: string) {
         task() {
           return self.query(userCALL.login.call(self, email, password)).then(({ secret }) => {
             if (secret) {
-              let newSelf = new DB({ secret, private_key: self.private_key });
+              let newSelf = new Biota({ secret, private_key: self.private_key });
               newSelf.secret = secret;
               return newSelf;
             } else return self;
@@ -20,7 +20,7 @@ export async function login(this: DB, email: string, password: string) {
       },
     ],
     {
-      domain: 'DB.user.login',
+      domain: 'Biota.user.login',
     },
   );
 }

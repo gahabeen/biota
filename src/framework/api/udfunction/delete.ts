@@ -1,9 +1,9 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
 import { udfunction } from '~/factory/api/classes/udfunction';
 import { execute } from '~/tasks';
 
-export function delete_(this: DB, udfunctionName: string) {
+export function delete_(this: Biota, udfunctionName: string) {
   const self = this;
 
   return async function deleteMethod() {
@@ -17,7 +17,7 @@ export function delete_(this: DB, udfunctionName: string) {
         },
       ],
       {
-        domain: 'DB.udfunction.delete',
+        domain: 'Biota.udfunction.delete',
       },
     );
   };

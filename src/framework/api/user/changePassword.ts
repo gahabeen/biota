@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { user as userCALL } from '~/factory/api/call/user';
 import { execute } from '~/tasks';
 
-export async function changePassword(this: DB, newPassword: string) {
+export async function changePassword(this: Biota, newPassword: string) {
   const self = this;
   return execute(
     [
@@ -14,7 +14,7 @@ export async function changePassword(this: DB, newPassword: string) {
       },
     ],
     {
-      domain: 'DB.user.login',
+      domain: 'Biota.user.login',
     },
   );
 }

@@ -1,9 +1,9 @@
 import { FaunaId, FaunaDocumentOptions, FaunaDatabaseOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { database } from '~/factory/api/classes/database';
 import { execute } from '~/tasks';
 
-export function insert(this: DB, databaseName: string) {
+export function insert(this: Biota, databaseName: string) {
   const self = this;
 
   return async function insertMethod(options: FaunaDatabaseOptions = {}) {
@@ -17,7 +17,7 @@ export function insert(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: 'DB.database.insert',
+        domain: 'Biota.database.insert',
       },
     );
   };

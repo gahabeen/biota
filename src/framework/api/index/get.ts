@@ -1,8 +1,8 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { index } from '~/factory/api/classes/index';
 import { execute } from '~/tasks';
 
-export function get(this: DB, indexName: string) {
+export function get(this: Biota, indexName: string) {
   const self = this;
 
   return async function getMethod() {
@@ -16,7 +16,7 @@ export function get(this: DB, indexName: string) {
         },
       ],
       {
-        domain: 'DB.index.get',
+        domain: 'Biota.index.get',
       },
     );
   };

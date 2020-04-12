@@ -1,7 +1,7 @@
-import { DBFrameworkUDFunctionsApi } from '~/../types/framework/framework.udfunctions';
+import { BiotaFrameworkUDFunctionsApi } from '~/../types/framework/framework.udfunctions';
 
 import { cleanAll } from '~/framework/api/udfunctions/cleanAll';
 
-export const udfunctions: DBFrameworkUDFunctionsApi = {
+export const udfunctions: BiotaFrameworkUDFunctionsApi = {
   cleanAll,
 };

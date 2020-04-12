@@ -1,4 +1,4 @@
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { query as q } from 'faunadb';
 import { execute } from '~/tasks';
 import { role as roleFQLBase } from '~/factory/api/fql/base/role';
@@ -9,12 +9,12 @@ import * as defaultFunctions from '~/framework/api/defaults/udfunctions';
 import * as defaultRoles from '~/framework/api/defaults/roles';
 import * as defaultCollections from '~/framework/api/defaults/collections';
 import * as defaultIndexes from '~/framework/api/defaults/indexes';
-import { DBFoundationOptions } from '~/../types/db';
+import { BiotaFoundationOptions } from '~/../types/db';
 import { FaunaUDFunctionOptions } from '~/../types/fauna';
 import { roleNameNormalized } from '~/factory/classes/role';
 import { delay } from '~/helpers/delay';
 
-export async function foundation(this: DB, options: DBFoundationOptions) {
+export async function foundation(this: Biota, options: BiotaFoundationOptions) {
   const self = this;
   options = { roles: true, udfunctions: true, collections: true, indexes: true, ...options };
   const tasks = [];
@@ -38,7 +38,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Initial roles',
       async task() {
         return execute(initialRoleTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -86,7 +86,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Initial UDFunctions',
       async task() {
         return execute(initialUDFunctionsTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -112,7 +112,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Other UDFunctions',
       async task() {
         return execute(otherUDFunctionsTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -144,7 +144,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Initial Roles',
       async task() {
         return execute(intialRolesTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -191,7 +191,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Initial Collections',
       async task() {
         return execute(collectionsTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -218,7 +218,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Indexes',
       async task() {
         return execute(indexesTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -258,7 +258,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Roles',
       async task() {
         return execute(rolesTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -361,7 +361,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'Collections',
       async task() {
         return execute(collectionsTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -418,7 +418,7 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
       name: 'UDFunctions on Roles',
       async task() {
         return execute(udfunctionsTasks, {
-          domain: 'DB.foundation',
+          domain: 'Biota.foundation',
           parallel: false,
           indent: 2,
         });
@@ -427,6 +427,6 @@ export async function foundation(this: DB, options: DBFoundationOptions) {
   }
 
   return execute(tasks, {
-    domain: 'DB.foundation',
+    domain: 'Biota.foundation',
   });
 }

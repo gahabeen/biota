@@ -1,9 +1,9 @@
 import { FaunaDatabaseOptions } from '~/../types/fauna';
-import { DB } from '~/db';
+import { Biota } from '~/biota';
 import { database } from '~/factory/api/classes/database';
 import { execute } from '~/tasks';
 
-export function replace(this: DB, databaseName: string) {
+export function replace(this: Biota, databaseName: string) {
   const self = this;
 
   return async function replaceMethod(options: FaunaDatabaseOptions = {}) {
@@ -17,7 +17,7 @@ export function replace(this: DB, databaseName: string) {
         },
       ],
       {
-        domain: 'DB.database.replace',
+        domain: 'Biota.database.replace',
       },
     );
   };
