@@ -49,9 +49,36 @@ export interface DocumentMembership {
   roles?: String[];
 }
 
+export interface DocumentValidity {
+  deleted: boolean;
+  expires_at: FaunaTime;
+}
+
+export type DocumentActionName =
+| "insert"
+| "update"
+| "replace"
+| "delete_change"
+| "credentials_change"
+| "auth_email_change"
+| "auth_accounts_change"
+| "roles_change"
+| "owner_change"
+| "expiration_change"
+| "assignees_change"
+
 export interface DocumentActivity {
-  assigned_by?: FaunaRef;
-  assigned_at?: FaunaTime;
+  auth_email_changed_by?: FaunaRef;
+  auth_email_changed_at?: FaunaTime;
+
+  auth_accounts_changed_by?: FaunaRef;
+  auth_accounts_changed_at?: FaunaTime;
+
+  roles_changed_by?: FaunaRef;
+  roles_changed_at?: FaunaTime;
+
+  assignees_changed_by?: FaunaRef;
+  assignees_changed_at?: FaunaTime;
 
   owner_changed_by?: FaunaRef;
   owner_changed_at?: FaunaTime;
@@ -59,8 +86,8 @@ export interface DocumentActivity {
   credentials_changed_by?: FaunaRef;
   credentials_changed_at?: FaunaTime;
 
-  created_by?: FaunaRef;
-  created_at?: FaunaTime;
+  inserted_by?: FaunaRef;
+  inserted_at?: FaunaTime;
 
   updated_by?: FaunaRef;
   updated_at?: FaunaTime;
@@ -68,11 +95,11 @@ export interface DocumentActivity {
   replaced_by?: FaunaRef;
   replaced_at?: FaunaTime;
 
-  expired_by?: FaunaRef;
-  expired_at?: FaunaTime;
+  expiration_changed_by?: FaunaRef;
+  expiration_changed_at?: FaunaTime;
 
-  deleted_by?: FaunaRef;
-  deleted_at?: FaunaTime;
+  delete_changed_by?: FaunaRef;
+  delete_changed_at?: FaunaTime;
 
   forgotten_by?: FaunaRef;
   forgotten_at?: FaunaTime;

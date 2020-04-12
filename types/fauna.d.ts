@@ -1,5 +1,5 @@
-import * as Fauna from "faunadb";
-import { Fn } from "./db";
+import * as Fauna from 'faunadb';
+import { Fn } from './db';
 export { Fauna };
 
 export interface FaunaPaginateOptions {
@@ -81,6 +81,14 @@ export interface FaunaRule {
   query?: Fauna.Expr;
 }
 
+export interface FaunaCredentials {
+  ref?: FaunaRef;
+  ts?: number;
+  instance?: FaunaRef;
+  data?: object;
+  hashed_password?: string
+}
+
 export interface FaunaKeyOptions {
   name?: string;
   database?: FaunaRef;
@@ -89,7 +97,7 @@ export interface FaunaKeyOptions {
 }
 
 export interface FaunaTokenOptions {
-  name?: string;
+  instance?: FaunaRef;
   data?: object;
 }
 
@@ -102,8 +110,8 @@ export interface FaunaUDFunctionOptions {
 
 export interface FaunaRoleOptions {
   name?: string;
-  membership?: FaunaRoleMembership | FaunaRoleMembership[];
-  privileges?: FaunaRolePrivilege[];
+  membership?: FaunaRoleMembership | FaunaRoleMembership[] | Fauna.Expr;
+  privileges?: FaunaRolePrivilege[] | Fauna.Expr;
 }
 
 export interface FaunaRoleMembership {
@@ -143,9 +151,15 @@ export interface FaunaRolePrivilegeActionsDefault {
   call?: Fauna.Expr | FaunaRuleAction;
 }
 
+export type FaunaData =
+  | {
+      [key: string]: any;
+    }
+  | Fauna.Expr;
+
 export type FaunaPaginateMapper = Fauna.Expr;
 
-export type FaunaRuleAction = "self_own" | "secured_fields" | "self" | "owner" | "not_owner" | "assignee" | "not_assignee" | "all" | "none";
+export type FaunaRuleAction = 'self_own' | 'secured_fields' | 'self' | 'owner' | 'not_owner' | 'assignee' | 'not_assignee' | 'all' | 'none';
 
 export type FaunaRuleLambda = Fauna.Expr | Fn<Fauna.Expr>;
 
@@ -167,3 +181,6 @@ export type FaunaRef =
       id: FaunaId;
     }
   | Fauna.Expr;
+
+export type FaunaString = string | Fauna.Expr;
+export type FaunaNumber = number | Fauna.Expr;
