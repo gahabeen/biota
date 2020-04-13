@@ -8,12 +8,13 @@ import { ThrowError } from '../constructors/error';
 
 // tslint:disable-next-line: only-arrow-functions
 export const action: FactoryContext<FactoryAction> = function (contextExpr): FactoryAction {
+  contextExpr = ContextExtend(contextExpr);
   // tslint:disable-next-line: only-arrow-functions
-  return (name, refOrDoc) => {
+  return (name = null, refOrDoc = null) => {
     const ref = q.If(
       q.IsRef(refOrDoc),
       refOrDoc,
-      q.If(q.And(q.IsObject(refOrDoc), q.Contains('ref', refOrDoc)), q.Select('ref', refOrDoc, null), null),
+      q.If(q.IsObject(refOrDoc), q.If(q.Contains('ref', refOrDoc), q.Select('ref', refOrDoc, null), null), null),
     );
 
     return {
@@ -22,8 +23,8 @@ export const action: FactoryContext<FactoryAction> = function (contextExpr): Fac
         return q.If(
           ContextProp(ctx, 'logActions'),
           q.If(
-            q.And(q.IsString(action), q.IsRef(ref), q.Now()),
-            document(ctx)(BiotaCollectionName('actions')).insert({
+            q.And(q.IsString(name), q.IsRef(ref)),
+            q.Create(BiotaCollectionName('actions'), {
               data: {
                 name,
                 instance: ref,
@@ -31,44 +32,40 @@ export const action: FactoryContext<FactoryAction> = function (contextExpr): Fac
                 user: ContextProp(ctx, 'identity'),
               },
             }),
-            ThrowError(ctx, 'Wrong inputs', { action, ref, ts: q.Now() }),
+            ThrowError(ctx, 'Wrong inputs', { name, ref, ts: q.Now() }),
           ),
           false,
         );
       },
       annotate() {
         const ctx = ContextExtend(contextExpr, 'factory.action.annotate');
-        let _activity = {};
-        switch (name) {
-          case 'insert':
-            _activity = { inserted_by: ContextProp(ctx, 'identity'), inserted_at: q.Now() };
-          case 'update':
-            _activity = { updated_by: ContextProp(ctx, 'identity'), updated_at: q.Now() };
-          case 'replace':
-            _activity = { replaced_by: ContextProp(ctx, 'identity'), replaced_at: q.Now() };
-          case 'delete':
-            _activity = { delete_changed_by: ContextProp(ctx, 'identity'), delete_changed_at: q.Now() };
-          case 'credentials_change':
-            _activity = { credentials_changed_by: ContextProp(ctx, 'identity'), credentials_changed_at: q.Now() };
-          case 'auth_email_change':
-            _activity = { auth_email_changed_by: ContextProp(ctx, 'identity'), auth_email_changed_at: q.Now() };
-          case 'auth_accounts_change':
-            _activity = { auth_accounts_changed_by: ContextProp(ctx, 'identity'), auth_accounts_changed_at: q.Now() };
-          case 'roles_change':
-            _activity = { roles_changed_by: ContextProp(ctx, 'identity'), roles_changed_at: q.Now() };
-          case 'owner_change':
-            _activity = { owner_changed_by: ContextProp(ctx, 'identity'), owner_changed_at: q.Now() };
-          case 'expire':
-            _activity = { expiration_changed_by: ContextProp(ctx, 'identity'), expiration_changed_at: q.Now() };
-          case 'assignees_change':
-            _activity = { assignees_changed_by: ContextProp(ctx, 'identity'), assignees_changed_at: q.Now() };
-        }
-
         return q.If(
           ContextProp(ctx, 'annotateDocuments'),
-          document(contextExpr)(ref).update({
-            _activity,
-          }),
+          q.Let(
+            {
+              activity: {
+                insert: { inserted_by: ContextProp(ctx, 'identity'), inserted_at: q.Now() },
+                update: { updated_by: ContextProp(ctx, 'identity'), updated_at: q.Now() },
+                replace: { replaced_by: ContextProp(ctx, 'identity'), replaced_at: q.Now() },
+                delete: { delete_changed_by: ContextProp(ctx, 'identity'), delete_changed_at: q.Now() },
+                credentials_change: { credentials_changed_by: ContextProp(ctx, 'identity'), credentials_changed_at: q.Now() },
+                auth_email_change: { auth_email_changed_by: ContextProp(ctx, 'identity'), auth_email_changed_at: q.Now() },
+                auth_accounts_change: { auth_accounts_changed_by: ContextProp(ctx, 'identity'), auth_accounts_changed_at: q.Now() },
+                roles_change: { roles_changed_by: ContextProp(ctx, 'identity'), roles_changed_at: q.Now() },
+                owner_change: { owner_changed_by: ContextProp(ctx, 'identity'), owner_changed_at: q.Now() },
+                expire: { expiration_changed_by: ContextProp(ctx, 'identity'), expiration_changed_at: q.Now() },
+                assignees_change: { assignees_changed_by: ContextProp(ctx, 'identity'), assignees_changed_at: q.Now() },
+              },
+              _activity: q.Select(name, q.Var('activity'), null),
+            },
+            q.If(
+              q.IsObject(q.Var('_activity')),
+              q.Update(ref, {
+                data: { _activity: q.Var('_activity') },
+              }),
+              ThrowError(ctx, "This action event doesn't exist", { name }),
+            ),
+          ),
           false,
         );
       },

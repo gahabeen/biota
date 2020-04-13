@@ -5,8 +5,8 @@ import { DefaultToOjbect } from './ql/defaultTo';
 import { BiotaFunctionName } from '../constructors/udfunction';
 import { pathString } from '~/framework/helpers/path';
 import { BiotaIndexName } from '../constructors';
-import { ContextExtend } from './ql';
 import { ThrowError } from '../constructors/error';
+import { ContextExtend } from '../constructors/context';
 
 // tslint:disable-next-line: only-arrow-functions
 export const indexes: FactoryContext<FactoryIndexesApi> = function (contextExpr): FactoryIndexesApi {

@@ -2,19 +2,17 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from 'types/factory/factory.context';
 import { FactoryUser } from '~/../types/factory/factory.user';
 import { PAGINATION_SIZE_MAX } from '~/consts';
+import { action } from '~/factory/api/action';
+import { credential } from '~/factory/api/credential';
 import { document } from '~/factory/api/document';
 import { indexes } from '~/factory/api/indexes';
-import { action } from '~/factory/api/action';
 import { users } from '~/factory/api/users';
 import { userSession } from '~/factory/api/userSession';
-import { credential } from '~/factory/api/credential';
 import { BiotaCollectionName } from '../constructors/collection';
-import { ContextProp } from '../constructors/context';
+import { ContextExtend, ContextProp } from '../constructors/context';
 import { ThrowError } from '../constructors/error';
 import { BiotaRoleName } from '../constructors/role';
 import { BiotaFunctionName, CallUDFunction } from '../constructors/udfunction';
-import { ContextExtend } from './ql';
-import { BiotaIndexName } from '../constructors';
 
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (contextExpr): FactoryUser {

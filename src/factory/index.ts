@@ -1,23 +1,52 @@
-export * as ql from './api/ql';
-export * as foundation from './api/foundation';
+import * as ql from './api/ql';
+import * as foundation from './api/foundation';
+import * as constructors from './api/constructors';
 
-export * from './api/action';
-export * from './api/collection';
-export * from './api/collections';
-export * from './api/credential';
-export * from './api/credentials';
-export * from './api/database';
-export * from './api/databases';
-export * from './api/document';
-export * from './api/index';
-export * from './api/indexes';
-export * from './api/key';
-export * from './api/keys';
-export * from './api/role';
-export * from './api/roles';
-export * from './api/token';
-export * from './api/tokens';
-export * from './api/udfunction';
-export * from './api/udfunctions';
-export * from './api/user';
-export * from './api/userSession';
+import { action } from './api/action';
+import { collection } from './api/collection';
+import { collections } from './api/collections';
+import { credential } from './api/credential';
+import { credentials } from './api/credentials';
+import { database } from './api/database';
+import { databases } from './api/databases';
+import { document } from './api/document';
+import { index } from './api/index';
+import { indexes } from './api/indexes';
+import { key } from './api/key';
+import { keys } from './api/keys';
+import { role } from './api/role';
+import { roles } from './api/roles';
+import { token } from './api/token';
+import { tokens } from './api/tokens';
+import { udfunction } from './api/udfunction';
+import { udfunctions } from './api/udfunctions';
+import { user } from './api/user';
+import { users } from './api/users';
+import { userSession } from './api/userSession';
+
+export const factory = {
+  ql,
+  foundation,
+  constructors,
+  action,
+  collection,
+  collections,
+  credential,
+  credentials,
+  database,
+  databases,
+  document,
+  index,
+  indexes,
+  key,
+  keys,
+  role,
+  roles,
+  token,
+  tokens,
+  udfunction,
+  udfunctions,
+  user,
+  users,
+  userSession,
+};

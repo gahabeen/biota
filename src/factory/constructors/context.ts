@@ -3,41 +3,62 @@ import { FactoryContextDefinition } from 'types/factory/factory.context';
 import * as helpers from '~/helpers';
 import { FaunaString, FaunaObject } from 'types/fauna';
 
-export function ContextsExtend(context: FactoryContextDefinition, offlineFunctionName: FaunaString, onlineFunctionName: FaunaString) {
-  return {
-    offlineCtx: ContextExtend(context, offlineFunctionName),
-    onlineCtx: ContextExtend(context, onlineFunctionName),
-  };
-}
+// export function ContextDefault(context: FactoryContextDefinition = {}) {
+//   return {
+//     offline: q.Select('offline', context, false),
+//     identity: q.Select('identity', context, false),
+//     hasIdentity: q.IsDoc(q.Var('identity')),
+//     session: q.Select('session', context, false),
+//     hasSession: q.Var('hasSession'),
+//     callstack: q.Select('callstack', context, 'Biota'),
+//     logActions: q.If(q.IsBoolean(q.Var('logActions')), q.Var('logActions'), false),
+//     annotateDocuments: q.If(q.IsBoolean(q.Var('annotateDocuments')), q.Var('annotateDocuments'), false),
+//     skipErrors: q.If(q.IsBoolean(q.Var('skipErrors')), q.Var('skipErrors'), false),
+//   };
+// }
 
-export function ContextExtend(context: FactoryContextDefinition, functionName: FaunaString): FactoryContextDefinition {
-  // DocumentInsert |
-  const callstack = q.Concat([q.Select('callstack', context, ''), functionName], '%');
-  const offline = q.Select('offline', context, null);
-  const identity = q.Select('identity', context, null);
-  const hasIdentity = q.IsDoc(identity);
-  const session = q.Select('session', context, null);
-  const hasSession = q.IsDoc(session);
-  const selectedLogActions = q.Select('logActions', context, false);
-  const logActions = q.If(q.IsBoolean(selectedLogActions), selectedLogActions, false);
-  const selectedAnnotateDocuments = q.Select('annotateDocuments', context, false);
-  const annotateDocuments = q.If(q.IsBoolean(selectedAnnotateDocuments), selectedAnnotateDocuments, false);
-  const selectedSkipErrors = q.Select('skipErrors', context, false);
-  const skipErrors = q.If(q.IsBoolean(selectedSkipErrors), selectedSkipErrors, false);
-
-  return {
-    offline,
-    identity,
-    hasIdentity,
-    session,
-    hasSession,
-    callstack,
-    logActions,
-    annotateDocuments,
-    skipErrors,
-  };
+export function ContextExtend(
+  context: FactoryContextDefinition = {},
+  functionName: FaunaString = null,
+  params: object = {},
+  extend: object = {},
+): FactoryContextDefinition {
+  return q.Let(
+    {
+      context,
+      functionName,
+      offline: q.Select('offline', q.Var('context'), false),
+      identity: q.Select('identity', q.Var('context'), false),
+      hasIdentity: q.IsDoc(q.Var('identity')),
+      session: q.Select('session', q.Var('context'), false),
+      hasSession: q.IsDoc(q.Var('session')),
+      callstack: q.Select('callstack', q.Var('context'), ['Biota']),
+      logActions: q.Select('logActions', q.Var('context'), false),
+      annotateDocuments: q.Select('annotateDocuments', q.Var('context'), false),
+      skipErrors: q.Select('skipErrors', q.Var('context'), false),
+    },
+    q.Merge(
+      {
+        offline: q.Var('offline'),
+        identity: q.Var('identity'),
+        hasIdentity: q.Var('hasIdentity'),
+        session: q.Var('session'),
+        hasSession: q.Var('hasSession'),
+        callstack: q.If(
+          q.IsString(q.Var('functionName')),
+          q.Union(q.Var('callstack'), [[q.Var('functionName'), q.Format('%@', params)]]),
+          q.Var('callstack'),
+        ),
+        // callstack: q.If(q.IsString(q.Var('functionName')), q.Concat([q.Var('callstack'), q.Var('functionName')], '%'), q.Var('callstack')),
+        logActions: q.If(q.IsBoolean(q.Var('logActions')), q.Var('logActions'), false),
+        annotateDocuments: q.If(q.IsBoolean(q.Var('annotateDocuments')), q.Var('annotateDocuments'), false),
+        skipErrors: q.If(q.IsBoolean(q.Var('skipErrors')), q.Var('skipErrors'), false),
+      },
+      extend,
+    ),
+  );
 }
 
 export function ContextProp(context: FactoryContextDefinition, path: string) {
-  return q.Select(helpers.path(path), context, null);
+  return q.Select(helpers.path(path, false), context, false);
 }

@@ -15,17 +15,43 @@ import { BiotaFrameworkUDFunctionsApi } from '../types/framework/framework.udfun
 import { BiotaFrameworkUserApi } from '../types/framework/framework.user';
 import { bindSubFunctions } from './helpers';
 
+interface BiotaOptionsDocumentProtectedPaths {
+  _auth: boolean;
+  _membership: boolean;
+  _validity: boolean;
+  _activity: boolean;
+  [key: string]: boolean;
+}
+
+interface BiotaOptionsDocumentPaths {
+  _auth: string | string[];
+  '_auth.email'?: string | string[];
+  '_auth.accounts'?: string | string[];
+  _membership?: string | string[];
+  '_membership.owner'?: string | string[];
+  '_membership.roles'?: string | string[];
+  '_membership.assignees'?: string | string[];
+  _validity: string | string[];
+  '_validity.deleted'?: string | string[];
+  '_validity.expires_at'?: string | string[];
+  _activity?: string | string[];
+}
+
+interface BiotaOptionsDocument {
+  paths?: BiotaOptionsDocumentPaths;
+  protectedPaths?: BiotaOptionsDocumentProtectedPaths;
+}
+
 interface BiotaOptions {
   secret: string;
   debug?: boolean;
-  private_key?: string;
+  document?: BiotaOptionsDocument;
 }
 
 export class Biota {
   client: Fauna.Client;
-  // tslint:disable-next-line: variable-name
-  private_key: string;
   secret: string;
+  documentOptions: BiotaOptionsDocument;
 
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
@@ -52,10 +78,33 @@ export class Biota {
   privateKey: (private_key: string) => Promise<any>;
 
   constructor(options: BiotaOptions) {
-    const { secret, debug, private_key } = options || {};
+    const { secret, debug, document } = options || {};
 
     this.secret = secret;
-    this.private_key = private_key;
+
+    const { paths = {}, protectedPaths = {} } = document || {};
+    this.documentOptions = {};
+    this.documentOptions.protectedPaths = {
+      _auth: true,
+      _membership: true,
+      _validity: true,
+      _activity: true,
+      ...protectedPaths,
+    };
+    this.documentOptions.paths = {
+      _auth: '_auth',
+      '_auth.email': '_auth.email',
+      '_auth.accounts': '_auth.accounts',
+      _membership: '_membership',
+      '_membership.owner': '_membership.owner',
+      '_membership.roles': '_membership.roles',
+      '_membership.assignees': '_membership.assignees',
+      _validity: '_validity',
+      '_validity.deleted': '_validity.deleted',
+      '_validity.expires_at': '_validity.expires_at',
+      _activity: '_activity',
+      ...paths,
+    };
 
     try {
       this.client = new fauna.Client({ secret });

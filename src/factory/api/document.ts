@@ -4,19 +4,22 @@ import { FactoryDocument } from '~/../types/factory/factory.document';
 import { TS_2500_YEARS } from '~/consts';
 import * as helpers from '~/helpers';
 import { ContextProp, ContextExtend } from '../constructors/context';
+import { Result } from '../constructors/result';
 import { CallUDFunction } from '../constructors/udfunction';
 import { action } from '~/factory/api/action';
 import { ThrowError } from '../constructors/error';
 
 // tslint:disable-next-line: only-arrow-functions
 export const document: FactoryContext<FactoryDocument> = function (contextExpr): FactoryDocument {
+  contextExpr = ContextExtend(contextExpr);
   const offline = ContextProp(contextExpr, 'offline');
+
   // tslint:disable-next-line: only-arrow-functions
-  return (collectionOrRef, id) => {
+  return (collectionOrRef = null, id = null) => {
     const ref = q.If(
       q.Or(q.IsDoc(collectionOrRef), q.IsCollection(collectionOrRef)),
       collectionOrRef,
-      q.If(q.IsString(id), q.Ref(q.Collection(collectionOrRef), id), q.Ref(q.Collection(collectionOrRef))),
+      q.If(q.IsString(id), q.Ref(q.Collection(collectionOrRef), id), q.Collection(collectionOrRef)),
     );
     return {
       get() {
@@ -26,9 +29,8 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
           q.Let(
             {
               doc: q.Get(ref),
-              // action: action(ctx)('get', q.Var('doc')).dispatch(),
             },
-            q.Var('doc'),
+            Result(ctx, q.Var('doc')),
           ),
           CallUDFunction('DocumentGet', contextExpr, { ref }),
         );
@@ -42,7 +44,7 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
               doc: q.Create(ref, { data }),
               action: action(ctx)('insert', q.Var('doc')).dispatch(),
             },
-            q.Var('doc'),
+            Result(ctx, q.Select('doc', q.Var('action'), q.Var('doc')), q.Var('action')),
           ),
           CallUDFunction('DocumentInsert', contextExpr, { ref, data }),
         );
@@ -56,7 +58,7 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
               doc: q.Update(ref, { data }),
               action: action(ctx)('update', q.Var('doc')).dispatch(),
             },
-            q.Var('doc'),
+            Result(ctx, q.Select('doc', q.Var('action'), q.Var('doc')), q.Var('action')),
           ),
           CallUDFunction('DocumentUpdate', contextExpr, { ref }),
         );
@@ -70,7 +72,7 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
               doc: q.If(q.Exists(ref), document(ctx)(ref).update(data), document(ctx)(ref).insert(data)),
               // already logging actions: update or insert
             },
-            q.Var('doc'),
+            Result(ctx, q.Var('doc')),
           ),
           CallUDFunction('DocumentUpsert', contextExpr, { ref }),
         );
@@ -81,10 +83,10 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
           offline,
           q.Let(
             {
-              doc: q.Replace(ref, data),
+              doc: q.Replace(ref, { data }),
               action: action(ctx)('replace', q.Var('doc')).dispatch(),
             },
-            q.Var('doc'),
+            Result(ctx, q.Select('doc', q.Var('action'), q.Var('doc')), q.Var('action')),
           ),
           CallUDFunction('DocumentReplace', contextExpr, { ref }),
         );
@@ -112,7 +114,7 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
               doc: document(ctx)(ref).validity.delete(),
               action: action(ctx)('delete', q.Var('doc')).dispatch(),
             },
-            q.Var('doc'),
+            q.Select('doc', q.Var('action'), q.Var('doc')),
           ),
           CallUDFunction('DocumentDelete', contextExpr, { ref }),
         );

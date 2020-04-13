@@ -10,8 +10,8 @@ export function scaffold(this: Biota, collectionName: string) {
   const self = this;
 
   return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: BiotaFrameworkCollectionScaffoldOptions = {}) {
-    let defaultRoles = options.roles || ['biota.user'];
-    let defaultSearchable = [
+    const defaultRoles = options.roles || ['biota.user'];
+    const defaultSearchable = [
       '~ref',
       '~ts',
       '_auth.providers.provider',
@@ -42,9 +42,9 @@ export function scaffold(this: Biota, collectionName: string) {
       // "_activity.hidden_at"
     ];
 
-    let { index = defaultSearchable, compute = [], field = [] } = options || {};
+    const { index = defaultSearchable, compute = [], field = [] } = options || {};
 
-    let tasks = [
+    const tasks = [
       {
         name: `Upserting collection (${collectionName})`,
         async task() {
@@ -53,7 +53,7 @@ export function scaffold(this: Biota, collectionName: string) {
       },
     ];
 
-    for (let indexField of index) {
+    for (const indexField of index) {
       tasks.push({
         name: `Upserting index field (${indexField}) on (${collectionName})`,
         async task() {
@@ -62,7 +62,7 @@ export function scaffold(this: Biota, collectionName: string) {
       });
     }
 
-    for (let computeField of compute) {
+    for (const computeField of compute) {
       tasks.push({
         name: `Upserting viewable field (${computeField.field}) on (${collectionName})`,
         async task() {
@@ -71,7 +71,7 @@ export function scaffold(this: Biota, collectionName: string) {
       });
     }
 
-    for (let fieldField of field) {
+    for (const fieldField of field) {
       tasks.push({
         name: `Upserting viewable field (${fieldField.field}) on (${collectionName})`,
         async task() {
@@ -80,7 +80,7 @@ export function scaffold(this: Biota, collectionName: string) {
       });
     }
 
-    for (let role of defaultRoles) {
+    for (const role of defaultRoles) {
       tasks.push({
         name: `Adding collection ${collectionName} to [${role}] role`,
         async task() {
