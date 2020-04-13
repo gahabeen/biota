@@ -1,7 +1,6 @@
 import { FactoryContextDefinition } from 'types/factory/factory.context';
 import { FaunaRef } from 'types/fauna';
-import { query as q } from 'faunadb';
-
+import { query as q, Expr } from 'faunadb';
 
 interface ActionDispatchResult {
   action?: object;
@@ -13,13 +12,13 @@ interface ResultInferface {
   data?: any;
   action?: object;
 }
-
-export function Result(context: FactoryContextDefinition = {}, result: FaunaRef = null, actionResult: ActionDispatchResult = {}): ResultInferface {
+// context: FactoryContextDefinition = {},
+export function Result(result: Expr = null, actionResult: ActionDispatchResult = {}): ResultInferface {
   // const isPlainDocument = (d: any) => q.If(q.IsObject(d), q.Contains(['ref'], d), false);
   return {
-    context,
+    context: q.Var('ctx'),
     data: result,
-    action: q.Select('action', actionResult, null),
+    action: q.If(q.IsObject(actionResult), q.Select('action', actionResult, null), null),
   };
 }
 

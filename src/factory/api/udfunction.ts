@@ -4,10 +4,10 @@ import { FactoryUDFunction } from '~/../types/factory/factory.udfunction';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const udfunction: FactoryContext<FactoryUDFunction> = function (contextExpr): FactoryUDFunction {
+export const udfunction: FactoryContext<FactoryUDFunction> = function (context): FactoryUDFunction {
   // tslint:disable-next-line: only-arrow-functions
   return (name) => {
-    const udfunctionApi = udfunction(contextExpr);
+    const udfunctionApi = udfunction(context);
     const ref = q.Function(name);
     return {
       get() {

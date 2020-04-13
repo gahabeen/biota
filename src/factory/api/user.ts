@@ -12,20 +12,20 @@ import { BiotaCollectionName } from '../constructors/collection';
 import { ContextExtend, ContextProp } from '../constructors/context';
 import { ThrowError } from '../constructors/error';
 import { BiotaRoleName } from '../constructors/role';
-import { BiotaFunctionName, CallUDFunction } from '../constructors/udfunction';
+import { BiotaFunctionName, CallFunction } from '../constructors/udfunction';
 
 // tslint:disable-next-line: only-arrow-functions
-export const user: FactoryContext<FactoryUser> = function (contextExpr): FactoryUser {
-  const offline = ContextProp(contextExpr, 'offline');
+export const user: FactoryContext<FactoryUser> = function (context): FactoryUser {
+  const offline = ContextProp(context, 'offline');
   // tslint:disable-next-line: only-arrow-functions
   return (idOrRef) => {
     const ref = q.If(q.IsDoc(idOrRef), idOrRef, q.Ref(q.Collection(BiotaCollectionName('users')), idOrRef));
 
     return {
-      ...document(contextExpr)(ref),
+      ...document(context)(ref),
       login(email, password) {
         // #improve: add expirationDuration
-        const ctx = ContextExtend(contextExpr, 'factory.user.login');
+        const ctx = ContextExtend(context, 'factory.user.login');
         return q.If(
           offline,
           q.Let(
@@ -39,11 +39,11 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             },
             q.Var('session'),
           ),
-          CallUDFunction('UserLogin', contextExpr, { email, password }),
+          CallFunction('UserLogin', context, { email, password }),
         );
       },
       logout(everywhere) {
-        const ctx = ContextExtend(contextExpr, 'factory.user.logout');
+        const ctx = ContextExtend(context, 'factory.user.logout');
         return q.If(
           offline,
           q.If(
@@ -75,11 +75,11 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             ),
             ThrowError(ctx, 'Context has no identity or session', ctx),
           ),
-          q.Call(BiotaFunctionName('UserLogout'), ContextExtend(contextExpr, 'udf.UserLogout'), { everywhere }),
+          q.Call(BiotaFunctionName('UserLogout'), ContextExtend(context, 'udf.UserLogout'), { everywhere }),
         );
       },
       changePassword(currentPassword, password) {
-        const ctx = ContextExtend(contextExpr, 'factory.user.changePassword');
+        const ctx = ContextExtend(context, 'factory.user.changePassword');
         return q.If(
           offline,
           q.If(
@@ -87,12 +87,12 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             credential(ctx)(ContextProp(ctx, 'identity')).update(currentPassword, password),
             ThrowError(ctx, "Can't change password without identity", { identity: ContextProp(ctx, 'identity') }),
           ),
-          CallUDFunction('UserChangePassword', contextExpr, { password }),
+          CallFunction('UserChangePassword', context, { password }),
         );
       },
       loginWithAuthAccount(account) {
         // #improve: add expirationDuration
-        const ctx = ContextExtend(contextExpr, 'factory.user.loginWithAuthAccount');
+        const ctx = ContextExtend(context, 'factory.user.loginWithAuthAccount');
         return q.If(
           offline,
           q.Let(
@@ -108,11 +108,11 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             },
             q.Var('session'),
           ),
-          CallUDFunction('UserLoginWithAuthAccount', contextExpr, { account }),
+          CallFunction('UserLoginWithAuthAccount', context, { account }),
         );
       },
       register(email, password, data) {
-        const ctx = ContextExtend(contextExpr, 'factory.user.register');
+        const ctx = ContextExtend(context, 'factory.user.register');
         return q.If(
           offline,
           q.Let(
@@ -129,11 +129,11 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             },
             q.Var('session'),
           ),
-          CallUDFunction('UserRegister', contextExpr, { email, password, data }),
+          CallFunction('UserRegister', context, { email, password, data }),
         );
       },
       registerWithAuthAccount(account) {
-        const ctx = ContextExtend(contextExpr, 'factory.user.registerWithAuthAccount');
+        const ctx = ContextExtend(context, 'factory.user.registerWithAuthAccount');
         return q.If(
           offline,
           q.Let(
@@ -149,14 +149,14 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             },
             q.Var('session'),
           ),
-          CallUDFunction('UserRegisterWithAuthAccount', contextExpr, { account }),
+          CallFunction('UserRegisterWithAuthAccount', context, { account }),
         );
       },
 
       auth: {
         email: {
           set(email) {
-            const ctx = ContextExtend(contextExpr, 'factory.user.auth.email.set');
+            const ctx = ContextExtend(context, 'factory.user.auth.email.set');
             return q.If(
               q.IsString(email),
               user(ctx)(ref).upsert({
@@ -168,7 +168,7 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             );
           },
           remove() {
-            const ctx = ContextExtend(contextExpr, 'factory.user.auth.email.remove');
+            const ctx = ContextExtend(context, 'factory.user.auth.email.remove');
             return user(ctx)(ref).upsert({
               _auth: {
                 email: null,
@@ -178,7 +178,7 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
         },
         accounts: {
           distinct(account) {
-            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.distinct');
+            const ctx = ContextExtend(context, 'factory.user.auth.accounts.distinct');
             return q.Let(
               {
                 provider: q.Select('provider', account, null),
@@ -213,7 +213,7 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             );
           },
           difference(provider, accountId) {
-            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.difference');
+            const ctx = ContextExtend(context, 'factory.user.auth.accounts.difference');
             return q.Let(
               {
                 current_accounts: q.Select(['data', '_auth', 'accounts'], q.Get(ref), []),
@@ -229,7 +229,7 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             );
           },
           set(account) {
-            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.set');
+            const ctx = ContextExtend(context, 'factory.user.auth.accounts.set');
             return q.If(
               offline,
               user(ctx)(ref).upsert({
@@ -237,11 +237,11 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
                   accounts: user(ctx)(ref).auth.accounts.distinct(account),
                 },
               }),
-              CallUDFunction('UserAuthAccountsSet', contextExpr, { account }),
+              CallFunction('UserAuthAccountsSet', context, { account }),
             );
           },
           remove(provider, accountId) {
-            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.remove');
+            const ctx = ContextExtend(context, 'factory.user.auth.accounts.remove');
             return q.If(
               offline,
               user(ctx)(ref).upsert({
@@ -249,7 +249,7 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
                   accounts: user(ctx)(ref).auth.accounts.difference(provider, accountId),
                 },
               }),
-              CallUDFunction('UserAuthAccountsRemove', contextExpr, { provider, accountId }),
+              CallFunction('UserAuthAccountsRemove', context, { provider, accountId }),
             );
           },
         },

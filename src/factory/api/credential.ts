@@ -4,10 +4,10 @@ import { FactoryCredential } from '~/../types/factory/factory.credential';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const credential: FactoryContext<FactoryCredential> = function (contextExpr): FactoryCredential {
+export const credential: FactoryContext<FactoryCredential> = function (context): FactoryCredential {
   // tslint:disable-next-line: only-arrow-functions
   return (idOrRefOrInstance) => {
-    const credentialApi = credential(contextExpr);
+    const credentialApi = credential(context);
     const instance = q.If(q.IsDoc(idOrRefOrInstance), idOrRefOrInstance, null);
     const ref = q.If(
       q.IsCredentials(idOrRefOrInstance),

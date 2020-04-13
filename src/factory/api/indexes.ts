@@ -9,10 +9,10 @@ import { ThrowError } from '../constructors/error';
 import { ContextExtend } from '../constructors/context';
 
 // tslint:disable-next-line: only-arrow-functions
-export const indexes: FactoryContext<FactoryIndexesApi> = function (contextExpr): FactoryIndexesApi {
+export const indexes: FactoryContext<FactoryIndexesApi> = function (context): FactoryIndexesApi {
   return {
     findIndex(resource, termFields) {
-      const ctx = ContextExtend(contextExpr, 'factory.indexes.findIndex');
+      const ctx = ContextExtend(context, 'factory.indexes.findIndex');
       return q.Let(
         {
           indexes: q.Paginate(
@@ -31,7 +31,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (contextExpr)
       );
     },
     searchQuery(resource, searchTerms) {
-      const ctx = ContextExtend(contextExpr, 'factory.indexes.searchQuery');
+      const ctx = ContextExtend(context, 'factory.indexes.searchQuery');
       return q.Let(
         {
           searchTerms: q.ToArray(searchTerms),

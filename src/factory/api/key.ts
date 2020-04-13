@@ -4,10 +4,10 @@ import { FactoryKey } from '~/../types/factory/factory.key';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const key: FactoryContext<FactoryKey> = function (contextExpr): FactoryKey {
+export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
   // tslint:disable-next-line: only-arrow-functions
   return (idOrRef) => {
-    const keyApi = key(contextExpr);
+    const keyApi = key(context);
     const ref = q.If(q.IsKey(idOrRef), idOrRef, q.Ref(q.Keys(), idOrRef));
     return {
       get() {

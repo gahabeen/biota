@@ -9,12 +9,12 @@ import { BiotaFunctionName } from '../constructors/udfunction';
 import { BiotaCollectionName } from '../constructors/collection';
 
 // tslint:disable-next-line: only-arrow-functions
-export const users: FactoryContext<FactoryUsersApi> = function (contextExpr): FactoryUsersApi {
-  const offline = ContextProp(contextExpr, 'offline');
+export const users: FactoryContext<FactoryUsersApi> = function (context): FactoryUsersApi {
+  const offline = ContextProp(context, 'offline');
 
   return {
     getByAuthAccount(providerOrAccount, id) {
-      const ctx = ContextExtend(contextExpr, 'factory.users.getByAuthAccount');
+      const ctx = ContextExtend(context, 'factory.users.getByAuthAccount');
       const account = q.If(q.IsObject(providerOrAccount), providerOrAccount, { provider: providerOrAccount, id });
       const provider = q.Select('provider', account, null);
       const accountId = q.Select('id', account, null);
@@ -28,14 +28,14 @@ export const users: FactoryContext<FactoryUsersApi> = function (contextExpr): Fa
           },
           q.Var('user'),
         ),
-        q.Call(BiotaFunctionName('UsersGetByAuthAccount'), ContextExtend(contextExpr, 'udf.UsersGetByAuthAccount'), {
+        q.Call(BiotaFunctionName('UsersGetByAuthAccount'), ContextExtend(context, 'udf.UsersGetByAuthAccount'), {
           providerOrAccount,
           id,
         }),
       );
     },
     getByAuthEmail(email) {
-      const ctx = ContextExtend(contextExpr, 'factory.users.getByAuthEmail');
+      const ctx = ContextExtend(context, 'factory.users.getByAuthEmail');
       return q.If(
         offline,
         q.Let(
@@ -45,13 +45,13 @@ export const users: FactoryContext<FactoryUsersApi> = function (contextExpr): Fa
           },
           q.Var('user'),
         ),
-        q.Call(BiotaFunctionName('UsersGetByAuthEmail'), ContextExtend(contextExpr, 'udf.UsersGetByAuthEmail'), {
+        q.Call(BiotaFunctionName('UsersGetByAuthEmail'), ContextExtend(context, 'udf.UsersGetByAuthEmail'), {
           email,
         }),
       );
     },
     paginate(pagination) {
-      const ctx = ContextExtend(contextExpr, 'factory.users.paginate');
+      const ctx = ContextExtend(context, 'factory.users.paginate');
       pagination = DefaultToOjbect(pagination);
       return q.Paginate(q.Documents(q.Collection(BiotaCollectionName('users'))), pagination);
     },

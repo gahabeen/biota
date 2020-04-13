@@ -4,7 +4,7 @@ import { FactoryDatabasesApi } from '~/../types/factory/factory.databases';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const databases: FactoryContext<FactoryDatabasesApi> = function (contextExpr): FactoryDatabasesApi {
+export const databases: FactoryContext<FactoryDatabasesApi> = function (context): FactoryDatabasesApi {
   return {
     paginate(pagination) {
       pagination = DefaultToOjbect(pagination);

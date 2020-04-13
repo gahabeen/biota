@@ -4,10 +4,10 @@ import { FactoryRole } from '~/../types/factory/factory.role';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const role: FactoryContext<FactoryRole> = function (contextExpr): FactoryRole {
+export const role: FactoryContext<FactoryRole> = function (context): FactoryRole {
   // tslint:disable-next-line: only-arrow-functions
   return (nameOrRef) => {
-    const roleApi = role(contextExpr);
+    const roleApi = role(context);
     const ref = q.If(q.IsRole(nameOrRef), nameOrRef, q.Role(nameOrRef));
     const name = q.If(q.IsString(nameOrRef), nameOrRef, q.Select('id', ref));
     return {

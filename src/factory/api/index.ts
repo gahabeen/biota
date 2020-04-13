@@ -4,10 +4,10 @@ import { FactoryIndex } from '~/../types/factory/factory.index';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const index: FactoryContext<FactoryIndex> = function (contextExpr): FactoryIndex {
+export const index: FactoryContext<FactoryIndex> = function (context): FactoryIndex {
   // tslint:disable-next-line: only-arrow-functions
   return (name) => {
-    const indexApi = index(contextExpr);
+    const indexApi = index(context);
     const ref = q.Index(name);
     return {
       get() {

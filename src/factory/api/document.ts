@@ -4,15 +4,15 @@ import { FactoryDocument } from '~/../types/factory/factory.document';
 import { TS_2500_YEARS } from '~/consts';
 import * as helpers from '~/helpers';
 import { ContextProp, ContextExtend } from '../constructors/context';
-import { Result } from '../constructors/result';
-import { CallUDFunction } from '../constructors/udfunction';
+import { Result, ResultData } from '../constructors/result';
+import { CallFunction, BiotaFunctionName } from '../constructors/udfunction';
 import { action } from '~/factory/api/action';
 import { ThrowError } from '../constructors/error';
+import { Query, MethodDispatch } from '../constructors/method';
 
 // tslint:disable-next-line: only-arrow-functions
-export const document: FactoryContext<FactoryDocument> = function (contextExpr): FactoryDocument {
-  contextExpr = ContextExtend(contextExpr);
-  const offline = ContextProp(contextExpr, 'offline');
+export const document: FactoryContext<FactoryDocument> = function (context): FactoryDocument {
+  context = ContextExtend(context);
 
   // tslint:disable-next-line: only-arrow-functions
   return (collectionOrRef = null, id = null) => {
@@ -23,185 +23,183 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
     );
     return {
       get() {
-        const ctx = ContextExtend(contextExpr, 'factory.document.get');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: q.Get(ref),
-            },
-            Result(ctx, q.Var('doc')),
-          ),
-          CallUDFunction('DocumentGet', contextExpr, { ref }),
+        const inputs = { ref };
+        const query = Query(
+          {
+            doc: q.Get(q.Var('ref')),
+          },
+          q.Var('doc'),
         );
+        const offline = 'factory.document.get';
+        const online = { name: BiotaFunctionName('DocumentGet'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(data) {
-        const ctx = ContextExtend(contextExpr, 'factory.document.insert');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: q.Create(ref, { data }),
-              action: action(ctx)('insert', q.Var('doc')).dispatch(),
-            },
-            Result(ctx, q.Select('doc', q.Var('action'), q.Var('doc')), q.Var('action')),
-          ),
-          CallUDFunction('DocumentInsert', contextExpr, { ref, data }),
+        const inputs = { name, data };
+        const query = Query(
+          {
+            doc: q.Create(q.Var('ref'), { data: q.Var('data') }),
+            action: action(q.Var('ctx'))('insert', q.Var('doc')).dispatch(),
+          },
+          q.Select('doc', q.Var('action'), q.Var('doc')),
+          q.Var('action'),
         );
+        const offline = 'factory.document.insert';
+        const online = { name: BiotaFunctionName('DocumentInsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(data) {
-        const ctx = ContextExtend(contextExpr, 'factory.document.update');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: q.Update(ref, { data }),
-              action: action(ctx)('update', q.Var('doc')).dispatch(),
-            },
-            Result(ctx, q.Select('doc', q.Var('action'), q.Var('doc')), q.Var('action')),
-          ),
-          CallUDFunction('DocumentUpdate', contextExpr, { ref }),
+        const inputs = { ref, data };
+        const query = Query(
+          {
+            doc: q.Update(q.Var('ref'), { data: q.Var('data') }),
+            action: action(q.Var('ctx'))('update', q.Var('doc')).dispatch(),
+          },
+          q.Select('doc', q.Var('action'), q.Var('doc')),
+          q.Var('action'),
         );
+        const offline = 'factory.document.update';
+        const online = { name: BiotaFunctionName('DocumentUpdate'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(data) {
-        const ctx = ContextExtend(contextExpr, 'factory.document.upsert');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: q.If(q.Exists(ref), document(ctx)(ref).update(data), document(ctx)(ref).insert(data)),
-              // already logging actions: update or insert
-            },
-            Result(ctx, q.Var('doc')),
-          ),
-          CallUDFunction('DocumentUpsert', contextExpr, { ref }),
+        const inputs = { ref, data };
+        const query = Query(
+          {
+            doc: q.If(
+              q.Exists(q.Var('ref')),
+              ResultData(document(q.Var('ctx'))(q.Var('ref')).update(q.Var('data'))),
+              ResultData(document(q.Var('ctx'))(q.Var('ref')).insert(q.Var('data'))),
+            ),
+          },
+          q.Var('doc'),
+          // already logging actions: update or insert
         );
+        const offline = 'factory.document.upsert';
+        const online = { name: BiotaFunctionName('DocumentUpsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(data) {
-        const ctx = ContextExtend(contextExpr, 'factory.document.replace');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: q.Replace(ref, { data }),
-              action: action(ctx)('replace', q.Var('doc')).dispatch(),
-            },
-            Result(ctx, q.Select('doc', q.Var('action'), q.Var('doc')), q.Var('action')),
-          ),
-          CallUDFunction('DocumentReplace', contextExpr, { ref }),
+        const inputs = { ref, data };
+        const query = Query(
+          {
+            doc: q.Replace(q.Var('ref'), { data: q.Var('data') }),
+            action: action(q.Var('ctx'))('replace', q.Var('doc')).dispatch(),
+          },
+          q.Select('doc', q.Var('action'), q.Var('doc')),
+          q.Var('action'),
         );
+        const offline = 'factory.document.replace';
+        const online = { name: BiotaFunctionName('DocumentReplace'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(data) {
-        const ctx = ContextExtend(contextExpr, 'factory.document.repsert');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: q.If(q.Exists(ref), document(ctx)(ref).replace(data), document(ctx)(ref).insert(data)),
-              // already logging actions: replace or insert
-            },
-            q.Var('doc'),
-          ),
-          CallUDFunction('DocumentReplace', contextExpr, { ref }),
+        const inputs = { ref, data };
+        const query = Query(
+          {
+            doc: q.If(
+              q.Exists(q.Var('ref')),
+              ResultData(document(q.Var('ctx'))(q.Var('ref')).replace(q.Var('data'))),
+              ResultData(document(q.Var('ctx'))(q.Var('ref')).insert(q.Var('data'))),
+            ),
+          },
+          q.Var('doc'),
+          // already logging actions: replace or insert
         );
+        const offline = 'factory.document.repsert';
+        const online = { name: BiotaFunctionName('DocumentRepsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       delete() {
-        const ctx = ContextExtend(contextExpr, 'factory.document.delete');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: document(ctx)(ref).validity.delete(),
-              action: action(ctx)('delete', q.Var('doc')).dispatch(),
-            },
-            q.Select('doc', q.Var('action'), q.Var('doc')),
-          ),
-          CallUDFunction('DocumentDelete', contextExpr, { ref }),
+        const inputs = { ref };
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
+            action: action(q.Var('ctx'))('delete', q.Var('doc')).dispatch(),
+          },
+          q.Select('doc', q.Var('action'), q.Var('doc')),
+          q.Var('action'),
         );
+        const offline = 'factory.document.delete';
+        const online = { name: BiotaFunctionName('DocumentDelete'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       restore() {
-        const ctx = ContextExtend(contextExpr, 'factory.document.restore');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: document(ctx)(ref).validity.restore(),
-              // already logged
-            },
-            q.Var('doc'),
-          ),
-          CallUDFunction('DocumentRestore', contextExpr, { ref }),
+        const inputs = { ref };
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
+          },
+          q.Var('doc'),
         );
+        const offline = 'factory.document.restore';
+        const online = { name: BiotaFunctionName('DocumentRestore'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
-        const ctx = ContextExtend(contextExpr, 'factory.document.forget');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              action: action(ctx)('forget', ref).dispatch(),
-              doc: q.Delete(ref),
-            },
-            q.Var('doc'),
-          ),
-          CallUDFunction('DocumentRestore', contextExpr, { ref }),
+        const inputs = { ref };
+        const query = Query(
+          {
+            action: action(q.Var('ctx'))('forget', ref).dispatch(),
+            doc: q.Delete(q.Var('ref')),
+          },
+          q.Var('doc'),
         );
+        const offline = 'factory.document.forget';
+        const online = { name: BiotaFunctionName('DocumentRestore'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       clean() {
-        const ctx = ContextExtend(contextExpr, 'factory.document.clean');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: q.If(q.Exists(ref), document(ctx)(ref).forget(), false),
-              // already logging actions: forget
-            },
-            q.Var('doc'),
-          ),
-          CallUDFunction('DocumentClean', contextExpr, { ref }),
+        const inputs = { ref };
+        const query = Query(
+          {
+            doc: q.If(q.Exists(q.Var('ref')), document(q.Var('ctx'))(q.Var('ref')).forget(), false),
+            // already logging actions: forget
+          },
+          q.Var('doc'),
         );
+        const offline = 'factory.document.clean';
+        const online = { name: BiotaFunctionName('DocumentClean'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireAt(at) {
-        const ctx = ContextExtend(contextExpr, 'factory.document.expireAt');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: document(ctx)(ref).validity.expire(at),
-              // already logged
-            },
-            q.Var('doc'),
-          ),
-          CallUDFunction('DocumentExpireAt', contextExpr, { ref, at }),
+        const inputs = { ref, at };
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
+          },
+          q.Var('doc'),
+          // already logged
         );
+        const offline = 'factory.document.expireAt';
+        const online = { name: BiotaFunctionName('DocumentExpireAt'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireIn(delay) {
-        const ctx = ContextExtend(contextExpr, 'factory.document.expireIn');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: document(ctx)(ref).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds')),
-              // already logged
-            },
-            q.Var('doc'),
-          ),
-          CallUDFunction('DocumentExpireIn', contextExpr, { ref, delay }),
+        const inputs = { ref, delay };
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+          },
+          q.Var('doc'),
+          // already logged
         );
+        const offline = 'factory.document.expireIn';
+        const online = { name: BiotaFunctionName('DocumentExpireIn'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireNow() {
-        const ctx = ContextExtend(contextExpr, 'factory.document.expireIn');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              doc: document(ctx)(ref).validity.expire(q.Now()),
-              // already logged
-            },
-            q.Var('doc'),
-          ),
-          CallUDFunction('DocumentExpireNow', contextExpr, { ref }),
+        const inputs = { ref };
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
+          },
+          q.Var('doc'),
+          // already logged
         );
+        const offline = 'factory.document.expireNow';
+        const online = { name: BiotaFunctionName('DocumentExpireNow'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
 
       membership: {
@@ -209,65 +207,65 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
           const roleRef = q.If(q.IsRole(roleOrRef), roleOrRef, q.Role(roleOrRef));
           return {
             distinct() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.role.distinct');
+              const ctx = ContextExtend(context, 'factory.document.membership.role.distinct');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: q.Distinct(q.Union(q.Select(helpers.path('_membership.roles'), q.Get(ref), []), [roleRef])),
+                    doc: q.Distinct(q.Union(q.Select(helpers.path('_membership.roles'), q.Get(q.Var('ref')), []), [roleRef])),
                     // nothing to log
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipRoleDistinct', contextExpr, { ref, roleRef }),
+                CallFunction('DocumentMembershipRoleDistinct', context, { ref, roleRef }),
               );
             },
             difference() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.role.difference');
+              const ctx = ContextExtend(context, 'factory.document.membership.role.difference');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: q.Difference(q.Select(helpers.path('_membership.roles'), q.Get(ref), []), [roleRef]),
+                    doc: q.Difference(q.Select(helpers.path('_membership.roles'), q.Get(q.Var('ref')), []), [roleRef]),
                     // nothing to log
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipRoleDifference', contextExpr, { ref, roleRef }),
+                CallFunction('DocumentMembershipRoleDifference', context, { ref, roleRef }),
               );
             },
             set() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.role.set');
+              const ctx = ContextExtend(context, 'factory.document.membership.role.set');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: document(ctx)(ref).upsert({
+                    doc: document(q.Var('ctx'))(q.Var('ref')).upsert({
                       _membership: {
-                        roles: document(ctx)(ref).membership.role(roleRef).distinct(),
+                        roles: ResultData(document(q.Var('ctx'))(q.Var('ref')).membership.role(roleRef).distinct()),
                       },
                     }),
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipRoleSet', contextExpr, { ref, roleRef }),
+                CallFunction('DocumentMembershipRoleSet', context, { ref, roleRef }),
               );
             },
             remove() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.role.remove');
+              const ctx = ContextExtend(context, 'factory.document.membership.role.remove');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: document(ctx)(ref).upsert({
+                    doc: document(q.Var('ctx'))(q.Var('ref')).upsert({
                       _membership: {
-                        roles: document(ctx)(ref).membership.role(roleRef).difference(),
+                        roles: ResultData(document(q.Var('ctx'))(q.Var('ref')).membership.role(roleRef).difference()),
                       },
                     }),
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipRoleRemove', contextExpr, { ref, roleRef }),
+                CallFunction('DocumentMembershipRoleRemove', context, { ref, roleRef }),
               );
             },
           };
@@ -275,41 +273,45 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
         owner: {
           // tslint:disable-next-line: no-shadowed-variable
           set(user) {
-            const ctx = ContextExtend(contextExpr, 'factory.document.membership.owner.set');
+            const ctx = ContextExtend(context, 'factory.document.membership.owner.set');
             return q.If(
               offline,
               q.Let(
                 {
                   doc: q.If(
                     q.IsDoc(user),
-                    document(ctx)(ref).upsert({
-                      _membership: {
-                        owner: user,
-                      },
-                    }),
+                    ResultData(
+                      document(q.Var('ctx'))(q.Var('ref')).upsert({
+                        _membership: {
+                          owner: user,
+                        },
+                      }),
+                    ),
                     ThrowError(ctx, "User isn't a document reference", { user }),
                   ),
                 },
-                q.Var('doc'),
+                Result(ctx, q.Var('doc')),
               ),
-              CallUDFunction('DocumentMembershipOwnerSet', contextExpr, { ref, user }),
+              CallFunction('DocumentMembershipOwnerSet', context, { ref, user }),
             );
           },
           remove() {
-            const ctx = ContextExtend(contextExpr, 'factory.document.membership.owner.remove');
+            const ctx = ContextExtend(context, 'factory.document.membership.owner.remove');
             return q.If(
               offline,
               q.Let(
                 {
-                  doc: document(ctx)(ref).upsert({
-                    _membership: {
-                      owner: null,
-                    },
-                  }),
+                  doc: ResultData(
+                    document(q.Var('ctx'))(q.Var('ref')).upsert({
+                      _membership: {
+                        owner: null,
+                      },
+                    }),
+                  ),
                 },
-                q.Var('doc'),
+                Result(ctx, q.Var('doc')),
               ),
-              CallUDFunction('DocumentMembershipOwnerRemove', contextExpr, { ref }),
+              CallFunction('DocumentMembershipOwnerRemove', context, { ref }),
             );
           },
         },
@@ -317,67 +319,71 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
           const assigneeRef = q.If(q.IsDoc(assignee), assignee, null);
           return {
             distinct() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.assignee.distinct');
+              const ctx = ContextExtend(context, 'factory.document.membership.assignee.distinct');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: q.Distinct(q.Union(q.Select(helpers.path('_membership.assignees'), q.Get(ref), []), [assigneeRef])),
+                    doc: q.Distinct(q.Union(q.Select(helpers.path('_membership.assignees'), q.Get(q.Var('ref')), []), [assigneeRef])),
                     // don't need logging
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipAssigneeDistinct', contextExpr, { ref, assigneeRef }),
+                CallFunction('DocumentMembershipAssigneeDistinct', context, { ref, assigneeRef }),
               );
             },
             difference() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.assignee.difference');
+              const ctx = ContextExtend(context, 'factory.document.membership.assignee.difference');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: q.Difference(q.Select(helpers.path('_membership.assignees'), q.Get(ref), []), [assigneeRef]),
+                    doc: q.Difference(q.Select(helpers.path('_membership.assignees'), q.Get(q.Var('ref')), []), [assigneeRef]),
                     // don't need logging
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipAssigneeDifference', contextExpr, { ref, assigneeRef }),
+                CallFunction('DocumentMembershipAssigneeDifference', context, { ref, assigneeRef }),
               );
             },
             set() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.assignee.set');
+              const ctx = ContextExtend(context, 'factory.document.membership.assignee.set');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: document(ctx)(ref).upsert({
-                      _membership: {
-                        assignees: document(ctx)(ref).membership.role(assigneeRef).distinct(),
-                      },
-                    }),
+                    doc: ResultData(
+                      document(q.Var('ctx'))(q.Var('ref')).upsert({
+                        _membership: {
+                          assignees: document(q.Var('ctx'))(q.Var('ref')).membership.role(assigneeRef).distinct(),
+                        },
+                      }),
+                    ),
                     // already logging actions: update/insert in upsert
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipAssigneeSet', contextExpr, { ref, assigneeRef }),
+                CallFunction('DocumentMembershipAssigneeSet', context, { ref, assigneeRef }),
               );
             },
             remove() {
-              const ctx = ContextExtend(contextExpr, 'factory.document.membership.assignee.remove');
+              const ctx = ContextExtend(context, 'factory.document.membership.assignee.remove');
               return q.If(
                 offline,
                 q.Let(
                   {
-                    doc: document(ctx)(ref).upsert({
-                      _membership: {
-                        assignees: document(ctx)(ref).membership.role(assigneeRef).difference(),
-                      },
-                    }),
+                    doc: ResultData(
+                      document(q.Var('ctx'))(q.Var('ref')).upsert({
+                        _membership: {
+                          assignees: document(q.Var('ctx'))(q.Var('ref')).membership.role(assigneeRef).difference(),
+                        },
+                      }),
+                    ),
                     // already logging actions: update/insert in upsert
                   },
-                  q.Var('doc'),
+                  Result(ctx, q.Var('doc')),
                 ),
-                CallUDFunction('DocumentMembershipAssigneeRemove', contextExpr, { ref, assigneeRef }),
+                CallFunction('DocumentMembershipAssigneeRemove', context, { ref, assigneeRef }),
               );
             },
           };
@@ -385,83 +391,91 @@ export const document: FactoryContext<FactoryDocument> = function (contextExpr):
       },
       validity: {
         delete() {
-          const ctx = ContextExtend(contextExpr, 'factory.document.validity.delete');
+          const ctx = ContextExtend(context, 'factory.document.validity.delete');
           return q.If(
             offline,
             q.Let(
               {
-                doc: document(ctx)(ref).upsert({
-                  _validity: {
-                    deleted: true,
-                  },
-                }),
+                doc: ResultData(
+                  document(q.Var('ctx'))(q.Var('ref')).upsert({
+                    _validity: {
+                      deleted: true,
+                    },
+                  }),
+                ),
                 // already logging actions: update/insert in upsert
               },
-              q.Var('doc'),
+              Result(ctx, q.Var('doc')),
             ),
-            CallUDFunction('DocumentValidityDelete', contextExpr, { ref }),
+            CallFunction('DocumentValidityDelete', context, { ref }),
           );
         },
         expire(at) {
-          const ctx = ContextExtend(contextExpr, 'factory.document.validity.expire');
+          const ctx = ContextExtend(context, 'factory.document.validity.expire');
           return q.If(
             offline,
             q.Let(
               {
                 doc: q.If(
                   q.IsTimestamp(at),
-                  document(ctx)(ref).upsert({
-                    _validity: {
-                      expires_at: at,
-                    },
-                  }),
+                  ResultData(
+                    document(q.Var('ctx'))(q.Var('ref')).upsert({
+                      _validity: {
+                        expires_at: at,
+                      },
+                    }),
+                  ),
                   ThrowError(ctx, "[at] isn't a valid time", { at }),
                 ),
-                action: action(ctx)('expire', q.Var('doc')).dispatch(),
+                action: action(q.Var('ctx'))('expire', q.Var('doc')).dispatch(),
               },
-              q.Var('doc'),
+              Result(ctx, q.Var('doc')),
             ),
-            CallUDFunction('DocumentValidityExpire', contextExpr, { ref, at }),
+            CallFunction('DocumentValidityExpire', context, { ref, at }),
           );
         },
         restore() {
-          const ctx = ContextExtend(contextExpr, 'factory.document.validity.restore');
+          const ctx = ContextExtend(context, 'factory.document.validity.restore');
           return q.If(
             offline,
             q.Let(
               {
                 doc: q.Let(
                   {
-                    doc: q.Get(ref),
+                    doc: q.Get(q.Var('ref')),
                     isDeleted: q.Select(helpers.path('_validity.deleted'), q.Var('doc'), false),
                     isExpired: q.GTE(q.Select(helpers.path('_validity.expires_at'), q.Var('doc'), q.ToTime(TS_2500_YEARS)), q.Now()),
                   },
                   q.Do(
                     q.If(
                       q.Var('isDeleted'),
-                      document(ctx)(ref).upsert({
-                        _validity: {
-                          deleted: false,
-                        },
-                      }),
+                      ResultData(
+                        document(q.Var('ctx'))(q.Var('ref')).upsert({
+                          _validity: {
+                            deleted: false,
+                          },
+                        }),
+                      ),
                       false,
                     ),
                     q.If(
                       q.Var('isExpired'),
-                      document(ctx)(ref).upsert({
-                        _validity: {
-                          expires_at: null,
-                        },
-                      }),
+                      ResultData(
+                        document(q.Var('ctx'))(q.Var('ref')).upsert({
+                          _validity: {
+                            expires_at: null,
+                          },
+                        }),
+                      ),
                       false,
                     ),
                   ),
                 ),
-                action: action(ctx)('restore', q.Var('doc')).dispatch(),
+                action: action(q.Var('ctx'))('restore', q.Var('doc')).dispatch(),
               },
-              q.Var('doc'),
+              Result(ctx, q.Var('doc')),
             ),
-            CallUDFunction('DocumentValidityRestore', contextExpr, { ref }),
+            CallFunction('DocumentValidityRestore', context, { ref }),
           );
         },
       },

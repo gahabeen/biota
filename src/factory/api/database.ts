@@ -4,10 +4,10 @@ import { FactoryDatabase } from '~/../types/factory/factory.database';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const database: FactoryContext<FactoryDatabase> = function (contextExpr): FactoryDatabase {
+export const database: FactoryContext<FactoryDatabase> = function (context): FactoryDatabase {
   // tslint:disable-next-line: only-arrow-functions
   return (name) => {
-    const databaseApi = database(contextExpr);
+    const databaseApi = database(context);
     const ref = q.Database(name);
     return {
       get() {

@@ -4,10 +4,10 @@ import { FactoryToken } from '~/../types/factory/factory.token';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const token: FactoryContext<FactoryToken> = function (contextExpr): FactoryToken {
+export const token: FactoryContext<FactoryToken> = function (context): FactoryToken {
   // tslint:disable-next-line: only-arrow-functions
   return (idOrRefOrInstance) => {
-    const tokenApi = token(contextExpr);
+    const tokenApi = token(context);
     const instance = q.If(q.IsDoc(idOrRefOrInstance), idOrRefOrInstance, null);
     const ref = q.If(
       q.IsToken(idOrRefOrInstance),

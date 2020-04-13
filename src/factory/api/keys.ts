@@ -4,7 +4,7 @@ import { FactoryKeysApi } from '~/../types/factory/factory.keys';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const keys: FactoryContext<FactoryKeysApi> = function (contextExpr): FactoryKeysApi {
+export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryKeysApi {
   return {
     paginate(pagination) {
       pagination = DefaultToOjbect(pagination);

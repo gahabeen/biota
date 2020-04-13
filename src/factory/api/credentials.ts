@@ -5,7 +5,7 @@ import { DefaultToOjbect } from './ql/defaultTo';
 import { BiotaIndexName } from '../constructors';
 
 // tslint:disable-next-line: only-arrow-functions
-export const credentials: FactoryContext<FactoryCredentialsApi> = function (contextExpr): FactoryCredentialsApi {
+export const credentials: FactoryContext<FactoryCredentialsApi> = function (context): FactoryCredentialsApi {
   return {
     findByInstance(instance, pagination) {
       pagination = DefaultToOjbect(pagination);

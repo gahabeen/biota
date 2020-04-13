@@ -4,7 +4,7 @@ import { FactoryCollectionsApi } from '~/../types/factory/factory.collections';
 import { DefaultToOjbect } from './ql/defaultTo';
 
 // tslint:disable-next-line: only-arrow-functions
-export const collections: FactoryContext<FactoryCollectionsApi> = function (contextExpr): FactoryCollectionsApi {
+export const collections: FactoryContext<FactoryCollectionsApi> = function (context): FactoryCollectionsApi {
   return {
     paginate(pagination) {
       pagination = DefaultToOjbect(pagination);
