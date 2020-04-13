@@ -23,6 +23,7 @@ interface BiotaOptions {
 
 export class Biota {
   client: Fauna.Client;
+  // tslint:disable-next-line: variable-name
   private_key: string;
   secret: string;
 
@@ -47,44 +48,46 @@ export class Biota {
 
   defaults: any;
 
+  // tslint:disable-next-line: variable-name
   privateKey: (private_key: string) => Promise<any>;
 
   constructor(options: BiotaOptions) {
-    let { secret, debug, private_key } = options || {};
+    const { secret, debug, private_key } = options || {};
 
     this.secret = secret;
     this.private_key = private_key;
 
     try {
       this.client = new fauna.Client({ secret });
+      // tslint:disable-next-line: no-empty
     } catch (error) {}
 
     this.query = framework.query.bind(this);
-    this.paginate = framework.paginate.bind(this);
-    this.document = framework.document.bind(this);
+    // this.paginate = framework.paginate.bind(this);
+    // this.document = framework.document.bind(this);
 
-    this.user = framework.user;
-    bindSubFunctions(this, 'user');
-    this.collection = framework.collection.bind(this);
-    this.collections = framework.collections;
-    bindSubFunctions(this, 'collections');
-    this.index = framework.index.bind(this);
-    this.indexes = framework.indexes;
-    bindSubFunctions(this, 'indexes');
-    this.role = framework.role.bind(this);
-    this.roles = framework.roles;
-    bindSubFunctions(this, 'roles');
-    this.database = framework.database.bind(this);
-    this.databases = framework.databases;
-    bindSubFunctions(this, 'databases');
-    this.udfunction = framework.udfunction.bind(this);
-    this.udfunctions = framework.udfunctions;
-    bindSubFunctions(this, 'udfunctions');
+    // this.user = framework.user;
+    // bindSubFunctions(this, 'user');
+    // this.collection = framework.collection.bind(this);
+    // this.collections = framework.collections;
+    // bindSubFunctions(this, 'collections');
+    // this.index = framework.index.bind(this);
+    // this.indexes = framework.indexes;
+    // bindSubFunctions(this, 'indexes');
+    // this.role = framework.role.bind(this);
+    // this.roles = framework.roles;
+    // bindSubFunctions(this, 'roles');
+    // this.database = framework.database.bind(this);
+    // this.databases = framework.databases;
+    // bindSubFunctions(this, 'databases');
+    // this.udfunction = framework.udfunction.bind(this);
+    // this.udfunctions = framework.udfunctions;
+    // bindSubFunctions(this, 'udfunctions');
 
-    this.foundation = framework.foundation.bind(this);
-    this.relation = framework.relation.bind(this);
+    // this.foundation = framework.foundation.bind(this);
+    // this.relation = framework.relation.bind(this);
 
-    this.privateKey = framework.privateKey.bind(this);
-    this.defaults = framework.defaults;
+    // this.privateKey = framework.privateKey.bind(this);
+    // this.defaults = framework.defaults;
   }
 }

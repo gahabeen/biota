@@ -1,8 +1,8 @@
 import { Expr } from 'faunadb';
 import { DocumentActionName } from 'types/document';
-import { FaunaNumber, FaunaRef } from '../fauna';
+import { FaunaNumber, FaunaRef, FaunaDocument } from '../fauna';
 
-export type FactoryAction = (name: DocumentActionName, ref: FaunaRef) => FactoryActionApi;
+export type FactoryAction = (name: DocumentActionName, refOrDoc: FaunaRef | FaunaDocument) => FactoryActionApi;
 
 export interface FactoryActionApi {
   insert(): Expr;

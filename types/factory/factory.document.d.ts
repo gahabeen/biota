@@ -47,6 +47,7 @@ export interface FactoryDocumentApi {
   repsert(data: FaunaData): Expr;
   delete(): Expr;
   forget(): Expr;
+  restore(): Expr;
   clean(): Expr;
   expireAt(time: Expr): Expr;
   expireIn(delay: number | Expr): Expr;

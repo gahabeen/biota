@@ -1,4 +1,4 @@
-import { Collection, BiotaCollectionName } from '~/factory/classes/collection';
+import { Collection, BiotaCollectionName } from '~/factory/constructors/collection';
 
 export const user_sessions = Collection({
   name: BiotaCollectionName('user_sessions'),

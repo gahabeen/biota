@@ -18,10 +18,10 @@ import { BiotaIndexName } from '../constructors';
 
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (contextExpr): FactoryUser {
+  const offline = ContextProp(contextExpr, 'offline');
   // tslint:disable-next-line: only-arrow-functions
   return (idOrRef) => {
     const ref = q.If(q.IsDoc(idOrRef), idOrRef, q.Ref(q.Collection(BiotaCollectionName('users')), idOrRef));
-    const offline = ContextProp(contextExpr, 'offline');
 
     return {
       ...document(contextExpr)(ref),
@@ -80,27 +80,6 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
           q.Call(BiotaFunctionName('UserLogout'), ContextExtend(contextExpr, 'udf.UserLogout'), { everywhere }),
         );
       },
-      register(email, password, data) {
-        const ctx = ContextExtend(contextExpr, 'factory.user.register');
-        return q.If(
-          offline,
-          q.Let(
-            {
-              user: user(ctx)().insert(data),
-              user_email: user(ctx)(q.Var('user')).auth.email.set(email),
-              user_owner: user(ctx)(q.Var('user')).membership.owner.set(q.Var('users')),
-              user_user_role: user(ctx)(q.Var('user'))
-                .membership.role(q.Role(BiotaRoleName('user')))
-                .set(),
-              user_credentials: credential(ctx)(q.Var('user')).insert(password),
-              session: userSession(ctx)().start(q.Var('user'), password),
-              action: action(ctx)('register', q.Var('user')).dispatch(),
-            },
-            q.Var('session'),
-          ),
-          q.Call(BiotaFunctionName('UserRegister'), ContextExtend(contextExpr, 'udf.UserRegister'), { email, password, data }),
-        );
-      },
       changePassword(currentPassword, password) {
         const ctx = ContextExtend(contextExpr, 'factory.user.changePassword');
         return q.If(
@@ -134,42 +113,46 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
           CallUDFunction('UserLoginWithAuthAccount', contextExpr, { account }),
         );
       },
+      register(email, password, data) {
+        const ctx = ContextExtend(contextExpr, 'factory.user.register');
+        return q.If(
+          offline,
+          q.Let(
+            {
+              user: user(ctx)().insert(data),
+              user_email: user(ctx)(q.Var('user')).auth.email.set(email),
+              user_owner: user(ctx)(q.Var('user')).membership.owner.set(q.Var('users')),
+              user_user_role: user(ctx)(q.Var('user'))
+                .membership.role(q.Role(BiotaRoleName('user')))
+                .set(),
+              user_credentials: credential(ctx)(q.Var('user')).insert(password),
+              session: userSession(ctx)().start(q.Var('user'), null), // #improve: add expirationDuration
+              action: action(ctx)('register', q.Var('user')).dispatch(),
+            },
+            q.Var('session'),
+          ),
+          CallUDFunction('UserRegister', contextExpr, { email, password, data }),
+        );
+      },
       registerWithAuthAccount(account) {
-        return {};
-        // return q.Let(
-        //   {
-        //     account,
-        //     doc: q.Call(
-        //       BiotaFunctionName('InsertDocument'),
-        //       Identity(),
-        //       q.Var('private_key'),
-        //       BiotaCollectionName('users'),
-        //       {},
-        //       null,
-        //     ),
-        //     upsert_auth_account: q.Call(
-        //       BiotaFunctionName('UserAuthAccountUpsert'),
-        //       Identity(),
-        //       q.Var('private_key'),
-        //       q.Select(['ref', 'id'], q.Var('doc'), null),
-        //       q.Var('account'),
-        //     ),
-        //     operation: CallSystemOperator(
-        //       updateBaseFQL.document(BiotaCollectionName('users'), q.Select(['ref', 'id'], q.Var('doc')), {
-        //         _membership: {
-        //           owner: q.Select('ref', q.Var('doc')),
-        //           roles: ['biota.user'],
-        //         },
-        //         _activity: {
-        //           created_by: q.Select('ref', q.Var('doc')),
-        //         },
-        //       }),
-        //       q.Select('ref', q.Var('doc')),
-        //     ),
-        //     action: CallLogAction('register', q.Var('doc')),
-        //   },
-        //   q.Call(BiotaFunctionName('UserLoginWithAuthAccount'), Identity(), q.Var('private_key'), q.Var('account')),
-        // );
+        const ctx = ContextExtend(contextExpr, 'factory.user.registerWithAuthAccount');
+        return q.If(
+          offline,
+          q.Let(
+            {
+              user: user(ctx)().insert({}),
+              user_auth_account: user(ctx)(q.Var('user')).auth.accounts.set(account),
+              user_owner: user(ctx)(q.Var('user')).membership.owner.set(q.Var('users')),
+              user_user_role: user(ctx)(q.Var('user'))
+                .membership.role(q.Role(BiotaRoleName('user')))
+                .set(),
+              action: action(ctx)('register', q.Var('user')).dispatch(),
+              session: userSession(ctx)().start(q.Var('user'), null),
+            },
+            q.Var('session'),
+          ),
+          CallUDFunction('UserRegisterWithAuthAccount', contextExpr, { account }),
+        );
       },
 
       auth: {
@@ -197,6 +180,7 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
         },
         accounts: {
           distinct(account) {
+            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.distinct');
             return q.Let(
               {
                 provider: q.Select('provider', account, null),
@@ -231,6 +215,7 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
             );
           },
           difference(provider, accountId) {
+            const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.difference');
             return q.Let(
               {
                 current_accounts: q.Select(['data', '_auth', 'accounts'], q.Get(ref), []),
@@ -247,19 +232,27 @@ export const user: FactoryContext<FactoryUser> = function (contextExpr): Factory
           },
           set(account) {
             const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.set');
-            return user(ctx)(ref).upsert({
-              _auth: {
-                accounts: user(ctx)(ref).auth.accounts.distinct(account),
-              },
-            });
+            return q.If(
+              offline,
+              user(ctx)(ref).upsert({
+                _auth: {
+                  accounts: user(ctx)(ref).auth.accounts.distinct(account),
+                },
+              }),
+              CallUDFunction('UserAuthAccountsSet', contextExpr, { account }),
+            );
           },
           remove(provider, accountId) {
             const ctx = ContextExtend(contextExpr, 'factory.user.auth.accounts.remove');
-            return user(ctx)(ref).upsert({
-              _auth: {
-                accounts: user(ctx)(ref).auth.accounts.difference(provider, accountId),
-              },
-            });
+            return q.If(
+              offline,
+              user(ctx)(ref).upsert({
+                _auth: {
+                  accounts: user(ctx)(ref).auth.accounts.difference(provider, accountId),
+                },
+              }),
+              CallUDFunction('UserAuthAccountsRemove', contextExpr, { provider, accountId }),
+            );
           },
         },
       },

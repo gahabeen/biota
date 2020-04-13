@@ -66,6 +66,12 @@ export interface FaunaDatabaseOptions {
   api_version?: number;
 }
 
+export interface FaunaDocument {
+  ref?: FaunaRef;
+  ts?: number;
+  data?: any;
+}
+
 export interface FaunaDocumentOptions {
   data?: object;
   credentials?: FaunaDocumentCredentials;
@@ -86,7 +92,7 @@ export interface FaunaCredentials {
   ts?: number;
   instance?: FaunaRef;
   data?: object;
-  hashed_password?: string
+  hashed_password?: string;
 }
 
 export interface FaunaKeyOptions {

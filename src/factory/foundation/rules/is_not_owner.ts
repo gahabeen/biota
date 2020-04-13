@@ -2,7 +2,7 @@
 // external
 import { query as q } from 'faunadb';
 // biota
-import { Rule } from '~/factory/role/rule';
+import { Rule } from '~/factory/constructors/role/rule';
 
 export const is_not_owner = Rule({
   name: 'is_not_owner',

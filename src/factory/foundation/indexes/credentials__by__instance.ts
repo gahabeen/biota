@@ -1,5 +1,5 @@
 import { query as q } from 'faunadb';
-import { Index, BiotaIndexName } from '~/factory/classes/index';
+import { Index, BiotaIndexName } from '~/factory/constructors/index';
 
 // tslint:disable-next-line: variable-name
 export const credentials__by__instance = Index({

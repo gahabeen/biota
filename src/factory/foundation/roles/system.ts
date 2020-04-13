@@ -1,9 +1,9 @@
 import { query as q } from 'faunadb';
 import { FaunaRoleOptions } from '~/../types/fauna';
-import { BiotaIndexName } from '~/factory/classes/index';
-import { Privilege, BiotaRoleName } from '~/factory/classes/role';
-import { BiotaFunctionName } from '~/factory/classes/udfunction';
-import { BiotaCollectionName } from '~/factory/classes/collection';
+import { BiotaIndexName } from '~/factory/constructors/index';
+import { Privilege, BiotaRoleName } from '~/factory/constructors/role';
+import { BiotaFunctionName } from '~/factory/constructors/udfunction';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
 
 export const system: FaunaRoleOptions = {
   name: BiotaRoleName('system'),

@@ -1,4 +1,4 @@
-import { Rule } from '~/factory/role/rule';
+import { Rule } from '~/factory/constructors/role/rule';
 import { query as q } from 'faunadb';
 
 export const are_fields_secure = Rule({

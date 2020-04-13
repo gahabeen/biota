@@ -1,6 +1,6 @@
 import * as fauna from 'faunadb';
 import { Fauna, FaunaRuleAction, FaunaRuleLambda } from '~/../types/fauna';
-import { Rules } from '~/factory/role/rule';
+import { Rules } from '~/factory/constructors/role/rule';
 import {
   all,
   are_fields_secure,
@@ -12,7 +12,7 @@ import {
   is_self,
   is_document_available,
   none,
-} from '~/framework/api/defaults/rules';
+} from '~/factory/api/foundation/rules';
 const q = fauna.query;
 
 export function Action(type: FaunaRuleAction): FaunaRuleLambda {

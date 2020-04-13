@@ -55,22 +55,24 @@ export interface DocumentValidity {
 }
 
 export type DocumentActionName =
-| "register"
-| "login"
-| "login_fail"
-| "logout"
-| "logout_everywhere"
-| "insert"
-| "update"
-| "replace"
-| "delete_change"
-| "credentials_change"
-| "auth_email_change"
-| "auth_accounts_change"
-| "roles_change"
-| "owner_change"
-| "expiration_change"
-| "assignees_change"
+  | 'register'
+  | 'login'
+  | 'login_fail'
+  | 'logout'
+  | 'logout_everywhere'
+  | 'insert'
+  | 'update'
+  | 'replace'
+  | 'forget'
+  | 'delete'
+  | 'expire'
+  | 'restore'
+  | 'credentials_change'
+  | 'auth_email_change'
+  | 'auth_accounts_change'
+  | 'roles_change'
+  | 'owner_change'
+  | 'assignees_change';
 
 export interface DocumentActivity {
   auth_email_changed_by?: FaunaRef;
@@ -100,11 +102,14 @@ export interface DocumentActivity {
   replaced_by?: FaunaRef;
   replaced_at?: FaunaTime;
 
-  expiration_changed_by?: FaunaRef;
-  expiration_changed_at?: FaunaTime;
+  expiration_by?: FaunaRef;
+  expiration_at?: FaunaTime;
 
-  delete_changed_by?: FaunaRef;
-  delete_changed_at?: FaunaTime;
+  deleted_by?: FaunaRef;
+  deleted_at?: FaunaTime;
+
+  restored_by?: FaunaRef;
+  restored_at?: FaunaTime;
 
   forgotten_by?: FaunaRef;
   forgotten_at?: FaunaTime;

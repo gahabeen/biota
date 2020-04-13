@@ -9,7 +9,13 @@ import { ThrowError } from '../constructors/error';
 // tslint:disable-next-line: only-arrow-functions
 export const action: FactoryContext<FactoryAction> = function (contextExpr): FactoryAction {
   // tslint:disable-next-line: only-arrow-functions
-  return (name, ref) => {
+  return (name, refOrDoc) => {
+    const ref = q.If(
+      q.IsRef(refOrDoc),
+      refOrDoc,
+      q.If(q.And(q.IsObject(refOrDoc), q.Contains('ref', refOrDoc)), q.Select('ref', refOrDoc, null), null),
+    );
+
     return {
       insert() {
         const ctx = ContextExtend(contextExpr, 'factory.action.insert');
@@ -40,7 +46,7 @@ export const action: FactoryContext<FactoryAction> = function (contextExpr): Fac
             _activity = { updated_by: ContextProp(ctx, 'identity'), updated_at: q.Now() };
           case 'replace':
             _activity = { replaced_by: ContextProp(ctx, 'identity'), replaced_at: q.Now() };
-          case 'delete_change':
+          case 'delete':
             _activity = { delete_changed_by: ContextProp(ctx, 'identity'), delete_changed_at: q.Now() };
           case 'credentials_change':
             _activity = { credentials_changed_by: ContextProp(ctx, 'identity'), credentials_changed_at: q.Now() };
@@ -52,7 +58,7 @@ export const action: FactoryContext<FactoryAction> = function (contextExpr): Fac
             _activity = { roles_changed_by: ContextProp(ctx, 'identity'), roles_changed_at: q.Now() };
           case 'owner_change':
             _activity = { owner_changed_by: ContextProp(ctx, 'identity'), owner_changed_at: q.Now() };
-          case 'expiration_change':
+          case 'expire':
             _activity = { expiration_changed_by: ContextProp(ctx, 'identity'), expiration_changed_at: q.Now() };
           case 'assignees_change':
             _activity = { assignees_changed_by: ContextProp(ctx, 'identity'), assignees_changed_at: q.Now() };

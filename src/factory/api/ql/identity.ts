@@ -1,7 +1,7 @@
 // types
 // external
 import * as fauna from 'faunadb';
-import { BiotaCollectionName } from '~/factory/classes/collection';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
 const q = fauna.query;
 
 export function Identity(allowSession: boolean = false) {

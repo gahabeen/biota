@@ -1,8 +1,8 @@
 import { query as q } from 'faunadb';
 import { FaunaRoleOptions } from '~/../types/fauna';
-import { BiotaCollectionName } from '~/factory/classes/collection';
-import { Privilege, Role, BiotaRoleName, CustomPrivilege } from '~/factory/classes/role';
-import { BiotaFunctionName } from '~/factory/classes/udfunction';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
+import { Privilege, Role, BiotaRoleName, CustomPrivilege } from '~/factory/constructors/role';
+import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { has_role } from '../rules/has_role';
 import { is_document_available } from '../rules/is_document_available';
 import { Identity } from '~/factory/api/ql';

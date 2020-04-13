@@ -1,5 +1,5 @@
 import { query as q } from 'faunadb';
-import { Rule } from '~/factory/role/rule';
+import { Rule } from '~/factory/constructors/role/rule';
 import { Identity } from '~/factory/api/ql';
 
 export const is_assignee = Rule({
