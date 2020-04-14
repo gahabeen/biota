@@ -1,7 +1,7 @@
 // types
 // external
 // biota
-import { Rule } from '~/factory/constructors/role/rule';
+import { Rule } from '~/factory/constructors/rule';
 
 export const all = Rule({
   name: 'all',

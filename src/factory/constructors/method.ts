@@ -14,18 +14,19 @@ export function Query(query: Expr, result: Expr, action: Expr = null) {
 }
 
 export function MethodDispatch(options: MethodDispatchOption) {
-  const { context, inputs, query } = options
+  const { context, inputs, query } = options;
   // return (offline: OfflineNext, online: OnlineNext) => {
   return (offline: string, online: string | FaunaUDFunctionOptions) => {
-    return q.If(ContextProp(context, 'offline'), Offline(offline)(context, inputs, query), Online(online)(context, inputs, query));
+    return q.If(ContextProp(context, 'offline'), Offline(offline)(context, inputs, query), Online(online)(context, inputs)); // query
   };
 }
 
-type OnlineNext = (context: FactoryContextDefinition, inputs: object, query: Expr) => Expr;
-
+type OnlineNext = (context: FactoryContextDefinition, inputs: object) => Expr;
+// , query: Expr
 export function Online(nameOrDefinition: string | FaunaUDFunctionOptions) {
-  const onlineNext: OnlineNext = (context = {}, inputs = {}, query = null): Expr => {
-    return CallFunction(nameOrDefinition, context, inputs, query);
+  const onlineNext: OnlineNext = (context = {}, inputs = {}): Expr => {
+    // , query = null
+    return CallFunction(nameOrDefinition, context, inputs); // query
   };
   return onlineNext;
 }

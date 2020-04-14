@@ -13,12 +13,13 @@ interface ResultInferface {
   action?: object;
 }
 // context: FactoryContextDefinition = {},
-export function Result(result: Expr = null, actionResult: ActionDispatchResult = {}): ResultInferface {
+export function Result(result: Expr = null, actionResult: ActionDispatchResult = {}, context: Expr = q.Var('ctx')): ResultInferface {
   // const isPlainDocument = (d: any) => q.If(q.IsObject(d), q.Contains(['ref'], d), false);
   return {
-    context: q.Var('ctx'),
+    context,
     data: result,
-    action: q.If(q.IsObject(actionResult), q.Select('action', actionResult, null), null),
+    action: actionResult,
+    // action: q.If(q.IsObject(actionResult), q.Select('action', actionResult, null), null),
   };
 }
 

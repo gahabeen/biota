@@ -1,6 +1,6 @@
 import * as fauna from 'faunadb';
 import { Fauna, FaunaRuleAction, FaunaRuleLambda } from '~/../types/fauna';
-import { Rules } from '~/factory/constructors/role/rule';
+import { Rules } from '~/factory/constructors/rule';
 import {
   all,
   are_fields_secure,

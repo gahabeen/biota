@@ -6,6 +6,4 @@ export type FactoryAction = (name: DocumentActionName, refOrDoc: FaunaRef | Faun
 
 export interface FactoryActionApi {
   insert(): Expr;
-  annotate(): Expr;
-  dispatch(): Expr;
 }

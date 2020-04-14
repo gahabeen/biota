@@ -35,9 +35,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const query = Query(
           {
             doc: q.CreateCollection(q.Merge(q.Var('options'), { name: q.Var('name') })),
-            action: action(q.Var('ctx'))('insert', q.Var('doc')).dispatch(),
+            action: action(q.Var('ctx'))('insert', q.Var('doc')).insert(),
           },
-          q.Select('doc', q.Var('action'), q.Var('doc')),
+          q.Var('doc'),
           q.Var('action'),
         );
         const offline = 'factory.collection.insert';
@@ -50,9 +50,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const query = Query(
           {
             doc: q.Update(q.Var('ref'), q.Var('options')),
-            action: action(q.Var('ctx'))('update', q.Var('doc')).dispatch(),
+            action: action(q.Var('ctx'))('update', q.Var('doc')).insert(),
           },
-          q.Select('doc', q.Var('action'), q.Var('doc')),
+          q.Var('doc'),
           q.Var('action'),
         );
         const offline = 'factory.collection.update';
@@ -83,9 +83,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const query = Query(
           {
             doc: q.Replace(q.Var('ref'), q.Var('options')),
-            action: action(q.Var('ctx'))('replace', q.Var('doc')).dispatch(),
+            action: action(q.Var('ctx'))('replace', q.Var('doc')).insert(),
           },
-          q.Select('doc', q.Var('action'), q.Var('doc')),
+          q.Var('doc'),
           q.Var('action'),
         );
         const offline = 'factory.collection.replace';
@@ -121,7 +121,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const inputs = { ref };
         const query = Query(
           {
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).dispatch(),
+            action: action(q.Var('ctx'))('forget', q.Var('ref')).insert(),
             doc: q.Delete(q.Var('ref')),
           },
           q.Var('doc'),

@@ -35,7 +35,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               identified_user: q.Identify(ContextProp(ctx, 'identity'), password),
               is_identified_user: q.If(q.Var('identified_user'), true, ThrowError(ctx, 'User email or password is wrong')),
               session: userSession(ctx)().start(q.Var('user'), null), // #improve: add expirationDuration
-              action: action(ctx)('login', q.Var('user')).dispatch(),
+              action: action(ctx)('login', q.Var('user')).insert(),
             },
             q.Var('session'),
           ),
@@ -61,14 +61,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                     ),
                     q.Lambda(['session'], document(ctx)(q.Var('session')).delete()),
                   ),
-                  action: action(ctx)('logout_everywhere', q.Var('user')).dispatch(),
+                  action: action(ctx)('logout_everywhere', q.Var('user')).insert(),
                 },
                 q.Var('logging_out'),
               ),
               q.Let(
                 {
                   logging_out: document(ctx)(ContextProp(ctx, 'hasSession')).delete(),
-                  action: action(ctx)('logout', q.Var('user')).dispatch(),
+                  action: action(ctx)('logout', q.Var('user')).insert(),
                 },
                 q.Var('logging_out'),
               ),
@@ -125,7 +125,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                 .set(),
               user_credentials: credential(ctx)(q.Var('user')).insert(password),
               session: userSession(ctx)().start(q.Var('user'), null), // #improve: add expirationDuration
-              action: action(ctx)('register', q.Var('user')).dispatch(),
+              action: action(ctx)('register', q.Var('user')).insert(),
             },
             q.Var('session'),
           ),
@@ -144,7 +144,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               user_user_role: user(ctx)(q.Var('user'))
                 .membership.role(q.Role(BiotaRoleName('user')))
                 .set(),
-              action: action(ctx)('register', q.Var('user')).dispatch(),
+              action: action(ctx)('register', q.Var('user')).insert(),
               session: userSession(ctx)().start(q.Var('user'), null),
             },
             q.Var('session'),

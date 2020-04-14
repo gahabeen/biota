@@ -2,7 +2,7 @@
 // external
 import { query as q } from 'faunadb';
 // biota
-import { Rule } from '~/factory/constructors/role/rule';
+import { Rule } from '~/factory/constructors/rule';
 import { Identity } from '~/factory/api/ql';
 
 export const is_first_argument_identity = Rule({

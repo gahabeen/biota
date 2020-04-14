@@ -1,8 +1,8 @@
 import { FaunaRoleOptions } from '~/../types/fauna';
 import { CONVENTION } from '~/consts';
 
-export * from './role/action';
-export * from './role/privilege';
+export * from './action';
+export * from './privilege';
 
 export function BiotaRoleName(name: string) {
   return `${CONVENTION.ROLE_PREFIX}${name.replace(CONVENTION.ROLE_PREFIX, '')}`;

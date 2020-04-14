@@ -1,5 +1,5 @@
 import { query as q } from 'faunadb';
-import { Rule } from '~/factory/constructors/role/rule';
+import { Rule } from '~/factory/constructors/rule';
 import { Identity } from '~/factory/api/ql';
 
 export const is_owned_by = Rule({

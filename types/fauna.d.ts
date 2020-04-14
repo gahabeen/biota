@@ -1,6 +1,16 @@
+import * as faunadb from 'faunadb';
 import * as Fauna from 'faunadb';
 import { Fn } from './db';
+import { ExprArg } from 'faunadb';
 export { Fauna };
+
+// declare module 'faunadb.query' {
+//   // export module query {
+//     export function wrap(expr: ExprArg): Fauna.Expr;
+//   // }
+// }
+
+export type WrapFunction = (expr: ExprArg) => Fauna.Expr;
 
 export interface FaunaPaginateOptions {
   ts?: Fauna.Expr;

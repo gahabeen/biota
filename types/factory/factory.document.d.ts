@@ -1,7 +1,8 @@
 import { Expr } from 'faunadb';
-import { FaunaData, FaunaRef, FaunaTime } from '../fauna';
+import { FaunaData, FaunaRef, FaunaTime, FaunaString } from '../fauna';
+import { DocumentActionName } from 'types/document';
 
-export type FactoryDocument = (collectionOrRef: string | Expr | FaunaRef, id?: string | Expr) => FactoryDocumentApi;
+export type FactoryDocument = (collectionOrRef?: string | Expr | FaunaRef, id?: string | Expr) => FactoryDocumentApi;
 
 export interface FactoryDocumentValidityApi {
   delete(): Expr;
@@ -54,4 +55,5 @@ export interface FactoryDocumentApi {
   expireNow(): Expr;
   validity: FactoryDocumentValidityApi;
   membership: FactoryDocumentMembershipApi;
+  annotate(action: DocumentActionName, data?: FaunaData): Expr;
 }
