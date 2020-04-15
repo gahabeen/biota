@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { FactoryContextDefinition } from 'types/factory/factory.context';
+import { FaunaString } from 'types/fauna';
 import * as helpers from '~/helpers';
-import { FaunaString, FaunaObject } from 'types/fauna';
 
 // export function ContextDefault(context: FactoryContextDefinition = {}) {
 //   return {
@@ -28,7 +28,7 @@ export function ContextExtend(
       context,
       functionName,
       offline: q.Select('offline', q.Var('context'), false),
-      identity: q.Select('identity', q.Var('context'), q.Identity()),
+      identity: q.Select('identity', q.Var('context'), q.If(q.HasIdentity(), q.Identity(), null)),
       useRole: q.Select('useRole', q.Var('context'), false),
       hasIdentity: q.IsDoc(q.Var('identity')),
       session: q.Select('session', q.Var('context'), false),

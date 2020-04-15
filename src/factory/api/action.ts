@@ -18,7 +18,7 @@ export const action: FactoryContext<FactoryAction> = function (context): Factory
     );
 
     return {
-      ...document(context)(ref),
+      ...document(context, { prefix: 'Action' })(ref),
       log() {
         const inputs = { ref };
         // ----

@@ -10,7 +10,18 @@ type MethodDispatchOption = { context: FactoryContextDefinition; inputs: object;
 // type QueryNext = (ctx: Expr) => Expr;
 
 export function Query(query: Expr, result: Expr, action: Expr = null) {
-  return q.Let(query, Result(result, action));
+  const actionData = q.Let(
+    {
+      action,
+      isResult: q.And(
+        q.Contains(['context'], q.Var('action')),
+        q.Contains(['data'], q.Var('action')),
+        q.Contains(['action'], q.Var('action')),
+      ),
+    },
+    q.If(q.Var('isResult'), q.Select('data', q.Var('action'), null), q.Var('action')),
+  );
+  return q.Let(query, Result(result, actionData));
 }
 
 export function MethodDispatch(options: MethodDispatchOption) {
@@ -35,7 +46,7 @@ type OfflineNext = (context: FactoryContextDefinition, inputs: object, query: Ex
 
 export function Offline(name: string) {
   const offlineNext: OfflineNext = (context = {}, inputs = {}, query = null): Expr => {
-    const ctx = ContextExtend(context, name);
+    const ctx = ContextExtend(context, name, inputs);
     return q.Let(
       {
         ctx,

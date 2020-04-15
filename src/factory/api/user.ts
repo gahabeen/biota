@@ -22,7 +22,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
     const ref = q.If(q.IsDoc(idOrRef), idOrRef, q.Ref(q.Collection(BiotaCollectionName('users')), idOrRef));
 
     return {
-      ...document(context)(ref),
+      ...document(context, { prefix: 'User' })(ref),
       login(email, password) {
         // #improve: add expirationDuration
         const ctx = ContextExtend(context, 'factory.user.login');

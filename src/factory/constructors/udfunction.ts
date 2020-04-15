@@ -109,7 +109,7 @@ export function CallFunction(
     },
     q.Call(
       definition.name,
-      ContextExtend(context, 'udf.CallFunction >' + definition.name),
+      ContextExtend(context, 'udf.CallFunction >' + definition.name, params),
       params,
     ),
     // q.Call(

@@ -12,7 +12,6 @@ import { ResultData } from '../constructors/result';
 export const udfunction: FactoryContext<FactoryUDFunction> = function (context): FactoryUDFunction {
   // tslint:disable-next-line: only-arrow-functions
   return (name) => {
-    const udfunctionApi = udfunction(context);
     const ref = q.Function(name);
     return {
       get() {

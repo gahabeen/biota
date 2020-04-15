@@ -7,10 +7,10 @@ export function ThrowError(context: FactoryContextDefinition = {}, message: Faun
     {
       callstack: q.Select('callstack', context, []),
       flat_callstack: q.Concat(
-        q.Map(q.Var('callstack'), q.Lambda('step', q.If(q.IsArray(q.Var('step')), q.Concat(q.Var('step'), '|'), q.Var('step')))),
-        '%',
+        q.Map(q.Var('callstack'), q.Lambda('step', q.If(q.IsArray(q.Var('step')), q.Concat(q.Var('step'), '%|%'), q.Var('step')))),
+        '%%%',
       ),
-      message: q.Concat(['biota.ThrowError', q.Var('callstack'), message, q.Format('%@', params)], '|'),
+      message: q.Concat(['biota.ThrowError', q.Var('flat_callstack'), message, q.Format('%@', params), q.Format('%@', context)], '%||%'),
     },
     q.Abort(q.Var('message')),
   );

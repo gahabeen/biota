@@ -2,51 +2,190 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { FactoryRole } from '~/../types/factory/factory.role';
 import { DefaultToOjbect } from './ql/defaultTo';
+import { Query, MethodDispatch } from '../constructors/method';
+import { BiotaFunctionName } from './constructors';
+import { ResultData } from '../constructors/result';
+import { action } from './action';
+import { document } from './document';
 
 // tslint:disable-next-line: only-arrow-functions
 export const role: FactoryContext<FactoryRole> = function (context): FactoryRole {
   // tslint:disable-next-line: only-arrow-functions
   return (nameOrRef) => {
-    const roleApi = role(context);
     const ref = q.If(q.IsRole(nameOrRef), nameOrRef, q.Role(nameOrRef));
     const name = q.If(q.IsString(nameOrRef), nameOrRef, q.Select('id', ref));
     return {
       get() {
-        return q.Get(ref);
+        const inputs = { ref };
+        // ----
+        const query = Query(
+          {
+            doc: q.Get(q.Var('ref')),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.role.get';
+        const online = { name: BiotaFunctionName('RoleGet'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
         options = DefaultToOjbect(options);
-        return q.CreateRole(q.Merge(options, { name }));
+        const inputs = { name, options };
+        // ---
+        const query = Query(
+          {
+            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
+            doc: q.CreateFunction(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
+            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.role.insert';
+        const online = { name: BiotaFunctionName('RoleInsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
         options = DefaultToOjbect(options);
-        return q.Update(ref, options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
+            doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.role.update';
+        const online = { name: BiotaFunctionName('RoleUpdate'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-        return q.If(q.Exists(ref), roleApi(ref).update(options), roleApi(ref).insert(options));
+        options = DefaultToOjbect(options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            doc: q.If(
+              q.Exists(q.Var('ref')),
+              ResultData(role(q.Var('ref'))(q.Var('ref')).update(q.Var('options'))),
+              ResultData(role(q.Var('ref'))(q.Var('ref')).insert(q.Var('options'))),
+            ),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.role.upsert';
+        const online = { name: BiotaFunctionName('RoleUpsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
         options = DefaultToOjbect(options);
-        return q.Replace(ref, options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            current_doc: ResultData(role(q.Var('ctx'))(q.Var('ref')).get()),
+            annotated: ResultData(
+              document(q.Var('ctx'))().annotate(
+                'replace',
+                q.Merge(q.Select('data', q.Var('options'), {}), {
+                  _auth: q.Select('_auth', q.Var('current_doc'), {}),
+                  _membership: q.Select('_membership', q.Var('current_doc'), {}),
+                  _validity: q.Select('_validity', q.Var('current_doc'), {}),
+                  _activity: q.Select('_activity', q.Var('current_doc'), {}),
+                }),
+              ),
+            ),
+            doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.role.replace';
+        const online = { name: BiotaFunctionName('RoleReplace'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-        return q.If(q.Exists(ref), roleApi(ref).replace(options), roleApi(ref).insert(options));
+        options = DefaultToOjbect(options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            doc: q.If(
+              q.Exists(ref),
+              ResultData(role(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
+              ResultData(role(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+            ),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.role.repsert';
+        const online = { name: BiotaFunctionName('RoleRepsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       delete() {
-        return '';
+        const inputs = { ref };
+        // ---
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.role.delete';
+        const online = { name: BiotaFunctionName('RoleDelete'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
-        return q.Delete(ref);
+        const inputs = { ref };
+        // ---
+        const query = Query(
+          {
+            annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
+            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
+            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
+            doc: q.Delete(q.Var('ref')),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.role.forget';
+        const online = { name: BiotaFunctionName('RoleForget'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       drop() {
-        return q.If(q.Exists(ref), roleApi(ref).forget(), false);
+        const inputs = { ref };
+        // ---
+        const query = Query(
+          {
+            doc: q.If(q.Exists(q.Var('ref')), role(q.Var('ctx'))(q.Var('ref')).forget(), false),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.role.drop';
+        const online = { name: BiotaFunctionName('RoleClean'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       membership: {
         distinct(membership) {
-          return q.Let(
+          const inputs = { ref, membership };
+          // ---
+          const query = Query(
             {
-              membership_resource: q.Select('resource', membership),
-              current_membership_raw: q.Select('membership', q.Get(q.Role(name)), []),
+              membership_resource: q.Select('resource', q.Var('membership')),
+              current_membership_raw: q.Select('membership', q.Get(q.Role(q.Var('name'))), []),
               current_membership: q.If(
                 q.IsObject(q.Var('current_membership_raw')),
                 [q.Var('current_membership_raw')],
@@ -60,16 +199,22 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
                 q.Var('current_membership'),
                 q.Lambda('cm', q.Not(q.Equals(q.Select('resource', q.Var('cm')), q.Var('membership_resource')))),
               ),
-              new_membership: q.Merge(q.Select(0, q.Var('same_current_membership'), {}), membership),
+              new_membership: q.Merge(q.Select(0, q.Var('same_current_membership'), {}), q.Var('membership')),
               new_memberships: q.Append(q.Var('current_membership_except_new'), [q.Var('new_membership')]),
             },
             q.Var('new_memberships'),
           );
+          // ---
+          const offline = 'factory.role.membership.distinct';
+          const online = null;
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
         difference(resource) {
-          return q.Let(
+          const inputs = { ref, resource };
+          // ---
+          const query = Query(
             {
-              current_membership_raw: q.Select('membership', q.Get(ref), []),
+              current_membership_raw: q.Select('membership', q.Get(q.Var('ref')), []),
               current_membership: q.If(
                 q.IsObject(q.Var('current_membership_raw')),
                 [q.Var('current_membership_raw')],
@@ -77,30 +222,62 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
               ),
               membership_filtered: q.Filter(
                 q.Var('current_membership'),
-                q.Lambda('cm', q.Not(q.Equals(q.Select('resource', q.Var('cm')), resource))),
+                q.Lambda('cm', q.Not(q.Equals(q.Select('resource', q.Var('cm')), q.Var('resource')))),
               ),
             },
             q.Var('membership_filtered'),
           );
+          // ---
+          const offline = 'factory.role.membership.difference';
+          const online = null;
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
         set(membership) {
-          return roleApi(ref).upsert({
-            membership: roleApi(ref).membership.distinct(membership),
-          });
+          const inputs = { ref, membership };
+          // ---
+          const query = Query(
+            {
+              doc: ResultData(
+                role(q.Var('ctx'))(q.Var('ref')).upsert({
+                  membership: role(q.Var('ctx'))(q.Var('ref')).membership.distinct(q.Var('membership')),
+                }),
+              ),
+            },
+            q.Var('doc'),
+          );
+          // ---
+          const offline = 'factory.role.membership.set';
+          const online = { name: BiotaFunctionName('RoleMembershipSet'), role: null };
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
         remove(resource) {
-          return roleApi(ref).upsert({
-            membership: roleApi(ref).membership.difference(resource),
-          });
+          const inputs = { ref, resource };
+          // ---
+          const query = Query(
+            {
+              doc: ResultData(
+                role(q.Var('ctx'))(ref).upsert({
+                  membership: role(q.Var('ctx'))(ref).membership.difference(q.Var('resource')),
+                }),
+              ),
+            },
+            q.Var('doc'),
+          );
+          // ---
+          const offline = 'factory.role.membership.remove';
+          const online = { name: BiotaFunctionName('RoleMembershipRemove'), role: null };
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
       },
       privileges: {
         distinct(privilege) {
-          return q.Let(
+          const inputs = { ref, privilege };
+          // ---
+          const query = Query(
             {
-              privilege_resource: q.Select('resource', privilege),
+              privilege_resource: q.Select('resource', q.Var('privilege')),
               has_privilege_resource: q.If(q.IsRef(q.Var('privilege_resource')), true, q.Abort("Privilege doesn't have a resource")),
-              current_privilege_raw: q.Select('privileges', q.Get(ref), []),
+              current_privilege_raw: q.Select('privileges', q.Get(q.Var('ref')), []),
               current_privilege: q.If(
                 q.IsObject(q.Var('current_privilege_raw')),
                 [q.Var('current_privilege_raw')],
@@ -114,16 +291,22 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
                 q.Var('current_privilege'),
                 q.Lambda('cm', q.Not(q.Equals(q.Select('resource', q.Var('cm')), q.Var('privilege_resource')))),
               ),
-              new_privilege: q.Merge(q.Select(0, q.Var('same_current_privilege'), {}), privilege),
+              new_privilege: q.Merge(q.Select(0, q.Var('same_current_privilege'), {}), q.Var('privilege')),
               new_privileges: q.Append(q.Var('current_privilege_except_new'), [q.Var('new_privilege')]),
             },
             q.Var('new_privileges'),
           );
+          // ---
+          const offline = 'factory.role.privileges.distinct';
+          const online = null;
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
         difference(resource) {
-          return q.Let(
+          const inputs = { ref, resource };
+          // ---
+          const query = Query(
             {
-              current_privileges_raw: q.Select('privileges', q.Get(ref), []),
+              current_privileges_raw: q.Select('privileges', q.Get(q.Var('ref')), []),
               current_privileges: q.If(
                 q.IsObject(q.Var('current_privileges_raw')),
                 [q.Var('current_privileges_raw')],
@@ -131,21 +314,51 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
               ),
               privileges_filtered: q.Filter(
                 q.Var('current_privileges'),
-                q.Lambda('cm', q.Not(q.Equals(q.Select('resource', q.Var('cm')), resource))),
+                q.Lambda('cm', q.Not(q.Equals(q.Select('resource', q.Var('cm')), q.Var('resource')))),
               ),
             },
             q.Var('privileges_filtered'),
           );
+          // ---
+          const offline = 'factory.role.privileges.difference';
+          const online = null;
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
         set(privilege) {
-          return roleApi(ref).upsert({
-            privileges: roleApi(ref).privileges.distinct(privilege),
-          });
+          const inputs = { ref, privilege };
+          // ---
+          const query = Query(
+            {
+              doc: ResultData(
+                role(q.Var('ctx'))(ref).upsert({
+                  privileges: role(q.Var('ctx'))(ref).privileges.distinct(q.Var('privilege')),
+                }),
+              ),
+            },
+            q.Var('doc'),
+          );
+          // ---
+          const offline = 'factory.role.privileges.set';
+          const online = { name: BiotaFunctionName('RolePrivilegesSet'), role: null };
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
         remove(resource) {
-          return roleApi(ref).upsert({
-            privileges: roleApi(ref).privileges.difference(resource),
-          });
+          const inputs = { ref, resource };
+          // ---
+          const query = Query(
+            {
+              doc: ResultData(
+                role(q.Var('ctx'))(q.Var('ref')).upsert({
+                  privileges: role(q.Var('ctx'))(ref).privileges.difference(q.Var('resource')),
+                }),
+              ),
+            },
+            q.Var('doc'),
+          );
+          // ---
+          const offline = 'factory.role.privileges.remove';
+          const online = { name: BiotaFunctionName('RolePrivilegesRemove'), role: null };
+          return MethodDispatch({ context, inputs, query })(offline, online);
         },
       },
     };

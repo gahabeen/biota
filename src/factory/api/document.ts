@@ -4,14 +4,15 @@ import { FactoryDocument } from '~/../types/factory/factory.document';
 import { TS_2500_YEARS } from '~/consts';
 import { action } from '~/factory/api/action';
 import * as helpers from '~/helpers';
-import { ContextExtend, ContextProp } from '../constructors/context';
+import { ContextProp } from '../constructors/context';
 import { ThrowError } from '../constructors/error';
 import { MethodDispatch, Query } from '../constructors/method';
 import { ResultData } from '../constructors/result';
 import { BiotaFunctionName } from '../constructors/udfunction';
 
 // tslint:disable-next-line: only-arrow-functions
-export const document: FactoryContext<FactoryDocument> = function (context): FactoryDocument {
+export const document: FactoryContext<FactoryDocument> = function (context, options): FactoryDocument {
+  const { prefix = 'Document' } = options || {};
   // tslint:disable-next-line: only-arrow-functions
   return (collectionOrRef = null, id = null) => {
     const ref = q.If(
@@ -25,13 +26,14 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
         // ----
         const query = Query(
           {
+            check: q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: q.Var('ref') }), true),
             doc: q.Get(q.Var('ref')),
           },
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.get';
-        const online = { name: BiotaFunctionName('DocumentGet'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.get`;
+        const online = { name: BiotaFunctionName(`${prefix}Get`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(data) {
@@ -39,7 +41,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
         // ----
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Var('data'))),
+            annotated: ResultData(document(q.Var('ctx'))(q.Var('ref')).annotate('insert', q.Var('data'))),
             doc: q.Create(q.Var('ref'), { data: q.Var('annotated') }),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
@@ -47,8 +49,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('action'),
         );
         // ----
-        const offline = 'factory.document.insert';
-        const online = { name: BiotaFunctionName('DocumentInsert'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.insert`;
+        const online = { name: BiotaFunctionName(`${prefix}Insert`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(data) {
@@ -64,8 +66,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('action'),
         );
         // ----
-        const offline = 'factory.document.update';
-        const online = { name: BiotaFunctionName('DocumentUpdate'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.update`;
+        const online = { name: BiotaFunctionName(`${prefix}Update`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(data) {
@@ -83,8 +85,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           // already logging actions: update or insert
         );
         // ----
-        const offline = 'factory.document.upsert';
-        const online = { name: BiotaFunctionName('DocumentUpsert'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.upsert`;
+        const online = { name: BiotaFunctionName(`${prefix}Upsert`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(data) {
@@ -109,8 +111,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('action'),
         );
         // ----
-        const offline = 'factory.document.replace';
-        const online = { name: BiotaFunctionName('DocumentReplace'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.replace`;
+        const online = { name: BiotaFunctionName(`${prefix}Replace`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(data) {
@@ -128,8 +130,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           // already logging actions: replace or insert
         );
         // ----
-        const offline = 'factory.document.repsert';
-        const online = { name: BiotaFunctionName('DocumentRepsert'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.repsert`;
+        const online = { name: BiotaFunctionName(`${prefix}Repsert`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       delete() {
@@ -143,8 +145,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.delete';
-        const online = { name: BiotaFunctionName('DocumentDelete'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.delete`;
+        const online = { name: BiotaFunctionName(`${prefix}Delete`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       restore() {
@@ -158,8 +160,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.restore';
-        const online = { name: BiotaFunctionName('DocumentRestore'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.restore`;
+        const online = { name: BiotaFunctionName(`${prefix}Restore`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
@@ -176,8 +178,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('action'),
         );
         // ----
-        const offline = 'factory.document.forget';
-        const online = { name: BiotaFunctionName('DocumentRestore'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.forget`;
+        const online = { name: BiotaFunctionName(`${prefix}Restore`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       drop() {
@@ -190,8 +192,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.drop';
-        const online = { name: BiotaFunctionName('DocumentClean'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.drop`;
+        const online = { name: BiotaFunctionName(`${prefix}Clean`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireAt(at) {
@@ -205,8 +207,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.expireAt';
-        const online = { name: BiotaFunctionName('DocumentExpireAt'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.expireAt`;
+        const online = { name: BiotaFunctionName(`${prefix}ExpireAt`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireIn(delay) {
@@ -220,8 +222,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.expireIn';
-        const online = { name: BiotaFunctionName('DocumentExpireIn'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.expireIn`;
+        const online = { name: BiotaFunctionName(`${prefix}ExpireIn`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireNow() {
@@ -235,8 +237,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.expireNow';
-        const online = { name: BiotaFunctionName('DocumentExpireNow'), role: null };
+        const offline = `factory.${prefix.toLowerCase()}.expireNow`;
+        const online = { name: BiotaFunctionName(`${prefix}ExpireNow`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       membership: {
@@ -253,8 +255,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('doc'),
               );
               // ----
-              const offline = 'factory.document.membership.role.distinct';
-              const online = { name: BiotaFunctionName('DocumentMembershipRoleDistinct'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.role.distinct`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipRoleDistinct`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             difference() {
@@ -267,8 +269,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('doc'),
               );
               // ----
-              const offline = 'factory.document.membership.role.difference';
-              const online = { name: BiotaFunctionName('DocumentMembershipRoleDifference'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.role.difference`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipRoleDifference`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             set() {
@@ -288,8 +290,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('action'),
               );
               // ----
-              const offline = 'factory.document.membership.role.set';
-              const online = { name: BiotaFunctionName('DocumentMembershipRoleSet'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.role.set`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipRoleSet`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             remove() {
@@ -309,8 +311,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('action'),
               );
               // ----
-              const offline = 'factory.document.membership.role.remove';
-              const online = { name: BiotaFunctionName('DocumentMembershipRoleRemove'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.role.remove`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipRoleRemove`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
           };
@@ -338,8 +340,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
               q.Var('action'),
             );
             // ----
-            const offline = 'factory.document.membership.owner.set';
-            const online = { name: BiotaFunctionName('DocumentMembershipOwnerSet'), role: null };
+            const offline = `factory.${prefix.toLowerCase()}.membership.owner.set`;
+            const online = { name: BiotaFunctionName(`${prefix}MembershipOwnerSet`), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           remove() {
@@ -359,8 +361,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
               q.Var('action'),
             );
             // ----
-            const offline = 'factory.document.membership.owner.remove';
-            const online = { name: BiotaFunctionName('DocumentMembershipOwnerRemove'), role: null };
+            const offline = `factory.${prefix.toLowerCase()}.membership.owner.remove`;
+            const online = { name: BiotaFunctionName(`${prefix}MembershipOwnerRemove`), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
         },
@@ -379,8 +381,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('doc'),
               );
               // ----
-              const offline = 'factory.document.membership.assignee.distinct';
-              const online = { name: BiotaFunctionName('DocumentMembershipAssigneeDistinct'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.assignee.distinct`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeDistinct`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             difference() {
@@ -393,8 +395,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('doc'),
               );
               // ----
-              const offline = 'factory.document.membership.assignee.difference';
-              const online = { name: BiotaFunctionName('DocumentMembershipAssigneeDifference'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.assignee.difference`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeDifference`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             set() {
@@ -414,8 +416,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('action'),
               );
               // ----
-              const offline = 'factory.document.membership.assignee.set';
-              const online = { name: BiotaFunctionName('DocumentMembershipAssigneeSet'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.assignee.set`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeSet`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             remove() {
@@ -435,8 +437,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 q.Var('action'),
               );
               // ----
-              const offline = 'factory.document.membership.assignee.remove';
-              const online = { name: BiotaFunctionName('DocumentMembershipAssigneeRemove'), role: null };
+              const offline = `factory.${prefix.toLowerCase()}.membership.assignee.remove`;
+              const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeRemove`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
           };
@@ -460,8 +462,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
             q.Var('action'),
           );
           // ----
-          const offline = 'factory.document.validity.delete';
-          const online = { name: BiotaFunctionName('DocumentValidityDelete'), role: null };
+          const offline = `factory.${prefix.toLowerCase()}.validity.delete`;
+          const online = { name: BiotaFunctionName(`${prefix}ValidityDelete`), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
         expire(at) {
@@ -485,8 +487,8 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
             q.Var('action'),
           );
           // ----
-          const offline = 'factory.document.validity.expire';
-          const online = { name: BiotaFunctionName('DocumentValidityExpire'), role: null };
+          const offline = `factory.${prefix.toLowerCase()}.validity.expire`;
+          const online = { name: BiotaFunctionName(`${prefix}ValidityExpire`), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
         restore() {
@@ -519,13 +521,13 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
             q.Var('action'),
           );
           // ----
-          const offline = 'factory.document.validity.restore';
-          const online = { name: BiotaFunctionName('DocumentValidityRestore'), role: null };
+          const offline = `factory.${prefix.toLowerCase()}.validity.restore`;
+          const online = { name: BiotaFunctionName(`${prefix}ValidityRestore`), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
       },
       annotate(actionName = null, data = {}) {
-        const inputs = { ref, actionName, data };
+        const inputs = { actionName, data };
         // ----
         const query = Query(
           {
@@ -565,7 +567,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.annotate';
+        const offline = `factory.${prefix.toLowerCase()}.annotate`;
         const online = null;
         return MethodDispatch({ context, inputs, query })(offline, online);
       },

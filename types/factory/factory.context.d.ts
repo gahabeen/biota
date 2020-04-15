@@ -1,7 +1,11 @@
 import { FaunaRef, FaunaString, FaunaBoolean } from '../fauna';
 import { Expr } from 'faunadb';
 
-export type FactoryContext<T> = (context?: FactoryContextDefinition) => T;
+export type FactoryContext<T> = (context?: FactoryContextDefinition, options?: FactoryContextOptions) => T;
+
+export interface FactoryContextOptions {
+  prefix?: string;
+}
 
 export type FactoryContextDefinition =
   | {
