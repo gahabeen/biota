@@ -1,3 +1,3 @@
 export interface BiotaFrameworkUDFunctionsApi {
-  cleanAll: () => Promise<any>;
+  dropAll: () => Promise<any>;
 }

@@ -12,5 +12,5 @@ export interface FactoryKeyApi {
   repsert(options: FaunaKeyOptions): Expr;
   delete(): Expr;
   forget(): Expr;
-  clean(): Expr;
+  drop(): Expr;
 }

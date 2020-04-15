@@ -12,5 +12,9 @@ export interface FactoryCollectionApi {
   repsert(options: FaunaCollectionOptions): Expr;
   delete(): Expr;
   forget(): Expr;
-  clean(): Expr;
+  restore(): Expr;
+  expireAt(time: Expr): Expr;
+  expireIn(delay: number | Expr): Expr;
+  expireNow(): Expr;
+  drop(): Expr;
 }

@@ -12,5 +12,5 @@ export interface FactoryTokenApi {
   repsert(options: FaunaTokenOptions): Expr;
   delete(): Expr;
   forget(): Expr;
-  clean(): Expr;
+  drop(): Expr;
 }

@@ -7,6 +7,7 @@ export type FactoryContextDefinition =
   | {
       identity?: FaunaRef;
       session?: FaunaRef;
+      useRole?: FaunaRef;
       callstack?: FaunaString;
       offline?: FaunaBoolean;
       hasIdentity?: FaunaBoolean;

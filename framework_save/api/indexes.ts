@@ -1,7 +1,7 @@
 import { BiotaFrameworkIndexesApi } from '~/../types/framework/framework.indexes';
 
-import { cleanAll } from '~/framework/api/indexes/cleanAll';
+import { dropAll } from '~/framework/api/indexes/dropAll';
 
 export const indexes: BiotaFrameworkIndexesApi = {
-  cleanAll,
+  dropAll,
 };

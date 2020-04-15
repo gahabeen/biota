@@ -12,8 +12,6 @@ import { BiotaFunctionName } from '../constructors/udfunction';
 
 // tslint:disable-next-line: only-arrow-functions
 export const document: FactoryContext<FactoryDocument> = function (context): FactoryDocument {
-  context = ContextExtend(context);
-
   // tslint:disable-next-line: only-arrow-functions
   return (collectionOrRef = null, id = null) => {
     const ref = q.If(
@@ -41,9 +39,9 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
         // ----
         const query = Query(
           {
-            annotated: document(q.Var('ctx'))().annotate('insert', q.Var('data')),
+            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Var('data'))),
             doc: q.Create(q.Var('ref'), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('insert', q.Var('doc')).insert(),
+            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -60,7 +58,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           {
             annotated: document(q.Var('ctx'))().annotate('update', q.Var('data')),
             doc: q.Update(q.Var('ref'), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('update', q.Var('doc')).insert(),
+            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -105,7 +103,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
               }),
             ),
             doc: q.Replace(q.Var('ref'), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('replace', q.Var('doc')).insert(),
+            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -171,17 +169,18 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           {
             annotated: document(q.Var('ctx'))().annotate('forget'),
             annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', ref).insert(),
+            action: action(q.Var('ctx'))('forget', ref).log(),
             doc: q.Delete(q.Var('ref')),
           },
           q.Var('doc'),
+          q.Var('action'),
         );
         // ----
         const offline = 'factory.document.forget';
         const online = { name: BiotaFunctionName('DocumentRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      clean() {
+      drop() {
         const inputs = { ref };
         // ----
         const query = Query(
@@ -191,7 +190,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
           q.Var('doc'),
         );
         // ----
-        const offline = 'factory.document.clean';
+        const offline = 'factory.document.drop';
         const online = { name: BiotaFunctionName('DocumentClean'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
@@ -240,7 +239,6 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
         const online = { name: BiotaFunctionName('DocumentExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-
       membership: {
         role(roleOrRef) {
           const roleRef = q.If(q.IsRole(roleOrRef), roleOrRef, q.Role(roleOrRef));
@@ -284,7 +282,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                     },
                   }),
                   doc: document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated')),
-                  action: action(q.Var('ctx'))('roles_change', ref).insert(),
+                  action: action(q.Var('ctx'))('roles_change', ref).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -305,7 +303,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                     },
                   }),
                   doc: document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated')),
-                  action: action(q.Var('ctx'))('roles_change', ref).insert(),
+                  action: action(q.Var('ctx'))('roles_change', ref).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -334,7 +332,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                   ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
                   ThrowError(q.Var('ctx'), "User isn't a document reference", { user: q.Var('user') }),
                 ),
-                action: action(q.Var('ctx'))('owner_change', ref).insert(),
+                action: action(q.Var('ctx'))('owner_change', ref).log(),
               },
               q.Var('doc'),
               q.Var('action'),
@@ -355,7 +353,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                   },
                 }),
                 doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-                action: action(q.Var('ctx'))('owner_change', ref).insert(),
+                action: action(q.Var('ctx'))('owner_change', ref).log(),
               },
               q.Var('doc'),
               q.Var('action'),
@@ -410,7 +408,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                     },
                   }),
                   doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-                  action: action(q.Var('ctx'))('assignees_change', ref).insert(),
+                  action: action(q.Var('ctx'))('assignees_change', ref).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -431,7 +429,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                     },
                   }),
                   doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-                  action: action(q.Var('ctx'))('assignees_change', ref).insert(),
+                  action: action(q.Var('ctx'))('assignees_change', ref).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -456,7 +454,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 },
               }),
               doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-              action: action(q.Var('ctx'))('delete', q.Var('doc')).insert(),
+              action: action(q.Var('ctx'))('delete', q.Var('doc')).log(),
             },
             q.Var('doc'),
             q.Var('action'),
@@ -481,7 +479,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                 ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
                 ThrowError(q.Var('ctx'), "[at] isn't a valid time", { at: q.Var('ctx') }),
               ),
-              action: action(q.Var('ctx'))('expire', q.Var('doc')).insert(),
+              action: action(q.Var('ctx'))('expire', q.Var('doc')).log(),
             },
             q.Var('doc'),
             q.Var('action'),
@@ -515,7 +513,7 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
                   q.Var('doc'),
                 ),
               ),
-              action: action(q.Var('ctx'))('restore', q.Var('doc')).insert(),
+              action: action(q.Var('ctx'))('restore', q.Var('doc')).log(),
             },
             q.Var('doc'),
             q.Var('action'),
@@ -527,36 +525,49 @@ export const document: FactoryContext<FactoryDocument> = function (context): Fac
         },
       },
       annotate(actionName = null, data = {}) {
-        const ctx = ContextExtend(context, 'factory.document.annotate');
-        return q.If(
-          ContextProp(ctx, 'annotateDocuments'),
-          q.Let(
-            {
-              activity: {
-                insert: { inserted_by: ContextProp(ctx, 'identity'), inserted_at: q.Now() },
-                update: { updated_by: ContextProp(ctx, 'identity'), updated_at: q.Now() },
-                replace: { replaced_by: ContextProp(ctx, 'identity'), replaced_at: q.Now() },
-                delete: { deleted_by: ContextProp(ctx, 'identity'), deleted_at: q.Now() },
-                forget: { forgotten_by: ContextProp(ctx, 'identity'), forgotten_at: q.Now() },
-                restore: { restored_by: ContextProp(ctx, 'identity'), restored_at: q.Now() },
-                expire: { expiration_changed_by: ContextProp(ctx, 'identity'), expiration_changed_at: q.Now() },
-                credentials_change: { credentials_changed_by: ContextProp(ctx, 'identity'), credentials_changed_at: q.Now() },
-                auth_email_change: { auth_email_changed_by: ContextProp(ctx, 'identity'), auth_email_changed_at: q.Now() },
-                auth_accounts_change: { auth_accounts_changed_by: ContextProp(ctx, 'identity'), auth_accounts_changed_at: q.Now() },
-                roles_change: { roles_changed_by: ContextProp(ctx, 'identity'), roles_changed_at: q.Now() },
-                owner_change: { owner_changed_by: ContextProp(ctx, 'identity'), owner_changed_at: q.Now() },
-                assignees_change: { assignees_changed_by: ContextProp(ctx, 'identity'), assignees_changed_at: q.Now() },
-              },
-              _activity: q.Select(actionName, q.Var("activity"), null),
-            },
-            q.If(
-              q.IsObject(q.Var('_activity')),
-              q.Merge(data, { _activity: q.Var('_activity') }),
-              ThrowError(ctx, "This action event doesn't exist", { name: actionName }),
+        const inputs = { ref, actionName, data };
+        // ----
+        const query = Query(
+          {
+            doc: q.If(
+              ContextProp(q.Var('ctx'), 'annotateDocuments'),
+              q.Let(
+                {
+                  activity: {
+                    insert: { inserted_by: ContextProp(q.Var('ctx'), 'identity'), inserted_at: q.Now() },
+                    update: { updated_by: ContextProp(q.Var('ctx'), 'identity'), updated_at: q.Now() },
+                    replace: { replaced_by: ContextProp(q.Var('ctx'), 'identity'), replaced_at: q.Now() },
+                    delete: { deleted_by: ContextProp(q.Var('ctx'), 'identity'), deleted_at: q.Now() },
+                    forget: { forgotten_by: ContextProp(q.Var('ctx'), 'identity'), forgotten_at: q.Now() },
+                    restore: { restored_by: ContextProp(q.Var('ctx'), 'identity'), restored_at: q.Now() },
+                    expire: { expiration_changed_by: ContextProp(q.Var('ctx'), 'identity'), expiration_changed_at: q.Now() },
+                    credentials_change: { credentials_changed_by: ContextProp(q.Var('ctx'), 'identity'), credentials_changed_at: q.Now() },
+                    auth_email_change: { auth_email_changed_by: ContextProp(q.Var('ctx'), 'identity'), auth_email_changed_at: q.Now() },
+                    auth_accounts_change: {
+                      auth_accounts_changed_by: ContextProp(q.Var('ctx'), 'identity'),
+                      auth_accounts_changed_at: q.Now(),
+                    },
+                    roles_change: { roles_changed_by: ContextProp(q.Var('ctx'), 'identity'), roles_changed_at: q.Now() },
+                    owner_change: { owner_changed_by: ContextProp(q.Var('ctx'), 'identity'), owner_changed_at: q.Now() },
+                    assignees_change: { assignees_changed_by: ContextProp(q.Var('ctx'), 'identity'), assignees_changed_at: q.Now() },
+                  },
+                  _activity: q.Select(q.Var('actionName'), q.Var('activity'), null),
+                },
+                q.If(
+                  q.IsObject(q.Var('_activity')),
+                  q.Merge(q.Var('data'), { _activity: q.Var('_activity') }),
+                  ThrowError(q.Var('ctx'), "This action event doesn't exist", { name: q.Var('actionName') }),
+                ),
+              ),
+              q.Var('data'),
             ),
-          ),
-          data,
+          },
+          q.Var('doc'),
         );
+        // ----
+        const offline = 'factory.document.annotate';
+        const online = null;
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };
   };

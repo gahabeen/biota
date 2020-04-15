@@ -28,7 +28,8 @@ export function ContextExtend(
       context,
       functionName,
       offline: q.Select('offline', q.Var('context'), false),
-      identity: q.Select('identity', q.Var('context'), false),
+      identity: q.Select('identity', q.Var('context'), q.Identity()),
+      useRole: q.Select('useRole', q.Var('context'), false),
       hasIdentity: q.IsDoc(q.Var('identity')),
       session: q.Select('session', q.Var('context'), false),
       hasSession: q.IsDoc(q.Var('session')),
@@ -41,6 +42,7 @@ export function ContextExtend(
       {
         offline: q.Var('offline'),
         identity: q.Var('identity'),
+        useRole: q.If(q.IsRole(q.Var('useRole')), q.Var('useRole'), false),
         hasIdentity: q.Var('hasIdentity'),
         session: q.Var('session'),
         hasSession: q.Var('hasSession'),

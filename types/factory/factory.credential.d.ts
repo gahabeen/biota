@@ -11,5 +11,5 @@ export interface FactoryCredentialApi {
   replace(password: FaunaString): Expr;
   // delete(): Expr;
   forget(): Expr;
-  clean(): Expr;
+  drop(): Expr;
 }

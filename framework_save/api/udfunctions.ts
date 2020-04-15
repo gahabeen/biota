@@ -1,7 +1,7 @@
 import { BiotaFrameworkUDFunctionsApi } from '~/../types/framework/framework.udfunctions';
 
-import { cleanAll } from '~/framework/api/udfunctions/cleanAll';
+import { dropAll } from '~/framework/api/udfunctions/dropAll';
 
 export const udfunctions: BiotaFrameworkUDFunctionsApi = {
-  cleanAll,
+  dropAll,
 };

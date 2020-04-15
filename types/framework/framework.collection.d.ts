@@ -37,7 +37,7 @@ export interface BiotaFrameworkCollectionApi {
   upsert: (id: FaunaId, data: object) => Promise<any>;
   delete: (id: FaunaId) => Promise<any>;
   forget: (id: FaunaId) => Promise<any>;
-  clean: () => Promise<any>;
+  drop: () => Promise<any>;
   activity: (pagination: FaunaPaginateOptions) => Promise<any>;
   changes: () => Promise<any>;
 }

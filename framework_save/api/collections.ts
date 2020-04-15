@@ -1,7 +1,7 @@
 import { BiotaFrameworkCollectionsApi } from '~/../types/framework/framework.collections';
 
-import { cleanAll } from '~/framework/api/collections/cleanAll';
+import { dropAll } from '~/framework/api/collections/dropAll';
 
 export const collections: BiotaFrameworkCollectionsApi = {
-  cleanAll,
+  dropAll,
 };

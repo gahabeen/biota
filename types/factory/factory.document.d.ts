@@ -49,7 +49,7 @@ export interface FactoryDocumentApi {
   delete(): Expr;
   forget(): Expr;
   restore(): Expr;
-  clean(): Expr;
+  drop(): Expr;
   expireAt(time: Expr): Expr;
   expireIn(delay: number | Expr): Expr;
   expireNow(): Expr;

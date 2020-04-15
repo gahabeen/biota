@@ -17,7 +17,7 @@ export function MethodDispatch(options: MethodDispatchOption) {
   const { context, inputs, query } = options;
   // return (offline: OfflineNext, online: OnlineNext) => {
   return (offline: string, online: string | FaunaUDFunctionOptions) => {
-    return q.If(ContextProp(context, 'offline'), Offline(offline)(context, inputs, query), Online(online)(context, inputs)); // query
+    return q.If(ContextProp(context, 'offline'), Offline(offline)(context, inputs, query), online ? Online(online)(context, inputs) : null); // query
   };
 }
 

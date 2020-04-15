@@ -1,3 +1,3 @@
 export interface BiotaFrameworkCollectionsApi {
-  cleanAll: () => Promise<any>;
+  dropAll: () => Promise<any>;
 }

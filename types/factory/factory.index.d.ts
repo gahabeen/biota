@@ -12,5 +12,5 @@ export interface FactoryIndexApi {
   repsert(options: FaunaIndexOptions): Expr;
   delete(): Expr;
   forget(): Expr;
-  clean(): Expr;
+  drop(): Expr;
 }

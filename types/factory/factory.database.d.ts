@@ -12,5 +12,5 @@ export interface FactoryDatabaseApi {
   repsert(options: FaunaCollectionOptions): Expr;
   delete(): Expr;
   forget(): Expr;
-  clean(): Expr;
+  drop(): Expr;
 }

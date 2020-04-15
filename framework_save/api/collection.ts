@@ -17,7 +17,7 @@ import { repsert } from '~/framework/api/collection/repsert';
 import { scaffold } from '~/framework/api/collection/scaffold';
 import { update } from '~/framework/api/collection/update';
 import { upsert } from '~/framework/api/collection/upsert';
-import { clean } from '~/framework/api/collection/clean';
+import { drop } from '~/framework/api/collection/drop';
 
 export function collection(collectionName: string): BiotaFrameworkCollectionApi {
   const self = this;
@@ -27,7 +27,7 @@ export function collection(collectionName: string): BiotaFrameworkCollectionApi 
   }
 
   return {
-    clean: clean.call(self, collectionName),
+    drop: drop.call(self, collectionName),
     scaffold: scaffold.call(self, collectionName),
     activity: activity.call(self, collectionName),
     field: field.call(self, collectionName),

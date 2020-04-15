@@ -94,7 +94,6 @@ export function UDFunctionFromMethod(methodRaw: any) {
     return null;
   }
 }
-
 export function CallFunction(
   nameOrDefinition: string | FaunaUDFunctionOptions,
   context: FactoryContextDefinition,

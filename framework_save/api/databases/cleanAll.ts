@@ -2,19 +2,19 @@ import { Biota } from '~/biota';
 import { database } from '~/factory/api/classes/database';
 import { execute } from '~/tasks';
 
-export function cleanAll(this: Biota) {
+export function dropAll(this: Biota) {
   const self = this;
   return execute(
     [
       {
         name: `Clean all databases`,
         task() {
-          return self.query(database.cleanAll.call(self));
+          return self.query(database.dropAll.call(self));
         },
       },
     ],
     {
-      domain: 'Biota.databases.cleanAll',
+      domain: 'Biota.databases.dropAll',
     },
   );
 }

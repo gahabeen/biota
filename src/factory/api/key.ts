@@ -2,43 +2,180 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { FactoryKey } from '~/../types/factory/factory.key';
 import { DefaultToOjbect } from './ql/defaultTo';
+import { Query, MethodDispatch } from '../constructors/method';
+import { BiotaFunctionName } from './constructors';
+import { action } from './action';
+import { document } from './document';
+import { ResultData } from '../constructors/result';
 
 // tslint:disable-next-line: only-arrow-functions
 export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
   // tslint:disable-next-line: only-arrow-functions
   return (idOrRef) => {
-    const keyApi = key(context);
     const ref = q.If(q.IsKey(idOrRef), idOrRef, q.Ref(q.Keys(), idOrRef));
     return {
       get() {
-        return q.Get(ref);
+        const inputs = { ref };
+        // ----
+        const query = Query(
+          {
+            doc: q.Get(q.Var('ref')),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.key.get';
+        const online = { name: BiotaFunctionName('KeyGet'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
         options = DefaultToOjbect(options);
-        return q.CreateKey(options);
+        const inputs = { name, options };
+        // ---
+        const query = Query(
+          {
+            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
+            doc: q.CreateKey(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
+            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.key.insert';
+        const online = { name: BiotaFunctionName('KeyInsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
         options = DefaultToOjbect(options);
-        return q.Update(ref, options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
+            doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.key.update';
+        const online = { name: BiotaFunctionName('KeyUpdate'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-        return q.If(q.Exists(ref), keyApi(ref).update(options), keyApi(ref).insert(options));
+        options = DefaultToOjbect(options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            doc: q.If(
+              q.Exists(q.Var('ref')),
+              ResultData(key(q.Var('ref'))(q.Var('ref')).update(q.Var('options'))),
+              ResultData(key(q.Var('ref'))(q.Var('ref')).insert(q.Var('options'))),
+            ),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.key.upsert';
+        const online = { name: BiotaFunctionName('KeyUpsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
         options = DefaultToOjbect(options);
-        return q.Replace(ref, options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            current_doc: ResultData(key(q.Var('ctx'))(q.Var('ref')).get()),
+            annotated: ResultData(
+              document(q.Var('ctx'))().annotate(
+                'replace',
+                q.Merge(q.Select('data', q.Var('options'), {}), {
+                  _auth: q.Select('_auth', q.Var('current_doc'), {}),
+                  _membership: q.Select('_membership', q.Var('current_doc'), {}),
+                  _validity: q.Select('_validity', q.Var('current_doc'), {}),
+                  _activity: q.Select('_activity', q.Var('current_doc'), {}),
+                }),
+              ),
+            ),
+            doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.key.replace';
+        const online = { name: BiotaFunctionName('KeyReplace'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-        return q.If(q.Exists(ref), keyApi(ref).replace(options), keyApi(ref).insert(options));
+        options = DefaultToOjbect(options);
+        const inputs = { ref, options };
+        // ---
+        const query = Query(
+          {
+            doc: q.If(
+              q.Exists(ref),
+              ResultData(key(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
+              ResultData(key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+            ),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.key.repsert';
+        const online = { name: BiotaFunctionName('KeyRepsert'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       delete() {
-        return '';
+        const inputs = { ref };
+        // ---
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.key.delete';
+        const online = { name: BiotaFunctionName('KeyDelete'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
-        return q.Delete(ref);
+        const inputs = { ref };
+        // ---
+        const query = Query(
+          {
+            annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
+            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
+            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
+            doc: q.Delete(q.Var('ref')),
+          },
+          q.Var('doc'),
+          q.Var('action'),
+        );
+        // ---
+        const offline = 'factory.key.forget';
+        const online = { name: BiotaFunctionName('KeyForget'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      clean() {
-        return q.If(q.Exists(ref), keyApi(ref).forget(), false);
+      drop() {
+        const inputs = { ref };
+        // ---
+        const query = Query(
+          {
+            doc: q.If(q.Exists(q.Var('ref')), key(q.Var('ctx'))(q.Var('ref')).forget(), false),
+          },
+          q.Var('doc'),
+        );
+        // ---
+        const offline = 'factory.key.drop';
+        const online = { name: BiotaFunctionName('KeyClean'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };
   };

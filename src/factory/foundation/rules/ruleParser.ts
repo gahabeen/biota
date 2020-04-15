@@ -1,13 +1,16 @@
-import { query as q, Expr } from 'faunadb';
-import { FactoryRuleDefinition, FactoryRuleDefinitionPaths, FactoryRuleBooleanDefinition } from '~/../types/factory/factory.rule';
-import { FaunaRolePrivilegeActions, FaunaRef, FaunaTime } from 'types/fauna';
+import { Expr, query as q } from 'faunadb';
+import { FaunaRef, FaunaRolePrivilegeActions } from 'types/fauna';
+import { FactoryRuleDefinition, FactoryRuleDefinitionPaths } from '~/../types/factory/factory.rule';
 import { Identity } from '~/factory/api/ql';
 import * as helpers from '~/helpers';
+import { TS_2500_YEARS } from '~/consts';
 
 interface RuleParserOptions {
-  self?: FactoryRuleBooleanDefinition;
-  owner?: FactoryRuleBooleanDefinition;
-  assignee?: FactoryRuleBooleanDefinition;
+  global?: FaunaRolePrivilegeActions;
+  self?: FactoryRuleDefinition;
+  owner?: FactoryRuleDefinition;
+  assignee?: FactoryRuleDefinition;
+  admin?: FactoryRuleDefinition;
 }
 
 interface ActionRuleDefinition {
@@ -17,69 +20,58 @@ interface ActionRuleDefinition {
 
 function prepareRules(rules: FactoryRuleDefinition = {}, paths?: FactoryRuleDefinitionPaths): RuleParserOptions {
   // tslint:disable-next-line: prefer-const
-  let actions: RuleParserOptions = {
-    self: {
-      immutablePaths: [],
-      get: false,
-      getHistory: false,
-      insert: false,
-      insertHistory: false,
-      update: false,
-      replace: false,
-      delete: false,
-      forget: false,
-      expire: false,
-      restore: false,
-      setOwner: false,
-      removeOwner: false,
-      setAssignee: false,
-      removeAssignee: false,
-      setRole: false,
-      removeRole: false,
-    },
-    owner: {
-      immutablePaths: [],
-      get: false,
-      getHistory: false,
-      insert: false,
-      insertHistory: false,
-      update: false,
-      replace: false,
-      delete: false,
-      forget: false,
-      expire: false,
-      restore: false,
-      setOwner: false,
-      removeOwner: false,
-      setAssignee: false,
-      removeAssignee: false,
-      setRole: false,
-      removeRole: false,
-    },
-    assignee: {
-      immutablePaths: [],
-      get: false,
-      getHistory: false,
-      insert: false,
-      insertHistory: false,
-      update: false,
-      replace: false,
-      delete: false,
-      forget: false,
-      expire: false,
-      restore: false,
-      setOwner: false,
-      removeOwner: false,
-      setAssignee: false,
-      removeAssignee: false,
-      setRole: false,
-      removeRole: false,
-    },
+  let defaultRuleDefinition: FactoryRuleDefinition = {
+    immutablePaths: [],
+    get: false,
+    getHistory: false,
+    getHistoryWhenDeleted: false,
+    getHistoryWhenExpired: false,
+    insert: false,
+    insertHistory: false,
+    update: false,
+    replace: false,
+    delete: false,
+    getWhenDeleted: false,
+    updateWhenDeleted: false,
+    replaceWhenDeleted: false,
+    forgetWhenDeleted: false,
+    expire: false,
+    getWhenExpired: false,
+    updateWhenExpired: false,
+    replaceWhenExpired: false,
+    forgetWhenExpired: false,
+    forget: false,
+    restore: false,
+    setOwner: false,
+    removeOwner: false,
+    setAssignee: false,
+    removeAssignee: false,
+    setRole: false,
+    removeRole: false,
+  };
+  const actions: RuleParserOptions = {
+    global: {},
+    self: { ...defaultRuleDefinition },
+    owner: { ...defaultRuleDefinition },
+    assignee: { ...defaultRuleDefinition },
+    admin: Object.keys(defaultRuleDefinition).reduce((adminActions, adminAction) => {
+      if (typeof defaultRuleDefinition[adminAction] === 'boolean') {
+        adminActions[adminAction] = true;
+      } else {
+        adminActions[adminAction] = defaultRuleDefinition[adminAction];
+      }
+      return adminActions;
+    }, {}),
   };
   for (const key of Object.keys(rules)) {
-    if ((rules[key] || []).includes('self')) actions.self[key] = true;
-    if ((rules[key] || []).includes('owner')) actions.owner[key] = true;
-    if ((rules[key] || []).includes('assignee')) actions.assignee[key] = true;
+    if (Array.isArray(rules[key])) {
+      if (rules[key].includes('self')) actions.self[key] = true;
+      if (rules[key].includes('owner')) actions.owner[key] = true;
+      if (rules[key].includes('assignee')) actions.assignee[key] = true;
+      if (rules[key].includes('admin')) actions.admin[key] = true;
+    } else if (typeof rules[key] === 'boolean') {
+      actions.global[key] = rules[key];
+    }
   }
   if ((paths.self.immutablePaths || []).length > 0) {
     actions.self.immutablePaths = paths.self.immutablePaths;
@@ -116,18 +108,17 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
       return q.And(...andRules);
     }
   }
-
   const RefIsSelf = (ref: FaunaRef) => q.If(q.IsRef(ref), q.Equals(ref, Identity()), false);
   const DocOfOwner = (doc: Expr) => q.Equals(q.Select(helpers.path('_membership.owner'), doc), Identity());
-  const DocOfAssignee = (doc: Expr) =>
-    q.Let(
+  const DocOfAssignee = (doc: Expr) => {
+    return q.Let(
       {
         raw_assignees: q.Select(helpers.path('_membership.assignees'), doc, []),
         assignees: q.If(q.IsArray(q.Var('raw_assignees')), q.Var('raw_assignees'), []),
       },
       q.Not(q.IsEmpty(q.Filter(q.Var('assignees'), q.Lambda('assignee', q.Equals(q.Var('assignee'), Identity()))))),
     );
-
+  };
   const changedPathsOnlyAt = (root: string, allowedChangedSubPaths: string[]) => {
     return q.Let(
       {
@@ -172,11 +163,28 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
   const PathHasntChanged = (path: string) => {
     return q.Equals(q.Select(helpers.path(path), q.Var('oldDoc'), {}), q.Select(helpers.path(path), q.Var('newDoc'), {}));
   };
-  // const PathHasntChangedOr = (path: string, orThen: Expr) => {
-  //   return q.Or(PathHasntChanged(path), q.Equals(q.Select(helpers.path(path), q.Var('oldDoc'), {}), orThen));
-  // };
   const PathChangedWith = (path: string, value: any) => {
     return q.Equals(q.Select(helpers.path(path), q.Var('oldDoc'), {}), value);
+  };
+
+  const documentIsNotExpired = (doc: Expr) => {
+    return q.GTE(q.Select(helpers.path('_validity.expires_at'), doc, q.ToTime(TS_2500_YEARS)), q.Now());
+  };
+
+  const documentIsExpired = (doc: Expr) => {
+    return q.Not(documentIsNotExpired(doc));
+  };
+
+  const documentIsNotDeleted = (doc: Expr) => {
+    return q.Equals(q.Select(helpers.path('_validity.deleted'), doc, false), false);
+  };
+
+  const documentIsDeleted = (doc: Expr) => {
+    return q.Not(documentIsNotDeleted(doc));
+  };
+
+  const documentIsAvailable = (doc: Expr) => {
+    return q.And(documentIsNotExpired(doc), documentIsNotDeleted(doc));
   };
 
   /**
@@ -209,33 +217,103 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
   /**
    * get
    */
+  const getBaseRules = [documentIsAvailable(q.Get(q.Var('ref')))];
 
   if (options.self.get) {
-    actions.read.or.push(RefIsSelf(q.Var('ref')));
+    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getBaseRules));
   }
 
   if (options.owner.get) {
-    actions.read.or.push(DocOfOwner(q.Get(q.Var('ref'))));
+    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getBaseRules));
   }
 
   if (options.assignee.get) {
-    actions.read.or.push(DocOfAssignee(q.Get(q.Var('ref'))));
+    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getBaseRules));
+  }
+
+  /**
+   * getWhenDeleted
+   */
+  const getWhenDeletedBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
+
+  if (options.self.getWhenDeleted) {
+    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getWhenDeletedBaseRules));
+  }
+
+  if (options.owner.getWhenDeleted) {
+    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getWhenDeletedBaseRules));
+  }
+
+  if (options.assignee.getWhenDeleted) {
+    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getWhenDeletedBaseRules));
+  }
+
+  /**
+   * getWhenExpired
+   */
+  const getWhenExpiredBaseRules = [documentIsExpired(q.Get(q.Var('ref')))];
+
+  if (options.self.getWhenExpired) {
+    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getWhenExpiredBaseRules));
+  }
+
+  if (options.owner.getWhenExpired) {
+    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getWhenExpiredBaseRules));
+  }
+
+  if (options.assignee.getWhenExpired) {
+    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getWhenExpiredBaseRules));
   }
 
   /**
    * getHistory
    */
+  const getHistoryBaseRules = [documentIsAvailable(q.Get(q.Var('ref')))];
 
   if (options.self.getHistory) {
-    actions.history_read.or.push(RefIsSelf(q.Var('ref')));
+    actions.history_read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getHistoryBaseRules));
   }
 
   if (options.owner.getHistory) {
-    actions.history_read.or.push(DocOfOwner(q.Get(q.Var('ref'))));
+    actions.history_read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getHistoryBaseRules));
   }
 
   if (options.assignee.getHistory) {
-    actions.history_read.or.push(DocOfAssignee(q.Get(q.Var('ref'))));
+    actions.history_read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getHistoryBaseRules));
+  }
+
+  /**
+   * getHistoryWhenDeleted
+   */
+  const getHistoryWhenDeletedBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
+
+  if (options.self.getHistoryWhenDeleted) {
+    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getHistoryWhenDeletedBaseRules));
+  }
+
+  if (options.owner.getHistoryWhenDeleted) {
+    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getHistoryWhenDeletedBaseRules));
+  }
+
+  if (options.assignee.getHistoryWhenDeleted) {
+    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getHistoryWhenDeletedBaseRules));
+  }
+
+  /**
+   * getHistoryWhenExpired
+   */
+  const getHistoryWhenExpiredBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
+
+  if (options.self.getHistoryWhenExpired) {
+    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getHistoryWhenExpiredBaseRules));
+  }
+
+  if (options.owner.getHistoryWhenExpired) {
+    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getHistoryWhenExpiredBaseRules));
+  }
+
+  if (options.assignee.getHistoryWhenExpired) {
+    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getHistoryWhenExpiredBaseRules));
   }
 
   /**
@@ -274,7 +352,9 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
   /**
    * update
    */
+
   const updateBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_validity'),
     PathHasntChanged('_membership'),
@@ -297,10 +377,65 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
   }
 
   /**
+   * updateWhenDeleted
+   */
+
+  const updateWhenDeletedBaseRules = [
+    documentIsDeleted(q.Var('oldDoc')),
+    PathHasntChanged('_auth'),
+    PathHasntChanged('_validity'),
+    PathHasntChanged('_membership'),
+    q.And(
+      changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
+      q.Or(PathChangedWith('_activity.updated_by', Identity()), PathChangedWith('_activity.updated_at', q.Now())),
+    ),
+  ];
+
+  if (options.self.updateWhenDeleted) {
+    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenDeletedBaseRules));
+  }
+
+  if (options.owner.updateWhenDeleted) {
+    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...updateWhenDeletedBaseRules));
+  }
+
+  if (options.assignee.updateWhenDeleted) {
+    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...updateWhenDeletedBaseRules));
+  }
+
+  /**
+   * updateWhenDeleted
+   */
+
+  const updateWhenExpiredBaseRules = [
+    documentIsExpired(q.Var('oldDoc')),
+    PathHasntChanged('_auth'),
+    PathHasntChanged('_validity'),
+    PathHasntChanged('_membership'),
+    q.And(
+      changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
+      q.Or(PathChangedWith('_activity.updated_by', Identity()), PathChangedWith('_activity.updated_at', q.Now())),
+    ),
+  ];
+
+  if (options.self.updateWhenExpired) {
+    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenExpiredBaseRules));
+  }
+
+  if (options.owner.updateWhenExpired) {
+    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...updateWhenExpiredBaseRules));
+  }
+
+  if (options.assignee.updateWhenExpired) {
+    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...updateWhenExpiredBaseRules));
+  }
+
+  /**
    * replace
    */
 
   const replaceBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_validity'),
     PathHasntChanged('_membership'),
@@ -323,10 +458,65 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
   }
 
   /**
+   * replaceWhenDeleted
+   */
+
+  const replaceWhenDeletedBaseRules = [
+    documentIsDeleted(q.Var('oldDoc')),
+    PathHasntChanged('_auth'),
+    PathHasntChanged('_validity'),
+    PathHasntChanged('_membership'),
+    q.And(
+      changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
+      q.Or(PathChangedWith('_activity.replaced_by', Identity()), PathChangedWith('_activity.replaced_at', q.Now())),
+    ),
+  ];
+
+  if (options.self.replaceWhenDeleted) {
+    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenDeletedBaseRules));
+  }
+
+  if (options.owner.replaceWhenDeleted) {
+    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...replaceWhenDeletedBaseRules));
+  }
+
+  if (options.assignee.replaceWhenDeleted) {
+    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...replaceWhenDeletedBaseRules));
+  }
+
+  /**
+   * replaceWhenDeleted
+   */
+
+  const replaceWhenExpiredBaseRules = [
+    documentIsExpired(q.Var('oldDoc')),
+    PathHasntChanged('_auth'),
+    PathHasntChanged('_validity'),
+    PathHasntChanged('_membership'),
+    q.And(
+      changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
+      q.Or(PathChangedWith('_activity.replaced_by', Identity()), PathChangedWith('_activity.replaced_at', q.Now())),
+    ),
+  ];
+
+  if (options.self.replaceWhenExpired) {
+    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenExpiredBaseRules));
+  }
+
+  if (options.owner.replaceWhenExpired) {
+    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...replaceWhenExpiredBaseRules));
+  }
+
+  if (options.assignee.replaceWhenExpired) {
+    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...replaceWhenExpiredBaseRules));
+  }
+
+  /**
    * delete
    */
 
   const deleteBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_membership'),
     q.And(
@@ -356,6 +546,7 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
    */
 
   const forgetBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_validity'),
     PathHasntChanged('_membership'),
@@ -378,10 +569,65 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
   }
 
   /**
+   * forgetWhenDeleted
+   */
+
+  const forgetWhenDeletedBaseRules = [
+    documentIsDeleted(q.Get('oldDoc')),
+    PathHasntChanged('_auth'),
+    PathHasntChanged('_validity'),
+    PathHasntChanged('_membership'),
+    q.And(
+      changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
+      q.Or(PathChangedWith('_activity.forgotten_by', Identity()), PathChangedWith('_activity.forgotten_at', q.Now())),
+    ),
+  ];
+
+  if (options.self.forgetWhenDeleted) {
+    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenDeletedBaseRules));
+  }
+
+  if (options.owner.forgetWhenDeleted) {
+    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...forgetWhenDeletedBaseRules));
+  }
+
+  if (options.assignee.forgetWhenDeleted) {
+    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...forgetWhenDeletedBaseRules));
+  }
+
+  /**
+   * forgetWhenDeleted
+   */
+
+  const forgetWhenExpiredBaseRules = [
+    documentIsExpired(q.Get('oldDoc')),
+    PathHasntChanged('_auth'),
+    PathHasntChanged('_validity'),
+    PathHasntChanged('_membership'),
+    q.And(
+      changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
+      q.Or(PathChangedWith('_activity.forgotten_by', Identity()), PathChangedWith('_activity.forgotten_at', q.Now())),
+    ),
+  ];
+
+  if (options.self.forgetWhenExpired) {
+    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenExpiredBaseRules));
+  }
+
+  if (options.owner.forgetWhenExpired) {
+    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...forgetWhenExpiredBaseRules));
+  }
+
+  if (options.assignee.forgetWhenExpired) {
+    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...forgetWhenExpiredBaseRules));
+  }
+
+  /**
    * expire
    */
 
   const expireBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_membership'),
     q.And(
@@ -434,6 +680,7 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
    */
 
   const setRemoveOwnerBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_validity'),
     q.And(
@@ -472,6 +719,7 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
    */
 
   const setRemoveAssigneeBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_validity'),
     q.And(
@@ -510,6 +758,7 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
    */
 
   const setRemoveRoleBaseRules = [
+    documentIsAvailable(q.Get('oldDoc')),
     PathHasntChanged('_auth'),
     PathHasntChanged('_validity'),
     q.And(
@@ -543,14 +792,17 @@ export function ruleParser(rules: FactoryRuleDefinition = {}, immutablePaths?: F
     actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveRoleBaseRules));
   }
 
-  return {
-    create: buildAction(actions.create),
-    delete: buildAction(actions.delete),
-    read: buildAction(actions.read),
-    write: buildAction(actions.write),
-    history_read: buildAction(actions.history_read),
-    history_write: buildAction(actions.history_write),
-    unrestricted_read: buildAction(actions.unrestricted_read),
-    call: buildAction(actions.call),
-  };
+  return Object.assign(
+    {
+      create: buildAction(actions.create),
+      delete: buildAction(actions.delete),
+      read: buildAction(actions.read),
+      write: buildAction(actions.write),
+      history_read: buildAction(actions.history_read),
+      history_write: buildAction(actions.history_write),
+      unrestricted_read: buildAction(actions.unrestricted_read),
+      call: buildAction(actions.call),
+    },
+    options.global,
+  );
 }

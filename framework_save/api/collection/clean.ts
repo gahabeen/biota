@@ -3,21 +3,21 @@ import { Biota } from '~/biota';
 import { collection } from '~/factory/api/classes/collection';
 import { execute } from '~/tasks';
 
-export function clean(this: Biota, collectionName: string) {
+export function drop(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function cleanMethod() {
+  return async function dropMethod() {
     return execute(
       [
         {
           name: `Clean everything in (${collectionName})`,
           task() {
-            return self.query(collection.clean.call(self, collectionName));
+            return self.query(collection.drop.call(self, collectionName));
           },
         },
       ],
       {
-        domain: 'Biota.collection.clean',
+        domain: 'Biota.collection.drop',
       },
     );
   };

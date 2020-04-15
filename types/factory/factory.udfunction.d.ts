@@ -12,5 +12,5 @@ export interface FactoryUDFunctionApi {
   repsert(options: FaunaUDFunctionOptions): Expr;
   delete(): Expr;
   forget(): Expr;
-  clean(): Expr;
+  drop(): Expr;
 }

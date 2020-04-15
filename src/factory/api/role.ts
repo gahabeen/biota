@@ -38,7 +38,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       forget() {
         return q.Delete(ref);
       },
-      clean() {
+      drop() {
         return q.If(q.Exists(ref), roleApi(ref).forget(), false);
       },
       membership: {
