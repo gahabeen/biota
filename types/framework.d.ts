@@ -1,5 +1,5 @@
-import { BiotaFrameworkCollectionApi } from "./framework/framework.collection";
+import { FrameworkCollectionApi } from "./framework/framework.collection";
 
-export interface BiotaFramework {
-  collection: BiotaFrameworkCollection;
+export interface Framework {
+  collection: FrameworkCollection;
 }

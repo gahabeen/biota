@@ -1,10 +1,10 @@
 import {
-  BiotaFrameworkAuthConnectUrlOptions,
-  BiotaFrameworkAuthAuthenticateOptions,
-  BiotaFrameworkAuthAuthenticateResponse,
-  BiotaFrameworkAuthTokenInfoOptions,
-  BiotaFrameworkAuthUserInfoOptions,
-  BiotaFrameworkAuthGetIdOptions,
+  FrameworkAuthConnectUrlOptions,
+  FrameworkAuthAuthenticateOptions,
+  FrameworkAuthAuthenticateResponse,
+  FrameworkAuthTokenInfoOptions,
+  FrameworkAuthUserInfoOptions,
+  FrameworkAuthGetIdOptions,
 } from '~/../types/framework/framework.user';
 import { OAUTH2 } from '~/consts';
 import { authenticate } from '~/framework/api/user/auth/authenticate';
@@ -12,10 +12,10 @@ import * as qs from 'querystring';
 import axios from 'axios';
 
 export const github = {
-  connectUrl: function (options?: BiotaFrameworkAuthConnectUrlOptions) {
+  connectUrl: function (options?: FrameworkAuthConnectUrlOptions) {
     let { client_id, scope = 'read:user user:email', redirect_uri, state = {} } = options || {};
     let url = OAUTH2.GITHUB.AUTHORIZE;
-    let query: BiotaFrameworkAuthConnectUrlOptions = {
+    let query: FrameworkAuthConnectUrlOptions = {
       client_id,
       scope,
       state,
@@ -23,18 +23,18 @@ export const github = {
     if (redirect_uri) query.redirect_uri = redirect_uri;
     return `${url}?${qs.stringify(query as any)}`;
   },
-  authenticate: async function (options?: BiotaFrameworkAuthAuthenticateOptions): Promise<BiotaFrameworkAuthAuthenticateResponse> {
+  authenticate: async function (options?: FrameworkAuthAuthenticateOptions): Promise<FrameworkAuthAuthenticateResponse> {
     let { client_id, client_secret, code } = options || {};
     let url = OAUTH2.GITHUB.ACCESS_TOKEN;
-    let data: BiotaFrameworkAuthAuthenticateOptions = {
+    let data: FrameworkAuthAuthenticateOptions = {
       client_id,
       client_secret,
       code,
     };
     return authenticate(url, data);
   },
-  tokenInfo: async function (options: BiotaFrameworkAuthTokenInfoOptions) {},
-  userInfo: async function (options: BiotaFrameworkAuthUserInfoOptions) {
+  tokenInfo: async function (options: FrameworkAuthTokenInfoOptions) {},
+  userInfo: async function (options: FrameworkAuthUserInfoOptions) {
     return axios
       .get(OAUTH2.GITHUB.USER_INFO, {
         headers: {
@@ -43,7 +43,7 @@ export const github = {
       })
       .then(({ data }) => data);
   },
-  userId: async function (options: BiotaFrameworkAuthGetIdOptions) {
+  userId: async function (options: FrameworkAuthGetIdOptions) {
     return this.userInfo(options).then(({ id }) => id);
   },
 };

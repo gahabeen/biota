@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { FactoryUsersApi } from '~/../types/factory/factory.users';
-import { DefaultToOjbect } from './ql/defaultTo';
+
 import { BiotaIndexName } from '../constructors';
 import { ThrowError } from '../constructors/error';
 import { ContextExtend, ContextProp } from '../constructors/context';
@@ -50,13 +50,16 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       const online = { name: BiotaFunctionName('UsersGetByAuthEmail'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
-    paginate(pagination) {
-      pagination = DefaultToOjbect(pagination);
+    findAll(pagination) {
+
       const inputs = { pagination };
       // ---
       const query = Query(
         {
-          docs: q.Paginate(q.Documents(q.Collection(BiotaCollectionName('users'))), q.Var('pagination')),
+          docs: q.Map(
+            q.Paginate(q.Documents(q.Collection(BiotaCollectionName('users'))), q.Var('pagination')),
+            q.Lambda('x', q.Get(q.Var('x'))),
+          ),
         },
         q.Var('docs'),
       );

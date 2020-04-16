@@ -1,16 +1,20 @@
 import { Expr } from 'faunadb';
 import { FaunaUDFunctionOptions } from '../fauna';
 
-export type FactoryUDFunction = (name: string | Expr) => FactoryUDFunctionApi;
+export type FactoryUDFunction<OT = FactoryUDFunctionApi> = (name: string | Expr) => OT;
 
-export interface FactoryUDFunctionApi {
-  get(): Expr;
-  insert(options: FaunaUDFunctionOptions): Expr;
-  update(options: FaunaUDFunctionOptions): Expr;
-  upsert(options: FaunaUDFunctionOptions): Expr;
-  replace(options: FaunaUDFunctionOptions): Expr;
-  repsert(options: FaunaUDFunctionOptions): Expr;
-  delete(): Expr;
-  forget(): Expr;
-  drop(): Expr;
+export interface FactoryUDFunctionApi<OT = Expr> {
+  get(): OT;
+  insert(options: FaunaUDFunctionOptions): OT;
+  update(options: FaunaUDFunctionOptions): OT;
+  upsert(options: FaunaUDFunctionOptions): OT;
+  replace(options: FaunaUDFunctionOptions): OT;
+  repsert(options: FaunaUDFunctionOptions): OT;
+  delete(): OT;
+  forget(): OT;
+  drop(): OT;
+  restore(): OT;
+  expireAt(time: OT): OT;
+  expireIn(delay: number | Expr): OT;
+  expireNow(): OT;
 }

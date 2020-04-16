@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { FactoryTokensApi } from '~/../types/factory/factory.tokens';
-import { DefaultToOjbect } from './ql/defaultTo';
+
 import { BiotaIndexName } from '../constructors';
 import { Query, MethodDispatch } from '../constructors/method';
 import { BiotaFunctionName } from './constructors';
@@ -10,7 +10,7 @@ import { BiotaFunctionName } from './constructors';
 export const tokens: FactoryContext<FactoryTokensApi> = function (context): FactoryTokensApi {
   return {
     findByInstance(instance, pagination) {
-      pagination = DefaultToOjbect(pagination);
+
       const inputs = { instance, pagination };
       // ---
       const query = Query(
@@ -24,13 +24,13 @@ export const tokens: FactoryContext<FactoryTokensApi> = function (context): Fact
       const online = { name: BiotaFunctionName('TokensPaginate'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
-    paginate(pagination) {
-      pagination = DefaultToOjbect(pagination);
+    findAll(pagination) {
+
       const inputs = { pagination };
       // ---
       const query = Query(
         {
-          docs: q.Paginate(q.Documents(q.Tokens()), q.Var('pagination')),
+          docs: q.Map(q.Paginate(q.Documents(q.Tokens()), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
         },
         q.Var('docs'),
       );

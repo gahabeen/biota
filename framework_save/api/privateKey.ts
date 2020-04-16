@@ -1,7 +1,7 @@
 import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 import { IsPrivateKeyValid } from '~/framework/api/defaults/udfunctions';
 
 export function privateKey(this: Biota) {

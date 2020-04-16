@@ -1,9 +1,9 @@
 import { Biota } from '~/biota';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 import { google } from '~/framework/api/user/auth/providers/google';
-import { BiotaFrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
+import { FrameworkAuthConnectUrlOptions } from '~/../types/framework/framework.user';
 
-export async function googleLoginUrl(this: Biota, options: BiotaFrameworkAuthConnectUrlOptions): Promise<string> {
+export async function googleLoginUrl(this: Biota, options: FrameworkAuthConnectUrlOptions): Promise<string> {
   const self = this;
   return execute(
     [

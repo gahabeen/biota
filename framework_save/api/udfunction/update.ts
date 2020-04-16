@@ -1,7 +1,7 @@
 import { FaunaUDFunctionOptions } from '~/../types/fauna';
 import { Biota } from '~/biota';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
 export function update(this: Biota, udfunctionName: string) {
   const self = this;

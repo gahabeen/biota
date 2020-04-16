@@ -1,7 +1,7 @@
 import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { document } from '~/factory/api/document';
+import { execute } from '~/tools/tasks';
 
 export function upsert(this: Biota, collectionName: string, id: FaunaId) {
   const self = this;

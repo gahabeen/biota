@@ -1,7 +1,7 @@
 import { DocumentAuthAccount } from 'types/document';
 import { Biota } from '~/biota';
 import { user } from '~/factory/api/call/user';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 
 export function registerWithAuthAccount(this: Biota, account: DocumentAuthAccount) {
   const self = this;

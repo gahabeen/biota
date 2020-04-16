@@ -1,10 +1,10 @@
 import {
-  BiotaFrameworkAuthConnectUrlOptions,
-  BiotaFrameworkAuthAuthenticateOptions,
-  BiotaFrameworkAuthAuthenticateResponse,
-  BiotaFrameworkAuthTokenInfoOptions,
-  BiotaFrameworkAuthUserInfoOptions,
-  BiotaFrameworkAuthGetIdOptions,
+  FrameworkAuthConnectUrlOptions,
+  FrameworkAuthAuthenticateOptions,
+  FrameworkAuthAuthenticateResponse,
+  FrameworkAuthTokenInfoOptions,
+  FrameworkAuthUserInfoOptions,
+  FrameworkAuthGetIdOptions,
 } from '~/../types/framework/framework.user';
 import { OAUTH2 } from '~/consts';
 import { authenticate } from '~/framework/api/user/auth/authenticate';
@@ -12,7 +12,7 @@ import axios from 'axios';
 import * as qs from '~/helpers/querystring';
 
 export const google = {
-  connectUrl: function (options?: BiotaFrameworkAuthConnectUrlOptions) {
+  connectUrl: function (options?: FrameworkAuthConnectUrlOptions) {
     const {
       client_id,
       scope = 'openid profile email',
@@ -23,7 +23,7 @@ export const google = {
       prompt = 'consent',
     } = options || {};
     const url = OAUTH2.GOOGLE.AUTHORIZE;
-    const query: BiotaFrameworkAuthConnectUrlOptions = {
+    const query: FrameworkAuthConnectUrlOptions = {
       client_id,
       scope,
       state,
@@ -34,10 +34,10 @@ export const google = {
     if (redirect_uri) query.redirect_uri = redirect_uri;
     return `${url}?${qs.stringify(query as any)}`;
   },
-  authenticate: async function (options?: BiotaFrameworkAuthAuthenticateOptions): Promise<BiotaFrameworkAuthAuthenticateResponse> {
+  authenticate: async function (options?: FrameworkAuthAuthenticateOptions): Promise<FrameworkAuthAuthenticateResponse> {
     const { client_id, client_secret, code, redirect_uri, grant_type = 'authorization_code' } = options || {};
     const url = OAUTH2.GOOGLE.ACCESS_TOKEN;
-    const query: BiotaFrameworkAuthAuthenticateOptions = {
+    const query: FrameworkAuthAuthenticateOptions = {
       client_id,
       client_secret,
       code,
@@ -46,7 +46,7 @@ export const google = {
     if (redirect_uri) query.redirect_uri = redirect_uri;
     return authenticate(url, query);
   },
-  tokenInfo: async function (options: BiotaFrameworkAuthTokenInfoOptions) {
+  tokenInfo: async function (options: FrameworkAuthTokenInfoOptions) {
     return axios
       .get(OAUTH2.GOOGLE.TOKEN_INFO, {
         headers: {
@@ -55,7 +55,7 @@ export const google = {
       })
       .then(({ data }) => data);
   },
-  userInfo: async function (options: BiotaFrameworkAuthUserInfoOptions) {
+  userInfo: async function (options: FrameworkAuthUserInfoOptions) {
     return axios
       .get(OAUTH2.GOOGLE.USER_INFO, {
         headers: {
@@ -64,7 +64,7 @@ export const google = {
       })
       .then(({ data }) => data);
   },
-  userId: async function (options: BiotaFrameworkAuthGetIdOptions) {
+  userId: async function (options: FrameworkAuthGetIdOptions) {
     return this.userInfo(options).then(({ sub }) => sub);
   },
 };

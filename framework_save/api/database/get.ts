@@ -1,7 +1,7 @@
 import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { database } from '~/factory/api/classes/database';
-import { execute } from '~/tasks';
+import { database } from '~/factory/api/database';
+import { execute } from '~/tools/tasks';
 
 export function get(this: Biota, databaseName: string) {
   const self = this;

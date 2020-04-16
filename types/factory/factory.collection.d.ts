@@ -1,20 +1,21 @@
 import { Expr } from 'faunadb';
-import { FaunaCollectionOptions } from '../fauna';
+import { FaunaCollectionOptions, FaunaPaginateOptions, FaunaPaginateMapper, FaunaRef, FaunaString } from '../fauna';
 
-export type FactoryCollection = (name: string | Expr) => FactoryCollectionApi;
+export type FactoryCollection<OT = FactoryCollectionApi> = (name?: string | Expr) => OT;
 
-export interface FactoryCollectionApi {
-  get(): Expr;
-  insert(options: FaunaCollectionOptions): Expr;
-  update(options: FaunaCollectionOptions): Expr;
-  upsert(options: FaunaCollectionOptions): Expr;
-  replace(options: FaunaCollectionOptions): Expr;
-  repsert(options: FaunaCollectionOptions): Expr;
-  delete(): Expr;
-  forget(): Expr;
-  restore(): Expr;
-  expireAt(time: Expr): Expr;
-  expireIn(delay: number | Expr): Expr;
-  expireNow(): Expr;
-  drop(): Expr;
+export interface FactoryCollectionApi<OT = Expr> {
+  findAll(pagination: FaunaPaginateOptions): OT;
+  get(): OT;
+  insert(options: FaunaCollectionOptions): OT;
+  update(options: FaunaCollectionOptions): OT;
+  upsert(options: FaunaCollectionOptions): OT;
+  replace(options: FaunaCollectionOptions): OT;
+  repsert(options: FaunaCollectionOptions): OT;
+  delete(): OT;
+  forget(): OT;
+  restore(): OT;
+  expireAt(time: Expr): OT;
+  expireIn(delay: number | Expr): OT;
+  expireNow(): OT;
+  drop(): OT;
 }

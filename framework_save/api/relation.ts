@@ -1,16 +1,16 @@
-import { BiotaFrameworkRelationDefinition } from '~/../types/framework/framework.collection';
+import { FrameworkRelationDefinition } from '~/../types/framework/framework.collection';
 // external
 import { Biota } from '~/biota';
 // biota
 import { collectionNamePlural, BiotaCollectionName } from '~/factory/constructors/collection';
 import { insert } from '~/factory/api/fql/base/insert';
 import { name } from '~/helpers';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 
 export function relation(this: Biota, relationName?: string) {
   const self = this;
 
-  let definition: BiotaFrameworkRelationDefinition = {
+  let definition: FrameworkRelationDefinition = {
     name: relationName,
     // Does the relation implies deep destruction/delete
     destructive: false,

@@ -1,13 +1,13 @@
-import { BiotaFrameworkAuthAuthenticateOptions, BiotaFrameworkUserAuthProviderDataApi } from '~/../types/framework/framework.user';
+import { FrameworkAuthAuthenticateOptions, FrameworkUserAuthProviderDataApi } from '~/../types/framework/framework.user';
 import { Biota } from '~/biota';
 import { google } from '~/framework/api/user/auth/providers/google';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 import { parseOpenIDUserInfo } from './auth/openid';
 
 export async function googleAuthenticate(
   this: Biota,
-  options: BiotaFrameworkAuthAuthenticateOptions,
-  data?: BiotaFrameworkUserAuthProviderDataApi,
+  options: FrameworkAuthAuthenticateOptions,
+  data?: FrameworkUserAuthProviderDataApi,
 ): Promise<any> {
   const self = this;
   return execute(

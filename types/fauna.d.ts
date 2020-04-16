@@ -87,6 +87,12 @@ export interface FaunaDocumentOptions {
   credentials?: FaunaDocumentCredentials;
 }
 
+export interface FaunaDocumentOptionsWithRef extends FaunaDocumentOptions {
+  ref?: FaunaRef;
+  data?: object;
+  credentials?: FaunaDocumentCredentials;
+}
+
 export interface FaunaDocumentCredentials {
   password?: string;
 }

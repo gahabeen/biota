@@ -2,12 +2,13 @@ import { query as q } from 'faunadb';
 import { FactoryIndexesApi } from 'types/factory/factory.indexes';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { pathString } from '~/framework/helpers/path';
+import { index } from '.';
 import { BiotaIndexName } from '../constructors';
-import { ContextExtend } from '../constructors/context';
 import { ThrowError } from '../constructors/error';
-import { DefaultToOjbect } from './ql/defaultTo';
-import { Query, MethodDispatch } from '../constructors/method';
+import { MethodDispatch, Query } from '../constructors/method';
+import { ResultData } from '../constructors/result';
 import { BiotaFunctionName } from './constructors';
+
 
 // tslint:disable-next-line: only-arrow-functions
 export const indexes: FactoryContext<FactoryIndexesApi> = function (context): FactoryIndexesApi {
@@ -95,7 +96,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findByResource(resource, pagination) {
-      pagination = DefaultToOjbect(pagination);
+
       const inputs = { resource, pagination };
       // ---
       const query = Query(
@@ -110,7 +111,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findByTerm(term, pagination) {
-      pagination = DefaultToOjbect(pagination);
+
       const inputs = { term, pagination };
       // ---
       const query = Query(
@@ -124,19 +125,216 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       const online = { name: BiotaFunctionName('IndexesFindByResource'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
-    paginate(pagination) {
-      pagination = DefaultToOjbect(pagination);
+    findAll(pagination) {
+
       const inputs = { pagination };
       // ---
       const query = Query(
         {
-          docs: q.Paginate(q.Indexes(), pagination),
+          docs: q.Map(q.Paginate(q.Indexes(), pagination), q.Lambda('x', q.Get(q.Var('x')))),
         },
         q.Var('docs'),
       );
       // ---
       const offline = 'factory.indexes.paginate';
       const online = { name: BiotaFunctionName('IndexesPaginate'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    getMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).get()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.getMany';
+      const online = { name: BiotaFunctionName('IndexesGetMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    insertMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(index(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).insert(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.insertMany';
+      const online = { name: BiotaFunctionName('IndexesInsertMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    updateMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(index(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).update(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.updateMany';
+      const online = { name: BiotaFunctionName('IndexesUpdateMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    upsertMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(index(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).upsert(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.upsertMany';
+      const online = { name: BiotaFunctionName('IndexesUpsertMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    replaceMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(index(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).replace(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.replaceMany';
+      const online = { name: BiotaFunctionName('IndexesReplaceMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    repsertMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(index(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).repsert(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.repsertMany';
+      const online = { name: BiotaFunctionName('IndexesRepsertMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    deleteMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).delete()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.deleteMany';
+      const online = { name: BiotaFunctionName('IndexesDeleteMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    restoreMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).restore()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.restoreMany';
+      const online = { name: BiotaFunctionName('IndexesRestoreMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    forgetMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).forget()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.forgetMany';
+      const online = { name: BiotaFunctionName('IndexesForgetMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    dropMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).drop()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.dropMany';
+      const online = { name: BiotaFunctionName('IndexesDropMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    expireManyAt(nameList, at) {
+      const inputs = { nameList, at };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).expireAt(q.Var('at'))))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.expireManyAt';
+      const online = { name: BiotaFunctionName('IndexesExpireManyAt'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    expireManyIn(nameList, delay) {
+      const inputs = { nameList, delay };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).expireIn(q.Var('delay'))))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.expireManyAt';
+      const online = { name: BiotaFunctionName('IndexesExpireManyAt'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    expireManyNow(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).expireNow()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.indexes.expireManyNow';
+      const online = { name: BiotaFunctionName('IndexesExpireManyNow'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
   };

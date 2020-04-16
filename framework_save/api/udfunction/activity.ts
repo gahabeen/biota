@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { FaunaPaginateOptions } from '~/../types/fauna';
 import { Biota } from '~/biota';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 
 export function activity(this: Biota, udfunctionName: string) {

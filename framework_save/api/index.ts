@@ -1,4 +1,4 @@
-import { BiotaFrameworkIndexApi } from '~/../types/framework/framework.index';
+import { FrameworkIndexApi } from '~/../types/framework/framework.index';
 import { delete_ } from '~/framework/api/index/delete';
 import { forget } from '~/framework/api/index/forget';
 import { get } from '~/framework/api/index/get';
@@ -8,7 +8,7 @@ import { repsert } from '~/framework/api/index/repsert';
 import { update } from '~/framework/api/index/update';
 import { upsert } from '~/framework/api/index/upsert';
 
-export function index(indexName: string): BiotaFrameworkIndexApi {
+export function index(indexName: string): FrameworkIndexApi {
   const self = this;
 
   if (!indexName) {

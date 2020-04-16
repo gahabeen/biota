@@ -1,19 +1,20 @@
 import * as fauna from 'faunadb';
-import { Fauna, FaunaId } from '~/../types/fauna';
+import { Fauna, FaunaId, FaunaRef } from '~/../types/fauna';
 import * as framework from '~/framework';
-import { BiotaFrameworkCollectionApi, BiotaFrameworkFoundation, BiotaFrameworkRelation } from '../types/framework/framework.collection';
-import { BiotaFrameworkCollectionsApi } from '../types/framework/framework.collections';
-import { BiotaFrameworkDatabaseApi } from '../types/framework/framework.database';
-import { BiotaFrameworkDatabasesApi } from '../types/framework/framework.databases';
-import { BiotaFrameworkDocumentApi } from '../types/framework/framework.document';
-import { BiotaFrameworkIndexApi } from '../types/framework/framework.index';
-import { BiotaFrameworkIndexesApi } from '../types/framework/framework.indexes';
-import { BiotaFrameworkRoleApi } from '../types/framework/framework.role';
-import { BiotaFrameworkRolesApi } from '../types/framework/framework.roles';
-import { BiotaFrameworkUDFunctionApi } from '../types/framework/framework.udfunction';
-import { BiotaFrameworkUDFunctionsApi } from '../types/framework/framework.udfunctions';
-import { BiotaFrameworkUserApi } from '../types/framework/framework.user';
+import { FrameworkCollectionApi, FrameworkFoundation, FrameworkRelation } from '../types/framework/framework.collection';
+import { FrameworkCollectionsApi } from '../types/framework/framework.collections';
+import { FrameworkDatabaseApi } from '../types/framework/framework.database';
+import { FrameworkDatabasesApi } from '../types/framework/framework.databases';
+import { FrameworkDocumentApi } from '../types/framework/framework.document';
+import { FrameworkIndexApi } from '../types/framework/framework.index';
+import { FrameworkIndexesApi } from '../types/framework/framework.indexes';
+import { FrameworkRoleApi } from '../types/framework/framework.role';
+import { FrameworkRolesApi } from '../types/framework/framework.roles';
+import { FrameworkUDFunctionApi } from '../types/framework/framework.udfunction';
+import { FrameworkUDFunctionsApi } from '../types/framework/framework.udfunctions';
+import { FrameworkUserApi } from '../types/framework/framework.user';
 import { bindSubFunctions } from './helpers';
+import { FactoryContextDefinition } from 'types/factory/factory.context';
 
 interface BiotaOptionsDocumentProtectedPaths {
   _auth: boolean;
@@ -48,39 +49,55 @@ interface BiotaOptions {
   document?: BiotaOptionsDocument;
 }
 
+// interface BiotaRunningAS {
+//   role?: FaunaRef;
+//   identity?: FaunaRef;
+// }
+
 export class Biota {
   client: Fauna.Client;
-  secret: string;
+  _secret: string;
+  _context: FactoryContextDefinition;
+  // _runningAs: BiotaRunningAS;
   documentOptions: BiotaOptionsDocument;
 
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
-  document?: (collectionName: string, id: FaunaId) => BiotaFrameworkDocumentApi;
-  user?: BiotaFrameworkUserApi;
-  collection?: (name: string) => BiotaFrameworkCollectionApi;
-  collections?: BiotaFrameworkCollectionsApi;
-  index?: (name: string) => BiotaFrameworkIndexApi;
-  indexes?: BiotaFrameworkIndexesApi;
-  role?: (name: string) => BiotaFrameworkRoleApi;
-  roles?: BiotaFrameworkRolesApi;
-  database?: (name: string) => BiotaFrameworkDatabaseApi;
-  databases?: BiotaFrameworkDatabasesApi;
-  udfunction?: (name: string) => BiotaFrameworkUDFunctionApi;
-  udfunctions?: BiotaFrameworkUDFunctionsApi;
+  document?: (collectionName: string, id: FaunaId) => FrameworkDocumentApi;
+  user?: FrameworkUserApi;
+  collection?: (name: string) => FrameworkCollectionApi;
+  collections?: FrameworkCollectionsApi;
+  index?: (name: string) => FrameworkIndexApi;
+  indexes?: FrameworkIndexesApi;
+  role?: (name: string) => FrameworkRoleApi;
+  roles?: FrameworkRolesApi;
+  database?: (name: string) => FrameworkDatabaseApi;
+  databases?: FrameworkDatabasesApi;
+  udfunction?: (name: string) => FrameworkUDFunctionApi;
+  udfunctions?: FrameworkUDFunctionsApi;
 
-  foundation: BiotaFrameworkFoundation;
-  relation: BiotaFrameworkRelation;
+  foundation: FrameworkFoundation;
+  relation: FrameworkRelation;
 
   defaults: any;
 
   // tslint:disable-next-line: variable-name
   privateKey: (private_key: string) => Promise<any>;
+  get context(): FactoryContextDefinition {
+    return this._context;
+  }
+
 
   constructor(options: BiotaOptions) {
     const { secret, debug, document } = options || {};
 
-    this.secret = secret;
+    this._secret = secret;
+    this._context = {
+      offline: true,
+      asRole: null,
+      asIdentity: null
+    };
 
     const { paths = {}, protectedPaths = {} } = document || {};
     this.documentOptions = {};

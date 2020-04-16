@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { FactoryIndex } from '~/../types/factory/factory.index';
-import { DefaultToOjbect } from './ql/defaultTo';
+
 import { Query, MethodDispatch } from '../constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
@@ -29,7 +29,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { name, options };
         // ---
         const query = Query(
@@ -46,8 +46,25 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         const online = { name: BiotaFunctionName('IndexInsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+      insertMany(optionsList) {
+        const inputs = { optionsList };
+        // ---
+        const query = Query(
+          {
+            docs: q.Map(
+              q.Var('optionsList'),
+              q.Lambda(['options'], ResultData(index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')))),
+            ),
+          },
+          q.Var('docs'),
+        );
+        // ---
+        const offline = 'factory.index.insertMany';
+        const online = { name: BiotaFunctionName('IndexInsertMany'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
       update(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -65,7 +82,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -84,7 +101,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -113,7 +130,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -175,6 +192,66 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         // ---
         const offline = 'factory.index.drop';
         const online = { name: BiotaFunctionName('IndexClean'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      expireAt(at) {
+        // alias
+        const inputs = { ref, at };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.index.expireAt';
+        const online = { name: BiotaFunctionName('IndexExpireAt'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      expireIn(delay) {
+        // alias
+        const inputs = { ref, delay };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.index.expireIn';
+        const online = { name: BiotaFunctionName('IndexExpireIn'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      expireNow() {
+        // alias
+        const inputs = { ref };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.index.expireNow';
+        const online = { name: BiotaFunctionName('IndexExpireNow'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      restore() {
+        // alias
+        const inputs = { ref };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.collection.restore';
+        const online = { name: BiotaFunctionName('IndexRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };

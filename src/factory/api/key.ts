@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { FactoryKey } from '~/../types/factory/factory.key';
-import { DefaultToOjbect } from './ql/defaultTo';
+
 import { Query, MethodDispatch } from '../constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
@@ -29,7 +29,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { name, options };
         // ---
         const query = Query(
@@ -47,7 +47,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -65,7 +65,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -84,7 +84,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -113,7 +113,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -175,6 +175,66 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // ---
         const offline = 'factory.key.drop';
         const online = { name: BiotaFunctionName('KeyClean'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      expireAt(at) {
+        // alias
+        const inputs = { ref, at };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.key.expireAt';
+        const online = { name: BiotaFunctionName('KeyExpireAt'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      expireIn(delay) {
+        // alias
+        const inputs = { ref, delay };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.key.expireIn';
+        const online = { name: BiotaFunctionName('KeyExpireIn'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      expireNow() {
+        // alias
+        const inputs = { ref };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.key.expireNow';
+        const online = { name: BiotaFunctionName('KeyExpireNow'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      restore() {
+        // alias
+        const inputs = { ref };
+        // ----
+        const query = Query(
+          {
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.collection.restore';
+        const online = { name: BiotaFunctionName('KeyRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };

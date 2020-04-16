@@ -1,6 +1,6 @@
 import { Expr } from 'faunadb';
-import { FaunaPaginateOptions } from 'types/fauna';
+import { FaunaPaginateOptions, FaunaPaginateMapper } from 'types/fauna';
 
-export interface FactoryKeysApi {
-  paginate(pagination: FaunaPaginateOptions | Expr): Expr;
+export interface FactoryKeysApi<OT = Expr> {
+  findAll(pagination: FaunaPaginateOptions | Expr): OT;
 }

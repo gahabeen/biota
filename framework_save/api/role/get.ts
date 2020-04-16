@@ -1,7 +1,7 @@
 import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
 export function get(this: Biota, roleName: string) {
   const self = this;

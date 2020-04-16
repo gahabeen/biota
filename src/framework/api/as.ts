@@ -1,9 +1,6 @@
-import { Fauna } from '~/../types/db';
+import { FaunaRef } from 'types/fauna';
 import { Biota } from '~/biota';
 
-export async function query(this: Biota, fqlQuery: Fauna.Expr) {
-  return this.client.query(fqlQuery).then((res) => {
-    // console.log(res);
-    return res;
-  });
+export async function as(this: Biota, roleOrIdentity: FaunaRef, identity?: FaunaRef) {
+  return;
 }

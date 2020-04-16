@@ -1,32 +1,40 @@
 import { Expr } from 'faunadb';
 import { FaunaRef, FaunaRoleMembership, FaunaRoleOptions, FaunaRolePrivilege } from '../fauna';
 
-export type FactoryRole = (name: string | Expr) => FactoryRoleApi;
+export type FactoryRole<OT = FactoryRoleApi> = (name: string | Expr) => OT;
 
-export interface FactoryRoleMembershipApi {
-  distinct(membership: FaunaRoleMembership): FaunaRoleMembership[] | Expr;
-  difference(resource: FaunaRef): FaunaRoleMembership[] | Expr;
-  set: (membership: FaunaRoleMembership) => Expr;
-  remove: (resource: FaunaRef) => Expr;
+export interface FactoryRoleMembershipApi<OT = Expr> {
+  distinct(membership: FaunaRoleMembership): FaunaRoleMembership[] | OT;
+  difference(resource: FaunaRef): FaunaRoleMembership[] | OT;
+  set(membership: FaunaRoleMembership): OT;
+  setMany(membershipList: FaunaRoleMembership[]): OT;
+  remove(resource: FaunaRef): OT;
+  removeMany(resourceList: FaunaRef[]): OT;
 }
 
-export interface FactoryRolePrivilegeApi {
-  distinct(privilege: FaunaRolePrivilege): FaunaRolePrivilege[] | Expr;
-  difference(resource: FaunaRef): FaunaRolePrivilege[] | Expr;
-  set: (membership: FaunaRolePrivilege) => Expr;
-  remove: (resource: FaunaRef) => Expr;
+export interface FactoryRolePrivilegeApi<OT = Expr> {
+  distinct(privilege: FaunaRolePrivilege): FaunaRolePrivilege[] | OT;
+  difference(resource: FaunaRef): FaunaRolePrivilege[] | OT;
+  set(privilege: FaunaRolePrivilege): OT;
+  setMany(privilegeList: FaunaRolePrivilege[]): OT;
+  remove(resource: FaunaRef): OT;
+  removeMany(resourceList: FaunaRef[]): OT;
 }
 
-export interface FactoryRoleApi {
-  get(): Expr;
-  insert(options: FaunaRoleOptions): Expr;
-  update(options: FaunaRoleOptions): Expr;
-  upsert(options: FaunaRoleOptions): Expr;
-  replace(options: FaunaRoleOptions): Expr;
-  repsert(options: FaunaRoleOptions): Expr;
-  delete(): Expr;
-  forget(): Expr;
-  drop(): Expr;
+export interface FactoryRoleApi<OT = Expr> {
+  get(): OT;
+  insert(options: FaunaRoleOptions): OT;
+  update(options: FaunaRoleOptions): OT;
+  upsert(options: FaunaRoleOptions): OT;
+  replace(options: FaunaRoleOptions): OT;
+  repsert(options: FaunaRoleOptions): OT;
+  delete(): OT;
+  forget(): OT;
+  drop(): OT;
   membership: FactoryRoleMembershipApi;
-  privileges: FactoryRolePrivilegeApi;
+  privilege: FactoryRolePrivilegeApi;
+  restore(): OT;
+  expireAt(time: OT): OT;
+  expireIn(delay: number | Expr): OT;
+  expireNow(): OT;
 }

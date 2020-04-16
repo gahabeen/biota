@@ -1,13 +1,22 @@
-import { FaunaPaginateOptions, FaunaDocumentCredentials } from "./../fauna";
+import { FaunaPaginateOptions, FaunaDocumentCredentials } from './../fauna';
+import { FactoryDocumentApi, FactoryDocument } from 'types/factory/factory.document';
 
-export interface BiotaFrameworkDocumentApi {
+export type FrameworkDocument = FactoryDocument<FrameworkDocumentApi>;
+
+export interface FrameworkDocumentApi {
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;
-  get: () => Promise<any>;
-  replace: (data: object) => Promise<any>;
-  update: (data: object) => Promise<any>;
-  repsert: (data: object) => Promise<any>;
-  upsert: (data: object) => Promise<any>;
-  delete: () => Promise<any>;
-  forget: () => Promise<any>;
-  changes: () => Promise<any>;
+  get: FactoryDocumentApi<Promise<any>>['get'];
+  insert: FactoryDocumentApi<Promise<any>>['insert'];
+  replace: FactoryDocumentApi<Promise<any>>['replace'];
+  update: FactoryDocumentApi<Promise<any>>['update'];
+  repsert: FactoryDocumentApi<Promise<any>>['repsert'];
+  upsert: FactoryDocumentApi<Promise<any>>['upsert'];
+  delete: FactoryDocumentApi<Promise<any>>['delete'];
+  forget: FactoryDocumentApi<Promise<any>>['forget'];
+  restore: FactoryDocumentApi<Promise<any>>['restore'];
+  drop: FactoryDocumentApi<Promise<any>>['drop'];
+  expireAt: FactoryDocumentApi<Promise<any>>['expireAt'];
+  expireIn: FactoryDocumentApi<Promise<any>>['expireIn'];
+  expireNow: FactoryDocumentApi<Promise<any>>['expireNow'];
+  membership: FactoryDocumentApi<Promise<any>>['membership'];
 }

@@ -1,7 +1,7 @@
 import { FaunaDatabaseOptions } from '~/../types/fauna';
 import { Biota } from '~/biota';
-import { database } from '~/factory/api/classes/database';
-import { execute } from '~/tasks';
+import { database } from '~/factory/api/database';
+import { execute } from '~/tools/tasks';
 
 export function repsert(this: Biota, databaseName: string) {
   const self = this;

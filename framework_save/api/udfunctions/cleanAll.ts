@@ -1,6 +1,6 @@
 import { Biota } from '~/biota';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
 export function dropAll(this: Biota) {
   const self = this;

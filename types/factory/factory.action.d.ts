@@ -1,10 +1,10 @@
 import { Expr } from 'faunadb';
 import { DocumentActionName } from 'types/document';
-import { FaunaNumber, FaunaRef, FaunaDocument } from '../fauna';
+import { FaunaDocument, FaunaRef } from '../fauna';
 import { FactoryDocumentApi } from './factory.document';
 
-export type FactoryAction = (name: DocumentActionName, refOrDoc: FaunaRef | FaunaDocument) => FactoryActionApi;
+export type FactoryAction<OT = FactoryActionApi> = (name: DocumentActionName, refOrDoc: FaunaRef | FaunaDocument) => OT;
 
-export interface FactoryActionApi extends FactoryDocumentApi {
-  log(): Expr;
+export interface FactoryActionApi<OT = Expr> extends FactoryDocumentApi<Expr> {
+  log(): OT;
 }

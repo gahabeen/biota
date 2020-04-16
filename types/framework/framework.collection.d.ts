@@ -1,73 +1,64 @@
-import {
-  FaunaPaginateOptions,
-  FaunaCollectionOptions,
-  FaunaRef,
-  FaunaPaginateMapper,
-  Fauna,
-  FaunaIndexValue,
-  FaunaId,
-  FaunaIndexTerm,
-} from "../fauna";
+import { FactoryCollectionApi } from 'types/factory/factory.collection';
+import { Fauna, FaunaCollectionOptions, FaunaIndexTerm, FaunaIndexValue, FaunaPaginateMapper, FaunaPaginateOptions } from '../fauna';
 
-export interface BiotaFrameworkCollectionApi {
-  // builder
-  scaffold: (collectionDefinition: FaunaCollectionOptions, options?: BiotaFrameworkCollectionScaffoldOptions) => Promise<any>;
-  field: (field: string | BiotaFrameworkCollectionFieldOptions) => Promise<any>;
-  index: (field: string | BiotaFrameworkCollectionFieldOptions, options?: BiotaFrameworkIndexOptions) => Promise<any>;
-  compute: (field: BiotaFrameworkCollectionFieldOptions, options?: BiotaFrameworkIndexOptions) => Promise<any>;
-
+export interface FrameworkCollectionApi {
+  scaffold: (collectionDefinition: FaunaCollectionOptions, options?: FrameworkCollectionScaffoldOptions) => Promise<any>;
+  field: (field: string | FrameworkCollectionFieldOptions) => Promise<any>;
+  index: (field: string | FrameworkCollectionFieldOptions, options?: FrameworkIndexOptions) => Promise<any>;
+  compute: (field: FrameworkCollectionFieldOptions, options?: FrameworkIndexOptions) => Promise<any>;
   // custom crud
-  find: (searchQuery?: BiotaFrameworkCollectionSearchParams, pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper) => Promise<any>;
-  findAll(pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper): Promise<any>;
-  paginate: (
-    searchTerms?: BiotaFrameworkCollectionSearchParams,
+  find: (searchQuery?: FrameworkCollectionSearchParams, pagination?: FaunaPaginateOptions) => Promise<any>;
+  paginate(
+    searchTerms?: FrameworkCollectionSearchParams,
     pagination?: FaunaPaginateOptions,
-    mapper?: FaunaPaginateMapper
-  ) => AsyncGenerator<any, any, any>;
-  paginateAll(pagination?: FaunaPaginateOptions, mapper?: FaunaPaginateMapper): Promise<any>;
-
+    mapper?: FaunaPaginateMapper,
+  ): AsyncGenerator<any, any, any>;
+  paginateAll(pagination?: FaunaPaginateOptions): Promise<any>;
+  insertBatch: (data: object[], options: FrameworkCollectionInsertBatchOptions) => Promise<any>;
   // basic crud
-  get: (id: FaunaId) => Promise<any>;
-  // #bug recreate the options type!
-  insert: (data: object) => Promise<any>; // options?: BiotaFactoryCollectionCreationOptions
-  insertBatch: (data: object[], options: BiotaFrameworkCollectionInsertBatchOptions) => Promise<any>;
-  replace: (id: FaunaId, data: object) => Promise<any>;
-  update: (id: FaunaId, data: object) => Promise<any>;
-  repsert: (id: FaunaId, data: object) => Promise<any>;
-  upsert: (id: FaunaId, data: object) => Promise<any>;
-  delete: (id: FaunaId) => Promise<any>;
-  forget: (id: FaunaId) => Promise<any>;
-  drop: () => Promise<any>;
-  activity: (pagination: FaunaPaginateOptions) => Promise<any>;
-  changes: () => Promise<any>;
+  activity(pagination?: FaunaPaginateOptions): Promise<any>;
+  findAll: FactoryCollectionApi<Promise<any>>['findAll'];
+  get: FactoryCollectionApi<Promise<any>>['get'];
+  insert: FactoryCollectionApi<Promise<any>>['insert'];
+  update: FactoryCollectionApi<Promise<any>>['update'];
+  upsert: FactoryCollectionApi<Promise<any>>['upsert'];
+  replace: FactoryCollectionApi<Promise<any>>['replace'];
+  repsert: FactoryCollectionApi<Promise<any>>['repsert'];
+  delete: FactoryCollectionApi<Promise<any>>['delete'];
+  forget: FactoryCollectionApi<Promise<any>>['forget'];
+  restore: FactoryCollectionApi<Promise<any>>['restore'];
+  expireAt: FactoryCollectionApi<Promise<any>>['expireAt'];
+  expireIn: FactoryCollectionApi<Promise<any>>['expireIn'];
+  expireNow: FactoryCollectionApi<Promise<any>>['expireNow'];
+  drop: FactoryCollectionApi<Promise<any>>['drop'];
 }
 
-export type BiotaFrameworkRelationPartRelation = "many" | "one";
+export type FrameworkRelationPartRelation = 'many' | 'one';
 
-export interface BiotaFrameworkIndexOptions {
+export interface FrameworkIndexOptions {
   role?: string | string[];
   roles?: string[];
   maxLength?: number;
 }
 
-export interface BiotaFrameworkDocument {
+export interface FrameworkDocument {
   get: () => Promise<any>;
   view: (field: string | string[]) => Promise<any>;
 }
 
-export interface BiotaFrameworkCollectionScaffoldOptions {
+export interface FrameworkCollectionScaffoldOptions {
   searchable?: string[];
-  viewable?: BiotaFrameworkCollectionValueOptions[];
-  fields?: BiotaFrameworkCollectionFieldOptions[];
+  viewable?: FrameworkCollectionValueOptions[];
+  fields?: FrameworkCollectionFieldOptions[];
   roles?: string[];
 }
 
-export interface BiotaFrameworkCollectionInsertBatchOptions {
+export interface FrameworkCollectionInsertBatchOptions {
   batchSize?: number;
   keepId?: boolean;
 }
 
-export interface BiotaFrameworkCollectionValueOptions {
+export interface FrameworkCollectionValueOptions {
   field?: string;
   binding?: Fauna.Expr;
   values?: FaunaIndexValue[];
@@ -76,7 +67,7 @@ export interface BiotaFrameworkCollectionValueOptions {
   data?: any;
 }
 
-export interface BiotaFrameworkCollectionFieldOptions {
+export interface FrameworkCollectionFieldOptions {
   name?: string;
   field?: string;
   values?: FaunaIndexValue[];
@@ -92,46 +83,46 @@ export interface BiotaFrameworkCollectionFieldOptions {
   data?: any;
 }
 
-export interface BiotaFrameworkCollectionSearchParams {
+export interface FrameworkCollectionSearchParams {
   [path: string]: any;
 }
 
-export interface BiotaFrameworkFoundation {}
+export interface FrameworkFoundation {}
 
-export interface BiotaFrameworkRelationDefinition {
+export interface FrameworkRelationDefinition {
   name: string;
-  parts: BiotaFrameworkRelationPart[];
+  parts: FrameworkRelationPart[];
   destructive?: boolean;
 }
 
-export interface BiotaFrameworkRelationPart {
-  relation: BiotaFrameworkRelationPartRelation;
+export interface FrameworkRelationPart {
+  relation: FrameworkRelationPartRelation;
   collection: string;
   path: string;
 }
 
-export interface BiotaFrameworkRelation {}
+export interface FrameworkRelation {}
 
-export type BiotaFrameworkCollectionFieldOptionsAction = "compute" | "index";
+export type FrameworkCollectionFieldOptionsAction = 'compute' | 'index';
 
-export interface BiotaFrameworkIndexOptions {
+export interface FrameworkIndexOptions {
   role?: string | string[];
   roles?: string[];
   maxLength?: number;
 }
 
-export interface BiotaFrameworkDocument {
+export interface FrameworkDocument {
   get: () => Promise<any>;
   view: (field: string | string[]) => Promise<any>;
 }
 
-export interface BiotaFrameworkCollectionScaffoldOptions {
-  index?: (string | BiotaFrameworkCollectionFieldOptions)[];
-  compute?: BiotaFrameworkCollectionFieldOptions[];
-  field?: BiotaFrameworkCollectionFieldOptions[];
+export interface FrameworkCollectionScaffoldOptions {
+  index?: (string | FrameworkCollectionFieldOptions)[];
+  compute?: FrameworkCollectionFieldOptions[];
+  field?: FrameworkCollectionFieldOptions[];
 }
 
-export interface BiotaFrameworkCollectionFieldOptions {
+export interface FrameworkCollectionFieldOptions {
   field?: string;
   binding?: Fauna.Expr;
   inputs?: string[] | FaunaIndexTerm[];
@@ -139,7 +130,7 @@ export interface BiotaFrameworkCollectionFieldOptions {
 
   name?: string;
   // view
-  action?: BiotaFrameworkCollectionFieldOptionsAction;
+  action?: FrameworkCollectionFieldOptionsAction;
   // search
   ngram?: boolean;
   ngramMin?: number;
@@ -153,18 +144,18 @@ export interface BiotaFrameworkCollectionFieldOptions {
   data?: any;
 }
 
-export interface BiotaFrameworkFoundation {}
+export interface FrameworkFoundation {}
 
-export interface BiotaFrameworkRelationDefinition {
+export interface FrameworkRelationDefinition {
   name: string;
-  parts: BiotaFrameworkRelationPart[];
+  parts: FrameworkRelationPart[];
   destructive?: boolean;
 }
 
-export interface BiotaFrameworkRelationPart {
-  relation: BiotaFrameworkRelationPartRelation;
+export interface FrameworkRelationPart {
+  relation: FrameworkRelationPartRelation;
   collection: string;
   path: string;
 }
 
-export interface BiotaFrameworkRelation {}
+export interface FrameworkRelation {}

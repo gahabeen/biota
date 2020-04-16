@@ -1,29 +1,23 @@
-import { FaunaPaginateOptions, FaunaDocumentCredentials, FaunaRoleMembership, FaunaRef, FaunaRolePrivilege } from "../fauna";
-import { Expr } from "faunadb";
+import { FaunaPaginateOptions } from '../fauna';
+import { FactoryRoleApi, FactoryRole } from 'types/factory/factory.role';
 
-export interface BiotaFrameworkRoleMembershipApi {
-  upsert: (membership: FaunaRoleMembership) => Promise<any>;
-  repsert: (membership: FaunaRoleMembership) => Promise<any>;
-  delete: (resource: FaunaRef) => Promise<any>;
-}
+export type FrameworkRole = FactoryRole<FrameworkRoleApi>;
 
-export interface BiotaFrameworkRolePrivilegeApi {
-  upsert: (privilege: FaunaRolePrivilege) => Promise<any>;
-  repsert: (privilege: FaunaRolePrivilege) => Promise<any>;
-  delete: (resource: FaunaRef) =>Promise<any>;
-}
-
-export interface BiotaFrameworkRoleApi {
+export interface FrameworkRoleApi {
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;
-  get: () => Promise<any>;
-  insert: (options: object) => Promise<any>;
-  replace: (options: object) => Promise<any>;
-  update: (options: object) => Promise<any>;
-  repsert: (options: object) => Promise<any>;
-  upsert: (options: object) => Promise<any>;
-  delete: () => Promise<any>;
-  forget: () => Promise<any>;
-  membership: BiotaFrameworkRoleMembershipApi;
-  privilege: BiotaFrameworkRolePrivilegeApi;
-  changes: () => Promise<any>;
+  get: FactoryRoleApi<Promise<any>>['get'];
+  insert: FactoryRoleApi<Promise<any>>['insert'];
+  update: FactoryRoleApi<Promise<any>>['update'];
+  upsert: FactoryRoleApi<Promise<any>>['upsert'];
+  replace: FactoryRoleApi<Promise<any>>['replace'];
+  repsert: FactoryRoleApi<Promise<any>>['repsert'];
+  delete: FactoryRoleApi<Promise<any>>['delete'];
+  forget: FactoryRoleApi<Promise<any>>['forget'];
+  drop: FactoryRoleApi<Promise<any>>['drop'];
+  restore: FactoryRoleApi<Promise<any>>['restore'];
+  expireAt: FactoryRoleApi<Promise<any>>['expireAt'];
+  expireIn: FactoryRoleApi<Promise<any>>['expireIn'];
+  expireNow: FactoryRoleApi<Promise<any>>['expireNow'];
+  membership: FactoryRoleApi<Promise<any>>['membership'];
+  privilege: FactoryRoleApi<Promise<any>>['privilege'];
 }

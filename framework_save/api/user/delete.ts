@@ -3,7 +3,7 @@ import { FaunaId } from '~/../types/fauna';
 import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 
 export function delete_(this: Biota) {
   const self = this;

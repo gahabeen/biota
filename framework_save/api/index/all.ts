@@ -1,6 +1,6 @@
 import { Biota } from '~/biota';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 import { FaunaPaginateOptions } from '~/../types/fauna';
 
 export function all(this: Biota, indexName: string) {

@@ -1,7 +1,7 @@
-import { BiotaFrameworkRolesApi } from '~/../types/framework/framework.roles';
+import { FrameworkRolesApi } from '~/../types/framework/framework.roles';
 
 import { dropAll } from '~/framework/api/roles/dropAll';
 
-export const roles: BiotaFrameworkRolesApi = {
+export const roles: FrameworkRolesApi = {
   dropAll,
 };

@@ -2,7 +2,7 @@ import { FaunaPaginateOptions } from '~/../types/fauna';
 import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 
 export async function activity(this: Biota, pagination: FaunaPaginateOptions = {}) {
   const self = this;

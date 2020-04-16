@@ -3,31 +3,31 @@ import { FaunaId, FaunaRef, FaunaDocumentOptions } from '../fauna';
 import { DocumentAuthAccount } from '../document';
 import { FactoryDocumentApi } from './factory.document';
 
-export interface FactoryDocumentAuthAccountsApi {
-  distinct(account: DocumentAuthAccount): Expr;
-  difference(provider: string, accountId: string): Expr;
-  set(account: DocumentAuthAccount): Expr;
-  remove(provider: string, accountId: string): Expr;
+export interface FactoryDocumentAuthAccountsApi<OT = Expr> {
+  distinct(account: DocumentAuthAccount): OT;
+  difference(provider: string, accountId: string): OT;
+  set(account: DocumentAuthAccount): OT;
+  remove(provider: string, accountId: string): OT;
 }
 
-export interface FactoryDocumentAuthEmailApi {
-  set(email: string): Expr;
-  remove(): Expr;
+export interface FactoryDocumentAuthEmailApi<OT = Expr> {
+  set(email: string): OT;
+  remove(): OT;
 }
 
-export interface FactoryDocumentAuthApi {
-  email: FactoryDocumentAuthEmailApi;
-  accounts: FactoryDocumentAuthAccountsApi;
+export interface FactoryDocumentAuthApi<OT = Expr> {
+  email: FactoryDocumentAuthEmailApi<OT>;
+  accounts: FactoryDocumentAuthAccountsApi<OT>;
 }
 
-export type FactoryUser = (idOrRef?: FaunaId | FaunaRef) => FactoryUserApi;
+export type FactoryUser<OT = FactoryUserApi> = (idOrRef?: FaunaId | FaunaRef) => OT;
 
-export interface FactoryUserApi extends FactoryDocumentApi {
-  register(email: string, password: string, data?: FaunaDocumentOptions['data']): Expr;
-  registerWithAuthAccount(account: DocumentAuthAccount): Expr;
-  login(email: string, password: string): Expr;
-  loginWithAuthAccount(account: DocumentAuthAccount): Expr;
-  logout(everywhere: boolean): Expr;
-  changePassword(currentPassword: string, password: string): Expr;
+export interface FactoryUserApi<OT = Expr> extends FactoryDocumentApi<Expr> {
+  register(email: string, password: string, data?: FaunaDocumentOptions['data']): OT;
+  registerWithAuthAccount(account: DocumentAuthAccount): OT;
+  login(email: string, password: string): OT;
+  loginWithAuthAccount(account: DocumentAuthAccount): OT;
+  logout(everywhere: boolean): OT;
+  changePassword(currentPassword: string, password: string): OT;
   auth: FactoryDocumentAuthApi;
 }

@@ -1,8 +1,8 @@
-import { BiotaFrameworkAuthAuthenticateResponse } from '~/../types/framework/framework.user';
+import { FrameworkAuthAuthenticateResponse } from '~/../types/framework/framework.user';
 import * as qs from 'querystring';
 import axios from 'axios';
 
-export async function authenticate(url: string, query: object): Promise<BiotaFrameworkAuthAuthenticateResponse> {
+export async function authenticate(url: string, query: object): Promise<FrameworkAuthAuthenticateResponse> {
   const queryParams = new URLSearchParams();
   for (const key of Object.keys(query)) {
     queryParams.append(key, query[key]);
@@ -19,5 +19,5 @@ export async function authenticate(url: string, query: object): Promise<BiotaFra
       } else {
         return data;
       }
-    }) as Promise<BiotaFrameworkAuthAuthenticateResponse>;
+    }) as Promise<FrameworkAuthAuthenticateResponse>;
 }

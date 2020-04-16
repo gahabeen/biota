@@ -1,59 +1,59 @@
 import { Expr } from 'faunadb';
-import { FaunaData, FaunaRef, FaunaTime, FaunaString } from '../fauna';
 import { DocumentActionName } from 'types/document';
+import { FaunaData, FaunaNumber, FaunaRef, FaunaTime } from '../fauna';
 
-export type FactoryDocument = (collectionOrRef?: string | Expr | FaunaRef, id?: string | Expr) => FactoryDocumentApi;
+export type FactoryDocument<OT = FactoryDocumentApi> = (collectionOrRef?: string | Expr | FaunaRef, id?: string | Expr) => OT;
 
-export interface FactoryDocumentValidityApi {
-  delete(): Expr;
-  expire(at: FaunaTime): Expr;
-  restore(): Expr;
+export interface FactoryDocumentValidityApi<OT = Expr> {
+  delete(): OT;
+  expire(at: FaunaTime): OT;
+  restore(): OT;
 }
 
-export type FactoryDocumentMembershipAssignee = (assignee: FaunaRef) => FactoryDocumentMembershipAssigneeApi;
+export type FactoryDocumentMembershipAssignee<OT = Expr> = (assignee: FaunaRef) => FactoryDocumentMembershipAssigneeApi<OT>;
 
-export interface FactoryDocumentMembershipAssigneeApi {
-  distinct(): Expr;
-  difference(): Expr;
-  set(): Expr;
-  remove(): Expr;
+export interface FactoryDocumentMembershipAssigneeApi<OT = Expr> {
+  distinct?(): OT;
+  difference?(): OT;
+  set(): OT;
+  remove(): OT;
 }
 
-export interface FactoryDocumentMembershipOwnerApi {
-  set(idOrRef: string | FaunaRef): Expr;
-  remove(idOrRef: string | FaunaRef): Expr;
+export interface FactoryDocumentMembershipOwnerApi<OT = Expr> {
+  set(idOrRef: string | FaunaRef): OT;
+  remove(idOrRef: string | FaunaRef): OT;
 }
 
-export type FactoryDocumentMembershipRole = (roleOrRef: string | FaunaRef) => FactoryDocumentMembershipRoleApi;
+export type FactoryDocumentMembershipRole<OT = Expr> = (roleOrRef: string | FaunaRef) => FactoryDocumentMembershipRoleApi<OT>;
 
-export interface FactoryDocumentMembershipRoleApi {
-  distinct(): Expr;
-  difference(): Expr;
-  set(): Expr;
-  remove(): Expr;
+export interface FactoryDocumentMembershipRoleApi<OT = Expr> {
+  distinct?(): OT;
+  difference?(): OT;
+  set(): OT;
+  remove(): OT;
 }
 
-export interface FactoryDocumentMembershipApi {
-  role: FactoryDocumentMembershipRole;
-  owner: FactoryDocumentMembershipOwnerApi;
-  assignee: FactoryDocumentMembershipAssignee;
+export interface FactoryDocumentMembershipApi<OT = Expr> {
+  role: FactoryDocumentMembershipRole<OT>;
+  owner: FactoryDocumentMembershipOwnerApi<OT>;
+  assignee: FactoryDocumentMembershipAssignee<OT>;
 }
 
-export interface FactoryDocumentApi {
-  get(): Expr;
-  insert(data: FaunaData): Expr;
-  update(data: FaunaData): Expr;
-  upsert(data: FaunaData): Expr;
-  replace(data: FaunaData): Expr;
-  repsert(data: FaunaData): Expr;
-  delete(): Expr;
-  forget(): Expr;
-  restore(): Expr;
-  drop(): Expr;
-  expireAt(time: Expr): Expr;
-  expireIn(delay: number | Expr): Expr;
-  expireNow(): Expr;
-  validity: FactoryDocumentValidityApi;
-  membership: FactoryDocumentMembershipApi;
-  annotate(action: DocumentActionName, data?: FaunaData): Expr;
+export interface FactoryDocumentApi<OT = Expr> {
+  get(): OT;
+  insert(data: FaunaData): OT;
+  update(data: FaunaData): OT;
+  upsert(data: FaunaData): OT;
+  replace(data: FaunaData): OT;
+  repsert(data: FaunaData): OT;
+  delete(): OT;
+  forget(): OT;
+  restore(): OT;
+  drop(): OT;
+  expireAt(time: FaunaTime): OT;
+  expireIn(delay: FaunaNumber): OT;
+  expireNow(): OT;
+  validity: FactoryDocumentValidityApi<OT>;
+  membership: FactoryDocumentMembershipApi<OT>;
+  annotate(action: DocumentActionName, data?: FaunaData): OT;
 }

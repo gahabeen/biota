@@ -1,6 +1,6 @@
 import { Biota } from '~/biota';
 import { user as userCALL } from '~/factory/api/call/user';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 
 export async function register(this: Biota, email: string, password: string, data: object = {}) {
   const self = this;

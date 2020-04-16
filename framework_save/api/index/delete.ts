@@ -1,7 +1,7 @@
 import { FaunaIndexOptions } from '~/../types/fauna';
 import { Biota } from '~/biota';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
 export function delete_(this: Biota, indexName: string) {
   const self = this;

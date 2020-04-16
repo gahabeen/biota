@@ -1,4 +1,4 @@
-import { BiotaFrameworkDatabaseApi } from '~/../types/framework/framework.database';
+import { FrameworkDatabaseApi } from '~/../types/framework/framework.database';
 import { activity } from '~/framework/api/database/activity';
 import { delete_ } from '~/framework/api/database/delete';
 import { forget } from '~/framework/api/database/forget';
@@ -9,7 +9,7 @@ import { update } from '~/framework/api/database/update';
 import { upsert } from '~/framework/api/database/upsert';
 import { FaunaId } from '~/../types/fauna';
 
-export function database(collectionName: string): BiotaFrameworkDatabaseApi {
+export function database(collectionName: string): FrameworkDatabaseApi {
   const self = this;
 
   if (!collectionName) {

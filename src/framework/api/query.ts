@@ -5,21 +5,17 @@ const debug = Debug('biota').extend('query');
 
 export async function query(this: Biota, fqlQuery: Fauna.Expr) {
   return this.client.query(fqlQuery).catch((err) => {
-    const { message, requestResult } = err || {};
+    const { requestResult } = err || {};
     const { requestRaw, responseRaw } = requestResult || {};
     let request = {};
-    let hasRequest = false;
     let response = {};
-    let hasResponse = false;
 
     try {
       request = JSON.parse(requestRaw);
-      hasRequest = true;
       // tslint:disable-next-line: no-empty
     } catch (error) {}
     try {
       response = JSON.parse(responseRaw);
-      hasResponse = true;
       // tslint:disable-next-line: no-empty
     } catch (error) {}
 
@@ -27,6 +23,16 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
 
     const errorResponse = {
       errors: errors.map((error) => {
+        let newError: any = {};
+        let context = {};
+        let params = {};
+
+        let location = request;
+        // tslint:disable-next-line: forin
+        for (const key of error.position) {
+          location = location[`${key}`];
+        }
+
         if (error.code === 'transaction aborted') {
           const errorArray = error.description.split('%||%').map((i) => (i && i.includes('%%%') ? i.split('%%%') : i));
           const trace = errorArray[1].map((i) => {
@@ -40,8 +46,6 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
             }
             return i;
           });
-          let context = {};
-          let params = {};
           try {
             context = JSON.parse(errorArray[4]);
             // tslint:disable-next-line: no-empty
@@ -50,24 +54,26 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
             params = JSON.parse(errorArray[3]);
             // tslint:disable-next-line: no-empty
           } catch (error) {}
-          let location = request;
-          // tslint:disable-next-line: forin
-          for (const key of error.position) {
-            location = location[`${key}`];
-          }
-          return {
+          newError = {
             message: errorArray[2],
             name: errorArray[0],
             trace,
             params,
-            position: error.position,
-            location,
             code: error.code,
             context,
           };
+        } else {
+          newError = error;
         }
+
+        newError.position = error.position;
+        newError.location = location;
+
         return error;
       }),
+      response,
+      request,
+      // err
     };
 
     debug(JSON.stringify(errorResponse, null, 2));

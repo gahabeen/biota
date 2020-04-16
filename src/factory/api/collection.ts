@@ -6,7 +6,7 @@ import { MethodDispatch, Query } from '../constructors/method';
 import { ResultData } from '../constructors/result';
 import { BiotaFunctionName } from '../constructors/udfunction';
 import { ContextExtend } from './constructors';
-import { DefaultToOjbect } from './ql/defaultTo';
+
 import { document } from '~/factory/api/document';
 
 // tslint:disable-next-line: only-arrow-functions
@@ -15,6 +15,21 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
   return (name = null) => {
     const ref = q.Collection(name);
     return {
+      findAll(pagination = {}) {
+
+        const inputs = { pagination };
+        // ---
+        const query = Query(
+          {
+            docs: q.Map(q.Paginate(q.Documents(ref), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
+          },
+          q.Var('docs'),
+        );
+        // ---
+        const offline = 'factory.collection.paginate';
+        const online = { name: BiotaFunctionName('CollectionPaginate'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
       get() {
         const inputs = { ref };
         // ---
@@ -30,7 +45,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { name, options };
         // ---
         const query = Query(
@@ -47,8 +62,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionInsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       update(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -65,8 +81,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionUpdate'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       upsert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -84,8 +101,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionUpsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       replace(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -113,8 +131,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionReplace'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       repsert(options) {
-        options = DefaultToOjbect(options);
+
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -133,6 +152,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionRepsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       delete() {
         const inputs = { ref };
         // ---
@@ -147,6 +167,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionDelete'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       restore() {
         // alias
         const inputs = { ref };
@@ -162,6 +183,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       forget() {
         const inputs = { ref };
         // ---
@@ -180,6 +202,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const online = { name: BiotaFunctionName('CollectionRepsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       drop() {
         const inputs = { ref };
         // ---
@@ -191,9 +214,10 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         );
         // ---
         const offline = 'factory.collection.drop';
-        const online = { name: BiotaFunctionName('DocumentClean'), role: null };
+        const online = { name: BiotaFunctionName('CollectionClean'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
+
       expireAt(at) {
         // alias
         const inputs = { ref, at };
@@ -206,7 +230,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         );
         // ----
         const offline = 'factory.document.expireAt';
-        const online = { name: BiotaFunctionName('DocumentExpireAt'), role: null };
+        const online = { name: BiotaFunctionName('CollectionExpireAt'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireIn(delay) {
@@ -221,7 +245,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         );
         // ----
         const offline = 'factory.document.expireIn';
-        const online = { name: BiotaFunctionName('DocumentExpireIn'), role: null };
+        const online = { name: BiotaFunctionName('CollectionExpireIn'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       expireNow() {
@@ -236,7 +260,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         );
         // ----
         const offline = 'factory.document.expireNow';
-        const online = { name: BiotaFunctionName('DocumentExpireNow'), role: null };
+        const online = { name: BiotaFunctionName('CollectionExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };

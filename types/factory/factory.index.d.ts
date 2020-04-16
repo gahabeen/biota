@@ -1,16 +1,21 @@
 import { Expr } from 'faunadb';
 import { FaunaIndexOptions } from '../fauna';
 
-export type FactoryIndex = (name: string | Expr) => FactoryIndexApi;
+export type FactoryIndex<OT = FactoryIndexApi> = (name: string | Expr) => OT;
 
-export interface FactoryIndexApi {
-  get(): Expr;
-  insert(options: FaunaIndexOptions): Expr;
-  update(options: FaunaIndexOptions): Expr;
-  upsert(options: FaunaIndexOptions): Expr;
-  replace(options: FaunaIndexOptions): Expr;
-  repsert(options: FaunaIndexOptions): Expr;
-  delete(): Expr;
-  forget(): Expr;
-  drop(): Expr;
+export interface FactoryIndexApi<OT = Expr> {
+  get(): OT;
+  insert(options: FaunaIndexOptions): OT;
+  insertMany(optionsList: FaunaIndexOptions[]): OT;
+  update(options: FaunaIndexOptions): OT;
+  upsert(options: FaunaIndexOptions): OT;
+  replace(options: FaunaIndexOptions): OT;
+  repsert(options: FaunaIndexOptions): OT;
+  delete(): OT;
+  forget(): OT;
+  drop(): OT;
+  restore(): OT;
+  expireAt(time: OT): OT;
+  expireIn(delay: number | Expr): OT;
+  expireNow(): OT;
 }

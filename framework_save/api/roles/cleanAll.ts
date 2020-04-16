@@ -1,6 +1,6 @@
 import { Biota } from '~/biota';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
 export function dropAll(this: Biota) {
   const self = this;

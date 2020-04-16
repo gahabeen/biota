@@ -1,7 +1,7 @@
 import { Biota } from '~/biota';
 import { FaunaCollectionOptions, FaunaId, FaunaRoleMembership, FaunaRef } from '~/../types/fauna';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
 export function privilegeDelete(this: Biota, roleName: string) {
   const self = this;

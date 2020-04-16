@@ -3,7 +3,7 @@ import { Fauna, FaunaPaginateResponse, FaunaPaginateOptions } from '~/../types/f
 // external
 import { query as q } from 'faunadb';
 import { Biota } from '~/biota';
-import { execute } from '~/tasks';
+import { execute } from '~/tools/tasks';
 
 export function* paginate(this: Biota, paginateQuery: Fauna.Expr, paginateOptions: FaunaPaginateOptions = {}) {
   let after: any = Infinity;
