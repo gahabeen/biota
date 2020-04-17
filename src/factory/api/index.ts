@@ -89,8 +89,8 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(index(q.Var('ref'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(index(q.Var('ref'))(q.Var('ref')).insert(q.Var('options'))),
+              ResultData(index(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
+              ResultData(index(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -136,7 +136,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         const query = Query(
           {
             doc: q.If(
-              q.Exists(ref),
+              q.Exists(q.Var('ref')),
               ResultData(index(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
               ResultData(index(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),

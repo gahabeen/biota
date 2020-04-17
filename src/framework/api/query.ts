@@ -62,6 +62,9 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
             code: error.code,
             context,
           };
+
+          debug(JSON.stringify(newError, null, 2));
+          // debug(JSON.stringify(newError, null, 2));
         } else {
           newError = error;
         }
@@ -69,14 +72,14 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
         newError.position = error.position;
         newError.location = location;
 
-        return error;
+        return newError;
       }),
       response,
       request,
       // err
     };
 
-    debug(JSON.stringify(errorResponse, null, 2));
+    // debug(JSON.stringify(errorResponse, null, 2));
     return errorResponse;
   });
 }

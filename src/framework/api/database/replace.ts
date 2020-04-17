@@ -1,18 +1,18 @@
-import { FaunaId } from '~/../types/fauna';
-import { Biota } from '~/biota';
+import { FactoryDatabase } from 'types/factory/factory.database';
+import { FrameworkDatabaseApi } from 'types/framework/framework.database';
 import { database } from '~/factory/api/database';
 import { execute } from '~/tools/tasks';
 
-export function replace(this: Biota, databaseName: string) {
+export const replace: FactoryDatabase<FrameworkDatabaseApi['replace']> = function (databaseName) {
   const self = this;
 
-  return async function replaceMethod(id: FaunaId, data: object) {
+  return async function replaceMethod(options) {
     return execute(
       [
         {
           name: `Replace (${databaseName})`,
           task() {
-            return self.query(database(self.context)(databaseName).replace(data));
+            return self.query(database(self.context)(databaseName).replace(options));
           },
         },
       ],
@@ -21,4 +21,4 @@ export function replace(this: Biota, databaseName: string) {
       },
     );
   };
-}
+};

@@ -72,8 +72,8 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              database(q.Var('ref'))(q.Var('ref')).update(q.Var('options')),
-              database(q.Var('ref'))(q.Var('ref')).insert(q.Var('options')),
+              database(q.Var('ctx'))(q.Var('ref')).update(q.Var('options')),
+              database(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options')),
             ),
           },
           q.Var('doc'),
@@ -119,7 +119,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
         const query = Query(
           {
             doc: q.If(
-              q.Exists(ref),
+              q.Exists(q.Var('ref')),
               ResultData(database(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
               ResultData(database(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),

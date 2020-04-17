@@ -21,7 +21,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // ---
         const query = Query(
           {
-            docs: q.Map(q.Paginate(q.Documents(ref), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
+            docs: q.Map(q.Paginate(q.Documents(q.Var('ref')), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
           },
           q.Var('docs'),
         );
@@ -50,7 +50,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // ---
         const query = Query(
           {
-            annotated: document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {})),
+            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
             doc: q.CreateCollection(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
@@ -139,13 +139,12 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const query = Query(
           {
             doc: q.If(
-              q.Exists(ref),
+              q.Exists(q.Var('ref')),
               ResultData(collection(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
               ResultData(collection(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
-          // already logging actions: replace or insert
         );
         // ---
         const offline = 'factory.collection.repsert';
@@ -189,7 +188,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // ---
         const query = Query(
           {
-            annotated: document(q.Var('ctx'))().annotate('forget'),
+            annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
             annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
             doc: q.Delete(q.Var('ref')),

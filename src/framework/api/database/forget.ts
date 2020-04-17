@@ -1,9 +1,9 @@
-import { FaunaId } from '~/../types/fauna';
-import { Biota } from '~/biota';
+import { FactoryDatabase } from 'types/factory/factory.database';
+import { FrameworkDatabaseApi } from 'types/framework/framework.database';
 import { database } from '~/factory/api/database';
 import { execute } from '~/tools/tasks';
 
-export function forget(this: Biota, databaseName: string) {
+export const forget: FactoryDatabase<FrameworkDatabaseApi['forget']> = function (databaseName) {
   const self = this;
 
   return async () => {
@@ -21,4 +21,4 @@ export function forget(this: Biota, databaseName: string) {
       },
     );
   };
-}
+};

@@ -1,5 +1,7 @@
-import { FactoryCollectionApi } from 'types/factory/factory.collection';
+import { FactoryCollectionApi, FactoryCollection } from 'types/factory/factory.collection';
 import { Fauna, FaunaCollectionOptions, FaunaIndexTerm, FaunaIndexValue, FaunaPaginateMapper, FaunaPaginateOptions } from '../fauna';
+
+export type FrameworkCollection = FactoryCollection<FrameworkCollectionApi>;
 
 export interface FrameworkCollectionApi {
   scaffold: (collectionDefinition: FaunaCollectionOptions, options?: FrameworkCollectionScaffoldOptions) => Promise<any>;

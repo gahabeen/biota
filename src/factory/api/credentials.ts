@@ -10,7 +10,6 @@ import { BiotaFunctionName } from './constructors';
 export const credentials: FactoryContext<FactoryCredentialsApi> = function (context): FactoryCredentialsApi {
   return {
     findByInstance(instance, pagination) {
-
       const inputs = { instance, pagination };
       // ---
       const query = Query(
@@ -25,7 +24,6 @@ export const credentials: FactoryContext<FactoryCredentialsApi> = function (cont
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findAll(pagination) {
-
       const inputs = { pagination };
       // ---
       const query = Query(

@@ -15,7 +15,7 @@
     "name": "Gabin Desserprit"
   },
   "scripts": {
-    "doc": "typedoc src",
+    "doc": "typedoc src --mode library",
     "test": "jest",
     "testw": "jest --watch",
     "build": "ttsc",
@@ -57,7 +57,7 @@
     "tslint": "^6.1.1",
     "tslint-config-prettier": "^1.18.0",
     "ttypescript": "^1.5.10",
-    "typedoc": "^0.17.1",
+    "typedoc": "^0.17.0-3",
     "typescript": "^3.8.3",
     "typescript-transform-paths": "^1.1.14",
     "uglifyify": "^5.0.2",

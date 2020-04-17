@@ -11,7 +11,7 @@ export function* paginate(this: Biota, paginateQuery: Fauna.Expr, paginateOption
         {
           name: `Paginating your query`,
           task() {
-            return this.client.query(q.Map(q.Paginate(paginateQuery, paginateOptions), mapper)).then((res: FaunaPaginateResponse) => {
+            return this.query(q.Map(q.Paginate(paginateQuery, paginateOptions), mapper)).then((res: FaunaPaginateResponse) => {
               if (res.after) {
                 after = res.after;
               } else {

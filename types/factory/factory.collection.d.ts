@@ -1,9 +1,9 @@
 import { Expr } from 'faunadb';
 import { FaunaCollectionOptions, FaunaPaginateOptions, FaunaPaginateMapper, FaunaRef, FaunaString } from '../fauna';
 
-export type FactoryCollection<OT = FactoryCollectionApi> = (name?: string | Expr) => OT;
+export type FactoryCollection<OT = FactoryCollectionApi> = (name?: FaunaString) => OT;
 
-export interface FactoryCollectionApi<OT = Expr> {
+export type FactoryCollectionApi<OT = Expr> = {
   findAll(pagination: FaunaPaginateOptions): OT;
   get(): OT;
   insert(options: FaunaCollectionOptions): OT;

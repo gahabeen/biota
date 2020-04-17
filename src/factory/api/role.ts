@@ -31,7 +31,6 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-
         const inputs = { name, options };
         // ---
         const query = Query(
@@ -49,7 +48,6 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -67,15 +65,14 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(role(q.Var('ref'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(role(q.Var('ref'))(q.Var('ref')).insert(q.Var('options'))),
+              ResultData(role(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
+              ResultData(role(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -86,7 +83,6 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -115,13 +111,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(ref),
+              q.Exists(q.Var('ref')),
               ResultData(role(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
               ResultData(role(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),
@@ -186,7 +181,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           const query = Query(
             {
               membership_resource: q.Select('resource', q.Var('membership')),
-              current_membership_raw: q.Select('membership', q.Get(q.Role(q.Var('name'))), []),
+              current_membership_raw: q.Select('membership', q.Get(q.Var('ref')), []),
               current_membership: q.If(
                 q.IsObject(q.Var('current_membership_raw')),
                 [q.Var('current_membership_raw')],
@@ -240,7 +235,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
             {
               doc: ResultData(
                 role(q.Var('ctx'))(q.Var('ref')).upsert({
-                  membership: role(q.Var('ctx'))(q.Var('ref')).membership.distinct(q.Var('membership')),
+                  membership: ResultData(role(q.Var('ctx'))(q.Var('ref')).membership.distinct(q.Var('membership'))),
                 }),
               ),
             },
@@ -262,7 +257,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
                   ['membership'],
                   ResultData(
                     role(q.Var('ctx'))(q.Var('ref')).upsert({
-                      membership: role(q.Var('ctx'))(q.Var('ref')).membership.distinct(q.Var('membership')),
+                      membership: ResultData(role(q.Var('ctx'))(q.Var('ref')).membership.distinct(q.Var('membership'))),
                     }),
                   ),
                 ),
@@ -282,8 +277,8 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           const query = Query(
             {
               doc: ResultData(
-                role(q.Var('ctx'))(ref).upsert({
-                  membership: role(q.Var('ctx'))(ref).membership.difference(q.Var('resource')),
+                role(q.Var('ctx'))(q.Var('ref')).upsert({
+                  membership: ResultData(role(q.Var('ctx'))(q.Var('ref')).membership.difference(q.Var('resource'))),
                 }),
               ),
             },
@@ -304,8 +299,8 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
                 q.Lambda(
                   ['resource'],
                   ResultData(
-                    role(q.Var('ctx'))(ref).upsert({
-                      membership: role(q.Var('ctx'))(ref).membership.difference(q.Var('resource')),
+                    role(q.Var('ctx'))(q.Var('ref')).upsert({
+                      membership: ResultData(role(q.Var('ctx'))(q.Var('ref')).membership.difference(q.Var('resource'))),
                     }),
                   ),
                 ),
@@ -342,8 +337,16 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
                 q.Var('current_privilege'),
                 q.Lambda('cm', q.Not(q.Equals(q.Select('resource', q.Var('cm')), q.Var('privilege_resource')))),
               ),
-              new_privilege: q.Merge(q.Select(0, q.Var('same_current_privilege'), {}), q.Var('privilege')),
-              new_privileges: q.Append(q.Var('current_privilege_except_new'), [q.Var('new_privilege')]),
+              new_privilege_actions: q.Merge(
+                q.Select([0, 'actions'], q.Var('same_current_privilege'), {}),
+                q.Select('actions', q.Var('privilege'), {}),
+              ),
+              new_privileges: q.Append(q.Var('current_privilege_except_new'), [
+                {
+                  resource: q.Select('resource', q.Var('privilege')),
+                  actions: q.Var('new_privilege_actions'),
+                },
+              ]),
             },
             q.Var('new_privileges'),
           );
@@ -381,8 +384,8 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           const query = Query(
             {
               doc: ResultData(
-                role(q.Var('ctx'))(ref).upsert({
-                  privileges: role(q.Var('ctx'))(ref).privilege.distinct(q.Var('privilege')),
+                role(q.Var('ctx'))(q.Var('ref')).upsert({
+                  privileges: ResultData(role(q.Var('ctx'))(q.Var('ref')).privilege.distinct(q.Var('privilege'))),
                 }),
               ),
             },
@@ -403,8 +406,8 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
                 q.Lambda(
                   ['privilege'],
                   ResultData(
-                    role(q.Var('ctx'))(ref).upsert({
-                      privileges: role(q.Var('ctx'))(ref).privilege.distinct(q.Var('privilege')),
+                    role(q.Var('ctx'))(q.Var('ref')).upsert({
+                      privileges: ResultData(role(q.Var('ctx'))(q.Var('ref')).privilege.distinct(q.Var('privilege'))),
                     }),
                   ),
                 ),
@@ -425,7 +428,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
             {
               doc: ResultData(
                 role(q.Var('ctx'))(q.Var('ref')).upsert({
-                  privileges: role(q.Var('ctx'))(ref).privilege.difference(q.Var('resource')),
+                  privileges: ResultData(role(q.Var('ctx'))(q.Var('ref')).privilege.difference(q.Var('resource'))),
                 }),
               ),
             },
@@ -447,7 +450,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
                   ['resource'],
                   ResultData(
                     role(q.Var('ctx'))(q.Var('ref')).upsert({
-                      privileges: role(q.Var('ctx'))(ref).privilege.difference(q.Var('resource')),
+                      privileges: ResultData(role(q.Var('ctx'))(q.Var('ref')).privilege.difference(q.Var('resource'))),
                     }),
                   ),
                 ),

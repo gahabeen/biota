@@ -1,7 +1,6 @@
-import * as faunadb from 'faunadb';
 import * as Fauna from 'faunadb';
-import { Fn } from './db';
 import { ExprArg } from 'faunadb';
+import { Fn } from './db';
 export { Fauna };
 
 // declare module 'faunadb.query' {

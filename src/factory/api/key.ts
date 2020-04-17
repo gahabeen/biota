@@ -72,8 +72,8 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(key(q.Var('ref'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(key(q.Var('ref'))(q.Var('ref')).insert(q.Var('options'))),
+              ResultData(key(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
+              ResultData(key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -119,7 +119,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         const query = Query(
           {
             doc: q.If(
-              q.Exists(ref),
+              q.Exists(q.Var('ref')),
               ResultData(key(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
               ResultData(key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),

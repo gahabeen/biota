@@ -67,6 +67,7 @@ export type DocumentActionName =
   | 'delete'
   | 'expire'
   | 'restore'
+  | 'remember'
   | 'credentials_change'
   | 'auth_email_change'
   | 'auth_accounts_change'
@@ -113,4 +114,7 @@ export interface DocumentActivity {
 
   forgotten_by?: FaunaRef;
   forgotten_at?: FaunaTime;
+
+  remembered_by?: FaunaRef;
+  remembered_at?: FaunaTime;
 }

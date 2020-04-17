@@ -72,8 +72,8 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(udfunction(q.Var('ref'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(udfunction(q.Var('ref'))(q.Var('ref')).insert(q.Var('options'))),
+              ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
+              ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -119,7 +119,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         const query = Query(
           {
             doc: q.If(
-              q.Exists(ref),
+              q.Exists(q.Var('ref')),
               ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
               ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),

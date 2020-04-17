@@ -77,8 +77,8 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(token(q.Var('ref'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(token(q.Var('ref'))(q.Var('ref')).insert(q.Var('options'))),
+              ResultData(token(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
+              ResultData(token(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -124,7 +124,7 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         const query = Query(
           {
             doc: q.If(
-              q.Exists(ref),
+              q.Exists(q.Var('ref')),
               ResultData(token(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
               ResultData(token(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
             ),

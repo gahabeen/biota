@@ -1,13 +1,13 @@
 import { query as q } from 'faunadb';
 import { FactoryContext } from '~/../types/factory/factory.context';
 import { FactoryUsersApi } from '~/../types/factory/factory.users';
-
 import { BiotaIndexName } from '../constructors';
-import { ThrowError } from '../constructors/error';
-import { ContextExtend, ContextProp } from '../constructors/context';
-import { BiotaFunctionName } from '../constructors/udfunction';
 import { BiotaCollectionName } from '../constructors/collection';
+import { ThrowError } from '../constructors/error';
 import { MethodDispatch, Query } from '../constructors/method';
+import { ResultData } from '../constructors/result';
+import { BiotaFunctionName } from '../constructors/udfunction';
+import { user } from './user';
 
 // tslint:disable-next-line: only-arrow-functions
 export const users: FactoryContext<FactoryUsersApi> = function (context): FactoryUsersApi {
@@ -51,7 +51,6 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findAll(pagination) {
-
       const inputs = { pagination };
       // ---
       const query = Query(
@@ -66,6 +65,203 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       // ---
       const offline = 'factory.users.paginate';
       const online = { name: BiotaFunctionName('UsersPaginate'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    getMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).get()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.getMany';
+      const online = { name: BiotaFunctionName('UsersGetMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    insertMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(user(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).insert(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.insertMany';
+      const online = { name: BiotaFunctionName('UsersInsertMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    updateMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(user(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).update(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.updateMany';
+      const online = { name: BiotaFunctionName('UsersUpdateMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    upsertMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(user(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).upsert(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.upsertMany';
+      const online = { name: BiotaFunctionName('UsersUpsertMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    replaceMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(user(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).replace(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.replaceMany';
+      const online = { name: BiotaFunctionName('UsersReplaceMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    repsertMany(optionsList) {
+      const inputs = { optionsList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(
+            q.Var('optionsList'),
+            q.Lambda(['options'], ResultData(user(q.Var('ctx'))(q.Select('name', q.Var('options'), null)).repsert(q.Var('options')))),
+          ),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.repsertMany';
+      const online = { name: BiotaFunctionName('UsersRepsertMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    deleteMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).delete()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.deleteMany';
+      const online = { name: BiotaFunctionName('UsersDeleteMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    restoreMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).restore()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.restoreMany';
+      const online = { name: BiotaFunctionName('UsersRestoreMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    forgetMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).forget()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.forgetMany';
+      const online = { name: BiotaFunctionName('UsersForgetMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    dropMany(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).drop()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.dropMany';
+      const online = { name: BiotaFunctionName('UsersDropMany'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    expireManyAt(nameList, at) {
+      const inputs = { nameList, at };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).expireAt(q.Var('at'))))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.expireManyAt';
+      const online = { name: BiotaFunctionName('UsersExpireManyAt'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    expireManyIn(nameList, delay) {
+      const inputs = { nameList, delay };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).expireIn(q.Var('delay'))))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.expireManyAt';
+      const online = { name: BiotaFunctionName('UsersExpireManyAt'), role: null };
+      return MethodDispatch({ context, inputs, query })(offline, online);
+    },
+    expireManyNow(nameList) {
+      const inputs = { nameList };
+      // ---
+      const query = Query(
+        {
+          docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).expireNow()))),
+        },
+        q.Var('docs'),
+      );
+      // ---
+      const offline = 'factory.users.expireManyNow';
+      const online = { name: BiotaFunctionName('UsersExpireManyNow'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
   };

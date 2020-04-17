@@ -1,12 +1,12 @@
-import { FaunaId } from '~/../types/fauna';
-import { Biota } from '~/biota';
+import { FactoryDatabase } from 'types/factory/factory.database';
+import { FrameworkDatabaseApi } from 'types/framework/framework.database';
 import { database } from '~/factory/api/database';
 import { execute } from '~/tools/tasks';
 
-export function update(this: Biota, databaseName: string) {
+export const update: FactoryDatabase<FrameworkDatabaseApi['update']> = function (databaseName) {
   const self = this;
 
-  return async function updateMethod(id: FaunaId, data: object) {
+  return async function updateMethod(data) {
     return execute(
       [
         {
@@ -21,4 +21,4 @@ export function update(this: Biota, databaseName: string) {
       },
     );
   };
-}
+};

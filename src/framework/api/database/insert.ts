@@ -1,9 +1,10 @@
+import { FactoryDatabase } from 'types/factory/factory.database';
+import { FrameworkDatabaseApi } from 'types/framework/framework.database';
 import { FaunaId } from '~/../types/fauna';
-import { Biota } from '~/biota';
 import { database } from '~/factory/api/database';
 import { execute } from '~/tools/tasks';
 
-export function insert(this: Biota, databaseName: string) {
+export const insert: FactoryDatabase<FrameworkDatabaseApi['drop']> = function (databaseName) {
   const self = this;
 
   return async function insertMethod(data: any = {}, id: FaunaId = null) {
@@ -21,4 +22,4 @@ export function insert(this: Biota, databaseName: string) {
       },
     );
   };
-}
+};

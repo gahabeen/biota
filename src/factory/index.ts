@@ -22,7 +22,7 @@ import { udfunction } from './api/udfunction';
 import { udfunctions } from './api/udfunctions';
 import { user } from './api/user';
 import { users } from './api/users';
-import { userSession } from './api/userSession';
+import { session } from './api/session';
 
 export const factory = {
   ql,
@@ -48,5 +48,5 @@ export const factory = {
   udfunctions,
   user,
   users,
-  userSession,
+  session,
 };

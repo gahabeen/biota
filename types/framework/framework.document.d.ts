@@ -1,10 +1,12 @@
-import { FaunaPaginateOptions, FaunaDocumentCredentials } from './../fauna';
+import { FaunaPaginateOptions, FaunaDocumentCredentials, FaunaRef } from './../fauna';
 import { FactoryDocumentApi, FactoryDocument } from 'types/factory/factory.document';
+import { Expr } from 'faunadb';
 
 export type FrameworkDocument = FactoryDocument<FrameworkDocumentApi>;
 
 export interface FrameworkDocumentApi {
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;
+  history: FactoryDocumentApi<Promise<any>>['history'];
   get: FactoryDocumentApi<Promise<any>>['get'];
   insert: FactoryDocumentApi<Promise<any>>['insert'];
   replace: FactoryDocumentApi<Promise<any>>['replace'];
@@ -14,6 +16,7 @@ export interface FrameworkDocumentApi {
   delete: FactoryDocumentApi<Promise<any>>['delete'];
   forget: FactoryDocumentApi<Promise<any>>['forget'];
   restore: FactoryDocumentApi<Promise<any>>['restore'];
+  remember: FactoryDocumentApi<Promise<any>>['remember'];
   drop: FactoryDocumentApi<Promise<any>>['drop'];
   expireAt: FactoryDocumentApi<Promise<any>>['expireAt'];
   expireIn: FactoryDocumentApi<Promise<any>>['expireIn'];

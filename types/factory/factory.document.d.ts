@@ -1,6 +1,6 @@
 import { Expr } from 'faunadb';
 import { DocumentActionName } from 'types/document';
-import { FaunaData, FaunaNumber, FaunaRef, FaunaTime } from '../fauna';
+import { FaunaData, FaunaNumber, FaunaRef, FaunaTime, FaunaPaginateOptions } from '../fauna';
 
 export type FactoryDocument<OT = FactoryDocumentApi> = (collectionOrRef?: string | Expr | FaunaRef, id?: string | Expr) => OT;
 
@@ -40,6 +40,7 @@ export interface FactoryDocumentMembershipApi<OT = Expr> {
 }
 
 export interface FactoryDocumentApi<OT = Expr> {
+  history(pagination?: FaunaPaginateOptions): OT;
   get(): OT;
   insert(data: FaunaData): OT;
   update(data: FaunaData): OT;
@@ -49,6 +50,7 @@ export interface FactoryDocumentApi<OT = Expr> {
   delete(): OT;
   forget(): OT;
   restore(): OT;
+  remember(): OT;
   drop(): OT;
   expireAt(time: FaunaTime): OT;
   expireIn(delay: FaunaNumber): OT;

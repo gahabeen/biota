@@ -1,15 +1,15 @@
-import { FaunaPaginateOptions } from '~/../types/fauna';
-import { Biota } from '~/biota';
+import { FactoryDatabase } from 'types/factory/factory.database';
+import { FrameworkDatabaseApi } from 'types/framework/framework.database';
 import { execute } from '~/tools/tasks';
 
-export function activity(this: Biota, databaseName: string) {
+export const activity: FactoryDatabase<FrameworkDatabaseApi['activity']> = function (databaseName) {
   const self = this;
 
-  return async (pagination: FaunaPaginateOptions = {}) => {
+  return async (pagination = {}) => {
     return execute(
       [
         {
-          name: `Activity for (${databaseName})`,
+          name: `Activity [${databaseName}]`,
           async task() {
             return {};
             // return self.database(BiotaCollectionName('actions')).find(
@@ -28,4 +28,4 @@ export function activity(this: Biota, databaseName: string) {
       },
     );
   };
-}
+};

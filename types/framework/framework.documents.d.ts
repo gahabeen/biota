@@ -2,7 +2,7 @@ import { FactoryDocuments, FactoryDocumentsApi } from '../factory/factory.docume
 import { FaunaPaginateOptions, FaunaPaginateMapper } from '../fauna';
 import { Expr } from 'faunadb';
 
-export type FrameworkDocument = FactoryDocuments<FrameworkDocumentsApi>;
+export type FrameworkDocuments = FactoryDocuments<FrameworkDocumentsApi>;
 
 export interface FrameworkDocumentsApi {
   activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;

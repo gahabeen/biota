@@ -32,6 +32,7 @@ export interface FactoryRuleDefinition {
   forgetWhenExpired?: FactoryRuleAuthor[] | boolean;
   forget?: FactoryRuleAuthor[] | boolean;
   restore?: FactoryRuleAuthor[] | boolean;
+  remember?: FactoryRuleAuthor[] | boolean;
   setOwner?: FactoryRuleAuthor[] | boolean;
   removeOwner?: FactoryRuleAuthor[] | boolean;
   setAssignee?: FactoryRuleAuthor[] | boolean;

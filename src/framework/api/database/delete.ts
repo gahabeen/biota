@@ -1,9 +1,10 @@
-import { FaunaId } from '~/../types/fauna';
-import { Biota } from '~/biota';
+import { FactoryDatabase } from 'types/factory/factory.database';
+import { FrameworkDatabaseApi } from 'types/framework/framework.database';
 import { database } from '~/factory/api/database';
 import { execute } from '~/tools/tasks';
 
-export function delete_(this: Biota, databaseName: string) {
+// tslint:disable-next-line: variable-name
+export const delete_: FactoryDatabase<FrameworkDatabaseApi['delete']> = function (databaseName) {
   const self = this;
 
   return async () => {
@@ -21,4 +22,4 @@ export function delete_(this: Biota, databaseName: string) {
       },
     );
   };
-}
+};

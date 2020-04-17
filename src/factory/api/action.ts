@@ -25,16 +25,20 @@ export const action: FactoryContext<FactoryAction> = function (context): Factory
         const query = Query(
           {
             doc: q.If(
-              q.And(q.IsString(name), q.IsRef(ref)),
-              q.Create(BiotaCollectionName('actions'), {
-                data: {
-                  name,
-                  instance: ref,
-                  ts: q.Now(),
-                  user: ContextProp(q.Var('ctx'), 'identity'),
-                },
-              }),
-              ThrowError(q.Var('ctx'), 'Wrong inputs', { name, ref, ts: q.Now() }),
+              ContextProp(q.Var('ctx'), 'logActions'),
+              q.If(
+                q.And(q.IsString(name), q.IsRef(q.Var('ref'))),
+                q.Create(BiotaCollectionName('actions'), {
+                  data: {
+                    name,
+                    instance: ref,
+                    ts: q.Now(),
+                    user: ContextProp(q.Var('ctx'), 'identity'),
+                  },
+                }),
+                ThrowError(q.Var('ctx'), 'Wrong inputs', { name, ref, ts: q.Now() }),
+              ),
+              null,
             ),
           },
           q.Var('doc'),

@@ -64,3 +64,7 @@ export function ContextExtend(
 export function ContextProp(context: FactoryContextDefinition, path: string) {
   return q.Select(helpers.path(path, false), context, false);
 }
+
+export function ContextNoLogNoAnnotation(context: FactoryContextDefinition) {
+  return q.Merge(context, { annotateDocuments: false, logActions: false });
+}
