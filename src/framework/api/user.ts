@@ -1,4 +1,4 @@
-import { FrameworkUser } from '~/../types/framework/framework.user';
+import { FrameworkUser } from '~/types/framework/framework.user';
 import { activity } from '~/framework/api/user/activity';
 import { delete_ } from '~/framework/api/user/delete';
 import { drop } from '~/framework/api/user/drop';

@@ -1,4 +1,4 @@
-import { FrameworkDatabasesApi } from '~/../types/framework/framework.databases';
+import { FrameworkDatabasesApi } from '~/types/framework/framework.databases';
 
 import { activity } from '~/framework/api/databases/activity';
 import { findAll } from '~/framework/api/databases/findAll';

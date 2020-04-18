@@ -1,8 +1,8 @@
 import { Biota } from '~/biota';
 import { document } from '~/factory/api/document';
 import { execute } from '~/tools/tasks';
-import { FactoryDocument } from 'types/factory/factory.document';
-import { FrameworkDocumentApi } from 'types/framework/framework.document';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
 
 export const history: FactoryDocument<FrameworkDocumentApi['history']> = function (this: Biota, collectionName, id) {
   const self = this;

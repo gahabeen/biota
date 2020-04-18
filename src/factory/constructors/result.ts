@@ -1,5 +1,5 @@
-import { FactoryContextDefinition } from 'types/factory/factory.context';
-import { FaunaRef } from 'types/fauna';
+import { FactoryContextDefinition } from '~/types/factory/factory.context';
+import { FaunaRef } from '~/types/fauna';
 import { query as q, Expr } from 'faunadb';
 
 interface ActionDispatchResult {
@@ -26,3 +26,8 @@ export function Result(result: Expr = null, actionResult: ActionDispatchResult =
 export function ResultData(result: ResultInferface) {
   return q.Select('data', result, null);
 }
+
+export function ResultAction(result: ResultInferface) {
+  return q.Select('action', result, null);
+}
+

@@ -1,5 +1,5 @@
 import { Biota } from '~/biota';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
+import { FaunaCollectionOptions, FaunaId } from '~/types/fauna';
 import { collection } from '~/factory/api/collection';
 import { execute } from '~/tools/tasks';
 

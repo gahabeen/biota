@@ -1,4 +1,4 @@
-import { FrameworkDocuments } from '~/../types/framework/framework.documents';
+import { FrameworkDocuments } from '~/types/framework/framework.documents';
 import { activity } from '~/framework/api/documents/activity';
 import { deleteMany } from '~/framework/api/documents/deleteMany';
 import { dropMany } from '~/framework/api/documents/dropMany';

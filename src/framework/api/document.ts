@@ -1,4 +1,4 @@
-import { FrameworkDocument } from '~/../types/framework/framework.document';
+import { FrameworkDocument } from '~/types/framework/framework.document';
 import { activity } from '~/framework/api/document/activity';
 import { delete_ } from '~/framework/api/document/delete';
 import { drop } from '~/framework/api/document/drop';

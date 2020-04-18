@@ -1,8 +1,8 @@
 import { Biota } from '~/biota';
 import { token } from '~/factory/api/token';
 import { execute } from '~/tools/tasks';
-import { FactoryToken } from 'types/factory/factory.token';
-import { FrameworkTokenApi } from 'types/framework/framework.token';
+import { FactoryToken } from '~/types/factory/factory.token';
+import { FrameworkTokenApi } from '~/types/framework/framework.token';
 
 export const insert: FactoryToken<FrameworkTokenApi['insert']> = function (this: Biota, idOrRefOrInstance) {
   const self = this;

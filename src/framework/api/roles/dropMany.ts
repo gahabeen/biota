@@ -1,4 +1,4 @@
-import { FrameworkRolesApi } from 'types/framework/framework.roles';
+import { FrameworkRolesApi } from '~/types/framework/framework.roles';
 import { roles } from '~/factory/api/roles';
 import { execute } from '~/tools/tasks';
 

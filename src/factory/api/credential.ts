@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryCredential } from '~/../types/factory/factory.credential';
-import { MethodDispatch, Query } from '../constructors/method';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryCredential } from '~/types/factory/factory.credential';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
 import { action } from './action';
 import { BiotaFunctionName } from './constructors';
 

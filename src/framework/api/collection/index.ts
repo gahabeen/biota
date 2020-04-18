@@ -1,4 +1,4 @@
-import { FrameworkCollectionFieldOptions, FrameworkIndexOptions } from '~/../types/framework/framework.collection';
+import { FrameworkCollectionFieldOptions, FrameworkIndexOptions } from '~/types/framework/framework.collection';
 import { Biota } from '~/biota';
 import { delay } from '~/helpers/delay';
 import { execute } from '~/tools/tasks';

@@ -1,5 +1,5 @@
 // types
-import { FaunaCollectionOptions } from '~/../types/fauna';
+import { FaunaCollectionOptions } from '~/types/fauna';
 // biota
 import { CONVENTION } from '~/consts';
 

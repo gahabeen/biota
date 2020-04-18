@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { Fauna } from '~/../types/db';
+import { Fauna } from '~/types/db';
 import { Biota } from '~/biota';
 const debug = Debug('biota').extend('query');
 

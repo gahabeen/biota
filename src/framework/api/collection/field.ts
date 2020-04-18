@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
-import { FaunaIndexOptions, FaunaIndexTerm, FaunaIndexValue } from '~/../types/fauna';
-import { FrameworkCollectionFieldOptions } from '~/../types/framework/framework.collection';
+import { FaunaIndexOptions, FaunaIndexTerm, FaunaIndexValue } from '~/types/fauna';
+import { FrameworkCollectionFieldOptions } from '~/types/framework/framework.collection';
 import { Biota } from '~/biota';
 import { BiotaIndexName, Index, NGramOnField } from '~/factory/constructors/index';
 import { index as indexFactory } from '~/factory/api/index';

@@ -1,4 +1,4 @@
-import { Fauna, FaunaPaginateResponse, FaunaPaginateOptions, FaunaPaginateMapper } from '~/../types/fauna';
+import { Fauna, FaunaPaginateResponse, FaunaPaginateOptions, FaunaPaginateMapper } from '~/types/fauna';
 import { query as q } from 'faunadb';
 import { Biota } from '~/biota';
 import { execute } from '~/tools/tasks';

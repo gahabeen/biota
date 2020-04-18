@@ -1,4 +1,4 @@
-import { FrameworkCollectionApi } from '~/../types/framework/framework.collection';
+import { FrameworkCollectionApi } from '~/types/framework/framework.collection';
 import { activity } from '~/framework/api/collection/activity';
 import { delete_ } from '~/framework/api/collection/delete';
 import { drop } from '~/framework/api/collection/drop';

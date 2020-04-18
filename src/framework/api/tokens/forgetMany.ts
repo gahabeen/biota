@@ -1,4 +1,4 @@
-import { FrameworkTokensApi } from 'types/framework/framework.tokens';
+import { FrameworkTokensApi } from '~/types/framework/framework.tokens';
 import { tokens } from '~/factory/api/tokens';
 import { execute } from '~/tools/tasks';
 

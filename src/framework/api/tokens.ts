@@ -1,4 +1,4 @@
-import { FrameworkTokensApi } from '~/../types/framework/framework.tokens';
+import { FrameworkTokensApi } from '~/types/framework/framework.tokens';
 
 import { activity } from '~/framework/api/tokens/activity';
 import { findAll } from '~/framework/api/tokens/findAll';

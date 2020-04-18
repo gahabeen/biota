@@ -1,4 +1,4 @@
-import { FrameworkToken } from '~/../types/framework/framework.token';
+import { FrameworkToken } from '~/types/framework/framework.token';
 import { activity } from '~/framework/api/token/activity';
 import { delete_ } from '~/framework/api/token/delete';
 import { drop } from '~/framework/api/token/drop';

@@ -1,16 +1,29 @@
 import * as fauna from 'faunadb';
-import { FactoryContextDefinition } from 'types/factory/factory.context';
-import { FrameworkDocuments, FrameworkDocumentsApi } from 'types/framework/framework.documents';
-import { Fauna, FaunaRef, FaunaString } from '~/../types/fauna';
 import * as framework from '~/framework';
-import { FrameworkCollection, FrameworkCollectionApi } from '../types/framework/framework.collection';
-import { FrameworkCollectionsApi } from '../types/framework/framework.collections';
-import { FrameworkDatabase, FrameworkDatabaseApi } from '../types/framework/framework.database';
-import { FrameworkDatabasesApi } from '../types/framework/framework.databases';
-import { FrameworkDocument, FrameworkDocumentApi } from '../types/framework/framework.document';
-import { FrameworkUserApi } from '../types/framework/framework.user';
-import { FrameworkRole, FrameworkRoleApi } from '../types/framework/framework.role';
-import { FrameworkRolesApi } from '../types/framework/framework.roles';
+import { FactoryContextDefinition } from '~/types/factory/factory.context';
+import { Fauna, FaunaId, FaunaRef, FaunaString } from '~/types/fauna';
+import { FrameworkCollectionApi } from '~/types/framework/framework.collection';
+import { FrameworkCollectionsApi } from '~/types/framework/framework.collections';
+import { FrameworkDatabaseApi } from '~/types/framework/framework.database';
+import { FrameworkDatabasesApi } from '~/types/framework/framework.databases';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
+import { FrameworkDocumentsApi } from '~/types/framework/framework.documents';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { FrameworkRolesApi } from '~/types/framework/framework.roles';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { FrameworkCredentialsApi } from './types/framework/framework.credentials';
+import { FrameworkIndexApi } from './types/framework/framework.index';
+import { FrameworkIndexesApi } from './types/framework/framework.indexes';
+import { FrameworkKeysApi } from './types/framework/framework.keys';
+import { FrameworkUDFunctionApi } from './types/framework/framework.udfunction';
+import { FrameworkUDFunctionsApi } from './types/framework/framework.udfunctions';
+import { FrameworkUsersApi } from './types/framework/framework.users';
+import { FrameworkKeyApi } from '~/types/framework/framework.key';
+import { FactorySessionApi } from './types/factory/factory.session';
+import { FrameworkSessionsApi } from './types/framework/framework.sessions';
+import { FactoryTokenApi } from './types/factory/factory.token';
+import { FrameworkTokensApi } from './types/framework/framework.tokens';
+import { bindSubFunctions } from './helpers';
 
 // interface BiotaRunningAS {
 //   role?: FaunaRef;
@@ -43,7 +56,8 @@ export class Biota {
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
-  user: FrameworkUserApi;
+  user: (idOrRef?: FaunaId | FaunaRef) => FrameworkUserApi;
+  users: (collectionName?: string) => FrameworkUsersApi;
   document: (collectionOrRef?: FaunaString | FaunaRef, id?: FaunaString) => FrameworkDocumentApi;
   documents: (collectionOrRef?: FaunaString | FaunaRef) => FrameworkDocumentsApi;
   collection: (name?: FaunaString) => FrameworkCollectionApi;
@@ -52,10 +66,18 @@ export class Biota {
   databases: FrameworkDatabasesApi;
   role: (name?: FaunaString) => FrameworkRoleApi;
   roles: FrameworkRolesApi;
-  // index?: (name: string) => FrameworkIndexApi;
-  // indexes?: FrameworkIndexesApi;
-  // udfunction?: (name: string) => FrameworkUDFunctionApi;
-  // udfunctions?: FrameworkUDFunctionsApi;
+  index: (name: string) => FrameworkIndexApi;
+  indexes: FrameworkIndexesApi;
+  udfunction: (name: string) => FrameworkUDFunctionApi;
+  udfunctions: FrameworkUDFunctionsApi;
+  credential: (idOrRefOrInstance?: FaunaId | FaunaRef) => FrameworkCredentialsApi;
+  credentials: FrameworkCredentialsApi;
+  key: (idOrRef: FaunaId | FaunaRef) => FrameworkKeyApi;
+  keys: FrameworkKeysApi;
+  session: (idOrRef: FaunaId | FaunaRef) => FactorySessionApi;
+  sessions: FrameworkSessionsApi;
+  token: (idOrRefOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
+  tokens: FrameworkTokensApi;
 
   // foundation: FrameworkFoundation;
   // relation: FrameworkRelation;
@@ -111,10 +133,16 @@ export class Biota {
     this.documents = framework.documents.bind(this);
     this.collection = framework.collection.bind(this);
     this.collections = framework.collections;
+    bindSubFunctions(this, 'collections');
     this.database = framework.database.bind(this);
     this.databases = framework.databases;
+    bindSubFunctions(this, 'databases');
     this.role = framework.role.bind(this);
     this.roles = framework.roles;
+    bindSubFunctions(this, 'roles');
+    this.udfunction = framework.udfunction.bind(this);
+    this.udfunctions = framework.udfunctions;
+    bindSubFunctions(this, 'udfunctions');
 
     // this.foundation = framework.foundation.bind(this);
     // this.relation = framework.relation.bind(this);

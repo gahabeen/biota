@@ -1,4 +1,4 @@
-import { FrameworkCollectionsApi } from 'types/framework/framework.collections';
+import { FrameworkCollectionsApi } from '~/types/framework/framework.collections';
 import { collections } from '~/factory/api/collections';
 import { execute } from '~/tools/tasks';
 

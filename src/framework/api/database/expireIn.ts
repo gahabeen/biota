@@ -1,5 +1,5 @@
-import { FactoryDatabase } from 'types/factory/factory.database';
-import { FrameworkDatabaseApi } from 'types/framework/framework.database';
+import { FactoryDatabase } from '~/types/factory/factory.database';
+import { FrameworkDatabaseApi } from '~/types/framework/framework.database';
 import { database } from '~/factory/api/database';
 import { execute } from '~/tools/tasks';
 

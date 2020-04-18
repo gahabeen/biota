@@ -1,5 +1,5 @@
-import { FactoryUser } from 'types/factory/factory.user';
-import { FrameworkUserApi } from 'types/framework/framework.user';
+import { FactoryUser } from '~/types/factory/factory.user';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 

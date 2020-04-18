@@ -1,8 +1,10 @@
-import { FrameworkCurrentApi } from '~/../types/framework/framework.current';
-
-// import { activity } from '~/framework/api/databases/activity';
+import { FrameworkCurrentApi } from '~/types/framework/framework.current';
 
 export const current: FrameworkCurrentApi = {
-  user: {},
-  session: {},
+  user: {
+    _empty: '',
+  },
+  session: {
+    _empty: '',
+  },
 };

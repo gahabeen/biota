@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
-import { Fauna, FaunaCollectionOptions } from '~/../types/fauna';
-import { FrameworkCollectionInsertBatchOptions } from '~/../types/framework/framework.collection';
+import { Fauna, FaunaCollectionOptions } from '~/types/fauna';
+import { FrameworkCollectionInsertBatchOptions } from '~/types/framework/framework.collection';
 import { Biota } from '~/biota';
 import { collection } from '~/factory/api/collection';
 import { document } from '~/factory/api/document';

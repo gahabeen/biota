@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
-import { FactoryDocument } from 'types/factory/factory.document';
-import { FrameworkDocumentApi } from 'types/framework/framework.document';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
 import { Biota } from '~/biota';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { execute } from '~/tools/tasks';

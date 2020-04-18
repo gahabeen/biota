@@ -1,8 +1,8 @@
-import { FaunaPaginateOptions } from '~/../types/fauna';
+import { FaunaPaginateOptions } from '~/types/fauna';
 import { Biota } from '~/biota';
 import { execute } from '~/tools/tasks';
-import { FactoryRole } from 'types/factory/factory.role';
-import { FrameworkRoleApi } from 'types/framework/framework.role';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
 
 export const activity: FactoryRole<FrameworkRoleApi['activity']> = function (roleName) {
   const self = this;

@@ -1,7 +1,7 @@
 import { Biota } from '~/biota';
-import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from '~/../types/fauna';
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from '~/types/fauna';
 import { execute } from '~/tools/tasks';
-import { FrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
+import { FrameworkCollectionSearchParams } from '~/types/framework/framework.collection';
 
 export function paginate(this: Biota, collectionName: string) {
   const self = this;

@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
-import { FactoryToken } from 'types/factory/factory.token';
-import { FrameworkTokenApi } from 'types/framework/framework.token';
+import { FactoryToken } from '~/types/factory/factory.token';
+import { FrameworkTokenApi } from '~/types/framework/framework.token';
 import { Biota } from '~/biota';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { execute } from '~/tools/tasks';

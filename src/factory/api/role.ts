@@ -1,13 +1,13 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryRole } from '~/../types/factory/factory.role';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryRole } from '~/types/factory/factory.role';
 
-import { Query, MethodDispatch } from '../constructors/method';
+import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
-import { ResultData } from '../constructors/result';
+import { ResultData } from '~/factory/constructors/result';
 import { action } from './action';
 import { document } from './document';
-import { ThrowError } from '../constructors/error';
+import { ThrowError } from '~/factory/constructors/error';
 
 // tslint:disable-next-line: only-arrow-functions
 export const role: FactoryContext<FactoryRole> = function (context): FactoryRole {
@@ -419,6 +419,24 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const offline = 'factory.role.privilege.setMany';
           const online = { name: BiotaFunctionName('RolePrivilegesSetMany'), role: null };
+          return MethodDispatch({ context, inputs, query })(offline, online);
+        },
+        scaffold(privilege) {
+          const inputs = { ref, privilege };
+          // ---
+          const query = Query(
+            {
+              doc: ResultData(
+                role(q.Var('ctx'))(q.Var('ref')).upsert({
+                  privileges: ResultData(role(q.Var('ctx'))(q.Var('ref')).privilege.distinct(q.Var('privilege'))),
+                }),
+              ),
+            },
+            q.Var('doc'),
+          );
+          // ---
+          const offline = 'factory.role.privilege.set';
+          const online = { name: BiotaFunctionName('RolePrivilegesSet'), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
         remove(resource) {

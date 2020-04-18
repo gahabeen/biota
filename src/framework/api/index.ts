@@ -1,4 +1,4 @@
-import { FrameworkIndexApi } from '~/../types/framework/framework.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
 import { activity } from '~/framework/api/index/activity';
 import { delete_ } from '~/framework/api/index/delete';
 import { forget } from '~/framework/api/index/forget';

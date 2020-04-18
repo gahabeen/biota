@@ -1,25 +1,25 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryUDFunction } from '~/../types/factory/factory.udfunction';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
 
-import { Query, MethodDispatch } from '../constructors/method';
+import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
-import { ResultData } from '../constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
+import { ThrowError } from '../constructors/error';
 
 // tslint:disable-next-line: only-arrow-functions
 export const udfunction: FactoryContext<FactoryUDFunction> = function (context): FactoryUDFunction {
   // tslint:disable-next-line: only-arrow-functions
-  return (name) => {
-    const ref = q.Function(name);
+  return (name = null) => {
     return {
       get() {
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: q.Get(q.Var('ref')),
+            doc: q.Get(q.Function(q.Var('name'))),
           },
           q.Var('doc'),
         );
@@ -29,13 +29,13 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-
         const inputs = { name, options };
         // ---
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
-            doc: q.CreateFunction(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
+            definition: q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') }),
+            doc: q.CreateFunction(q.Var('definition')),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -47,13 +47,12 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
-            doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Update(q.Function(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -65,18 +64,18 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              q.Exists(q.Function(q.Var('name'))),
+              udfunction(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
+              udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.udfunction.upsert';
@@ -84,12 +83,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
-            current_doc: ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).get()),
+            current_doc: ResultData(udfunction(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
               document(q.Var('ctx'))().annotate(
                 'replace',
@@ -101,7 +99,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
                 }),
               ),
             ),
-            doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Replace(q.Function(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -113,15 +111,14 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              q.Exists(q.Function(q.Var('name'))),
+              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
+              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -132,11 +129,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       delete() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.delete()),
           },
           q.Var('doc'),
         );
@@ -146,14 +143,14 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
-            doc: q.Delete(q.Var('ref')),
+            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
+            action: action(q.Var('ctx'))('forget', q.Function(q.Var('name'))).log(),
+            doc: q.Delete(q.Function(q.Var('name'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -164,11 +161,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       drop() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Var('ref')), udfunction(q.Var('ctx'))(q.Var('ref')).forget(), false),
+            doc: q.If(q.Exists(q.Function(q.Var('name'))), udfunction(q.Var('ctx'))(q.Var('name')).forget(), false),
           },
           q.Var('doc'),
         );
@@ -179,11 +176,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       },
       expireAt(at) {
         // alias
-        const inputs = { ref, at };
+        const inputs = { name, at };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
@@ -194,11 +191,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       },
       expireIn(delay) {
         // alias
-        const inputs = { ref, delay };
+        const inputs = { name, delay };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
           },
           q.Var('doc'),
         );
@@ -209,11 +206,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       },
       expireNow() {
         // alias
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
@@ -224,11 +221,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       },
       restore() {
         // alias
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.restore()),
           },
           q.Var('doc'),
         );

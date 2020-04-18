@@ -1,4 +1,4 @@
-import { FrameworkSession } from '~/../types/framework/framework.session';
+import { FrameworkSession } from '~/types/framework/framework.session';
 import { activity } from '~/framework/api/session/activity';
 import { delete_ } from '~/framework/api/session/delete';
 import { drop } from '~/framework/api/session/drop';

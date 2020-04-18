@@ -1,8 +1,8 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryHistoryApi } from '~/../types/factory/factory.history';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryHistoryApi } from '~/types/factory/factory.history';
 
-import { Query, MethodDispatch } from '../constructors/method';
+import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 
 // tslint:disable-next-line: only-arrow-functions

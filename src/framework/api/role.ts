@@ -1,4 +1,4 @@
-import { FrameworkRoleApi } from '~/../types/framework/framework.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
 import { activity } from '~/framework/api/role/activity';
 import { delete_ } from '~/framework/api/role/delete';
 import { forget } from '~/framework/api/role/forget';
@@ -21,6 +21,8 @@ import { privilegeSet } from '~/framework/api/role/privilege_set';
 import { privilegeSetMany } from '~/framework/api/role/privilege_setMany';
 import { privilegeRemove } from '~/framework/api/role/privilege_remove';
 import { privilegeRemoveMany } from '~/framework/api/role/privilege_removeMany';
+import { privilegescaffoldMany } from './role/privilege_scaffoldMany';
+import { privilegeScaffold } from './role/privilege_scaffold';
 
 export function role(roleName: string): FrameworkRoleApi {
   const self = this;
@@ -49,6 +51,8 @@ export function role(roleName: string): FrameworkRoleApi {
     privilege: {
       set: privilegeSet.call(self, roleName),
       setMany: privilegeSetMany.call(self, roleName),
+      scaffold: privilegeScaffold.call(self, roleName),
+      scaffoldMany: privilegescaffoldMany.call(self, roleName),
       remove: privilegeRemove.call(self, roleName),
       removeMany: privilegeRemoveMany.call(self, roleName),
     },

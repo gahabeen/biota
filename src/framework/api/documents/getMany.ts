@@ -1,4 +1,4 @@
-import { FrameworkDocumentsApi } from 'types/framework/framework.documents';
+import { FrameworkDocumentsApi } from '~/types/framework/framework.documents';
 import { documents } from '~/factory/api/documents';
 import { execute } from '~/tools/tasks';
 

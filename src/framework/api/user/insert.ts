@@ -1,10 +1,10 @@
-import { FactoryUser } from 'types/factory/factory.user';
-import { FrameworkUserApi } from 'types/framework/framework.user';
-import { FaunaId } from '~/../types/fauna';
+import { FactoryUser } from '~/types/factory/factory.user';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { FaunaId } from '~/types/fauna';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 
-export const insert: FactoryUser<FrameworkUserApi['drop']> = function (idOrRef) {
+export const insert: FactoryUser<FrameworkUserApi['insert']> = function (idOrRef) {
   const self = this;
 
   return async function insertMethod(data: any = {}, id: FaunaId = null) {

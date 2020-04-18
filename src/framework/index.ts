@@ -17,11 +17,12 @@ export * from './api/user';
 export * from './api/users';
 export * from './api/session';
 export * from './api/sessions';
+export * from './api/udfunction';
+export * from './api/udfunctions';
+export * from './api/key';
+export * from './api/keys';
+export * from './api/credential';
+export * from './api/credentials';
 
 // export * from './api/foundation';
 // export * from './api/relation';
-// // export * from "./api/import"
-
-// export * from './api/privateKey';
-
-// export * as defaults from './api/defaults';

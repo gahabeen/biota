@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
-import { FaunaString } from 'types/fauna';
-import { FactoryContextDefinition } from 'types/factory/factory.context';
+import { FaunaString } from '~/types/fauna';
+import { FactoryContextDefinition } from '~/types/factory/factory.context';
 
 export function ThrowError(context: FactoryContextDefinition = {}, message: FaunaString = '', params: object = {}) {
   return q.Let(

@@ -1,9 +1,9 @@
-import { FaunaId } from '~/../types/fauna';
+import { FaunaId } from '~/types/fauna';
 import { Biota } from '~/biota';
 import { document } from '~/factory/api/document';
 import { execute } from '~/tools/tasks';
-import { FactoryDocument } from 'types/factory/factory.document';
-import { FrameworkDocumentApi } from 'types/framework/framework.document';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
 
 export const forget: FactoryDocument<FrameworkDocumentApi['forget']> = function (this: Biota, collectionName, id) {
   const self = this;

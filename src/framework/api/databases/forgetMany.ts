@@ -1,4 +1,4 @@
-import { FrameworkDatabasesApi } from 'types/framework/framework.databases';
+import { FrameworkDatabasesApi } from '~/types/framework/framework.databases';
 import { databases } from '~/factory/api/databases';
 import { execute } from '~/tools/tasks';
 

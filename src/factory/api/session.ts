@@ -1,13 +1,13 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactorySession } from '~/../types/factory/factory.session';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactorySession } from '~/types/factory/factory.session';
 import { document } from '~/factory/api/document';
 import { token } from '~/factory/api/token';
-import { BiotaCollectionName } from '../constructors/collection';
-import { ContextProp } from '../constructors/context';
-import { ThrowError } from '../constructors/error';
-import { MethodDispatch, Query } from '../constructors/method';
-import { ResultData } from '../constructors/result';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
+import { ContextProp } from '~/factory/constructors/context';
+import { ThrowError } from '~/factory/constructors/error';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
 
 // tslint:disable-next-line: only-arrow-functions

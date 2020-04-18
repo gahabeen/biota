@@ -1,12 +1,12 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryKey } from '~/../types/factory/factory.key';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryKey } from '~/types/factory/factory.key';
 
-import { Query, MethodDispatch } from '../constructors/method';
+import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
-import { ResultData } from '../constructors/result';
+import { ResultData } from '~/factory/constructors/result';
 
 // tslint:disable-next-line: only-arrow-functions
 export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
@@ -29,13 +29,12 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-
-        const inputs = { name, options };
+        const inputs = { options };
         // ---
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
-            doc: q.CreateKey(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
+            doc: q.CreateKey(q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -47,7 +46,6 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -65,7 +63,6 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -84,7 +81,6 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -113,7 +109,6 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(

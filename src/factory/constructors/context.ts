@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
-import { FactoryContextDefinition } from 'types/factory/factory.context';
-import { FaunaString } from 'types/fauna';
+import { FactoryContextDefinition } from '~/types/factory/factory.context';
+import { FaunaString } from '~/types/fauna';
 import * as helpers from '~/helpers';
 
 // export function ContextDefault(context: FactoryContextDefinition = {}) {

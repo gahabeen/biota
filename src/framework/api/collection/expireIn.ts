@@ -1,8 +1,8 @@
-import { FrameworkDatabasesApi } from 'types/framework/framework.databases';
+import { FrameworkDatabasesApi } from '~/types/framework/framework.databases';
 import { collection } from '~/factory/api/collection';
 import { execute } from '~/tools/tasks';
-import { FrameworkCollectionApi } from 'types/framework/framework.collection';
-import { FactoryCollection } from 'types/factory/factory.collection';
+import { FrameworkCollectionApi } from '~/types/framework/framework.collection';
+import { FactoryCollection } from '~/types/factory/factory.collection';
 
 export const expireIn: FactoryCollection<FrameworkCollectionApi['expireIn']> = function (collectionName) {
   const self = this;

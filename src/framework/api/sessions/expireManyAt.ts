@@ -1,4 +1,4 @@
-import { FrameworkSessionsApi } from 'types/framework/framework.sessions';
+import { FrameworkSessionsApi } from '~/types/framework/framework.sessions';
 import { sessions } from '~/factory/api/sessions';
 import { execute } from '~/tools/tasks';
 

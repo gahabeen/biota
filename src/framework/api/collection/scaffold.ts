@@ -1,12 +1,13 @@
-import { FaunaCollectionOptions } from '~/../types/fauna';
-import { FrameworkCollectionScaffoldOptions } from '~/../types/framework/framework.collection';
+import { FaunaCollectionOptions } from '~/types/fauna';
+import { FrameworkCollectionScaffoldOptions } from '~/types/framework/framework.collection';
 import { Biota } from '~/biota';
 import { query as q } from 'faunadb';
 // import { upsert } from '~/factory/api/fql/base';
-import { BiotaRoleName, Privilege } from '~/factory/constructors/role';
+import { BiotaRoleName } from '~/factory/constructors/role';
 import { execute } from '~/tools/tasks';
 import { collection } from '~/factory/api/collection';
 import { collections } from '~/factory/api/collections';
+import { PrivilegeRights } from '~/factory/constructors/privilege';
 
 export function scaffold(this: Biota, collectionName: string) {
   const self = this;
@@ -58,13 +59,14 @@ export function scaffold(this: Biota, collectionName: string) {
         name: `Adding collection ${collectionName} to [${role}] role`,
         async task() {
           return self.role(role).privilege.set(
-            Privilege({
+            PrivilegeRights({
               resource: q.Collection(collectionName),
-              actions: {
-                create: 'all',
-                read: ['self', 'owner', 'assignee'],
-                write: ['self', 'owner', 'assignee'],
-                delete: 'owner',
+              rights: {
+                insert: true,
+                get: ['self', 'owner', 'assignee'],
+                update: ['self', 'owner', 'assignee'],
+                replace: ['self', 'owner', 'assignee'],
+                delete: ['owner'],
               },
             }),
           );
@@ -72,24 +74,24 @@ export function scaffold(this: Biota, collectionName: string) {
       });
     }
 
-    tasks.push({
-      name: `Adding collection ${collectionName} to [system] role`,
-      async task() {
-        return self.role(BiotaRoleName('system')).privilege.set(
-          Privilege({
-            resource: q.Collection(collectionName),
-            actions: {
-              create: 'all',
-              read: 'all',
-              history_read: 'all',
-              history_write: 'all',
-              write: 'all',
-              delete: 'all',
-            },
-          }),
-        );
-      },
-    });
+    // tasks.push({
+    //   name: `Adding collection ${collectionName} to [system] role`,
+    //   async task() {
+    //     return self.role(BiotaRoleName('system')).privilege.set(
+    //       PrivilegeRights({
+    //         resource: q.Collection(collectionName),
+    //         actions: {
+    //           create: 'all',
+    //           read: 'all',
+    //           history_read: 'all',
+    //           history_write: 'all',
+    //           write: 'all',
+    //           delete: 'all',
+    //         },
+    //       }),
+    //     );
+    //   },
+    // });
 
     return execute(tasks, {
       domain: 'Biota.collection.scaffold',

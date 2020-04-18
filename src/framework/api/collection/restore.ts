@@ -1,5 +1,5 @@
-import { FactoryCollection } from 'types/factory/factory.collection';
-import { FrameworkCollectionApi } from 'types/framework/framework.collection';
+import { FactoryCollection } from '~/types/factory/factory.collection';
+import { FrameworkCollectionApi } from '~/types/framework/framework.collection';
 import { Biota } from '~/biota';
 import { collection } from '~/factory/api/collection';
 import { execute } from '~/tools/tasks';

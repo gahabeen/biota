@@ -1,4 +1,4 @@
-import { FrameworkSessionsApi } from '~/../types/framework/framework.sessions';
+import { FrameworkSessionsApi } from '~/types/framework/framework.sessions';
 
 import { activity } from '~/framework/api/sessions/activity';
 import { findAll } from '~/framework/api/sessions/findAll';

@@ -10,6 +10,7 @@ import { credentials } from './api/credentials';
 import { database } from './api/database';
 import { databases } from './api/databases';
 import { document } from './api/document';
+import { documents } from './api/documents';
 import { index } from './api/index';
 import { indexes } from './api/indexes';
 import { key } from './api/key';
@@ -23,6 +24,7 @@ import { udfunctions } from './api/udfunctions';
 import { user } from './api/user';
 import { users } from './api/users';
 import { session } from './api/session';
+import { sessions } from './api/sessions';
 
 export const factory = {
   ql,
@@ -36,6 +38,7 @@ export const factory = {
   database,
   databases,
   document,
+  documents,
   index,
   indexes,
   key,
@@ -49,4 +52,30 @@ export const factory = {
   user,
   users,
   session,
+};
+
+export const factoryApi = {
+  action,
+  collection,
+  collections,
+  credential,
+  credentials,
+  database,
+  databases,
+  document,
+  documents,
+  index,
+  indexes,
+  key,
+  keys,
+  role,
+  roles,
+  token,
+  tokens,
+  udfunction,
+  udfunctions,
+  user,
+  users,
+  session,
+  sessions,
 };

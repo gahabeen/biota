@@ -1,7 +1,7 @@
 // types
 import { query as q, Expr } from 'faunadb';
-import { FactoryContextDefinition } from 'types/factory/factory.context';
-import { FaunaObject, FaunaUDFunctionOptions, WrapFunction } from '~/../types/fauna';
+import { FactoryContextDefinition } from '~/types/factory/factory.context';
+import { FaunaObject, FaunaUDFunctionOptions, WrapFunction } from '~/types/fauna';
 import { CONVENTION } from '~/consts';
 import { ContextExtend } from './context';
 
@@ -50,6 +50,7 @@ export function UDFunctionFromMethod(methodRaw: any) {
         if (obj.raw) {
           obj = obj.raw;
         }
+      // tslint:disable-next-line: no-empty
       } catch (error) {}
       return obj;
     }

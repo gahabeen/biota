@@ -1,4 +1,4 @@
-import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse } from '~/../types/fauna';
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse } from '~/types/fauna';
 import { Biota } from '~/biota';
 import { execute } from '~/tools/tasks';
 

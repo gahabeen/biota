@@ -1,4 +1,4 @@
-import { FrameworkCollectionsApi } from '~/../types/framework/framework.collections';
+import { FrameworkCollectionsApi } from '~/types/framework/framework.collections';
 import { activity } from '~/framework/api/collections/activity';
 import { deleteMany } from '~/framework/api/collections/deleteMany';
 import { dropMany } from '~/framework/api/collections/dropMany';

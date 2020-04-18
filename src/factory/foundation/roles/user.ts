@@ -1,11 +1,32 @@
-import { query as q } from 'faunadb';
-import { FaunaRoleOptions } from '~/../types/fauna';
+import { query as q, Expr } from 'faunadb';
+import { FaunaRoleOptions } from '~/types/fauna';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
-import { Privilege, Role, BiotaRoleName, CustomPrivilege } from '~/factory/constructors/role';
+import { Role, BiotaRoleName } from '~/factory/constructors/role';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
-import { has_role } from '../rules/has_role';
-import { is_document_available } from '../rules/is_document_available';
 import { Identity } from '~/factory/api/ql';
+import { TS_2500_YEARS } from '~/consts';
+import { CustomPrivilege, PrivilegeRights } from '~/factory/constructors/privilege';
+
+// tslint:disable-next-line: variable-name
+const is_document_available = q.Let(
+  {
+    deleted_at: q.Select(['data', '_activity', 'deleted_at'], q.Var('doc'), q.ToTime(TS_2500_YEARS)),
+    forgotten_at: q.Select(['data', '_activity', 'forgotten_at'], q.Var('doc'), q.ToTime(TS_2500_YEARS)),
+    expired_at: q.Select(['data', '_activity', 'expired_at'], q.Var('doc'), q.ToTime(TS_2500_YEARS)),
+  },
+  q.GTE(
+    q.If(
+      q.LTE(q.Var('deleted_at'), q.Var('forgotten_at'), q.Var('expired_at')),
+      q.Var('deleted_at'),
+      q.If(q.LTE(q.Var('forgotten_at'), q.Var('expired_at'), q.Var('deleted_at')), q.Var('forgotten_at'), q.Var('expired_at')),
+    ),
+    q.Now(),
+  ),
+);
+
+// tslint:disable-next-line: variable-name
+const has_role = (doc: Expr, role: string) =>
+  q.GT(q.Filter(q.Select(['data', '_membership', 'roles'], doc, []), q.Lambda(['role'], q.Equals(q.Role(role), q.Var('role')))), 0);
 
 export const user: FaunaRoleOptions = Role({
   name: BiotaRoleName('user'),
@@ -61,31 +82,29 @@ export const user: FaunaRoleOptions = Role({
       },
     }),
 
-    Privilege({
+    PrivilegeRights({
       resource: q.Collection(BiotaCollectionName('users')),
-      actions: {
-        read: ['self', 'owner', 'assignee'],
-        write: ['self', 'owner', 'assignee'],
-        // history_read: "self_own",
-        // history_write: "self_own",
+      rights: {
+        get: ['self', 'owner', 'assignee'],
+        update: ['self', 'owner', 'assignee'],
       },
     }),
 
-    Privilege({
+    PrivilegeRights({
       resource: q.Collection(BiotaCollectionName('user_sessions')),
-      actions: {
-        read: ['self', 'owner', 'assignee'],
-        write: ['self', 'owner', 'assignee'],
-      }, // , "secured_fields"
+      rights: {
+        get: ['self', 'owner', 'assignee'],
+        update: ['self', 'owner', 'assignee'],
+      },
     }),
 
     /**
      * Functions
      */
 
-    Privilege({
+    CustomPrivilege({
       resource: q.Function(BiotaFunctionName('SearchQuery')),
-      actions: { call: 'all' },
+      actions: { call: true },
     }),
   ],
 });

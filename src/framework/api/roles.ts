@@ -1,4 +1,4 @@
-import { FrameworkRolesApi } from '~/../types/framework/framework.roles';
+import { FrameworkRolesApi } from '~/types/framework/framework.roles';
 
 import { activity } from '~/framework/api/roles/activity';
 import { findAll } from '~/framework/api/roles/findAll';
@@ -15,6 +15,7 @@ import { restoreMany } from '~/framework/api/roles/restoreMany';
 import { updateMany } from '~/framework/api/roles/updateMany';
 import { upsertMany } from '~/framework/api/roles/upsertMany';
 import { dropMany } from '~/framework/api/roles/dropMany';
+import { scaffold } from '~/framework/api/roles/scaffold';
 
 export const roles: FrameworkRolesApi = {
   activity,
@@ -32,4 +33,5 @@ export const roles: FrameworkRolesApi = {
   updateMany,
   upsertMany,
   dropMany,
+  scaffold,
 };

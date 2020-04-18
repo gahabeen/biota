@@ -1,7 +1,7 @@
 import { Expr, query as q } from 'faunadb';
-import { DocumentAuthAccount } from 'types/document';
-import { FactoryContext } from 'types/factory/factory.context';
-import { FactoryUser } from '~/../types/factory/factory.user';
+import { DocumentAuthAccount } from '~/types/document';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryUser } from '~/types/factory/factory.user';
 import { PAGINATION_SIZE_MAX } from '~/consts';
 import { action } from '~/factory/api/action';
 import { credential } from '~/factory/api/credential';
@@ -9,13 +9,13 @@ import { document } from '~/factory/api/document';
 import { indexes } from '~/factory/api/indexes';
 import { users } from '~/factory/api/users';
 import { session } from '~/factory/api/session';
-import { BiotaCollectionName } from '../constructors/collection';
-import { ContextProp } from '../constructors/context';
-import { ThrowError } from '../constructors/error';
-import { MethodDispatch, Query } from '../constructors/method';
-import { ResultData } from '../constructors/result';
-import { BiotaRoleName } from '../constructors/role';
-import { BiotaFunctionName } from '../constructors/udfunction';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
+import { ContextProp } from '~/factory/constructors/context';
+import { ThrowError } from '~/factory/constructors/error';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { ResultData } from '~/factory/constructors/result';
+import { BiotaRoleName } from '~/factory/constructors/role';
+import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (context): FactoryUser {

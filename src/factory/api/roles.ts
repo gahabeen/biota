@@ -1,10 +1,10 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryRolesApi } from '~/../types/factory/factory.roles';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryRolesApi } from '~/types/factory/factory.roles';
 
-import { Query, MethodDispatch } from '../constructors/method';
+import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
-import { ResultData } from '../constructors/result';
+import { ResultData } from '~/factory/constructors/result';
 import { role } from './role';
 
 // tslint:disable-next-line: only-arrow-functions

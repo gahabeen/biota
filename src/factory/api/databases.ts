@@ -1,10 +1,10 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryDatabasesApi } from '~/../types/factory/factory.databases';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryDatabasesApi } from '~/types/factory/factory.databases';
 
-import { Query, MethodDispatch } from '../constructors/method';
+import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
-import { ResultData } from '../constructors/result';
+import { ResultData } from '~/factory/constructors/result';
 import { database } from './database';
 
 // tslint:disable-next-line: only-arrow-functions

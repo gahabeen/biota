@@ -1,10 +1,10 @@
-import { FactoryRole } from 'types/factory/factory.role';
-import { FrameworkRoleApi } from 'types/framework/framework.role';
-import { FaunaId } from '~/../types/fauna';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { FaunaId } from '~/types/fauna';
 import { role } from '~/factory/api/role';
 import { execute } from '~/tools/tasks';
 
-export const insert: FactoryRole<FrameworkRoleApi['drop']> = function (roleName) {
+export const insert: FactoryRole<FrameworkRoleApi['insert']> = function (roleName) {
   const self = this;
 
   return async function insertMethod(data: any = {}, id: FaunaId = null) {

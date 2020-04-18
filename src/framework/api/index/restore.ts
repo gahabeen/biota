@@ -1,5 +1,5 @@
-import { FactoryIndex } from 'types/factory/factory.index';
-import { FrameworkIndexApi } from 'types/framework/framework.index';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
 import { Biota } from '~/biota';
 import { index } from '~/factory/api/index';
 import { execute } from '~/tools/tasks';

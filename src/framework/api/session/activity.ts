@@ -1,5 +1,5 @@
-import { FactorySession } from 'types/factory/factory.session';
-import { FrameworkSessionApi } from 'types/framework/framework.session';
+import { FactorySession } from '~/types/factory/factory.session';
+import { FrameworkSessionApi } from '~/types/framework/framework.session';
 import { execute } from '~/tools/tasks';
 
 export const activity: FactorySession<FrameworkSessionApi['activity']> = function (idOrRef) {

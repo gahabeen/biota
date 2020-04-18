@@ -1,14 +1,14 @@
 import { query as q, Expr } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryDocument } from '~/../types/factory/factory.document';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryDocument } from '~/types/factory/factory.document';
 import { TS_2500_YEARS } from '~/consts';
 import { action } from '~/factory/api/action';
 import * as helpers from '~/helpers';
-import { ContextProp, ContextNoLogNoAnnotation } from '../constructors/context';
-import { ThrowError } from '../constructors/error';
-import { MethodDispatch, Query } from '../constructors/method';
-import { ResultData, Result } from '../constructors/result';
-import { BiotaFunctionName } from '../constructors/udfunction';
+import { ContextProp, ContextNoLogNoAnnotation } from '~/factory/constructors/context';
+import { ThrowError } from '~/factory/constructors/error';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { ResultData, Result } from '~/factory/constructors/result';
+import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 
 // tslint:disable-next-line: only-arrow-functions
 export const document: FactoryContext<FactoryDocument> = function (context, options): FactoryDocument {

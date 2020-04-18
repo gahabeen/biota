@@ -1,6 +1,6 @@
 import { query as q, Expr } from 'faunadb';
-import { FactoryContextDefinition } from 'types/factory/factory.context';
-import { FaunaUDFunctionOptions } from 'types/fauna';
+import { FactoryContextDefinition } from '~/types/factory/factory.context';
+import { FaunaUDFunctionOptions } from '~/types/fauna';
 import { ContextProp, ContextExtend } from '../api/constructors';
 import { CallFunction } from './udfunction';
 import { Result } from './result';

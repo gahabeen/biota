@@ -1,9 +1,9 @@
 import { query as q, Expr } from 'faunadb';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { FactoryDocumentsApi } from '~/../types/factory/factory.documents';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryDocumentsApi } from '~/types/factory/factory.documents';
 import { document } from '~/factory/api/document';
-import { MethodDispatch, Query } from '../constructors/method';
-import { ResultData } from '../constructors/result';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
 
 

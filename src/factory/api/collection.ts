@@ -1,10 +1,10 @@
 import { query as q } from 'faunadb';
-import { FactoryCollection } from '~/../types/factory/factory.collection';
-import { FactoryContext } from '~/../types/factory/factory.context';
+import { FactoryCollection } from '~/types/factory/factory.collection';
+import { FactoryContext } from '~/types/factory/factory.context';
 import { action } from '~/factory/api/action';
-import { MethodDispatch, Query } from '../constructors/method';
-import { ResultData } from '../constructors/result';
-import { BiotaFunctionName } from '../constructors/udfunction';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { ResultData } from '~/factory/constructors/result';
+import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { ContextExtend } from './constructors';
 
 import { document } from '~/factory/api/document';

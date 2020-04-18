@@ -1,5 +1,5 @@
 import Debug from 'debug';
-import { Task, TaskExecuteOptions } from '~/../types/task';
+import { Task, TaskExecuteOptions } from '~/types/task';
 import * as fs from 'fs';
 import { splitEvery } from '~/helpers';
 
@@ -14,7 +14,19 @@ export async function execute(tasks: Task[], options?: TaskExecuteOptions): Prom
     for (const task of taskBatch) {
       debug(`${indentation} ${task.name}`);
       const taskProm = () =>
-        new Promise((resolve, reject) => task.task(ctx).then(resolve).catch(reject))
+        new Promise((resolve, reject) =>
+          task
+            .task(ctx)
+            .then((res: any = {}) => {
+              if (res.errors) {
+                reject(res);
+              } else {
+                resolve(res);
+              }
+              return res;
+            })
+            .catch(reject),
+        )
           .then((res) => results.push(res))
           .catch((error) => {
             results.push({ error });
@@ -38,7 +50,7 @@ export async function execute(tasks: Task[], options?: TaskExecuteOptions): Prom
               try {
                 debug(JSON.stringify(JSON.parse(error.requestResult.responseRaw), null, 2));
               } catch (e) {
-                debug(error);
+                debug(JSON.stringify(error, null, 2));
               }
             }
           });

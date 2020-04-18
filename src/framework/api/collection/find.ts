@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import * as qs from 'querystring';
-import { Fauna, FaunaPaginateMapper, FaunaPaginateOptions } from '~/../types/fauna';
-import { FrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
+import { Fauna, FaunaPaginateMapper, FaunaPaginateOptions } from '~/types/fauna';
+import { FrameworkCollectionSearchParams } from '~/types/framework/framework.collection';
 import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';

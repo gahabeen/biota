@@ -1,5 +1,5 @@
-import { FactorySession } from 'types/factory/factory.session';
-import { FrameworkSessionApi } from 'types/framework/framework.session';
+import { FactorySession } from '~/types/factory/factory.session';
+import { FrameworkSessionApi } from '~/types/framework/framework.session';
 import { Biota } from '~/biota';
 import { session } from '~/factory/api/session';
 import { execute } from '~/tools/tasks';

@@ -1,12 +1,12 @@
 import { query as q } from 'faunadb';
-import { FactoryIndexesApi } from 'types/factory/factory.indexes';
-import { FactoryContext } from '~/../types/factory/factory.context';
-import { pathString } from '~/framework/helpers/path';
+import { FactoryIndexesApi } from '~/types/factory/factory.indexes';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { pathString } from '~/helpers/path';
 import { index } from '.';
-import { BiotaIndexName } from '../constructors';
-import { ThrowError } from '../constructors/error';
-import { MethodDispatch, Query } from '../constructors/method';
-import { ResultData } from '../constructors/result';
+import { BiotaIndexName } from '~/factory/constructors';
+import { ThrowError } from '~/factory/constructors/error';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
 
 

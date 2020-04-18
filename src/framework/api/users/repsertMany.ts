@@ -1,4 +1,4 @@
-import { FrameworkUsersApi } from 'types/framework/framework.users';
+import { FrameworkUsersApi } from '~/types/framework/framework.users';
 import { users } from '~/factory/api/users';
 import { execute } from '~/tools/tasks';
 

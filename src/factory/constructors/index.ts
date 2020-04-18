@@ -1,5 +1,5 @@
 import { query as q } from 'faunadb';
-import { Fauna, FaunaIndexOptions } from '~/../types/fauna';
+import { Fauna, FaunaIndexOptions } from '~/types/fauna';
 
 export function BiotaIndexName(name: string) {
   return `biota.${name.replace('biota.', '')}`;

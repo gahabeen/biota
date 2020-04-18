@@ -1,3 +1,3 @@
-export * from '~/factory/api/constructors/context';
-export * from '~/factory/api/constructors/result';
-export * from '~/factory/api/constructors/udfunction';
+export * from '~/factory/constructors/context';
+export * from '~/factory/constructors/result';
+export * from '~/factory/constructors/udfunction';

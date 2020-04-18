@@ -1,4 +1,4 @@
-import { FrameworkUsersApi } from '~/../types/framework/framework.users';
+import { FrameworkUsersApi } from '~/types/framework/framework.users';
 
 import { activity } from '~/framework/api/users/activity';
 import { findAll } from '~/framework/api/users/findAll';

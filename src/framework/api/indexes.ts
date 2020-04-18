@@ -1,4 +1,4 @@
-import { FrameworkIndexesApi } from '~/../types/framework/framework.indexes';
+import { FrameworkIndexesApi } from '~/types/framework/framework.indexes';
 
 import { activity } from '~/framework/api/indexes/activity';
 import { findAll } from '~/framework/api/indexes/findAll';
