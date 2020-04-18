@@ -1,7 +1,11 @@
 <h1 align="center">biota</h1>
 <p align="center">A simple database framework to start your next project in 30s with FaunaDB</p>
 
+<div align="center">
+
 [![Feature requests](https://img.shields.io/badge/feature-requests-violet?style=flat-square)](https://github.com/gahabeen/biota/issues?q=is%3Aopen+is%3Aissue+label%3A%22Type%3A+Feature%22) [![npm](https://img.shields.io/npm/v/biota?style=flat-square)](https://www.npmjs.com/package/biota) [![npm](https://img.shields.io/npm/dm/biota?style=flat-square)](https://www.npmjs.com/package/biota) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/biota?style=flat-square)
+
+</div>
  
 
 ```js
