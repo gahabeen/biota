@@ -144,8 +144,6 @@ export interface FrameworkCollectionFieldOptions {
   data?: any;
 }
 
-export interface FrameworkFoundation {}
-
 export interface FrameworkRelationDefinition {
   name: string;
   parts: FrameworkRelationPart[];

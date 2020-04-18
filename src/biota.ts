@@ -24,6 +24,7 @@ import { FrameworkSessionsApi } from './types/framework/framework.sessions';
 import { FactoryTokenApi } from './types/factory/factory.token';
 import { FrameworkTokensApi } from './types/framework/framework.tokens';
 import { bindSubFunctions } from './helpers';
+import { FrameworkFoundation } from './types/framework/framework.foundation';
 
 // interface BiotaRunningAS {
 //   role?: FaunaRef;
@@ -79,7 +80,7 @@ export class Biota {
   token: (idOrRefOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
   tokens: FrameworkTokensApi;
 
-  // foundation: FrameworkFoundation;
+  foundation: FrameworkFoundation;
   // relation: FrameworkRelation;
 
   defaults: any;
@@ -143,8 +144,11 @@ export class Biota {
     this.udfunction = framework.udfunction.bind(this);
     this.udfunctions = framework.udfunctions;
     bindSubFunctions(this, 'udfunctions');
+    this.session = framework.session.bind(this);
+    this.sessions = framework.sessions;
+    bindSubFunctions(this, 'sessions');
 
-    // this.foundation = framework.foundation.bind(this);
+    this.foundation = framework.foundation.bind(this);
     // this.relation = framework.relation.bind(this);
 
     // this.privateKey = framework.privateKey.bind(this);

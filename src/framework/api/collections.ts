@@ -14,6 +14,7 @@ import { repsertMany } from '~/framework/api/collections/repsertMany';
 import { restoreMany } from '~/framework/api/collections/restoreMany';
 import { updateMany } from '~/framework/api/collections/updateMany';
 import { upsertMany } from '~/framework/api/collections/upsertMany';
+import { scaffold } from '~/framework/api/collections/scaffold';
 
 export const collections: FrameworkCollectionsApi = {
   activity,
@@ -31,4 +32,5 @@ export const collections: FrameworkCollectionsApi = {
   updateMany,
   upsertMany,
   dropMany,
+  scaffold
 };

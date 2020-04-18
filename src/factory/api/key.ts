@@ -146,7 +146,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
+            annotated_doc: ResultData(key(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
             doc: q.Delete(q.Var('ref')),
           },
@@ -193,7 +193,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'))),
           },
           q.Var('doc'),
         );

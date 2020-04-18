@@ -8,7 +8,7 @@ import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
-
+import { Pagination } from '../constructors/pagination';
 
 // tslint:disable-next-line: only-arrow-functions
 export const indexes: FactoryContext<FactoryIndexesApi> = function (context): FactoryIndexesApi {
@@ -44,7 +44,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       // ---
       const query = Query(
         {
-          searchTerms: q.ToArray(searchTerms),
+          searchTerms: q.ToArray(q.Var('searchTerms')),
           termIndexes: q.Map(
             q.Var('searchTerms'),
             q.Lambda(
@@ -96,12 +96,11 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findByResource(resource, pagination) {
-
       const inputs = { resource, pagination };
       // ---
       const query = Query(
         {
-          docs: q.Paginate(q.Match(q.Index(BiotaIndexName('indexes__by__resource')), q.Var('resource')), q.Var('pagination')),
+          docs: q.Paginate(q.Match(q.Index(BiotaIndexName('indexes__by__resource')), q.Var('resource')), Pagination(q.Var('pagination'))),
         },
         q.Var('docs'),
       );
@@ -111,12 +110,11 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findByTerm(term, pagination) {
-
       const inputs = { term, pagination };
       // ---
       const query = Query(
         {
-          docs: q.Paginate(q.Match(q.Index(BiotaIndexName('indexes__by__terms')), q.Var('term')), q.Var('pagination')),
+          docs: q.Paginate(q.Match(q.Index(BiotaIndexName('indexes__by__terms')), q.Var('term')), Pagination(q.Var('pagination'))),
         },
         q.Var('docs'),
       );
@@ -126,7 +124,6 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findAll(pagination) {
-
       const inputs = { pagination };
       // ---
       const query = Query(
@@ -137,7 +134,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
       );
       // ---
       const offline = 'factory.indexes.paginate';
-      const online = { name: BiotaFunctionName('IndexesPaginate'), role: null };
+      const online = { name: BiotaFunctionName('IndexesFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(nameList) {

@@ -1,37 +1,34 @@
-import { query as q, Expr } from 'faunadb';
-import { FactoryContext } from '~/types/factory/factory.context';
-import { FactoryDocument } from '~/types/factory/factory.document';
+import { Expr, query as q } from 'faunadb';
 import { TS_2500_YEARS } from '~/consts';
 import { action } from '~/factory/api/action';
-import * as helpers from '~/helpers';
-import { ContextProp, ContextNoLogNoAnnotation } from '~/factory/constructors/context';
+import { ContextNoLogNoAnnotation, ContextProp } from '~/factory/constructors/context';
 import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
-import { ResultData, Result } from '~/factory/constructors/result';
+import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
+import * as helpers from '~/helpers';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { Pagination } from '../constructors/pagination';
 
 // tslint:disable-next-line: only-arrow-functions
 export const document: FactoryContext<FactoryDocument> = function (context, options): FactoryDocument {
   const { prefix = 'Document' } = options || {};
   // tslint:disable-next-line: only-arrow-functions
-  return (collectionOrRef = null, id = null) => {
-    const ref = q.If(
-      q.Or(q.IsDoc(collectionOrRef), q.IsCollection(collectionOrRef)),
-      collectionOrRef,
-      q.If(q.IsString(id), q.Ref(q.Collection(collectionOrRef), id), q.Collection(collectionOrRef)),
-    );
+  return (collection = null, id = null) => {
+    const ref = q.If(q.IsString(id), q.Ref(q.Collection(collection), id), q.Collection(collection));
     const refExists = (refExpr: Expr) => {
       return q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: refExpr }), true);
     };
 
     return {
-      history(pagination) {
+      history(pagination = {}) {
         const inputs = { ref, pagination };
         // ----
         const query = Query(
           {
             refExists: refExists(q.Var('ref')),
-            doc: q.Paginate(q.Events(q.Var('ref')), q.Var('pagination')),
+            doc: q.Paginate(q.Events(q.Var('ref')), Pagination(q.Var('pagination'))),
           },
           q.Var('doc'),
         );
@@ -201,7 +198,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             refExists: refExists(q.Var('ref')),
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
             annotated_doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', ref).log(),
+            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
             doc: q.Delete(q.Var('ref')),
           },
           q.Var('doc'),
@@ -228,7 +225,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             previousState: q.Get(ref, q.Subtract(q.Select('ts', q.Var('deleteEvent'), 0), 1)),
             annotated: ResultData(document(q.Var('ctx'))().annotate('remember', q.Select('data', q.Var('previousState'), {}))),
             doc: q.Insert(q.Var('ref'), q.Now(), 'update', { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('remember', ref).log(),
+            action: action(q.Var('ctx'))('remember', q.Var('ref')).log(),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -276,7 +273,9 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         const query = Query(
           {
             refExists: refExists(q.Var('ref')),
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+            doc: ResultData(
+              document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds')),
+            ),
           },
           q.Var('doc'),
         );
@@ -349,7 +348,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                     }),
                   ),
                   doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-                  action: action(q.Var('ctx'))('roles_change', ref).log(),
+                  action: action(q.Var('ctx'))('roles_change', q.Var('ref')).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -373,7 +372,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                     }),
                   ),
                   doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-                  action: action(q.Var('ctx'))('roles_change', ref).log(),
+                  action: action(q.Var('ctx'))('roles_change', q.Var('ref')).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -405,7 +404,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                   ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
                   ThrowError(q.Var('ctx'), "User isn't a document reference", { user: q.Var('user') }),
                 ),
-                action: action(q.Var('ctx'))('owner_change', ref).log(),
+                action: action(q.Var('ctx'))('owner_change', q.Var('ref')).log(),
               },
               q.Var('doc'),
               q.Var('action'),
@@ -429,7 +428,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                   }),
                 ),
                 doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-                action: action(q.Var('ctx'))('owner_change', ref).log(),
+                action: action(q.Var('ctx'))('owner_change', q.Var('ref')).log(),
               },
               q.Var('doc'),
               q.Var('action'),
@@ -489,7 +488,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                     }),
                   ),
                   doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-                  action: action(q.Var('ctx'))('assignees_change', ref).log(),
+                  action: action(q.Var('ctx'))('assignees_change', q.Var('ref')).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -513,7 +512,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                     }),
                   ),
                   doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-                  action: action(q.Var('ctx'))('assignees_change', ref).log(),
+                  action: action(q.Var('ctx'))('assignees_change', q.Var('ref')).log(),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -662,7 +661,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         );
         // ----
         const offline = `factory.${prefix.toLowerCase()}.annotate`;
-        const online = null;
+        const online = { name: BiotaFunctionName('DocumentAnnotate'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };

@@ -17,7 +17,7 @@ import { update } from '~/framework/api/document/update';
 import { upsert } from '~/framework/api/document/upsert';
 import { history } from '~/framework/api/document/history';
 
-export const document: FrameworkDocument = function (collectionName, id) {
+export const document: FrameworkDocument = function (collectionName = null, id = null) {
   const self = this;
 
   return {

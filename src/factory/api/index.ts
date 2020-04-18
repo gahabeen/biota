@@ -12,14 +12,13 @@ import { ResultData } from '~/factory/constructors/result';
 export const index: FactoryContext<FactoryIndex> = function (context): FactoryIndex {
   // tslint:disable-next-line: only-arrow-functions
   return (name) => {
-    const ref = q.Index(name);
     return {
       get() {
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: q.Get(q.Var('ref')),
+            doc: q.Get(q.Index(q.Var('name'))),
           },
           q.Var('doc'),
         );
@@ -29,12 +28,11 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-
         const inputs = { name, options };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
+            annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('insert', q.Select('data', q.Var('options'), {}))),
             doc: q.CreateIndex(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
@@ -46,31 +44,13 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         const online = { name: BiotaFunctionName('IndexInsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      insertMany(optionsList) {
-        const inputs = { optionsList };
-        // ---
-        const query = Query(
-          {
-            docs: q.Map(
-              q.Var('optionsList'),
-              q.Lambda(['options'], ResultData(index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')))),
-            ),
-          },
-          q.Var('docs'),
-        );
-        // ---
-        const offline = 'factory.index.insertMany';
-        const online = { name: BiotaFunctionName('IndexInsertMany'), role: null };
-        return MethodDispatch({ context, inputs, query })(offline, online);
-      },
       update(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
-            doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('update', q.Select('data', q.Var('options'), {}))),
+            doc: q.Update(q.Index(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -82,15 +62,14 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              ResultData(index(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(index(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              q.Exists(q.Index(q.Var('name'))),
+              ResultData(index(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
+              ResultData(index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -101,12 +80,11 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
-            current_doc: ResultData(index(q.Var('ctx'))(q.Var('ref')).get()),
+            current_doc: ResultData(index(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
               document(q.Var('ctx'))().annotate(
                 'replace',
@@ -118,7 +96,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
                 }),
               ),
             ),
-            doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Replace(q.Index(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -130,15 +108,14 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              ResultData(index(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
-              ResultData(index(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              q.Exists(q.Index(q.Var('name'))),
+              ResultData(index(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
+              ResultData(index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -149,11 +126,11 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       delete() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Index(q.Var('name'))).validity.delete()),
           },
           q.Var('doc'),
         );
@@ -163,14 +140,14 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
-            doc: q.Delete(q.Var('ref')),
+            annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('forget')),
+            annotated_doc: ResultData(index(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
+            action: action(q.Var('ctx'))('forget', q.Var('name')).log(),
+            doc: q.Delete(q.Var('name')),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -181,11 +158,11 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       drop() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Var('ref')), index(q.Var('ctx'))(q.Var('ref')).forget(), false),
+            doc: q.If(q.Exists(q.Index(q.Var('name'))), index(q.Var('ctx'))(q.Var('name')).forget(), false),
           },
           q.Var('doc'),
         );
@@ -196,11 +173,11 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       },
       expireAt(at) {
         // alias
-        const inputs = { ref, at };
+        const inputs = { name, at };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
@@ -211,11 +188,15 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       },
       expireIn(delay) {
         // alias
-        const inputs = { ref, delay };
+        const inputs = { name, delay };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+            doc: ResultData(
+              document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(
+                q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'),
+              ),
+            ),
           },
           q.Var('doc'),
         );
@@ -226,11 +207,11 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       },
       expireNow() {
         // alias
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
@@ -241,11 +222,11 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       },
       restore() {
         // alias
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.restore()),
           },
           q.Var('doc'),
         );

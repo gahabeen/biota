@@ -1,7 +1,7 @@
 import { Expr } from 'faunadb';
-import { FaunaCollectionOptions, FaunaRef } from '../fauna';
+import { FaunaCollectionOptions, FaunaString } from '../fauna';
 
-export type FactoryDatabase<OT = FactoryDatabaseApi> = (name: string | Expr) => OT;
+export type FactoryDatabase<OT = FactoryDatabaseApi> = (name: FaunaString) => OT;
 
 export interface FactoryDatabaseApi<OT = Expr> {
   get(): OT;

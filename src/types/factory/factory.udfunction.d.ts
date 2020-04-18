@@ -1,7 +1,7 @@
 import { Expr } from 'faunadb';
-import { FaunaUDFunctionOptions } from '../fauna';
+import { FaunaUDFunctionOptions, FaunaString } from '../fauna';
 
-export type FactoryUDFunction<OT = FactoryUDFunctionApi> = (name: string | Expr) => OT;
+export type FactoryUDFunction<OT = FactoryUDFunctionApi> = (name: FaunaString) => OT;
 
 export interface FactoryUDFunctionApi<OT = Expr> {
   get(): OT;

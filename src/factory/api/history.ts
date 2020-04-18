@@ -19,7 +19,7 @@ export const history: FactoryContext<FactoryHistoryApi> = function (context): Fa
       );
       // ---
       const offline = 'factory.history.at';
-      const online = null;
+      const online = { name: BiotaFunctionName('HistoryAt'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     events(ref) {
@@ -33,7 +33,7 @@ export const history: FactoryContext<FactoryHistoryApi> = function (context): Fa
       );
       // ---
       const offline = 'factory.history.at';
-      const online = null;
+      const online = { name: BiotaFunctionName('HistoryEvents'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
   };

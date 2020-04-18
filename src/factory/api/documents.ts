@@ -1,9 +1,10 @@
-import { query as q, Expr } from 'faunadb';
-import { FactoryContext } from '~/types/factory/factory.context';
-import { FactoryDocumentsApi } from '~/types/factory/factory.documents';
+import { Expr, query as q } from 'faunadb';
 import { document } from '~/factory/api/document';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryDocumentsApi } from '~/types/factory/factory.documents';
+import { Pagination } from '../constructors/pagination';
 import { BiotaFunctionName } from './constructors';
 
 
@@ -34,13 +35,13 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
       // ---
       const query = Query(
         {
-          docs: q.Paginate(q.Documents(q.Collection(q.Var('collectionName'))), q.Var('pagination')),
+          docs: q.Paginate(q.Documents(q.Collection(q.Var('collectionName'))), Pagination(q.Var('pagination'))),
         },
         q.Var('docs'),
       );
       // ---
       const offline = 'factory.documents.paginate';
-      const online = { name: BiotaFunctionName('DocumentsPaginate'), role: null };
+      const online = { name: BiotaFunctionName('DocumentsFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(refList) {

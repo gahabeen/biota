@@ -33,7 +33,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(password) {
-        const inputs = { ref, password };
+        const inputs = { instance, password };
         // ----
         const query = Query(
           {
@@ -53,7 +53,11 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
         // ----
         const query = Query(
           {
-            doc: q.Update(ref, { instance: q.Var('instance'), current_password: q.Var('currentPassword'), password: q.Var('password') }),
+            doc: q.Update(q.Var('ref'), {
+              instance: q.Var('instance'),
+              current_password: q.Var('currentPassword'),
+              password: q.Var('password'),
+            }),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -69,7 +73,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
         // ----
         const query = Query(
           {
-            doc: q.Replace(ref, { instance: q.Var('instance'), password: q.Var('password') }),
+            doc: q.Replace(q.Var('ref'), { instance: q.Var('instance'), password: q.Var('password') }),
             action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
           },
           q.Var('doc'),

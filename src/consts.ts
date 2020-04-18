@@ -2,6 +2,7 @@ export const SIMPLE_SEPARATOR = '_';
 export const DOUBLE_SEPARATOR = '__';
 export const TS_2500_YEARS = 31556952 * 1000 * 530;
 export const PAGINATION_SIZE_MAX = 100000;
+export const PAGINATION_SIZE_DEFAULT = 100;
 export const SAFE_WAIT_TIME = 65000;
 // export const DOCUMENT_RESERVED_DATA_FIELDS = ['_auth', '_membership', '_activity'];
 // export const DOCUMENT_RESERVED_DATA_FIELDS_OBJ = DOCUMENT_RESERVED_DATA_FIELDS.reduce((obj, field) => {

@@ -3,12 +3,12 @@ import { Expr } from 'faunadb';
 import { FactoryRolesApi } from '~/types/factory/factory.roles';
 
 export interface FrameworkRolesScaffoldOptions {
-  defaultRoles: string[];
-  baseOnly: boolean;
+  defaultRoles?: string[];
+  baseOnly?: boolean;
 }
 
 export interface FrameworkRolesApi {
-  scaffold: (options: FrameworkRolesScaffoldOptions) => Promise<any>;
+  scaffold: (options?: FrameworkRolesScaffoldOptions) => Promise<any>;
   activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;
   findAll: FactoryRolesApi<Promise<any>>['findAll'];
   getMany: FactoryRolesApi<Promise<any>>['getMany'];

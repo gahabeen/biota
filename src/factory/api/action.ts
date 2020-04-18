@@ -6,6 +6,7 @@ import { ContextProp } from '~/factory/constructors/context';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 
 // tslint:disable-next-line: only-arrow-functions
 export const action: FactoryContext<FactoryAction> = function (context): FactoryAction {
@@ -45,7 +46,7 @@ export const action: FactoryContext<FactoryAction> = function (context): Factory
         );
         // ----
         const offline = 'factory.action.insert';
-        const online = null;
+        const online = { name: BiotaFunctionName('ActionLog'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };

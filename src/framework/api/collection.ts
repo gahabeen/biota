@@ -24,12 +24,8 @@ import { insertBatch } from '~/framework/api/collection/insertBatch';
 import { paginate } from '~/framework/api/collection/paginate';
 import { paginateAll } from '~/framework/api/collection/paginateAll';
 
-export function collection(collectionName: string): FrameworkCollectionApi {
+export function collection(collectionName: string = null): FrameworkCollectionApi {
   const self = this;
-
-  if (!collectionName) {
-    throw new Error('biota.collection() - no valid collection name');
-  }
 
   return {
     scaffold: scaffold.call(self, collectionName),

@@ -6,23 +6,23 @@ import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { ResultData } from '~/factory/constructors/result';
 import { udfunction } from './udfunction';
+import { Pagination } from '../constructors/pagination';
 
 // tslint:disable-next-line: only-arrow-functions
 export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (context): FactoryUDFunctionsApi {
   return {
     findAll(pagination) {
-
       const inputs = { pagination };
       // ---
       const query = Query(
         {
-          docs: q.Map(q.Paginate(q.Functions(), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
+          docs: q.Map(q.Paginate(q.Functions(), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },
         q.Var('docs'),
       );
       // ---
       const offline = 'factory.udfunctions.paginate';
-      const online = { name: BiotaFunctionName('UDFPaginate'), role: null };
+      const online = { name: BiotaFunctionName('UDFFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(nameList) {

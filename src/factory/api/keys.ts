@@ -5,6 +5,7 @@ import { FactoryKeysApi } from '~/types/factory/factory.keys';
 import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName, ResultData } from './constructors';
 import { key } from './key';
+import { Pagination } from '../constructors/pagination';
 
 // tslint:disable-next-line: only-arrow-functions
 export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryKeysApi {
@@ -14,13 +15,13 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
       // ---
       const query = Query(
         {
-          docs: q.Map(q.Paginate(q.Keys(), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
+          docs: q.Map(q.Paginate(q.Keys(), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },
         q.Var('docs'),
       );
       // ---
       const offline = 'factory.keys.paginate';
-      const online = { name: BiotaFunctionName('KeysPaginate'), role: null };
+      const online = { name: BiotaFunctionName('KeysFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(nameList) {

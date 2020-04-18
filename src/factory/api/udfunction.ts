@@ -148,7 +148,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
+            annotated_doc: ResultData(udfunction(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))('forget', q.Function(q.Var('name'))).log(),
             doc: q.Delete(q.Function(q.Var('name'))),
           },
@@ -195,7 +195,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'))),
           },
           q.Var('doc'),
         );

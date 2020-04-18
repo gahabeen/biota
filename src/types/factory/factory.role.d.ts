@@ -1,8 +1,8 @@
 import { Expr } from 'faunadb';
-import { FaunaRef, FaunaRoleMembership, FaunaRoleOptions, FaunaRolePrivilege } from '../fauna';
+import { FaunaRef, FaunaRoleMembership, FaunaRoleOptions, FaunaRolePrivilege, FaunaString } from '../fauna';
 import { FactoryRuleDefinition, FactoryRuleDefinitionPaths } from './factory.rule';
 
-export type FactoryRole<OT = FactoryRoleApi> = (name: string | Expr) => OT;
+export type FactoryRole<OT = FactoryRoleApi> = (name: FaunaString) => OT;
 
 export interface FactoryRoleMembershipApi<OT = Expr> {
   distinct?(membership: FaunaRoleMembership): OT;

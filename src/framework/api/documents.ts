@@ -15,7 +15,7 @@ import { restoreMany } from '~/framework/api/documents/restoreMany';
 import { updateMany } from '~/framework/api/documents/updateMany';
 import { upsertMany } from '~/framework/api/documents/upsertMany';
 
-export const documents: FrameworkDocuments = function (collectionName) {
+export const documents: FrameworkDocuments = function (collectionName = null) {
   const self = this;
 
   return {

@@ -1,5 +1,5 @@
 import { FrameworkAs } from './framework/framework.as';
-import { FrameworkCollection, FrameworkFoundation } from './framework/framework.collection';
+import { FrameworkCollection } from './framework/framework.collection';
 import { FrameworkCollectionsApi } from './framework/framework.collections';
 import { FrameworkCredential } from './framework/framework.credential';
 import { FrameworkCredentialsApi } from './framework/framework.credentials';
@@ -22,6 +22,7 @@ import { FrameworkUDFunction } from './framework/framework.udfunction';
 import { FrameworkUDFunctionsApi } from './framework/framework.udfunctions';
 import { FrameworkUser } from './framework/framework.user';
 import { FrameworkUsersApi } from './framework/framework.users';
+import { FrameworkFoundation } from './framework/framework.foundation';
 
 export interface Framework {
   as: FrameworkAs;

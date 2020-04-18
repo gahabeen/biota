@@ -34,12 +34,16 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         // ----
         const query = Query(
           {
-            user: ResultData(users(q.Var('ctx')).getByAuthEmail(q.Var('email'))),
-            userIsValid: q.If(q.IsDoc(q.Var('user')), true, ThrowError(q.Var('ctx'), "Couldn't find the user", { email: q.Var('email') })),
+            userRef: ResultData(users(q.Var('ctx')).getByAuthEmail(q.Var('email'))),
+            userIsValid: q.If(
+              q.IsDoc(q.Var('userRef')),
+              true,
+              ThrowError(q.Var('ctx'), "Couldn't find the user", { email: q.Var('email') }),
+            ),
             identified_user: q.Identify(ContextProp(q.Var('ctx'), 'identity'), q.Var('password')),
             is_identified_user: q.If(q.Var('identified_user'), true, ThrowError(q.Var('ctx'), 'User email or password is wrong')),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('user'))), // #improve: add expirationDuration
-            action: action(q.Var('ctx'))('login', q.Var('user')).log(),
+            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))), // #improve: add expirationDuration
+            action: action(q.Var('ctx'))('login', q.Var('userRef')).log(),
           },
           q.Var('session'),
           q.Var('action'),
@@ -71,14 +75,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                       ),
                       q.Lambda(['session'], document(q.Var('ctx'))(q.Var('session')).delete()),
                     ),
-                    action: action(q.Var('ctx'))('logout_everywhere', q.Var('user')).log(),
+                    action: action(q.Var('ctx'))('logout_everywhere', ContextProp(q.Var('ctx'), 'identity')).log(),
                   },
                   q.Var('logging_out'),
                 ),
                 q.Let(
                   {
                     logging_out: ResultData(document(q.Var('ctx'))(ContextProp(q.Var('ctx'), 'hasSession')).delete()),
-                    action: action(q.Var('ctx'))('logout', q.Var('user')).log(),
+                    action: action(q.Var('ctx'))('logout', ContextProp(q.Var('ctx'), 'identity')).log(),
                   },
                   q.Var('logging_out'),
                 ),
@@ -124,13 +128,13 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               true,
               ThrowError(q.Var('ctx'), "Auth Account isn't valid", { account: q.Var('account') }),
             ),
-            user: ResultData(users(q.Var('ctx')).getByAuthAccount(q.Var('account'))),
+            userRef: ResultData(users(q.Var('ctx')).getByAuthAccount(q.Var('account'))),
             userIsValid: q.If(
-              q.IsDoc(q.Var('user')),
+              q.IsDoc(q.Var('userRef')),
               true,
               ThrowError(q.Var('ctx'), "Could'nt find the user", { account: q.Var('account') }),
             ),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('user'))), // #improve: add expirationDuration
+            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))), // #improve: add expirationDuration
           },
           q.Var('session'),
         );
@@ -144,17 +148,17 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         // ----
         const query = Query(
           {
-            user: ResultData(user(q.Var('ctx'))().insert(q.Var('data'))),
-            user_email: ResultData(user(q.Var('ctx'))(q.Var('user')).auth.email.set(q.Var('email'))),
-            user_owner: ResultData(user(q.Var('ctx'))(q.Var('user')).membership.owner.set(q.Var('users'))),
+            userRef: q.Select('ref', ResultData(user(q.Var('ctx'))().insert(q.Var('data'))), null),
+            user_email: ResultData(user(q.Var('ctx'))(q.Var('userRef')).auth.email.set(q.Var('email'))),
+            user_owner: ResultData(user(q.Var('ctx'))(q.Var('userRef')).membership.owner.set(q.Var('userRef'))),
             user_user_role: ResultData(
-              user(q.Var('ctx'))(q.Var('user'))
+              user(q.Var('ctx'))(q.Var('userRef'))
                 .membership.role(q.Role(BiotaRoleName('user')))
                 .set(),
             ),
-            user_credentials: ResultData(credential(q.Var('ctx'))(q.Var('user')).insert(q.Var('password'))),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('user'))), // #improve: add expirationDuration
-            action: action(q.Var('ctx'))('register', q.Var('user')).log(),
+            user_credentials: ResultData(credential(q.Var('ctx'))(q.Var('userRef')).insert(q.Var('password'))),
+            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))), // #improve: add expirationDuration
+            action: action(q.Var('ctx'))('register', q.Var('userRef')).log(),
           },
           q.Var('session'),
           q.Var('action'),
@@ -169,16 +173,16 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         // ----
         const query = Query(
           {
-            user: ResultData(user(q.Var('ctx'))().insert({})),
-            user_auth_account: ResultData(user(q.Var('ctx'))(q.Var('user')).auth.accounts.set(q.Var('account') as DocumentAuthAccount)),
-            user_owner: ResultData(user(q.Var('ctx'))(q.Var('user')).membership.owner.set(q.Var('users'))),
+            userRef: q.Select('ref', ResultData(user(q.Var('ctx'))().insert({})), null),
+            user_auth_account: ResultData(user(q.Var('ctx'))(q.Var('userRef')).auth.accounts.set(q.Var('account') as DocumentAuthAccount)),
+            user_owner: ResultData(user(q.Var('ctx'))(q.Var('userRef')).membership.owner.set(q.Var('userRef'))),
             user_user_role: ResultData(
-              user(q.Var('ctx'))(q.Var('user'))
+              user(q.Var('ctx'))(q.Var('userRef'))
                 .membership.role(q.Role(BiotaRoleName('user')))
                 .set(),
             ),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('user'))),
-            action: action(q.Var('ctx'))('register', q.Var('user')).log(),
+            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))),
+            action: action(q.Var('ctx'))('register', q.Var('userRef')).log(),
           },
           q.Var('session'),
           q.Var('action'),
@@ -273,7 +277,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             );
             // ----
             const offline = 'factory.user.auth.accounts.distinct';
-            const online = null;
+            const online = { name: BiotaFunctionName('UserAuthAccountsDistinct'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           difference(provider, accountId) {
@@ -299,7 +303,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             );
             // ----
             const offline = 'factory.user.auth.accounts.difference';
-            const online = null;
+            const online = { name: BiotaFunctionName('UserAuthAccountsDifference'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           set(account) {

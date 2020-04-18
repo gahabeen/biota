@@ -13,15 +13,9 @@ import { BiotaFunctionName } from './constructors';
 // tslint:disable-next-line: only-arrow-functions
 export const session: FactoryContext<FactorySession> = function (context): FactorySession {
   // tslint:disable-next-line: only-arrow-functions
-  return (idOrRef) => {
-    const ref = q.If(
-      q.IsDoc(idOrRef),
-      idOrRef,
-      q.If(q.IsString(idOrRef), q.Ref(q.Collection(BiotaCollectionName('user_sessions')), idOrRef), null),
-    );
-
+  return (id = null) => {
     return {
-      ...document(context, { prefix: 'Session' })(ref),
+      ...document(context, { prefix: 'Session' })(BiotaCollectionName('user_sessions'), id),
       start(expireAt, user = ContextProp(q.Var('ctx'), 'identity')) {
         const inputs = { expireAt, user };
         // ----

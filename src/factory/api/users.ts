@@ -8,6 +8,7 @@ import { MethodDispatch, Query } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { user } from './user';
+import { Pagination } from '../constructors/pagination';
 
 // tslint:disable-next-line: only-arrow-functions
 export const users: FactoryContext<FactoryUsersApi> = function (context): FactoryUsersApi {
@@ -56,7 +57,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       const query = Query(
         {
           docs: q.Map(
-            q.Paginate(q.Documents(q.Collection(BiotaCollectionName('users'))), q.Var('pagination')),
+            q.Paginate(q.Documents(q.Collection(BiotaCollectionName('users'))), Pagination(q.Var('pagination'))),
             q.Lambda('x', q.Get(q.Var('x'))),
           ),
         },
@@ -64,7 +65,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       );
       // ---
       const offline = 'factory.users.paginate';
-      const online = { name: BiotaFunctionName('UsersPaginate'), role: null };
+      const online = { name: BiotaFunctionName('UsersFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(nameList) {

@@ -6,7 +6,7 @@ import { MethodDispatch, Query } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
 import { token } from './token';
-
+import { Pagination } from '../constructors/pagination';
 
 // tslint:disable-next-line: only-arrow-functions
 export const tokens: FactoryContext<FactoryTokensApi> = function (context): FactoryTokensApi {
@@ -16,13 +16,13 @@ export const tokens: FactoryContext<FactoryTokensApi> = function (context): Fact
       // ---
       const query = Query(
         {
-          docs: q.Paginate(q.Match(q.Index(BiotaIndexName('tokens__by__instance')), q.Var('instance')), q.Var('pagination')),
+          docs: q.Paginate(q.Match(q.Index(BiotaIndexName('tokens__by__instance')), q.Var('instance')), Pagination(q.Var('pagination'))),
         },
         q.Var('docs'),
       );
       // ---
       const offline = 'factory.tokens.paginate';
-      const online = { name: BiotaFunctionName('TokensPaginate'), role: null };
+      const online = { name: BiotaFunctionName('TokensFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findAll(pagination) {
@@ -30,13 +30,13 @@ export const tokens: FactoryContext<FactoryTokensApi> = function (context): Fact
       // ---
       const query = Query(
         {
-          docs: q.Map(q.Paginate(q.Documents(q.Tokens()), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
+          docs: q.Map(q.Paginate(q.Documents(q.Tokens()), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },
         q.Var('docs'),
       );
       // ---
       const offline = 'factory.tokens.paginate';
-      const online = { name: BiotaFunctionName('TokensPaginate'), role: null };
+      const online = { name: BiotaFunctionName('TokensFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(nameList) {

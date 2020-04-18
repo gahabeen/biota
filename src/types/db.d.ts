@@ -7,12 +7,6 @@ export type Fn<T = object> = (...args: any[]) => T;
 export type ValueOptionsFn<T = object> = (value: String | T, options?: T) => Fauna.Expr;
 export type PromiseFn<T = object> = (...args: any[]) => Promise<T>;
 
-export interface BiotaFoundationOptions {
-  roles?: boolean;
-  udfunctions?: boolean;
-  collections?: boolean;
-  indexes?: boolean;
-}
 
 export interface CRUDReferenceDocument {
   create?<T = Fauna.Expr>(collection: string, options?: FaunaDocumentOptions, id?: FaunaId): T;

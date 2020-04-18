@@ -19,6 +19,7 @@ import { findIndex } from '~/framework/api/indexes/findIndex';
 import { searchQuery } from '~/framework/api/indexes/searchQuery';
 import { findByResource } from '~/framework/api/indexes/findByResource';
 import { findByTerm } from '~/framework/api/indexes/findByTerm';
+import { scaffold } from '~/framework/api/indexes/scaffold';
 
 export const indexes: FrameworkIndexesApi = {
   findIndex,
@@ -40,4 +41,5 @@ export const indexes: FrameworkIndexesApi = {
   updateMany,
   upsertMany,
   dropMany,
+  scaffold
 };

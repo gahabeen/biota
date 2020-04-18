@@ -21,7 +21,7 @@ export const roles: FactoryContext<FactoryRolesApi> = function (context): Factor
       );
       // ---
       const offline = 'factory.roles.paginate';
-      const online = { name: BiotaFunctionName('RolesPaginate'), role: null };
+      const online = { name: BiotaFunctionName('RolesFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(nameList) {

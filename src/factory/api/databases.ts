@@ -1,11 +1,12 @@
 import { query as q } from 'faunadb';
+import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { ResultData } from '~/factory/constructors/result';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryDatabasesApi } from '~/types/factory/factory.databases';
-
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { Pagination } from '../constructors/pagination';
 import { BiotaFunctionName } from './constructors';
-import { ResultData } from '~/factory/constructors/result';
 import { database } from './database';
+
 
 // tslint:disable-next-line: only-arrow-functions
 export const databases: FactoryContext<FactoryDatabasesApi> = function (context): FactoryDatabasesApi {
@@ -15,13 +16,13 @@ export const databases: FactoryContext<FactoryDatabasesApi> = function (context)
       // ---
       const query = Query(
         {
-          docs: q.Map(q.Paginate(q.Databases(), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
+          docs: q.Map(q.Paginate(q.Databases(), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },
         q.Var('docs'),
       );
       // ---
       const offline = 'factory.databases.paginate';
-      const online = { name: BiotaFunctionName('DatabasesPaginate'), role: null };
+      const online = { name: BiotaFunctionName('DatabasesFindAll'), role: null };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getMany(nameList) {

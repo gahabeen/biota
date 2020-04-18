@@ -1,8 +1,8 @@
 import { Expr } from 'faunadb';
 import { DocumentActionName } from '~/types/document';
-import { FaunaData, FaunaNumber, FaunaRef, FaunaTime, FaunaPaginateOptions } from '../fauna';
+import { FaunaData, FaunaNumber, FaunaRef, FaunaTime, FaunaPaginateOptions, FaunaString } from '../fauna';
 
-export type FactoryDocument<OT = FactoryDocumentApi> = (collectionOrRef?: string | Expr | FaunaRef, id?: string | Expr) => OT;
+export type FactoryDocument<OT = FactoryDocumentApi> = (collection?: FaunaString, id?: FaunaString) => OT;
 
 export interface FactoryDocumentValidityApi<OT = Expr> {
   delete(): OT;

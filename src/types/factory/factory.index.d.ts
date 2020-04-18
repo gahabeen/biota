@@ -6,7 +6,6 @@ export type FactoryIndex<OT = FactoryIndexApi> = (name: string | Expr) => OT;
 export interface FactoryIndexApi<OT = Expr> {
   get(): OT;
   insert(options: FaunaIndexOptions): OT;
-  insertMany(optionsList: FaunaIndexOptions[]): OT;
   update(options: FaunaIndexOptions): OT;
   upsert(options: FaunaIndexOptions): OT;
   replace(options: FaunaIndexOptions): OT;

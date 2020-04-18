@@ -24,5 +24,5 @@ export * from './api/keys';
 export * from './api/credential';
 export * from './api/credentials';
 
-// export * from './api/foundation';
+export * from './api/foundation';
 // export * from './api/relation';

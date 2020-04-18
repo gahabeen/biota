@@ -1,7 +1,7 @@
 import { Expr } from 'faunadb';
 import { FaunaTokenOptions, FaunaId, FaunaRef } from '../fauna';
 
-export type FactoryToken<OT = FactoryTokenApi> = (idOrRefOrInstance?: FaunaId | FaunaRef) => OT;
+export type FactoryToken<OT = FactoryTokenApi> = (id?: FaunaId) => OT;
 
 export interface FactoryTokenApi<OT = Expr> {
   get(): OT;

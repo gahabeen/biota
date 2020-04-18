@@ -8,6 +8,7 @@ import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { ContextExtend } from './constructors';
 
 import { document } from '~/factory/api/document';
+import { Pagination } from '../constructors/pagination';
 
 // tslint:disable-next-line: only-arrow-functions
 export const collection: FactoryContext<FactoryCollection> = function (context): FactoryCollection {
@@ -16,18 +17,17 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
     const ref = q.Collection(name);
     return {
       findAll(pagination = {}) {
-
-        const inputs = { pagination };
+        const inputs = { ref, pagination };
         // ---
         const query = Query(
           {
-            docs: q.Map(q.Paginate(q.Documents(q.Var('ref')), q.Var('pagination')), q.Lambda('x', q.Get(q.Var('x')))),
+            docs: q.Map(q.Paginate(q.Documents(q.Var('ref')), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
           },
           q.Var('docs'),
         );
         // ---
-        const offline = 'factory.collection.paginate';
-        const online = { name: BiotaFunctionName('CollectionPaginate'), role: null };
+        const offline = 'factory.collection.findAll';
+        const online = { name: BiotaFunctionName('CollectionFindAll'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       get() {
@@ -45,7 +45,6 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-
         const inputs = { name, options };
         // ---
         const query = Query(
@@ -64,7 +63,6 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       update(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -83,7 +81,6 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       upsert(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -103,7 +100,6 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       replace(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -133,7 +129,6 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       repsert(options) {
-
         const inputs = { ref, options };
         // ---
         const query = Query(
@@ -189,7 +184,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
+            annotated_doc: ResultData(collection(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
             doc: q.Delete(q.Var('ref')),
           },
@@ -238,7 +233,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'))),
           },
           q.Var('doc'),
         );

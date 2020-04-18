@@ -11,20 +11,14 @@ import { document } from './document';
 // tslint:disable-next-line: only-arrow-functions
 export const token: FactoryContext<FactoryToken> = function (context): FactoryToken {
   // tslint:disable-next-line: only-arrow-functions
-  return (idOrRefOrInstance) => {
-    const instance = q.If(q.IsDoc(idOrRefOrInstance), idOrRefOrInstance, null);
-    const ref = q.If(
-      q.IsToken(idOrRefOrInstance),
-      idOrRefOrInstance,
-      q.If(q.IsString(idOrRefOrInstance), q.Ref(q.Tokens(), idOrRefOrInstance), null),
-    );
+  return (id = null) => {
     return {
       get() {
-        const inputs = { ref };
+        const inputs = { id };
         // ----
         const query = Query(
           {
-            doc: q.Get(q.Var('ref')),
+            doc: q.Get(q.Ref(q.Tokens(), q.Var('id'))),
           },
           q.Var('doc'),
         );
@@ -34,13 +28,12 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(options) {
-
-        const inputs = { instance, options };
+        const inputs = { options };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
-            doc: q.Create(q.Tokens(), q.Merge(q.Var('options'), { instance: q.Var('instance'), data: q.Var('annotated') })),
+            annotated: ResultData(document(q.Var('ctx'), { prefix: 'Token' })().annotate('insert', q.Select('data', q.Var('options'), {}))),
+            doc: q.Create(q.Tokens(), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -52,13 +45,12 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
-
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
-            doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            annotated: ResultData(document(q.Var('ctx'), { prefix: 'Token' })().annotate('update', q.Select('data', q.Var('options'), {}))),
+            doc: q.Update(q.Ref(q.Tokens(), q.Var('id')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -70,15 +62,14 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              ResultData(token(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(token(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              q.Exists(q.Ref(q.Tokens(), q.Var('id'))),
+              ResultData(token(q.Var('ctx'))(q.Var('id')).update(q.Var('options'))),
+              ResultData(token(q.Var('ctx'))(q.Var('id')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -89,12 +80,11 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = Query(
           {
-            current_doc: ResultData(token(q.Var('ctx'))(q.Var('ref')).get()),
+            current_doc: ResultData(token(q.Var('ctx'))(q.Var('id')).get()),
             annotated: ResultData(
               document(q.Var('ctx'))().annotate(
                 'replace',
@@ -106,7 +96,7 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
                 }),
               ),
             ),
-            doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Replace(q.Ref(q.Tokens(), q.Var('id')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -118,15 +108,14 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              ResultData(token(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
-              ResultData(token(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              q.Exists(q.Ref(q.Tokens(), q.Var('id'))),
+              ResultData(token(q.Var('ctx'))(q.Var('id')).replace(q.Var('options'))),
+              ResultData(token(q.Var('ctx'))(q.Var('id')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -137,11 +126,11 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       delete() {
-        const inputs = { ref };
+        const inputs = { id };
         // ---
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Token' })(q.Var('id')).validity.delete()),
           },
           q.Var('doc'),
         );
@@ -151,14 +140,14 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
-        const inputs = { ref };
+        const inputs = { id };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
-            doc: q.Delete(q.Var('ref')),
+            annotated: ResultData(document(q.Var('ctx'), { prefix: 'Token' })().annotate('forget')),
+            annotated_doc: ResultData(token(q.Var('ctx'))(q.Var('id')).upsert(q.Var('annotated'))),
+            action: action(q.Var('ctx'))('forget', q.Ref(q.Tokens(), q.Var('id'))).log(),
+            doc: q.Delete(q.Ref(q.Tokens(), q.Var('id'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -169,11 +158,11 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       drop() {
-        const inputs = { ref };
+        const inputs = { id };
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Var('ref')), token(q.Var('ctx'))(q.Var('ref')).forget(), false),
+            doc: q.If(q.Exists(q.Ref(q.Tokens(), q.Var('id'))), token(q.Var('ctx'))(q.Var('id')).forget(), false),
           },
           q.Var('doc'),
         );
@@ -184,11 +173,11 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       },
       expireAt(at) {
         // alias
-        const inputs = { ref, at };
+        const inputs = { id, at };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Token' })(q.Ref(q.Tokens(), q.Var('id'))).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
@@ -199,11 +188,15 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       },
       expireIn(delay) {
         // alias
-        const inputs = { ref, delay };
+        const inputs = { id, delay };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(delay), 'milliseconds'))),
+            doc: ResultData(
+              document(q.Var('ctx'), { prefix: 'Token' })(q.Ref(q.Tokens(), q.Var('id'))).validity.expire(
+                q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'),
+              ),
+            ),
           },
           q.Var('doc'),
         );
@@ -214,11 +207,11 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       },
       expireNow() {
         // alias
-        const inputs = { ref };
+        const inputs = { id };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Token' })(q.Ref(q.Tokens(), q.Var('id'))).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
@@ -229,11 +222,11 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       },
       restore() {
         // alias
-        const inputs = { ref };
+        const inputs = { id };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Token' })(q.Ref(q.Tokens(), q.Var('id'))).validity.restore()),
           },
           q.Var('doc'),
         );

@@ -14,12 +14,8 @@ import { expireAt } from '~/framework/api/database/expireAt';
 import { expireIn } from '~/framework/api/database/expireIn';
 import { expireNow } from '~/framework/api/database/expireNow';
 
-export function database(databaseName: string): FrameworkDatabaseApi {
+export function database(databaseName: string = null): FrameworkDatabaseApi {
   const self = this;
-
-  if (!databaseName) {
-    throw new Error('biota.database() - no valid database name');
-  }
 
   return {
     activity: activity.call(self, databaseName),

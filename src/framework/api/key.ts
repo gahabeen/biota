@@ -14,7 +14,7 @@ import { expireAt } from '~/framework/api/key/expireAt';
 import { expireIn } from '~/framework/api/key/expireIn';
 import { expireNow } from '~/framework/api/key/expireNow';
 
-export function key(keyName: string): FrameworkKeyApi {
+export function key(keyName: string = null): FrameworkKeyApi {
   const self = this;
 
   return {
