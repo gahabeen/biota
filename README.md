@@ -7,6 +7,7 @@
 
 </div>
  
+Find the [documentation here](https://gahabeen.github.io/biota). (It's not yet in its best form. That'll improve. *PR are welcomed!*)
 
 ```js
 import { Biota } from "biota";
