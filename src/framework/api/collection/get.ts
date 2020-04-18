@@ -1,23 +1,23 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FaunaId } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { collection } from '~/factory/api/collection';
+import { execute } from '~/tools/tasks';
 
-export function get(this: DB, collectionName: string) {
+export function get(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function getMethod(id: FaunaId) {
+  return async function getMethod() {
     return execute(
       [
         {
-          name: `Get (${id}) in (${collectionName})`,
+          name: `Get [${collectionName}]`,
           task() {
-            return self.query(document.get.call(self, collectionName, id));
+            return self.query(collection(self.context)(collectionName).get());
           },
         },
       ],
       {
-        domain: 'DB.collection.get',
+        domain: 'Biota.collection.get',
       },
     );
   };

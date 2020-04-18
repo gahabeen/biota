@@ -1,23 +1,23 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FaunaId } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { collection } from '~/factory/api/collection';
+import { execute } from '~/tools/tasks';
 
-export function upsert(this: DB, collectionName: string) {
+export function upsert(this: Biota, collectionName: string) {
   const self = this;
 
   return async function upsertMethod(id: FaunaId, data: object) {
     return execute(
       [
         {
-          name: `Update/Insert (${id}) in (${collectionName})`,
+          name: `Update/Insert [${collectionName}]`,
           task() {
-            return self.query(document.upsert.call(self, collectionName, id, data));
+            return self.query(collection(self.context)(collectionName).upsert(data));
           },
         },
       ],
       {
-        domain: 'DB.collection.upsert',
+        domain: 'Biota.collection.upsert',
       },
     );
   };

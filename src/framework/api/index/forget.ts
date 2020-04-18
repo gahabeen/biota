@@ -1,24 +1,24 @@
-import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function forget(this: DB, indexName: string) {
+export const forget: FactoryIndex<FrameworkIndexApi['forget']> = function (indexName) {
   const self = this;
 
-  return async function forgetMethod() {
+  return async () => {
     return execute(
       [
         {
           name: `Forget (${indexName})`,
           task() {
-            return self.query(index.forget(indexName));
+            return self.query(index(self.context)(indexName).forget());
           },
         },
       ],
       {
-        domain: 'DB.index.forget',
+        domain: 'Biota.index.forget',
       },
     );
   };
-}
+};

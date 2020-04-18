@@ -1,24 +1,25 @@
-import { FaunaId, FaunaDocumentOptions, FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
+import { FrameworkUDFunctionApi } from '~/types/framework/framework.udfunction';
+import { FaunaId } from '~/types/fauna';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
-export function insert(this: DB, udfunctionName: string) {
+export const insert: FactoryUDFunction<FrameworkUDFunctionApi['insert']> = function (udfunctionName) {
   const self = this;
 
-  return async function insertMethod(options: FaunaRoleOptions = {}) {
+  return async function insertMethod(data: any = {}, id: FaunaId = null) {
     return execute(
       [
         {
-          name: `Insert udfunction [${udfunctionName}]`,
+          name: `Insert data in [${udfunctionName}]`,
           task() {
-            return self.query(udfunction.insert.call(self, udfunctionName, options));
+            return self.query(udfunction(self.context)(udfunctionName).insert(data));
           },
         },
       ],
       {
-        domain: 'DB.udfunction.insert',
+        domain: 'Biota.udfunction.insert',
       },
     );
   };
-}
+};

@@ -1,14 +1,12 @@
-# biota
+<h1 align="center">biota</h1>
+<p align="center">A simple database framework to start your next project in 30s with FaunaDB</p>
 
-[![Roadmap](https://img.shields.io/badge/project-roadmap-violet?style=flat-square)](https://biota.canny.io) [![Feature requests](https://img.shields.io/badge/feature-requests-blue?style=flat-square)](https://biota.canny.io/features) [![npm](https://img.shields.io/npm/v/biota?style=flat-square)](https://www.npmjs.com/package/biota) [![npm](https://img.shields.io/npm/dm/biota?style=flat-square)](https://www.npmjs.com/package/biota) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/biota?style=flat-square)
+<div align="center">
+
+[![Feature requests](https://img.shields.io/badge/feature-requests-violet?style=flat-square)](https://github.com/gahabeen/biota/issues?q=is%3Aopen+is%3Aissue+label%3A%22Type%3A+Feature%22) [![npm](https://img.shields.io/npm/v/biota?style=flat-square)](https://www.npmjs.com/package/biota) [![npm](https://img.shields.io/npm/dm/biota?style=flat-square)](https://www.npmjs.com/package/biota) ![GitHub](https://img.shields.io/github/license/gahabeen/biota?style=flat-square) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/biota?style=flat-square)
+
+</div>
  
-A simple, yet 💪, _slightly opiniated_ database framework for Fauna, written in Javascript (Typescript).
-
-> 🙃 You're on beta release. Don't get scared though, the api is pretty stable but tests need to be added to be fool-proof. (Thus, as of yet, Biota isn't production ready.)
-
-> ❤️ [Check the features](https://biota.canny.io/features) and [request the ones](https://biota.canny.io/features) you would love to see in **biota**. (They arn't all listed yet!)
-
-Getting some errors? [Let us know!](https://github.com/gahabeen/biota/issues/new)
 
 ```js
 import { Biota } from "biota";
@@ -16,7 +14,7 @@ import { Biota } from "biota";
 
 ```js
 // 4 lines to:
-const db = new Biota({ secret: "<your-secret>", private_key: "123" });
+const db = new Biota({ secret: "<your-secret>" });
 
 // - scaffold the whole database (inc. users collection for ex)
 await db.foundation();
@@ -31,17 +29,28 @@ await db.collection("todos").index({ field: "name", ngram: true });
 ```js
 // 4 lines to:
 // - create a user & login
-let asUser = await db.user.register("my@email.com", "password", {
+let asUser = await db.user().register("my@email.com", "password", {
   nickname: "Georgy",
 });
 
 // - create a todo
-await asUser.collection("todos").insert({ name: "Remember to star this project" });
+await asUser.documents("todos").insert({ name: "Remember to star this project" });
 
 // - query a todo with $ngram (autocomplete behavior)
-await asUser.collection("todos").find({ name: { $ngram: "star" } });
+await asUser.documents("todos").find({ name: { $ngram: "star" } });
 // output: [{ ref, ts, data: { name: "Remember to star this project" } }]
 ```
+
+## Current status
+
+> Finishing up design and tests of the main API (400+ methods).
+
+> 🙃 You're on preview release. Don't get scared though, the api is pretty stable but tests need to be added to be fool-proof. (Thus, as of yet, Biota isn't production ready)
+
+> ❤️ [Check the features](https://github.com/gahabeen/biota/issues?q=is%3Aopen+is%3Aissue+label%3A%22Type%3A+Feature%22) and [request the ones](https://github.com/gahabeen/biota/issues?q=is%3Aopen+is%3Aissue+label%3A%22Type%3A+Feature%22) you would love to see in **biota**. (They arn't all listed yet!)
+
+> Found some errors? [Let us know!](https://github.com/gahabeen/biota/issues/new)
+
 
 ## Getting Started
 
@@ -77,11 +86,14 @@ const db = new Biota({ secret: "<your-secret>"})
 await db.query( q.Create(...) )
 ```
 
-2. You can use the function `.user.login(id, password)` to log a user.
+2. You can use the function `.login(id, password)` to log a user.
 
 ```js
 const db = new Biota()
-const logged = await db.user.login("123", "super_password123")
+const logged = await db.login("123", "super_password123")
+// which is a shortcut for
+const logged = await db.current.user.login("123", "super_password123")
+
 // example
 await logged.query( q.Create(...) )
 ```
@@ -99,7 +111,7 @@ const { q, factory, Page } = require('biota')
 // q: export the query builder, same as fauna.query
 q.If(..., true, false)
 // factory: export the factory api (helpers that wrap FQL)
-factory.create.database(name, options)
+factory.database(ctx)(name).insert(options)
 ```
 
 ## Running the tests

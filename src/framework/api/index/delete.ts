@@ -1,24 +1,25 @@
-import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function delete_(this: DB, indexName: string) {
+// tslint:disable-next-line: variable-name
+export const delete_: FactoryIndex<FrameworkIndexApi['delete']> = function (indexName) {
   const self = this;
 
-  return async function deleteMethod() {
+  return async () => {
     return execute(
       [
         {
           name: `Delete (${indexName})`,
           task() {
-            return self.query(index.delete.call(self, indexName));
+            return self.query(index(self.context)(indexName).delete());
           },
         },
       ],
       {
-        domain: 'DB.index.delete',
+        domain: 'Biota.index.delete',
       },
     );
   };
-}
+};

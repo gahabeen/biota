@@ -1,23 +1,24 @@
-import { FaunaPaginateOptions, FaunaPaginateMapper } from '~/../types/fauna';
-import { DB } from '~/db';
-import { execute } from '~/tasks';
+import { FaunaPaginateOptions, FaunaPaginateMapper } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { execute } from '~/tools/tasks';
 import { query as q } from 'faunadb';
+import { collection } from '~/factory/api/collection';
 
-export function findAll(this: DB, collectionName: string) {
+export function findAll(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function findAllMethod(pagination: FaunaPaginateOptions = {}, mapper: FaunaPaginateMapper = (x) => q.Get(x)) {
+  return async (pagination: FaunaPaginateOptions = {}) => {
     return execute(
       [
         {
           name: `Find all documents in (${collectionName})`,
           task() {
-            return self.query(q.Map(q.Paginate(q.Documents(q.Collection(collectionName)), pagination), mapper));
+            return self.query(collection(self.context)(collectionName).findAll(pagination));
           },
         },
       ],
       {
-        domain: 'DB.collection.findAll',
+        domain: 'Biota.collection.findAll',
       },
     );
   };

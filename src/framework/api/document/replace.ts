@@ -1,24 +1,25 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
+import { Biota } from '~/biota';
+import { document } from '~/factory/api/document';
+import { execute } from '~/tools/tasks';
 
-export function replace(this: DB, collectionName: string, id: FaunaId) {
+export const replace: FactoryDocument<FrameworkDocumentApi['replace']> = function (this: Biota, collectionName, id) {
   const self = this;
 
-  return async function replaceMethod(data: object) {
+  return async (data: object) => {
     return execute(
       [
         {
-          name: `Replace (${id}) in (${collectionName})`,
+          name: `Replace [${collectionName}/${id}]`,
           task() {
-            return self.query(document.replace.call(self, collectionName, id, data));
+            return self.query(document(self.context)(collectionName, id).replace(data));
           },
         },
       ],
       {
-        domain: 'DB.document.replace',
+        domain: 'Biota.document.replace',
       },
     );
   };
-}
+};

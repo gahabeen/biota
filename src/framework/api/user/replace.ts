@@ -1,23 +1,24 @@
-import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
-import { Identity } from '~/factory/api/ql';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { execute } from '~/tasks';
-import { query as q } from 'faunadb';
+import { FactoryUser } from '~/types/factory/factory.user';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { user } from '~/factory/api/user';
+import { execute } from '~/tools/tasks';
 
-export function replace(this: DB, data: object) {
+export const replace: FactoryUser<FrameworkUserApi['replace']> = function (idOrRef) {
   const self = this;
-  return execute(
-    [
-      {
-        name: `Replace me`,
-        task() {
-          return self.document(collectionNameNormalized('users'), q.Select('id', Identity())).replace(data);
+
+  return async function replaceMethod(options) {
+    return execute(
+      [
+        {
+          name: `Replace (${idOrRef})`,
+          task() {
+            return self.query(user(self.context)(idOrRef).replace(options));
+          },
         },
+      ],
+      {
+        domain: 'Biota.user.replace',
       },
-    ],
-    {
-      domain: 'DB.user.replace',
-    },
-  );
-}
+    );
+  };
+};

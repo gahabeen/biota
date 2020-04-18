@@ -1,23 +1,23 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FaunaId } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { collection } from '~/factory/api/collection';
+import { execute } from '~/tools/tasks';
 
-export function delete_(this: DB, collectionName: string) {
+export function delete_(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function deleteMethod(id: FaunaId) {
+  return async () => {
     return execute(
       [
         {
-          name: `Delete (${id}) in (${collectionName})`,
+          name: `Delete [${collectionName}]`,
           task() {
-            return self.query(document.delete.call(self, collectionName, id));
+            return self.query(collection(self.context)(collectionName).delete());
           },
         },
       ],
       {
-        domain: 'DB.collection.delete',
+        domain: 'Biota.collection.delete',
       },
     );
   };

@@ -1,23 +1,24 @@
-import { query as q } from 'faunadb';
-import { DB } from '~/db';
-import { document } from '~/factory/api/classes/document';
-import { Identity } from '~/factory/api/ql';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { execute } from '~/tasks';
+import { FactoryUser } from '~/types/factory/factory.user';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { user } from '~/factory/api/user';
+import { execute } from '~/tools/tasks';
 
-export function update(this: DB, data: object) {
+export const update: FactoryUser<FrameworkUserApi['update']> = function (idOrRef) {
   const self = this;
-  return execute(
-    [
-      {
-        name: `Update me`,
-        async task() {
-          return self.query(document.update.call(self, collectionNameNormalized('users'), q.Select('id', Identity()), data));
+
+  return async function updateMethod(data) {
+    return execute(
+      [
+        {
+          name: `Update (${idOrRef})`,
+          task() {
+            return self.query(user(self.context)(idOrRef).update(data));
+          },
         },
+      ],
+      {
+        domain: 'Biota.user.update',
       },
-    ],
-    {
-      domain: 'DB.user.update',
-    },
-  );
-}
+    );
+  };
+};

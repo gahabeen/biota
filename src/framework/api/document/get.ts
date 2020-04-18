@@ -1,24 +1,25 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
+import { Biota } from '~/biota';
+import { document } from '~/factory/api/document';
+import { execute } from '~/tools/tasks';
 
-export function get(this: DB, collectionName: string, id: FaunaId) {
+export const get: FactoryDocument<FrameworkDocumentApi['get']> = function (this: Biota, collectionName, id) {
   const self = this;
 
-  return async function getMethod() {
+  return async () => {
     return execute(
       [
         {
           name: `Get (${id}) in (${collectionName})`,
           task() {
-            return self.query(document.get.call(self, collectionName, id));
+            return self.query(document(self.context)(collectionName, id).get());
           },
         },
       ],
       {
-        domain: 'DB.document.get',
+        domain: 'Biota.document.get',
       },
     );
   };
-}
+};

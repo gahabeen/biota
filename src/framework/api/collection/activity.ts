@@ -1,19 +1,19 @@
 import { query as q } from 'faunadb';
-import { FaunaPaginateOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { execute } from '~/tasks';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { FaunaPaginateOptions } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { execute } from '~/tools/tasks';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
 
-export function activity(this: DB, collectionName: string) {
+export function activity(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
+  return async (pagination: FaunaPaginateOptions = {}) => {
     return execute(
       [
         {
           name: `Activity for (${collectionName})`,
           async task() {
-            return self.collection(collectionNameNormalized('actions')).find(
+            return self.collection(BiotaCollectionName('actions')).find(
               {
                 collection: {
                   $computed: q.Collection(collectionName),
@@ -25,7 +25,7 @@ export function activity(this: DB, collectionName: string) {
         },
       ],
       {
-        domain: 'DB.collection.activity',
+        domain: 'Biota.collection.activity',
       },
     );
   };

@@ -1,24 +1,25 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
-export function delete_(this: DB, roleName: string) {
+// tslint:disable-next-line: variable-name
+export const delete_: FactoryRole<FrameworkRoleApi['delete']> = function (roleName) {
   const self = this;
 
-  return async function deleteMethod(id: FaunaId) {
+  return async () => {
     return execute(
       [
         {
-          name: `Delete (${id}) in (${roleName})`,
+          name: `Delete (${roleName})`,
           task() {
-            return self.query(role.delete.call(self, roleName));
+            return self.query(role(self.context)(roleName).delete());
           },
         },
       ],
       {
-        domain: 'DB.role.delete',
+        domain: 'Biota.role.delete',
       },
     );
   };
-}
+};

@@ -1,24 +1,25 @@
-import { FaunaId, FaunaDocumentOptions, FaunaDatabaseOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { database } from '~/factory/api/classes/database';
-import { execute } from '~/tasks';
+import { FactoryDatabase } from '~/types/factory/factory.database';
+import { FrameworkDatabaseApi } from '~/types/framework/framework.database';
+import { FaunaId } from '~/types/fauna';
+import { database } from '~/factory/api/database';
+import { execute } from '~/tools/tasks';
 
-export function insert(this: DB, databaseName: string) {
+export const insert: FactoryDatabase<FrameworkDatabaseApi['insert']> = function (databaseName) {
   const self = this;
 
-  return async function insertMethod(options: FaunaDatabaseOptions = {}) {
+  return async function insertMethod(data: any = {}, id: FaunaId = null) {
     return execute(
       [
         {
-          name: `Insert database [${databaseName}]`,
+          name: `Insert data in [${databaseName}]`,
           task() {
-            return self.query(database.insert.call(self, databaseName, options));
+            return self.query(database(self.context)(databaseName).insert(data));
           },
         },
       ],
       {
-        domain: 'DB.database.insert',
+        domain: 'Biota.database.insert',
       },
     );
   };
-}
+};

@@ -1,23 +1,24 @@
-import { query as q } from 'faunadb';
-import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
-import { Identity } from '~/factory/api/ql';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { execute } from '~/tasks';
+import { FactoryUser } from '~/types/factory/factory.user';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { user } from '~/factory/api/user';
+import { execute } from '~/tools/tasks';
 
-export function forget(this: DB) {
+export const forget: FactoryUser<FrameworkUserApi['forget']> = function (idOrRef) {
   const self = this;
-  return execute(
-    [
-      {
-        name: `Forget me`,
-        task() {
-          return self.document(collectionNameNormalized('users'), q.Select('id', Identity())).forget();
+
+  return async () => {
+    return execute(
+      [
+        {
+          name: `Forget (${idOrRef})`,
+          task() {
+            return self.query(user(self.context)(idOrRef).forget());
+          },
         },
+      ],
+      {
+        domain: 'Biota.user.forget',
       },
-    ],
-    {
-      domain: 'DB.user.forget',
-    },
-  );
-}
+    );
+  };
+};

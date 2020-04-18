@@ -1,24 +1,24 @@
-import { FaunaUDFunctionOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
+import { FrameworkUDFunctionApi } from '~/types/framework/framework.udfunction';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
-export function update(this: DB, udfunctionName: string) {
+export const update: FactoryUDFunction<FrameworkUDFunctionApi['update']> = function (udfunctionName) {
   const self = this;
 
-  return async function updateMethod(options: FaunaUDFunctionOptions = {}) {
+  return async function updateMethod(data) {
     return execute(
       [
         {
-          name: `Update udfunction [${udfunctionName}]`,
+          name: `Update (${udfunctionName})`,
           task() {
-            return self.query(udfunction.update.call(self, udfunctionName, options));
+            return self.query(udfunction(self.context)(udfunctionName).update(data));
           },
         },
       ],
       {
-        domain: 'DB.udfunction.update',
+        domain: 'Biota.udfunction.update',
       },
     );
   };
-}
+};

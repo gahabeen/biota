@@ -1,24 +1,24 @@
-import { FaunaUDFunctionOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
+import { FrameworkUDFunctionApi } from '~/types/framework/framework.udfunction';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
-export function repsert(this: DB, udfunctionName: string) {
+export const repsert: FactoryUDFunction<FrameworkUDFunctionApi['repsert']> = function (udfunctionName) {
   const self = this;
 
-  return async function repsertMethod(options: FaunaUDFunctionOptions = {}) {
+  return async function repsertMethod(options) {
     return execute(
       [
         {
-          name: `Replace/Insert udfunction [${udfunctionName}]`,
+          name: `Replace/Insert (${udfunctionName})`,
           task() {
-            return self.query(udfunction.repsert.call(self, udfunctionName, options));
+            return self.query(udfunction(self.context)(udfunctionName).repsert(options));
           },
         },
       ],
       {
-        domain: 'DB.udfunction.repsert',
+        domain: 'Biota.udfunction.repsert',
       },
     );
   };
-}
+};

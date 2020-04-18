@@ -1,24 +1,24 @@
-import { FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
-export function repsert(this: DB, roleName: string) {
+export const repsert: FactoryRole<FrameworkRoleApi['repsert']> = function (roleName) {
   const self = this;
 
-  return async function repsertMethod(options: FaunaRoleOptions = {}) {
+  return async function repsertMethod(options) {
     return execute(
       [
         {
-          name: `Replace/Insert [${roleName}]`,
+          name: `Replace/Insert (${roleName})`,
           task() {
-            return self.query(role.repsert.call(self, roleName, options));
+            return self.query(role(self.context)(roleName).repsert(options));
           },
         },
       ],
       {
-        domain: 'DB.role.repsert',
+        domain: 'Biota.role.repsert',
       },
     );
   };
-}
+};

@@ -1,15 +1,15 @@
 import { query as q } from 'faunadb';
 import * as qs from 'querystring';
-import { Fauna, FaunaCollectionOptions, FaunaPaginateMapper, FaunaPaginateOptions } from '~/../types/fauna';
-import { DBFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
-import { udfunctionNameNormalized } from '~/factory/classes/udfunction';
-import { execute } from '~/tasks';
+import { Fauna, FaunaPaginateMapper, FaunaPaginateOptions } from '~/types/fauna';
+import { FrameworkCollectionSearchParams } from '~/types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { Identity } from '~/factory/api/ql';
+import { BiotaFunctionName } from '~/factory/constructors/udfunction';
+import { execute } from '~/tools/tasks';
 
 export function parseSearchQuery(collection: string, searchQuery: object) {
   const buildQuery = (sq: Fauna.Expr) => {
-    return q.Call(udfunctionNameNormalized('SearchQuery'), Identity(), q.Collection(collection), sq);
+    return q.Call(BiotaFunctionName('SearchQuery'), Identity(), q.Collection(collection), sq);
   };
 
   // const safe = (x: object) => JSON.parse(JSON.stringify(x));
@@ -19,7 +19,6 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
       return q.Intersection(...queries.map(buildQuery));
     },
     $or: (...queries: Fauna.Expr[]) => {
-      console.log('queries', queries);
       return q.Union(...queries.map(buildQuery));
     },
     $nor: (query: Fauna.Expr, ...queries: Fauna.Expr[]) => {
@@ -38,16 +37,16 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
 
   // UPDATE!
   const reducer = (obj: object) => {
-    let reduced = {};
+    const reduced = {};
     const reducee = (value: any, acc: object) => {
       if (typeof value === 'object') {
         if (hasSystemOperators(value)) {
-          let operator = getFirstSystemOperator(value);
-          let operatorValue = value[operator];
-          let operation = operators[operator](...operatorValue);
+          const operator = getFirstSystemOperator(value);
+          const operatorValue = value[operator];
+          const operation = operators[operator](...operatorValue);
           Object.assign(acc, operation);
         } else {
-          for (let key in value) {
+          for (const key of Object.keys(value)) {
             acc[key] = {};
             reducee(value[key], acc[key]);
           }
@@ -80,11 +79,11 @@ export function parseSearchQuery(collection: string, searchQuery: object) {
   }
 }
 
-export function find(this: DB, collectionName: string) {
+export function find(this: Biota, collectionName: string) {
   const self = this;
 
   return async function findMethod(
-    searchQuery: DBFrameworkCollectionSearchParams,
+    searchQuery: FrameworkCollectionSearchParams,
     paginateOptions: FaunaPaginateOptions = {},
     mapper: FaunaPaginateMapper = q.Lambda('x', q.Get(q.Var('x'))),
   ) {
@@ -93,13 +92,13 @@ export function find(this: DB, collectionName: string) {
         {
           name: `Find (${qs.stringify(searchQuery).slice(0, 20)}...) in (${collectionName})`,
           task() {
-            let paginate = q.Paginate(parseSearchQuery(collectionName, searchQuery), paginateOptions);
+            const paginate = q.Paginate(parseSearchQuery(collectionName, searchQuery), paginateOptions);
             return self.query(mapper ? q.Map(paginate, mapper) : paginate);
           },
         },
       ],
       {
-        domain: 'DB.collection.find',
+        domain: 'Biota.collection.find',
       },
     );
   };

@@ -1,21 +1,22 @@
 import { query as q } from 'faunadb';
-import { FaunaId, FaunaPaginateOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { execute } from '~/tasks';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
+import { Biota } from '~/biota';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
+import { execute } from '~/tools/tasks';
 
-export function activity(this: DB, collectionName: string, id: FaunaId) {
+export const activity: FactoryDocument<FrameworkDocumentApi['activity']> = function (this: Biota, collectionName, id) {
   const self = this;
 
-  return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
+  return async (pagination = {}) => {
     return execute(
       [
         {
-          name: `Activity for (${collectionName})`,
+          name: `Activity for [${collectionName}/${id}]`,
           async task() {
-            return self.collection(collectionNameNormalized('actions')).find(
+            return self.collection(BiotaCollectionName('actions')).find(
               {
-                document: q.Ref(q.Collection(collectionName), id),
+                instance: q.Ref(q.Collection(collectionName), id),
               },
               pagination,
             );
@@ -23,8 +24,8 @@ export function activity(this: DB, collectionName: string, id: FaunaId) {
         },
       ],
       {
-        domain: 'DB.document.activity',
+        domain: 'Biota.document.activity',
       },
     );
   };
-}
+};

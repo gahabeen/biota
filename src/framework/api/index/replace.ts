@@ -1,24 +1,24 @@
-import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function replace(this: DB, indexName: string) {
+export const replace: FactoryIndex<FrameworkIndexApi['replace']> = function (indexName) {
   const self = this;
 
-  return async function replaceMethod(options: FaunaIndexOptions) {
+  return async function replaceMethod(options) {
     return execute(
       [
         {
-          name: `Update (${indexName})`,
+          name: `Replace (${indexName})`,
           task() {
-            return self.query(index.replace.call(self, indexName, options));
+            return self.query(index(self.context)(indexName).replace(options));
           },
         },
       ],
       {
-        domain: 'DB.index.replace',
+        domain: 'Biota.index.replace',
       },
     );
   };
-}
+};

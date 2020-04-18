@@ -1,23 +1,23 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FaunaId } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { collection } from '~/factory/api/collection';
+import { execute } from '~/tools/tasks';
 
-export function replace(this: DB, collectionName: string) {
+export function replace(this: Biota, collectionName: string) {
   const self = this;
 
   return async function replaceMethod(id: FaunaId, data: object) {
     return execute(
       [
         {
-          name: `Replace (${id}) in (${collectionName})`,
+          name: `Replace [${collectionName}]`,
           task() {
-            return self.query(document.replace.call(self, collectionName, id, data));
+            return self.query(collection(self.context)(collectionName).replace(data));
           },
         },
       ],
       {
-        domain: 'DB.collection.replace',
+        domain: 'Biota.collection.replace',
       },
     );
   };

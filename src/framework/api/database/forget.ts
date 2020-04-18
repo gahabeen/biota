@@ -1,24 +1,24 @@
-import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
-import { database } from '~/factory/api/classes/database';
-import { execute } from '~/tasks';
+import { FactoryDatabase } from '~/types/factory/factory.database';
+import { FrameworkDatabaseApi } from '~/types/framework/framework.database';
+import { database } from '~/factory/api/database';
+import { execute } from '~/tools/tasks';
 
-export function forget(this: DB, databaseName: string) {
+export const forget: FactoryDatabase<FrameworkDatabaseApi['forget']> = function (databaseName) {
   const self = this;
 
-  return async function forgetMethod() {
+  return async () => {
     return execute(
       [
         {
-          name: `Forget database [${databaseName}]`,
+          name: `Forget (${databaseName})`,
           task() {
-            return self.query(database.forget.call(self, databaseName));
+            return self.query(database(self.context)(databaseName).forget());
           },
         },
       ],
       {
-        domain: 'DB.database.forget',
+        domain: 'Biota.database.forget',
       },
     );
   };
-}
+};

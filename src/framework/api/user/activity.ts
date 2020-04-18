@@ -1,27 +1,31 @@
-import { FaunaPaginateOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { Identity } from '~/factory/api/ql';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { execute } from '~/tasks';
+import { FactoryUser } from '~/types/factory/factory.user';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { execute } from '~/tools/tasks';
 
-export async function activity(this: DB, pagination: FaunaPaginateOptions = {}) {
+export const activity: FactoryUser<FrameworkUserApi['activity']> = function (idOrRef) {
   const self = this;
-  return execute(
-    [
-      {
-        name: `User activity`,
-        async task() {
-          return self.collection(collectionNameNormalized('actions')).find(
-            {
-              user: Identity(),
-            },
-            pagination,
-          );
+
+  return async (pagination = {}) => {
+    return execute(
+      [
+        {
+          name: `Activity [${idOrRef}]`,
+          async task() {
+            return {};
+            // return self.user(BiotaCollectionName('actions')).find(
+            //   {
+            //     user: {
+            //       $computed: q.Collection(idOrRef),
+            //     },
+            //   },
+            //   pagination,
+            // );
+          },
         },
+      ],
+      {
+        domain: 'Biota.user.activity',
       },
-    ],
-    {
-      domain: 'DB.user.activity',
-    },
-  );
-}
+    );
+  };
+};

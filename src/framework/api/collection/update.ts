@@ -1,23 +1,23 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FaunaId } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { collection } from '~/factory/api/collection';
+import { execute } from '~/tools/tasks';
 
-export function update(this: DB, collectionName: string) {
+export function update(this: Biota, collectionName: string) {
   const self = this;
 
   return async function updateMethod(id: FaunaId, data: object) {
     return execute(
       [
         {
-          name: `Update (${id}) in (${collectionName})`,
+          name: `Update [${collectionName}]`,
           task() {
-            return self.query(document.update.call(self, collectionName, id, data));
+            return self.query(collection(self.context)(collectionName).update(data));
           },
         },
       ],
       {
-        domain: 'DB.collection.update',
+        domain: 'Biota.collection.update',
       },
     );
   };

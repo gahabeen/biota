@@ -1,24 +1,24 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
-export function get(this: DB, roleName: string) {
+export const get: FactoryRole<FrameworkRoleApi['get']> = function (roleName) {
   const self = this;
 
   return async function getMethod() {
     return execute(
       [
         {
-          name: `Get [${roleName}]`,
+          name: `Get (${roleName})`,
           task() {
-            return self.query(role.get.call(self, roleName));
+            return self.query(role(self.context)(roleName).get());
           },
         },
       ],
       {
-        domain: 'DB.role.get',
+        domain: 'Biota.role.get',
       },
     );
   };
-}
+};

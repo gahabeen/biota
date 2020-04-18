@@ -1,24 +1,24 @@
-import { FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
-export function update(this: DB, roleName: string) {
+export const update: FactoryRole<FrameworkRoleApi['update']> = function (roleName) {
   const self = this;
 
-  return async function updateMethod(options: FaunaRoleOptions = {}) {
+  return async function updateMethod(data) {
     return execute(
       [
         {
-          name: `Update role [${roleName}]`,
+          name: `Update (${roleName})`,
           task() {
-            return self.query(role.update.call(self, roleName, options));
+            return self.query(role(self.context)(roleName).update(data));
           },
         },
       ],
       {
-        domain: 'DB.role.update',
+        domain: 'Biota.role.update',
       },
     );
   };
-}
+};

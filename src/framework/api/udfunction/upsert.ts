@@ -1,24 +1,25 @@
-import { FaunaUDFunctionOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
+import { FrameworkUDFunctionApi } from '~/types/framework/framework.udfunction';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
-export function upsert(this: DB, collectionName: string) {
+export const upsert: FactoryUDFunction<FrameworkUDFunctionApi['upsert']> = function (udfunctionName = null) {
   const self = this;
 
-  return async function upsertMethod(options: FaunaUDFunctionOptions = {}) {
+  return async function upsertMethod(options = {}) {
     return execute(
       [
         {
-          name: `Update/Insert udfunction [${collectionName}]`,
+          name: `Update/Insert (${udfunctionName})`,
           task() {
-            return self.query(udfunction.upsert.call(self, collectionName, options));
+            return self.query(udfunction(self.context)(udfunctionName).upsert(options));
           },
+          // fullError: true,
         },
       ],
       {
-        domain: 'DB.collection.upsert',
+        domain: 'Biota.udfunction.upsert',
       },
     );
   };
-}
+};

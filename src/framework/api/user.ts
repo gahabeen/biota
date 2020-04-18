@@ -1,70 +1,40 @@
-import { DBFrameworkUserApi } from '~/../types/framework/framework.user';
-import { changePassword } from '~/framework/api/user/changePassword';
-import { googleLoginUrl } from '~/framework/api/user/google_loginUrl';
-import { googleRegisterUrl } from '~/framework/api/user/google_registerUrl';
-import { googleSyncUrl } from '~/framework/api/user/google_syncUrl';
-import { googleAuthenticate } from '~/framework/api/user/google_authenticate';
-import { login } from '~/framework/api/user/login';
-import { loginWithAuthAccount } from '~/framework/api/user/loginWithAuthAccount';
-import { logout } from '~/framework/api/user/logout';
-import { me } from '~/framework/api/user/me';
-import { register } from '~/framework/api/user/register';
-import { registerWithAuthAccount } from '~/framework/api/user/registerWithAuthAccount';
-import { delete_ as deleteSession } from '~/framework/api/user/session_delete';
-import { expireAt as expireAtSession } from '~/framework/api/user/session_expireAt';
-import { expireIn as expireInSession } from '~/framework/api/user/session_expireIn';
-import { expireNow as expireNowSession } from '~/framework/api/user/session_expireNow';
-import { forget as forgetSession } from '~/framework/api/user/session_forget';
-import { get as getSession } from '~/framework/api/user/session_get';
-import { replace as replaceSession } from '~/framework/api/user/session_replace';
-import { update as updateSession } from '~/framework/api/user/session_update';
-import { update } from '~/framework/api/user/update';
-import { replace } from '~/framework/api/user/replace';
-import { delete_ } from '~/framework/api/user/delete';
-import { forget } from '~/framework/api/user/forget';
+import { FrameworkUser } from '~/types/framework/framework.user';
 import { activity } from '~/framework/api/user/activity';
+import { delete_ } from '~/framework/api/user/delete';
+import { drop } from '~/framework/api/user/drop';
+import { expireAt } from '~/framework/api/user/expireAt';
+import { expireIn } from '~/framework/api/user/expireIn';
+import { expireNow } from '~/framework/api/user/expireNow';
+import { forget } from '~/framework/api/user/forget';
+import { get } from '~/framework/api/user/get';
+import { insert } from '~/framework/api/user/insert';
+import { replace } from '~/framework/api/user/replace';
+import { repsert } from '~/framework/api/user/repsert';
+import { restore } from '~/framework/api/user/restore';
+import { remember } from '~/framework/api/user/remember';
+import { update } from '~/framework/api/user/update';
+import { upsert } from '~/framework/api/user/upsert';
+import { history } from '~/framework/api/user/history';
 
-export const user: DBFrameworkUserApi = {
-  me,
-  login,
-  loginWithAuthAccount,
-  register,
-  registerWithAuthAccount,
-  changePassword,
-  logout,
+export const user: FrameworkUser = function (idOrRef) {
+  const self = this;
 
-  update,
-  replace,
-  delete: delete_,
-  forget,
-  activity,
-
-  session: {
-    get: getSession,
-    expireNow: expireNowSession,
-    expireIn: expireInSession,
-    expireAt: expireAtSession,
-    delete: deleteSession,
-    update: updateSession,
-    replace: replaceSession,
-    forget: forgetSession,
-  },
-  google: {
-    loginUrl: googleLoginUrl,
-    registerUrl: googleRegisterUrl,
-    syncUrl: googleSyncUrl,
-    authenticate: googleAuthenticate,
-  },
-  // github: {
-  //   async loginUrl() {
-  //     return '';
-  //   },
-  //   async registerUrl() {
-  //     return '';
-  //   },
-  //   async syncUrl() {
-  //     return '';
-  //   },
-  //   async authenticate() {},
-  // },
+  return {
+    activity: activity.call(self, idOrRef),
+    history: history.call(self, idOrRef),
+    get: get.call(self, idOrRef),
+    insert: insert.call(self, idOrRef),
+    replace: replace.call(self, idOrRef),
+    update: update.call(self, idOrRef),
+    repsert: repsert.call(self, idOrRef),
+    upsert: upsert.call(self, idOrRef),
+    delete: delete_.call(self, idOrRef),
+    forget: forget.call(self, idOrRef),
+    drop: drop.call(self, idOrRef),
+    restore: restore.call(self, idOrRef),
+    remember: remember.call(self, idOrRef),
+    expireAt: expireAt.call(self, idOrRef),
+    expireIn: expireIn.call(self, idOrRef),
+    expireNow: expireNow.call(self, idOrRef),
+  };
 };

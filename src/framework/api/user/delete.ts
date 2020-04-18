@@ -1,23 +1,25 @@
-import { query as q } from 'faunadb';
-import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
-import { Identity } from '~/factory/api/ql';
-import { collectionNameNormalized } from '~/factory/classes/collection';
-import { execute } from '~/tasks';
+import { FactoryUser } from '~/types/factory/factory.user';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { user } from '~/factory/api/user';
+import { execute } from '~/tools/tasks';
 
-export function delete_(this: DB) {
+// tslint:disable-next-line: variable-name
+export const delete_: FactoryUser<FrameworkUserApi['delete']> = function (idOrRef) {
   const self = this;
-  return execute(
-    [
-      {
-        name: `Delete me`,
-        task() {
-          return self.document(collectionNameNormalized('users'), q.Select('id', Identity())).delete();
+
+  return async () => {
+    return execute(
+      [
+        {
+          name: `Delete (${idOrRef})`,
+          task() {
+            return self.query(user(self.context)(idOrRef).delete());
+          },
         },
+      ],
+      {
+        domain: 'Biota.user.delete',
       },
-    ],
-    {
-      domain: 'DB.user.delete',
-    },
-  );
-}
+    );
+  };
+};

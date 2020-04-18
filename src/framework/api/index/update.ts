@@ -1,24 +1,24 @@
-import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function update(this: DB, indexName: string) {
+export const update: FactoryIndex<FrameworkIndexApi['update']> = function (indexName) {
   const self = this;
 
-  return async function updateMethod(options: FaunaIndexOptions) {
+  return async function updateMethod(data) {
     return execute(
       [
         {
           name: `Update (${indexName})`,
           task() {
-            return self.query(index.update.call(self, indexName, options));
+            return self.query(index(self.context)(indexName).update(data));
           },
         },
       ],
       {
-        domain: 'DB.index.update',
+        domain: 'Biota.index.update',
       },
     );
   };
-}
+};

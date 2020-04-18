@@ -1,24 +1,24 @@
-import { FaunaId } from '~/../types/fauna';
-import { DB } from '~/db';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
+import { FrameworkUDFunctionApi } from '~/types/framework/framework.udfunction';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
-export function forget(this: DB, udfunctionName: string) {
+export const forget: FactoryUDFunction<FrameworkUDFunctionApi['forget']> = function (udfunctionName) {
   const self = this;
 
-  return async function forgetMethod() {
+  return async () => {
     return execute(
       [
         {
-          name: `Forget udfunction [${udfunctionName}]`,
+          name: `Forget (${udfunctionName})`,
           task() {
-            return self.query(udfunction.forget.call(self, udfunctionName));
+            return self.query(udfunction(self.context)(udfunctionName).forget());
           },
         },
       ],
       {
-        domain: 'DB.udfunction.forget',
+        domain: 'Biota.udfunction.forget',
       },
     );
   };
-}
+};

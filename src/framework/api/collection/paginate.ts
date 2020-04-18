@@ -1,16 +1,12 @@
-import { DB } from '~/db';
-import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from '~/../types/fauna';
-import { execute } from '~/tasks';
-import { DBFrameworkCollectionSearchParams } from '~/../types/framework/framework.collection';
+import { Biota } from '~/biota';
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse, FaunaCollectionOptions } from '~/types/fauna';
+import { execute } from '~/tools/tasks';
+import { FrameworkCollectionSearchParams } from '~/types/framework/framework.collection';
 
-export function paginate(this: DB, collectionName: string) {
+export function paginate(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function* paginateMethod(
-    searchQuery: DBFrameworkCollectionSearchParams,
-    paginateOptions: FaunaPaginateOptions = {},
-    mapper: FaunaPaginateMapper,
-  ) {
+  return async function* paginateMethod(searchQuery: FrameworkCollectionSearchParams, paginateOptions: FaunaPaginateOptions = {}) {
     let firstRequest = true;
     let after: any;
 
@@ -23,7 +19,7 @@ export function paginate(this: DB, collectionName: string) {
             async task() {
               return self
                 .collection(collectionName)
-                .find(searchQuery, { ...paginateOptions, after }, mapper)
+                .find(searchQuery, { ...paginateOptions, after })
                 .then((res: FaunaPaginateResponse) => {
                   if (res.after) {
                     after = res.after;
@@ -36,7 +32,7 @@ export function paginate(this: DB, collectionName: string) {
           },
         ],
         {
-          domain: 'DB.collection.paginate',
+          domain: 'Biota.collection.paginate',
         },
       );
     }

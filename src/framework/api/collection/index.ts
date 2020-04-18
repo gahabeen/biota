@@ -1,20 +1,18 @@
-import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
-import { role as roleFactory } from '~/factory/api/classes';
-import { execute } from '~/tasks';
-import { q } from '~/index';
+import { FrameworkCollectionFieldOptions, FrameworkIndexOptions } from '~/types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { delay } from '~/helpers/delay';
+import { execute } from '~/tools/tasks';
 
-export function index(this: DB, collectionName: string) {
+export function index(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function indexMethod(field: string | DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
-    let { role, roles, maxLength } = options;
+  return async function indexMethod(field: string | FrameworkCollectionFieldOptions, options: FrameworkIndexOptions = {}) {
+    const { role, roles, maxLength } = options;
     let roleList = role || roles;
     if (!Array.isArray(roleList)) roleList = [role as string];
-    let tasks = [];
+    const tasks = [];
 
-    let definition: DBFrameworkCollectionFieldOptions = {
+    const definition: FrameworkCollectionFieldOptions = {
       field: null,
       action: 'index',
       ngram: false,
@@ -34,17 +32,17 @@ export function index(this: DB, collectionName: string) {
           .collection(collectionName)
           .field(definition)
           .then(async (indexes: any) => {
-            for (let index of indexes) {
-              let { ref, name } = index || {};
+            for (const indexItem of indexes) {
+              const { ref, name } = indexItem || {};
               if (name && role) {
-                let subTasks = [];
-                for (let r of roleList) {
+                const subTasks = [];
+                for (const r of roleList) {
                   subTasks.push({
                     name: `Adding privilege (read) for index ${name} on ${r}`,
                     async task() {
                       await delay(300);
                       return self.query(
-                        self.role(r).privilege.upsert({
+                        self.role(r).privilege.set({
                           resource: ref,
                           actions: {
                             read: true,
@@ -57,7 +55,7 @@ export function index(this: DB, collectionName: string) {
                   });
                 }
                 await execute(subTasks, {
-                  domain: 'DB.collection.index',
+                  domain: 'Biota.collection.index',
                 });
               }
             }
@@ -67,7 +65,7 @@ export function index(this: DB, collectionName: string) {
     });
 
     return execute(tasks, {
-      domain: 'DB.collection.index',
+      domain: 'Biota.collection.index',
     });
   };
 }

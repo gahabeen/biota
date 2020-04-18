@@ -1,9 +1,9 @@
-import { FaunaId, FaunaDocumentOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FaunaId } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { collection } from '~/factory/api/collection';
+import { execute } from '~/tools/tasks';
 
-export function insert(this: DB, collectionName: string) {
+export function insert(this: Biota, collectionName: string) {
   const self = this;
 
   return async function insertMethod(data: any = {}, id: FaunaId = null) {
@@ -12,12 +12,12 @@ export function insert(this: DB, collectionName: string) {
         {
           name: `Insert data in [${collectionName}]`,
           task() {
-            return self.query(document.insert.call(self, collectionName, data, id));
+            return self.query(collection(self.context)(collectionName).insert(data));
           },
         },
       ],
       {
-        domain: 'DB.collection.insert',
+        domain: 'Biota.collection.insert',
       },
     );
   };

@@ -1,32 +1,33 @@
-import { query as q } from 'faunadb';
-import { FaunaPaginateOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { execute } from '~/tasks';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { FaunaPaginateOptions } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { execute } from '~/tools/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
 
-export function activity(this: DB, roleName: string) {
+export const activity: FactoryRole<FrameworkRoleApi['activity']> = function (roleName) {
   const self = this;
 
-  return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
+  return async (pagination = {}) => {
     return execute(
       [
         {
           name: `Activity for (${roleName})`,
           async task() {
-            return self.collection(collectionNameNormalized('actions')).find(
-              {
-                collection: {
-                  $computed: q.Role(roleName),
-                },
-              },
-              pagination,
-            );
+            return {};
+            // return self.role(BiotaCollectionName('actions')).find(
+            //   {
+            //     role: {
+            //       $computed: q.Collection(roleName),
+            //     },
+            //   },
+            //   pagination,
+            // );
           },
         },
       ],
       {
-        domain: 'DB.role.activity',
+        domain: 'Biota.role.activity',
       },
     );
   };
-}
+};

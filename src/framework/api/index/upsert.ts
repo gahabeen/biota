@@ -1,24 +1,24 @@
-import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function upsert(this: DB, indexName: string) {
+export const upsert: FactoryIndex<FrameworkIndexApi['upsert']> = function (indexName) {
   const self = this;
 
-  return async function upsertMethod(options: FaunaIndexOptions) {
+  return async function upsertMethod(data) {
     return execute(
       [
         {
-          name: `Upsert (${indexName})`,
+          name: `Update/Insert (${indexName})`,
           task() {
-            return self.query(index.upsert.call(self, indexName, options));
+            return self.query(index(self.context)(indexName).upsert(data));
           },
         },
       ],
       {
-        domain: 'DB.index.upsert',
+        domain: 'Biota.index.upsert',
       },
     );
   };
-}
+};

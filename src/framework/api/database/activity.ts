@@ -1,32 +1,31 @@
-import { query as q } from 'faunadb';
-import { FaunaPaginateOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { execute } from '~/tasks';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { FactoryDatabase } from '~/types/factory/factory.database';
+import { FrameworkDatabaseApi } from '~/types/framework/framework.database';
+import { execute } from '~/tools/tasks';
 
-export function activity(this: DB, databaseName: string) {
+export const activity: FactoryDatabase<FrameworkDatabaseApi['activity']> = function (databaseName) {
   const self = this;
 
-  return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
+  return async (pagination = {}) => {
     return execute(
       [
         {
-          name: `Activity for database [${databaseName}]`,
+          name: `Activity [${databaseName}]`,
           async task() {
-            return self.collection(collectionNameNormalized('actions')).find(
-              {
-                collection: {
-                  $computed: q.Role(databaseName),
-                },
-              },
-              pagination,
-            );
+            return {};
+            // return self.database(BiotaCollectionName('actions')).find(
+            //   {
+            //     database: {
+            //       $computed: q.Collection(databaseName),
+            //     },
+            //   },
+            //   pagination,
+            // );
           },
         },
       ],
       {
-        domain: 'DB.database.activity',
+        domain: 'Biota.database.activity',
       },
     );
   };
-}
+};

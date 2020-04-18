@@ -1,17 +1,16 @@
-import { DBFrameworkCollectionFieldOptions, DBFrameworkIndexOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
-import { role as roleFactory } from '~/factory/api/classes';
-import { execute } from '~/tasks';
+import { FrameworkCollectionFieldOptions, FrameworkIndexOptions } from '~/types/framework/framework.collection';
+import { Biota } from '~/biota';
+import { execute } from '~/tools/tasks';
 import { delay } from '~/helpers/delay';
 
-export function compute(this: DB, collectionName: string) {
+export function compute(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function computeMethod(field: DBFrameworkCollectionFieldOptions, options: DBFrameworkIndexOptions = {}) {
-    let { role, roles } = options;
+  return async function computeMethod(field: FrameworkCollectionFieldOptions, options: FrameworkIndexOptions = {}) {
+    const { role, roles } = options;
     let roleList = role || roles;
     if (!Array.isArray(roleList)) roleList = [role as string];
-    let tasks = [];
+    const tasks = [];
 
     tasks.push({
       name: `Scaffolding index field on ${collectionName}`,
@@ -20,17 +19,17 @@ export function compute(this: DB, collectionName: string) {
           .collection(collectionName)
           .field({ ...field, action: 'compute' })
           .then(async (indexes: any) => {
-            for (let index of indexes) {
-              let { ref, name } = index || {};
+            for (const index of indexes) {
+              const { ref, name } = index || {};
               if (name && role) {
-                let subTasks = [];
-                for (let r of roleList) {
+                const subTasks = [];
+                for (const r of roleList) {
                   subTasks.push({
                     name: `Adding privilege (read) for index ${name} on ${r}`,
                     async task() {
                       await delay(300);
                       return self.query(
-                        self.role(r).privilege.upsert({
+                        self.role(r).privilege.set({
                           resource: ref,
                           actions: {
                             read: true,
@@ -42,7 +41,7 @@ export function compute(this: DB, collectionName: string) {
                   });
                 }
                 await execute(subTasks, {
-                  domain: 'DB.collection.compute',
+                  domain: 'Biota.collection.compute',
                 });
               }
             }
@@ -52,7 +51,7 @@ export function compute(this: DB, collectionName: string) {
     });
 
     return execute(tasks, {
-      domain: 'DB.collection.compute',
+      domain: 'Biota.collection.compute',
     });
   };
 }

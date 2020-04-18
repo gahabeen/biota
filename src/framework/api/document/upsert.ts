@@ -1,24 +1,25 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
+import { Biota } from '~/biota';
+import { document } from '~/factory/api/document';
+import { execute } from '~/tools/tasks';
 
-export function upsert(this: DB, collectionName: string, id: FaunaId) {
+export const upsert: FactoryDocument<FrameworkDocumentApi['upsert']> = function (this: Biota, collectionName, id) {
   const self = this;
 
-  return async function upsertMethod(data: object) {
+  return async (data: object) => {
     return execute(
       [
         {
-          name: `Update/Insert (${id}) in (${collectionName})`,
+          name: `Update/Insert [${collectionName}/${id}]`,
           task() {
-            return self.query(document.upsert.call(self, collectionName, id, data));
+            return self.query(document(self.context)(collectionName, id).upsert(data));
           },
         },
       ],
       {
-        domain: 'DB.document.upsert',
+        domain: 'Biota.document.upsert',
       },
     );
   };
-}
+};

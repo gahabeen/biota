@@ -1,11 +1,9 @@
-// types
-import { Fauna, FaunaPaginateResponse, FaunaPaginateOptions } from '~/../types/fauna';
-// external
+import { Fauna, FaunaPaginateResponse, FaunaPaginateOptions, FaunaPaginateMapper } from '~/types/fauna';
 import { query as q } from 'faunadb';
-import { DB } from '~/db';
-import { execute } from '~/tasks';
+import { Biota } from '~/biota';
+import { execute } from '~/tools/tasks';
 
-export function* paginate(this: DB, paginateQuery: Fauna.Expr, paginateOptions: FaunaPaginateOptions = {}) {
+export function* paginate(this: Biota, paginateQuery: Fauna.Expr, paginateOptions: FaunaPaginateOptions = {}, mapper: FaunaPaginateMapper) {
   let after: any = Infinity;
   while (after) {
     yield execute(
@@ -13,7 +11,7 @@ export function* paginate(this: DB, paginateQuery: Fauna.Expr, paginateOptions: 
         {
           name: `Paginating your query`,
           task() {
-            return this.client.query(q.Paginate(paginateQuery, paginateOptions)).then((res: FaunaPaginateResponse) => {
+            return this.query(q.Map(q.Paginate(paginateQuery, paginateOptions), mapper)).then((res: FaunaPaginateResponse) => {
               if (res.after) {
                 after = res.after;
               } else {
@@ -26,7 +24,7 @@ export function* paginate(this: DB, paginateQuery: Fauna.Expr, paginateOptions: 
       ],
       {
         singleResult: true,
-        domain: 'DB.paginate',
+        domain: 'Biota.paginate',
       },
     );
   }

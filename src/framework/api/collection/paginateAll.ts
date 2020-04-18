@@ -1,11 +1,11 @@
-import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse } from '~/../types/fauna';
-import { DB } from '~/db';
-import { execute } from '~/tasks';
+import { FaunaPaginateMapper, FaunaPaginateOptions, FaunaPaginateResponse } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { execute } from '~/tools/tasks';
 
-export function paginateAll(this: DB, collectionName: string) {
+export function paginateAll(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function* paginateAllMethod(paginateOptions: FaunaPaginateOptions = {}, mapper: FaunaPaginateMapper) {
+  return async function* paginateAllMethod(paginateOptions: FaunaPaginateOptions = {}) {
     let firstRequest = true;
     let after: any;
 
@@ -18,7 +18,7 @@ export function paginateAll(this: DB, collectionName: string) {
             async task() {
               return self
                 .collection(collectionName)
-                .findAll({ ...paginateOptions, after }, mapper)
+                .findAll({ ...paginateOptions, after })
                 .then((res: FaunaPaginateResponse) => {
                   if (res.after) {
                     after = res.after;
@@ -31,7 +31,7 @@ export function paginateAll(this: DB, collectionName: string) {
           },
         ],
         {
-          domain: 'DB.collection.paginateAll',
+          domain: 'Biota.collection.paginateAll',
         },
       );
     }

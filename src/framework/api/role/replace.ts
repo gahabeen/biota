@@ -1,24 +1,24 @@
-import { FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
-export function replace(this: DB, roleName: string) {
+export const replace: FactoryRole<FrameworkRoleApi['replace']> = function (roleName) {
   const self = this;
 
-  return async function replaceMethod(options: FaunaRoleOptions = {}) {
+  return async function replaceMethod(options) {
     return execute(
       [
         {
-          name: `Replace [${roleName}]`,
+          name: `Replace (${roleName})`,
           task() {
-            return self.query(role.replace.call(self, roleName, options));
+            return self.query(role(self.context)(roleName).replace(options));
           },
         },
       ],
       {
-        domain: 'DB.role.replace',
+        domain: 'Biota.role.replace',
       },
     );
   };
-}
+};

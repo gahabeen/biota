@@ -1,32 +1,33 @@
-import { query as q } from 'faunadb';
-import { FaunaPaginateOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { execute } from '~/tasks';
-import { collectionNameNormalized } from '~/factory/classes/collection';
+import { FaunaPaginateOptions } from '~/types/fauna';
+import { Biota } from '~/biota';
+import { execute } from '~/tools/tasks';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
+import { FrameworkUDFunctionApi } from '~/types/framework/framework.udfunction';
 
-export function activity(this: DB, udfunctionName: string) {
+export const activity: FactoryUDFunction<FrameworkUDFunctionApi['activity']> = function (udfunctionName) {
   const self = this;
 
-  return async function activityMethod(pagination: FaunaPaginateOptions = {}) {
+  return async (pagination = {}) => {
     return execute(
       [
         {
-          name: `Activity for udfunction [${udfunctionName}]`,
+          name: `Activity for (${udfunctionName})`,
           async task() {
-            return self.collection(collectionNameNormalized('actions')).find(
-              {
-                collection: {
-                  $computed: q.Role(udfunctionName),
-                },
-              },
-              pagination,
-            );
+            return {};
+            // return self.udfunction(BiotaCollectionName('actions')).find(
+            //   {
+            //     udfunction: {
+            //       $computed: q.Collection(udfunctionName),
+            //     },
+            //   },
+            //   pagination,
+            // );
           },
         },
       ],
       {
-        domain: 'DB.udfunction.activity',
+        domain: 'Biota.udfunction.activity',
       },
     );
   };
-}
+};

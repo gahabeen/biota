@@ -1,24 +1,24 @@
-import { FaunaDatabaseOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { database } from '~/factory/api/classes/database';
-import { execute } from '~/tasks';
+import { FactoryDatabase } from '~/types/factory/factory.database';
+import { FrameworkDatabaseApi } from '~/types/framework/framework.database';
+import { database } from '~/factory/api/database';
+import { execute } from '~/tools/tasks';
 
-export function upsert(this: DB, collectionName: string) {
+export const upsert: FactoryDatabase<FrameworkDatabaseApi['upsert']> = function (databaseName) {
   const self = this;
 
-  return async function upsertMethod(options: FaunaDatabaseOptions = {}) {
+  return async function upsertMethod(data) {
     return execute(
       [
         {
-          name: `Update/Insert database [${collectionName}]`,
+          name: `Update/Insert (${databaseName})`,
           task() {
-            return self.query(database.upsert.call(self, collectionName, options));
+            return self.query(database(self.context)(databaseName).upsert(data));
           },
         },
       ],
       {
-        domain: 'DB.collection.upsert',
+        domain: 'Biota.database.upsert',
       },
     );
   };
-}
+};

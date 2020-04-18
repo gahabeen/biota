@@ -1,24 +1,24 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
-export function forget(this: DB, roleName: string) {
+export const forget: FactoryRole<FrameworkRoleApi['forget']> = function (roleName) {
   const self = this;
 
-  return async function forgetMethod(id: FaunaId) {
+  return async () => {
     return execute(
       [
         {
-          name: `Forget (${id}) in (${roleName})`,
+          name: `Forget (${roleName})`,
           task() {
-            return self.query(role.forget.call(self, roleName));
+            return self.query(role(self.context)(roleName).forget());
           },
         },
       ],
       {
-        domain: 'DB.role.forget',
+        domain: 'Biota.role.forget',
       },
     );
   };
-}
+};

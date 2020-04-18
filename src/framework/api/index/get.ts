@@ -1,8 +1,9 @@
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function get(this: DB, indexName: string) {
+export const get: FactoryIndex<FrameworkIndexApi['get']> = function (indexName) {
   const self = this;
 
   return async function getMethod() {
@@ -11,13 +12,13 @@ export function get(this: DB, indexName: string) {
         {
           name: `Get (${indexName})`,
           task() {
-            return self.query(index.get.call(self, indexName));
+            return self.query(index(self.context)(indexName).get());
           },
         },
       ],
       {
-        domain: 'DB.index.get',
+        domain: 'Biota.index.get',
       },
     );
   };
-}
+};

@@ -1,24 +1,25 @@
-import { FaunaId, FaunaDocumentOptions, FaunaRoleOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { role } from '~/factory/api/classes/role';
-import { execute } from '~/tasks';
+import { FactoryRole } from '~/types/factory/factory.role';
+import { FrameworkRoleApi } from '~/types/framework/framework.role';
+import { FaunaId } from '~/types/fauna';
+import { role } from '~/factory/api/role';
+import { execute } from '~/tools/tasks';
 
-export function insert(this: DB, roleName: string) {
+export const insert: FactoryRole<FrameworkRoleApi['insert']> = function (roleName) {
   const self = this;
 
-  return async function insertMethod(options: FaunaRoleOptions = {}) {
+  return async function insertMethod(data: any = {}, id: FaunaId = null) {
     return execute(
       [
         {
-          name: `Insert role [${roleName}]`,
+          name: `Insert data in [${roleName}]`,
           task() {
-            return self.query(role.insert.call(self, roleName, options));
+            return self.query(role(self.context)(roleName).insert(data));
           },
         },
       ],
       {
-        domain: 'DB.role.insert',
+        domain: 'Biota.role.insert',
       },
     );
   };
-}
+};

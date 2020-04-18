@@ -1,24 +1,24 @@
-import { FaunaUDFunctionOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { udfunction } from '~/factory/api/classes/udfunction';
-import { execute } from '~/tasks';
+import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
+import { FrameworkUDFunctionApi } from '~/types/framework/framework.udfunction';
+import { udfunction } from '~/factory/api/udfunction';
+import { execute } from '~/tools/tasks';
 
-export function replace(this: DB, udfunctionName: string) {
+export const replace: FactoryUDFunction<FrameworkUDFunctionApi['replace']> = function (udfunctionName) {
   const self = this;
 
-  return async function replaceMethod(options: FaunaUDFunctionOptions = {}) {
+  return async function replaceMethod(options) {
     return execute(
       [
         {
-          name: `Replace udfunction [${udfunctionName}]`,
+          name: `Replace (${udfunctionName})`,
           task() {
-            return self.query(udfunction.replace.call(self, udfunctionName, options));
+            return self.query(udfunction(self.context)(udfunctionName).replace(options));
           },
         },
       ],
       {
-        domain: 'DB.udfunction.replace',
+        domain: 'Biota.udfunction.replace',
       },
     );
   };
-}
+};

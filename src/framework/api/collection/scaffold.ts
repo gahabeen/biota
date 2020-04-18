@@ -1,77 +1,51 @@
-import { FaunaCollectionOptions } from '~/../types/fauna';
-import { DBFrameworkCollectionScaffoldOptions } from '~/../types/framework/framework.collection';
-import { DB } from '~/db';
+import { FaunaCollectionOptions } from '~/types/fauna';
+import { FrameworkCollectionScaffoldOptions } from '~/types/framework/framework.collection';
+import { Biota } from '~/biota';
 import { query as q } from 'faunadb';
-import { upsert } from '~/factory/api/fql/base';
-import { roleNameNormalized, Privilege } from '~/factory/classes/role';
-import { execute } from '~/tasks';
+// import { upsert } from '~/factory/api/fql/base';
+import { BiotaRoleName } from '~/factory/constructors/role';
+import { execute } from '~/tools/tasks';
+import { collection } from '~/factory/api/collection';
+import { collections } from '~/factory/api/collections';
+import { PrivilegeRights } from '~/factory/constructors/privilege';
 
-export function scaffold(this: DB, collectionName: string) {
+export function scaffold(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: DBFrameworkCollectionScaffoldOptions = {}) {
-    let defaultRoles = options.roles || ['biota.user'];
-    let defaultSearchable = [
-      '~ref',
-      '~ts',
-      '_auth.providers.provider',
-      '_auth.providers.id',
-      '_membership.owner',
-      '_membership.roles',
-      '_membership.owner',
-      '_membership.assignees',
-      '_activity.assigned_by',
-      // "_activity.assigned_at",
-      '_activity.owner_changed_by',
-      // "_activity.owner_changed_at",
-      '_activity.credentials_changed_by',
-      // "_activity.credentials_changed_at",
-      '_activity.created_by',
-      // "_activity.created_at",
-      '_activity.updated_by',
-      // "_activity.updated_at",
-      '_activity.replaced_by',
-      // "_activity.replaced_at",
-      '_activity.expired_by',
-      // "_activity.expired_at",
-      '_activity.deleted_by',
-      // "_activity.deleted_at",
-      '_activity.archived_by',
-      // "_activity.archived_at",
-      '_activity.hidden_by',
-      // "_activity.hidden_at"
-    ];
+  return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: FrameworkCollectionScaffoldOptions = {}) {
+    const defaultRoles = options.roles || ['biota.user'];
+    const defaultSearchable = [];
 
-    let { index = defaultSearchable, compute = [], field = [] } = options || {};
+    const { index = defaultSearchable, compute = [], field = [] } = options || {};
 
-    let tasks = [
+    const tasks = [
       {
         name: `Upserting collection (${collectionName})`,
         async task() {
-          return self.query(upsert.collection.call(self, collectionName, collectionOptions));
+          return self.query(collection(self.context)(collectionName).upsert(collectionOptions));
         },
       },
     ];
 
-    for (let indexField of index) {
+    for (const indexField of index) {
       tasks.push({
         name: `Upserting index field (${indexField}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionName).index(indexField, { role: roleNameNormalized('user') });
+          return self.collection(collectionName).index(indexField, { role: BiotaRoleName('user') });
         },
       });
     }
 
-    for (let computeField of compute) {
+    for (const computeField of compute) {
       tasks.push({
         name: `Upserting viewable field (${computeField.field}) on (${collectionName})`,
         async task() {
-          return self.collection(collectionName).compute(computeField, { role: roleNameNormalized('user') });
+          return self.collection(collectionName).compute(computeField, { role: BiotaRoleName('user') });
         },
       });
     }
 
-    for (let fieldField of field) {
+    for (const fieldField of field) {
       tasks.push({
         name: `Upserting viewable field (${fieldField.field}) on (${collectionName})`,
         async task() {
@@ -80,47 +54,47 @@ export function scaffold(this: DB, collectionName: string) {
       });
     }
 
-    for (let role of defaultRoles) {
+    for (const role of defaultRoles) {
       tasks.push({
         name: `Adding collection ${collectionName} to [${role}] role`,
         async task() {
-          return self.role(role).privilege.repsert(
-            Privilege({
+          return self.role(role).privilege.set(
+            PrivilegeRights({
               resource: q.Collection(collectionName),
-              actions: {
-                create: 'all',
-                read: ['self', 'owner', 'assignee'],
-                write: ['self', 'owner', 'assignee'],
-                delete: 'owner',
+              rights: {
+                insert: true,
+                get: ['self', 'owner', 'assignee'],
+                update: ['self', 'owner', 'assignee'],
+                replace: ['self', 'owner', 'assignee'],
+                delete: ['owner'],
               },
             }),
           );
-          // .then(res => console.log(JSON.stringify(res.privileges[0], null, 2)))
         },
       });
     }
 
-    tasks.push({
-      name: `Adding collection ${collectionName} to [system] role`,
-      async task() {
-        return self.role(roleNameNormalized('system')).privilege.upsert(
-          Privilege({
-            resource: q.Collection(collectionName),
-            actions: {
-              create: 'all',
-              read: 'all',
-              history_read: 'all',
-              history_write: 'all',
-              write: 'all',
-              delete: 'all',
-            },
-          }),
-        );
-      },
-    });
+    // tasks.push({
+    //   name: `Adding collection ${collectionName} to [system] role`,
+    //   async task() {
+    //     return self.role(BiotaRoleName('system')).privilege.set(
+    //       PrivilegeRights({
+    //         resource: q.Collection(collectionName),
+    //         actions: {
+    //           create: 'all',
+    //           read: 'all',
+    //           history_read: 'all',
+    //           history_write: 'all',
+    //           write: 'all',
+    //           delete: 'all',
+    //         },
+    //       }),
+    //     );
+    //   },
+    // });
 
     return execute(tasks, {
-      domain: 'DB.collection.scaffold',
+      domain: 'Biota.collection.scaffold',
     });
   };
 }

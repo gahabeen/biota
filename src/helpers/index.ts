@@ -28,7 +28,7 @@ export function stringPath(p: string | string[]) {
   }
 }
 
-export function path(p: string | string[]) {
+export function path(p: string | string[], autoprefixing: boolean = true) {
   let pathArray = [];
   if (Array.isArray(p)) {
     pathArray = p.map((a) => `${a}`);
@@ -37,13 +37,16 @@ export function path(p: string | string[]) {
     pathArray = p.split('.');
   }
 
-  if (pathArray.length > 0) {
-    if (pathArray[0].startsWith('~')) {
-      pathArray[0] = pathArray[0].slice(1);
-    } else {
-      pathArray.unshift('data');
+  if (autoprefixing) {
+    if (pathArray.length > 0) {
+      if (pathArray[0].startsWith('~')) {
+        pathArray[0] = pathArray[0].slice(1);
+      } else {
+        pathArray.unshift('data');
+      }
     }
   }
+
   return pathArray;
 }
 

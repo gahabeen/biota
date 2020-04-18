@@ -1,24 +1,24 @@
-import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function repsert(this: DB, indexName: string) {
+export const repsert: FactoryIndex<FrameworkIndexApi['repsert']> = function (indexName) {
   const self = this;
 
-  return async function repsertMethod(options: FaunaIndexOptions) {
+  return async function repsertMethod(options) {
     return execute(
       [
         {
-          name: `Repsert (${indexName})`,
+          name: `Replace/Insert (${indexName})`,
           task() {
-            return self.query(index.repsert.call(self, indexName, options));
+            return self.query(index(self.context)(indexName).repsert(options));
           },
         },
       ],
       {
-        domain: 'DB.index.repsert',
+        domain: 'Biota.index.repsert',
       },
     );
   };
-}
+};

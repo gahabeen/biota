@@ -1,24 +1,26 @@
-import { DB } from '~/db';
-import { FaunaCollectionOptions, FaunaId } from '~/../types/fauna';
-import { document } from '~/factory/api/classes/document';
-import { execute } from '~/tasks';
+import { FactoryDocument } from '~/types/factory/factory.document';
+import { FrameworkDocumentApi } from '~/types/framework/framework.document';
+import { Biota } from '~/biota';
+import { document } from '~/factory/api/document';
+import { execute } from '~/tools/tasks';
 
-export function delete_(this: DB, collectionName: string, id: FaunaId) {
+// tslint:disable-next-line: variable-name
+export const delete_: FactoryDocument<FrameworkDocumentApi['delete']> = function (this: Biota, collectionName, id) {
   const self = this;
 
-  return async function deleteMethod() {
+  return async () => {
     return execute(
       [
         {
-          name: `Delete (${id}) in (${collectionName})`,
+          name: `Delete [${collectionName}/${id}]`,
           task() {
-            return self.query(document.delete.call(self, collectionName, id));
+            return self.query(document(self.context)(collectionName, id).delete());
           },
         },
       ],
       {
-        domain: 'DB.document.delete',
+        domain: 'Biota.document.delete',
       },
     );
   };
-}
+};

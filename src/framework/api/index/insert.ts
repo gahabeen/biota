@@ -1,24 +1,25 @@
-import { FaunaIndexOptions } from '~/../types/fauna';
-import { DB } from '~/db';
-import { index } from '~/factory/api/classes/index';
-import { execute } from '~/tasks';
+import { FactoryIndex } from '~/types/factory/factory.index';
+import { FrameworkIndexApi } from '~/types/framework/framework.index';
+import { FaunaId } from '~/types/fauna';
+import { index } from '~/factory/api/index';
+import { execute } from '~/tools/tasks';
 
-export function insert(this: DB, indexName: string) {
+export const insert: FactoryIndex<FrameworkIndexApi['insert']> = function (indexName) {
   const self = this;
 
-  return async function insertMethod(options: FaunaIndexOptions) {
+  return async function insertMethod(data: any = {}, id: FaunaId = null) {
     return execute(
       [
         {
-          name: `Insert (${indexName})`,
+          name: `Insert data in [${indexName}]`,
           task() {
-            return self.query(index.insert.call(self, indexName, options));
+            return self.query(index(self.context)(indexName).insert(data));
           },
         },
       ],
       {
-        domain: 'DB.index.insert',
+        domain: 'Biota.index.insert',
       },
     );
   };
-}
+};
