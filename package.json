@@ -1,6 +1,6 @@
 {
   "name": "biota",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "a simple, yet powerful, framework for faunadb",
   "homepage": ".",
   "main": "dist/index.js",
