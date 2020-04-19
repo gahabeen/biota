@@ -9,6 +9,7 @@ import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
+import { DEFAULT_EXPIRATION_DURATION } from '~/consts';
 
 // tslint:disable-next-line: only-arrow-functions
 export const session: FactoryContext<FactorySession> = function (context): FactorySession {
@@ -16,18 +17,18 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
   return (id = null) => {
     return {
       ...document(context, { prefix: 'Session' })(BiotaCollectionName('user_sessions'), id),
-      start(expireAt, user = ContextProp(q.Var('ctx'), 'identity')) {
-        const inputs = { expireAt, user };
+      start(expireIn, user = ContextProp(q.Var('ctx'), 'identity')) {
+        const inputs = { expireIn, user };
         // ----
         const query = Query(
           {
             doc: q.Let(
               {
-                validExpireAt: q.Or(q.IsNumber(q.Var('expireAt')), q.IsTimestamp(q.Var('expireAt'))),
+                validExpireIn: q.IsNumber(q.Var('expireIn')),
                 expire_at: q.If(
-                  q.Var('validExpireAt'),
-                  q.TimeAdd(q.Now(), q.ToNumber(q.Var('expireAt')), 'milliseconds'),
-                  q.TimeAdd(q.Now(), 1, 'hours'),
+                  q.Var('validExpireIn'),
+                  q.TimeAdd(q.Now(), q.ToNumber(q.Var('expireIn')), 'milliseconds'),
+                  q.TimeAdd(q.Now(), DEFAULT_EXPIRATION_DURATION, 'milliseconds'),
                 ),
               },
               q.Let(

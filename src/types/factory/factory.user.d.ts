@@ -1,5 +1,5 @@
 import { Expr } from 'faunadb';
-import { FaunaId, FaunaRef, FaunaDocumentOptions, FaunaString } from '../fauna';
+import { FaunaId, FaunaRef, FaunaDocumentOptions, FaunaString, FaunaTime } from '../fauna';
 import { DocumentAuthAccount } from '../document';
 import { FactoryDocumentApi } from './factory.document';
 
@@ -23,10 +23,10 @@ export interface FactoryDocumentAuthApi<OT = Expr> {
 export type FactoryUser<OT = FactoryUserApi> = (id?: FaunaId) => OT;
 
 export interface FactoryUserApi<OT = Expr> extends FactoryDocumentApi<Expr> {
-  register(email: FaunaString, password: FaunaString, data?: FaunaDocumentOptions['data']): OT;
-  registerWithAuthAccount(account: DocumentAuthAccount): OT;
-  login(email: FaunaString, password: FaunaString): OT;
-  loginWithAuthAccount(account: DocumentAuthAccount): OT;
+  register(email: FaunaString, password: FaunaString, data?: FaunaDocumentOptions['data'], expireIn?: FaunaTime): OT;
+  registerWithAuthAccount(account: DocumentAuthAccount, expireIn?: FaunaTime): OT;
+  login(email: FaunaString, password: FaunaString, expireIn?: FaunaTime): OT;
+  loginWithAuthAccount(account: DocumentAuthAccount, expireIn?: FaunaTime): OT;
   logout(everywhere: boolean): OT;
   changePassword(currentPassword: FaunaString, password: FaunaString): OT;
   auth: FactoryDocumentAuthApi<OT>;

@@ -1,26 +1,24 @@
-import { FactoryUser } from '~/types/factory/factory.user';
-import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { query as q } from 'faunadb';
+import { Biota } from '~/biota';
+import { Identity } from '~/factory/api/ql';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
-import { query as q } from 'faunadb';
-import { Identity } from '~/factory/api/ql';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
 
-export const currentUserUpdate: FactoryUser<FrameworkUserApi['update']> = function (id) {
+export const currentUserUpdate: FrameworkUserApi['update'] = function (this: Biota, data) {
   const self = this;
 
-  return async function updateMethod(data) {
-    return execute(
-      [
-        {
-          name: `Update current user`,
-          task() {
-            return self.query(user(self.context)(q.Select('id', Identity(), null)).update(data));
-          },
-        },
-      ],
+  return execute(
+    [
       {
-        domain: 'Biota.current.user.update',
+        name: `Update current user`,
+        task() {
+          return self.query(user(self.context)(q.Select('id', Identity(), null)).update(data));
+        },
       },
-    );
-  };
+    ],
+    {
+      domain: 'Biota.current.user.update',
+    },
+  );
 };

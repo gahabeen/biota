@@ -18,22 +18,22 @@ import { currentUserRestore } from '~/framework/api/current/user/restore';
 import { currentUserRemember } from '~/framework/api/current/user/remember';
 
 export const user: FrameworkCurrentUserApi = {
-  me: currentUserMe(),
-  login: currentUserLogin(),
-  loginWithAuthAccount: currentUserLoginWithAuthAccount(),
-  register: currentUserRegister(),
-  registerWithAuthAccount: currentUserRegisterWithAuthAccount(),
-  changePassword: currentUserPasswordChangePassword(),
-  logout: currentUserLogout(),
+  me: currentUserMe,
+  login: currentUserLogin,
+  loginWithAuthAccount: currentUserLoginWithAuthAccount,
+  register: currentUserRegister,
+  registerWithAuthAccount: currentUserRegisterWithAuthAccount,
+  changePassword: currentUserPasswordChangePassword,
+  logout: currentUserLogout,
 
-  update: currentUserUpdate(),
-  replace: currentUserReplace(),
-  delete: curentUserDelete(),
-  forget: currentUserForget(),
-  activity: currentUserActivity(),
-  history: currentUserHistory(),
-  restore: currentUserRestore(),
-  remember: currentUserRemember(),
+  update: currentUserUpdate,
+  replace: currentUserReplace,
+  delete: curentUserDelete,
+  forget: currentUserForget,
+  activity: currentUserActivity,
+  history: currentUserHistory,
+  restore: currentUserRestore,
+  remember: currentUserRemember,
 
   // google: {
   //   loginUrl: googleLoginUrl,

@@ -1,24 +1,21 @@
-import { FactoryUser } from '~/types/factory/factory.user';
-import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { Biota } from '~/biota';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
 
-export const currentUserLogout: FactoryUser<FrameworkUserApi['logout']> = function (id = null) {
+export const currentUserLogout: FrameworkUserApi['logout'] = function (this: Biota, everywhere) {
   const self = this;
-
-  return async (everywhere) => {
-    return execute(
-      [
-        {
-          name: `Logout ${everywhere ? ` from everywhere` : ''}`,
-          task() {
-            return self.query(user(self.context)().logout(everywhere));
-          },
-        },
-      ],
+  return execute(
+    [
       {
-        domain: 'Biota.current.user.logout',
+        name: `Logout ${everywhere ? ` from everywhere` : ''}`,
+        task() {
+          return self.query(user(self.context)().logout(everywhere));
+        },
       },
-    );
-  };
+    ],
+    {
+      domain: 'Biota.current.user.logout',
+    },
+  );
 };

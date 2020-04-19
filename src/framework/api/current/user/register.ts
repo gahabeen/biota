@@ -1,31 +1,29 @@
-import { FactoryUser } from '~/types/factory/factory.user';
-import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { Biota } from '~/biota';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
-import { Biota } from '~/biota';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
 
-export const currentUserRegister: FactoryUser<FrameworkUserApi['register']> = function (id = null) {
+export const currentUserRegister: FrameworkUserApi['register'] = function (this: Biota, email, password, data = {}, expireIn = null) {
   const self = this;
 
-  return async (email, password, data) => {
-    return execute(
-      [
-        {
-          name: `Register ${email}`,
-          task() {
-            return self.query(user(self.context)().register(email, password, data)).then(({ secret }) => {
-              if (secret) {
-                return new Biota({ secret });
-              } else {
-                return self;
-              }
-            });
-          },
-        },
-      ],
+  return execute(
+    [
       {
-        domain: 'Biota.current.user.register',
+        name: `Register ${email}`,
+        task() {
+          return self.query(user(self.context)().register(email, password, data, expireIn)).then((res: any) => {
+            const { secret } = (res.data as any) || {};
+            if (secret) {
+              return new Biota({ secret });
+            } else {
+              return self;
+            }
+          });
+        },
       },
-    );
-  };
+    ],
+    {
+      domain: 'Biota.current.user.register',
+    },
+  );
 };

@@ -2,7 +2,7 @@ import { Expr, query as q } from 'faunadb';
 import { DocumentAuthAccount } from '~/types/document';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryUser } from '~/types/factory/factory.user';
-import { PAGINATION_SIZE_MAX } from '~/consts';
+import { PAGINATION_SIZE_MAX, DEFAULT_EXPIRATION_DURATION } from '~/consts';
 import { action } from '~/factory/api/action';
 import { credential } from '~/factory/api/credential';
 import { document } from '~/factory/api/document';
@@ -20,17 +20,16 @@ import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (context): FactoryUser {
   // tslint:disable-next-line: only-arrow-functions
-  return (idOrRef = null) => {
-    const ref = q.If(q.IsDoc(idOrRef), idOrRef, q.Ref(q.Collection(BiotaCollectionName('users')), idOrRef));
-    const refExists = (refExpr: Expr) => {
-      return q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: refExpr }), true);
-    };
+  return (id = null) => {
+    const ref = q.If(q.IsString(id), q.Ref(q.Collection(BiotaCollectionName('users')), id), q.Collection(BiotaCollectionName('users')));
+    // const refExists = (refExpr: Expr) => {
+    //   return q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: refExpr }), true);
+    // };
 
     return {
       ...document(context, { prefix: 'User' })(ref),
-      login(email, password) {
-        // #improve: add expirationDuration
-        const inputs = { email, password };
+      login(email, password, expireIn) {
+        const inputs = { email, password, expireIn };
         // ----
         const query = Query(
           {
@@ -42,7 +41,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             ),
             identified_user: q.Identify(ContextProp(q.Var('ctx'), 'identity'), q.Var('password')),
             is_identified_user: q.If(q.Var('identified_user'), true, ThrowError(q.Var('ctx'), 'User email or password is wrong')),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))), // #improve: add expirationDuration
+            session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
             action: action(q.Var('ctx'))('login', q.Var('userRef')).log(),
           },
           q.Var('session'),
@@ -117,9 +116,8 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserChangePassword'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      loginWithAuthAccount(account) {
-        // #improve: add expirationDuration
-        const inputs = { account };
+      loginWithAuthAccount(account, expireIn) {
+        const inputs = { account, expireIn };
         // ----
         const query = Query(
           {
@@ -134,7 +132,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               true,
               ThrowError(q.Var('ctx'), "Could'nt find the user", { account: q.Var('account') }),
             ),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))), // #improve: add expirationDuration
+            session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
           },
           q.Var('session'),
         );
@@ -143,12 +141,16 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserLoginWithAuthAccount'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      register(email, password, data) {
-        const inputs = { email, password, data };
+      register(email = null, password = null, data = {}, expireIn = null) {
+        const inputs = { email, password, data, expireIn };
         // ----
         const query = Query(
           {
-            userRef: q.Select('ref', ResultData(user(q.Var('ctx'))().insert(q.Var('data'))), null),
+            userRef: q.Select(
+              'ref',
+              ResultData(user(q.Var('ctx'))(q.Collection(BiotaCollectionName('users'))).insert(q.Var('data'))),
+              null,
+            ),
             user_email: ResultData(user(q.Var('ctx'))(q.Var('userRef')).auth.email.set(q.Var('email'))),
             user_owner: ResultData(user(q.Var('ctx'))(q.Var('userRef')).membership.owner.set(q.Var('userRef'))),
             user_user_role: ResultData(
@@ -157,7 +159,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                 .set(),
             ),
             user_credentials: ResultData(credential(q.Var('ctx'))(q.Var('userRef')).insert(q.Var('password'))),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))), // #improve: add expirationDuration
+            session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
             action: action(q.Var('ctx'))('register', q.Var('userRef')).log(),
           },
           q.Var('session'),
@@ -168,12 +170,12 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserRegister'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      registerWithAuthAccount(account) {
-        const inputs = { account };
+      registerWithAuthAccount(account, expireIn) {
+        const inputs = { account, expireIn };
         // ----
         const query = Query(
           {
-            userRef: q.Select('ref', ResultData(user(q.Var('ctx'))().insert({})), null),
+            userRef: q.Select('ref', ResultData(user(q.Var('ctx'))(q.Collection(BiotaCollectionName('users'))).insert({})), null),
             user_auth_account: ResultData(user(q.Var('ctx'))(q.Var('userRef')).auth.account.set(q.Var('account') as DocumentAuthAccount)),
             user_owner: ResultData(user(q.Var('ctx'))(q.Var('userRef')).membership.owner.set(q.Var('userRef'))),
             user_user_role: ResultData(
@@ -181,7 +183,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                 .membership.role(q.Role(BiotaRoleName('user')))
                 .set(),
             ),
-            session: ResultData(session(q.Var('ctx'))().start(null, q.Var('userRef'))),
+            session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
             action: action(q.Var('ctx'))('register', q.Var('userRef')).log(),
           },
           q.Var('session'),

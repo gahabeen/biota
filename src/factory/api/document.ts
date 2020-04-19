@@ -19,7 +19,11 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
     const ref = q.If(
       q.IsRef(collectionOrRef),
       collectionOrRef,
-      q.If(q.IsString(id), q.Ref(q.Collection(collectionOrRef), id), q.Collection(collectionOrRef)),
+      q.If(
+        q.IsString(collectionOrRef),
+        q.If(q.IsString(id), q.Ref(q.Collection(collectionOrRef), id), q.Collection(collectionOrRef)),
+        ThrowError(context, 'No valid collection and id', { collectionOrRef, id }),
+      ),
     );
     const refExists = (refExpr: Expr) => {
       return q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: refExpr }), true);
@@ -569,9 +573,9 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 }),
               ),
               doc: q.If(
-                q.IsTimestamp(q.Var('ctx')),
+                q.IsTimestamp(q.Var('at')),
                 ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-                ThrowError(q.Var('ctx'), "[at] isn't a valid time", { at: q.Var('ctx') }),
+                ThrowError(q.Var('ctx'), "[at] isn't a valid time", { at: q.Var('at') }),
               ),
               action: action(q.Var('ctx'))('expire', q.Var('doc')).log(),
             },

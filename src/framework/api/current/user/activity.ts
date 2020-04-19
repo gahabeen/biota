@@ -1,31 +1,28 @@
-import { FactoryUser } from '~/types/factory/factory.user';
-import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { execute } from '~/tools/tasks';
+import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { Biota } from '~/biota';
 
-export const currentUserActivity: FactoryUser<FrameworkUserApi['activity']> = function (id = null) {
+export const currentUserActivity: FrameworkUserApi['activity'] = function (this: Biota, pagination = {}) {
   const self = this;
-
-  return async (pagination = {}) => {
-    return execute(
-      [
-        {
-          name: `Activity of current user`,
-          async task() {
-            return {};
-            // return self.user(BiotaCollectionName('actions')).find(
-            //   {
-            //     user: {
-            //       $computed: q.Collection(id),
-            //     },
-            //   },
-            //   pagination,
-            // );
-          },
-        },
-      ],
+  return execute(
+    [
       {
-        domain: 'Biota.current.user.activity',
+        name: `Activity of current user`,
+        async task() {
+          return {};
+          // return self.user(BiotaCollectionName('actions')).find(
+          //   {
+          //     user: {
+          //       $computed: q.Collection(id),
+          //     },
+          //   },
+          //   pagination,
+          // );
+        },
       },
-    );
-  };
+    ],
+    {
+      domain: 'Biota.current.user.activity',
+    },
+  );
 };

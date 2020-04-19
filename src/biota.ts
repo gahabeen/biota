@@ -25,6 +25,7 @@ import { FactoryTokenApi } from './types/factory/factory.token';
 import { FrameworkTokensApi } from './types/framework/framework.tokens';
 import { bindSubFunctions } from './helpers';
 import { FrameworkFoundation, FoundationOptions } from './types/framework/framework.foundation';
+import { FrameworkCurrentApi } from './types/framework/framework.current';
 
 // interface BiotaRunningAS {
 //   role?: FaunaRef;
@@ -55,6 +56,8 @@ export class Biota {
   }
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
+
+  current: FrameworkCurrentApi;
 
   user: (idOrRef?: FaunaId | FaunaRef) => FrameworkUserApi;
   users: (collectionName?: string) => FrameworkUsersApi;
@@ -129,6 +132,9 @@ export class Biota {
 
     this.query = framework.query.bind(this);
     this.paginate = framework.paginate.bind(this);
+
+    this.current = framework.current;
+    bindSubFunctions(this, 'current');
 
     this.document = framework.document.bind(this);
     this.documents = framework.documents.bind(this);

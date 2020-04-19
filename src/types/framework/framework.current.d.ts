@@ -1,9 +1,4 @@
-import { FaunaPaginateOptions, FaunaPaginateMapper, FaunaString, FaunaDatabaseOptions, FaunaTime, FaunaNumber } from '~/types/fauna';
-import { Expr } from 'faunadb';
-
-export interface FrameworkCurrentUserApi {
-  _empty: string;
-}
+import { FrameworkCurrentUserApi } from './framework.current.user';
 
 export interface FrameworkCurrentSessionsApi {
   _empty: string;

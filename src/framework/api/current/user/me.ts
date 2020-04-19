@@ -1,26 +1,24 @@
 import { query as q } from 'faunadb';
-import { FactoryUser } from '~/types/factory/factory.user';
-import { FrameworkCurrentUserApi } from '~/types/framework/framework.current.user';
+import { Biota } from '~/biota';
+import { Identity } from '~/factory/api/ql';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
-import { Identity } from '~/factory/api/ql';
+import { FrameworkCurrentUserApi } from '~/types/framework/framework.current.user';
 
-export const currentUserMe: FactoryUser<FrameworkCurrentUserApi['me']> = function () {
+export const currentUserMe: FrameworkCurrentUserApi['me'] = function (this: Biota) {
   const self = this;
-
-  return async () => {
-    return execute(
-      [
-        {
-          name: `Get current user`,
-          task() {
-            return self.query(user(self.context)(q.Select('id', Identity(), null)).get());
-          },
-        },
-      ],
+  return execute(
+    [
       {
-        domain: 'Biota.current.user.me',
+        name: `Get current user`,
+        task() {
+          return self.query(q.Identity());
+          // return self.query(user(self.context)(q.Select('id', Identity(), null)).get());
+        },
       },
-    );
-  };
+    ],
+    {
+      domain: 'Biota.current.user.me',
+    },
+  );
 };
