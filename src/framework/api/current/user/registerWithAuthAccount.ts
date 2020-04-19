@@ -11,7 +11,8 @@ export const currentUserRegisterWithAuthAccount: FrameworkUserApi['registerWithA
       {
         name: `Register with Auth Account ${account.provider}`,
         task() {
-          return self.query(user(self.context)().registerWithAuthAccount(account)).then(({ secret }) => {
+          return self.query(user(self.context)().registerWithAuthAccount(account)).then((res: any) => {
+            const { secret } = (res.data as any) || {};
             if (secret) {
               return new Biota({ secret });
             } else {

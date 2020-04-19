@@ -11,7 +11,8 @@ export const currentUserLoginWithAuthAccount: FrameworkUserApi['loginWithAuthAcc
       {
         name: `Login with Auth Account ${account.provider}`,
         task() {
-          return self.query(user(self.context)().loginWithAuthAccount(account)).then(({ secret }) => {
+          return self.query(user(self.context)().loginWithAuthAccount(account)).then((res: any) => {
+            const { secret } = (res.data as any) || {};
             if (secret) {
               return new Biota({ secret });
             } else {

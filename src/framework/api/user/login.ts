@@ -6,13 +6,13 @@ import { execute } from '~/tools/tasks';
 export const login: FactoryUser<FrameworkUserApi['login']> = function (id = null) {
   const self = this;
 
-  return async (email, password) => {
+  return async (email = null, password = null, expireIn = null) => {
     return execute(
       [
         {
           name: `Login for ${email}`,
           task() {
-            return self.query(user(self.context)().login(email, password));
+            return self.query(user(self.context)().login(email, password, expireIn));
           },
         },
       ],

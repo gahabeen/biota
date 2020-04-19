@@ -22,7 +22,11 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       // ---
       const query = Query(
         {
-          user: q.Select(0, q.Match(q.Index(BiotaIndexName('users__by__auth_account')), [q.Var('provider'), q.Var('accountId')]), null),
+          user: q.Select(
+            0,
+            q.Paginate(q.Match(q.Index(BiotaIndexName('users__by__auth_account')), [q.Var('provider'), q.Var('accountId')])),
+            null,
+          ),
           userIsValid: q.If(
             q.IsDoc(q.Var('user')),
             true,
@@ -41,7 +45,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       // ---
       const query = Query(
         {
-          user: q.Select(0, q.Match(q.Index(BiotaIndexName('users__by__auth_email')), q.Var('email')), null),
+          user: q.Select(0, q.Paginate(q.Match(q.Index(BiotaIndexName('users__by__auth_email')), q.Var('email'))), null),
           userIsValid: q.If(q.IsDoc(q.Var('user')), true, ThrowError(q.Var('ctx'), "Could'nt find the user", { email: q.Var('email') })),
         },
         q.Var('user'),

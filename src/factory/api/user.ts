@@ -32,18 +32,19 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
 
     return {
       ...document(context, { prefix: 'User' })(ref),
-      login(email, password, expireIn) {
+      login(email = null, password = null, expireIn = null) {
         const inputs = { email, password, expireIn };
         // ----
         const query = Query(
           {
+            ok: true,
             userRef: ResultData(users(q.Var('ctx')).getByAuthEmail(q.Var('email'))),
             userIsValid: q.If(
               q.IsDoc(q.Var('userRef')),
               true,
               ThrowError(q.Var('ctx'), "Couldn't find the user", { email: q.Var('email') }),
             ),
-            identified_user: q.Identify(ContextProp(q.Var('ctx'), 'identity'), q.Var('password')),
+            identified_user: q.Identify(q.Var('userRef'), q.Var('password')),
             is_identified_user: q.If(q.Var('identified_user'), true, ThrowError(q.Var('ctx'), 'User email or password is wrong')),
             session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
             action: action(q.Var('ctx'))('login', q.Var('userRef')).log(),
@@ -56,7 +57,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserLogin'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      logout(everywhere) {
+      logout(everywhere = null) {
         const inputs = { everywhere };
         // ----
         const query = Query(
@@ -100,7 +101,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserLogout'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      changePassword(currentPassword, password) {
+      changePassword(currentPassword = null, password = null) {
         const inputs = { currentPassword, password };
         // ----
         const query = Query(
@@ -120,7 +121,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserChangePassword'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      loginWithAuthAccount(account, expireIn) {
+      loginWithAuthAccount(account = null, expireIn = null) {
         const inputs = { account, expireIn };
         // ----
         const query = Query(
@@ -174,7 +175,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserRegister'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      registerWithAuthAccount(account, expireIn) {
+      registerWithAuthAccount(account = null, expireIn = null) {
         const inputs = { account, expireIn };
         // ----
         const query = Query(
@@ -200,7 +201,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
       },
       auth: {
         email: {
-          set(email) {
+          set(email = null) {
             const inputs = { ref, email };
             // ----
             const query = Query(
@@ -246,7 +247,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
           },
         },
         account: {
-          distinct(account) {
+          distinct(account = null) {
             const inputs = { ref, account };
             // ----
             const query = Query(
@@ -286,7 +287,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             const online = { name: BiotaFunctionName('UserAuthAccountsDistinct'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
-          difference(provider, accountId) {
+          difference(provider = null, accountId = null) {
             const inputs = { ref, provider, accountId };
             // ----
             const query = Query(
@@ -312,7 +313,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             const online = { name: BiotaFunctionName('UserAuthAccountsDifference'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
-          set(account) {
+          set(account = null) {
             const inputs = { ref, account };
             // ----
             const query = Query(
@@ -332,7 +333,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             const online = { name: BiotaFunctionName('UserAuthAccountsSet'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
-          remove(provider, accountId) {
+          remove(provider = null, accountId = null) {
             const inputs = { ref, provider, accountId };
             // ----
             const query = Query(

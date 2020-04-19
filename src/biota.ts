@@ -57,6 +57,10 @@ export class Biota {
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
+  me: FrameworkCurrentApi['user']['me'];
+  login: FrameworkCurrentApi['user']['login'];
+  register: FrameworkCurrentApi['user']['register'];
+  logout: FrameworkCurrentApi['user']['logout'];
   current: FrameworkCurrentApi;
 
   user: (idOrRef?: FaunaId | FaunaRef) => FrameworkUserApi;
@@ -170,6 +174,11 @@ export class Biota {
     self.foundation = framework.foundation.bind(self);
     self.dismantle = framework.dismantle.bind(self);
     // self.relation = framework.relation.bind(self);
+
+    self.me = self.current.user.me;
+    self.register = self.current.user.register;
+    self.login = self.current.user.login;
+    self.logout = self.current.user.logout;
 
     // self.privateKey = framework.privateKey.bind(self);
     // self.defaults = framework.defaults;

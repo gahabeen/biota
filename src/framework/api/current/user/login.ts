@@ -10,7 +10,8 @@ export const currentUserLogin: FrameworkCurrentUserApi['login'] = function (this
       {
         name: `Login`,
         task() {
-          return self.query(user(self.context)().login(email, password)).then(({ secret }) => {
+          return self.query(user(self.context)().login(email, password)).then((res: any) => {
+            const { secret } = (res.data as any) || {};
             if (secret) {
               return new Biota({ secret });
             } else {
