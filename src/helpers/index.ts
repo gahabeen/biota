@@ -2,8 +2,8 @@ import { SIMPLE_SEPARATOR, DOUBLE_SEPARATOR } from '~/consts';
 
 export function bindSubFunctions(self, rootKey) {
   const resolver = (value) => {
-    let entries = Object.entries(value);
-    for (let [key, entry] of entries) {
+    const entries = Object.entries(value);
+    for (const [key, entry] of entries) {
       if (typeof entry === 'object') {
         value[key] = resolver(entry);
       } else if (typeof entry === 'function') {
@@ -68,7 +68,7 @@ export function splitTextEvery(nb: number, text: string) {
 }
 
 export function splitEvery(nb: number, items: any[]) {
-  let result = [];
+  const result = [];
   let index = 0;
   while (index < items.length) {
     result.push(items.slice(index, (index += nb)));

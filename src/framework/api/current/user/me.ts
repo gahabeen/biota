@@ -12,8 +12,7 @@ export const currentUserMe: FrameworkCurrentUserApi['me'] = function (this: Biot
       {
         name: `Get current user`,
         task() {
-          return self.query(q.Identity());
-          // return self.query(user(self.context)(q.Select('id', Identity(), null)).get());
+          return self.query(user(self.context)(q.Select('id', Identity(), null)).get());
         },
       },
     ],

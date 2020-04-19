@@ -20,8 +20,12 @@ import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (context): FactoryUser {
   // tslint:disable-next-line: only-arrow-functions
-  return (id = null) => {
-    const ref = q.If(q.IsString(id), q.Ref(q.Collection(BiotaCollectionName('users')), id), q.Collection(BiotaCollectionName('users')));
+  return (idOrRef = null) => {
+    const ref = q.If(
+      q.IsRef(idOrRef),
+      idOrRef,
+      q.If(q.IsString(idOrRef), q.Ref(q.Collection(BiotaCollectionName('users')), idOrRef), q.Collection(BiotaCollectionName('users'))),
+    );
     // const refExists = (refExpr: Expr) => {
     //   return q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: refExpr }), true);
     // };

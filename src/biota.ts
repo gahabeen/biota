@@ -43,7 +43,7 @@ import { FrameworkCurrentApi } from './types/framework/framework.current';
  * ```
  */
 export class Biota {
-  client: Fauna.Client;
+  client: any; //Fauna.Client;
   private _secret: string;
   private _context: FactoryContextDefinition;
   // _runningAs: BiotaRunningAS;
@@ -89,11 +89,12 @@ export class Biota {
   defaults: any;
 
   constructor(options: BiotaOptions) {
+    const self = this;
     const { secret, debug, document, offline } = options || {};
     const { annotate = true, logActions = true } = document || {};
 
-    this._secret = secret;
-    this._context = {
+    self._secret = secret;
+    self._context = {
       offline,
       annotateDocuments: annotate,
       logActions,
@@ -102,15 +103,15 @@ export class Biota {
     };
 
     const { paths = {}, protectedPaths = {} } = document || {};
-    this.documentOptions = {};
-    this.documentOptions.protectedPaths = {
+    self.documentOptions = {};
+    self.documentOptions.protectedPaths = {
       _auth: true,
       _membership: true,
       _validity: true,
       _activity: true,
       ...protectedPaths,
     };
-    this.documentOptions.paths = {
+    self.documentOptions.paths = {
       _auth: '_auth',
       '_auth.email': '_auth.email',
       '_auth.accounts': '_auth.accounts',
@@ -126,52 +127,52 @@ export class Biota {
     };
 
     try {
-      this.client = new fauna.Client({ secret });
+      self.client = new fauna.Client({ secret });
       // tslint:disable-next-line: no-empty
     } catch (error) {}
 
-    this.query = framework.query.bind(this);
-    this.paginate = framework.paginate.bind(this);
+    self.query = framework.query.bind(self);
+    self.paginate = framework.paginate.bind(self);
 
-    this.current = framework.current;
-    bindSubFunctions(this, 'current');
+    self.current = framework.current;
+    bindSubFunctions(self, 'current');
 
-    this.document = framework.document.bind(this);
-    this.documents = framework.documents.bind(this);
-    this.collection = framework.collection.bind(this);
-    this.collections = framework.collections;
-    bindSubFunctions(this, 'collections');
-    this.database = framework.database.bind(this);
-    this.databases = framework.databases;
-    bindSubFunctions(this, 'databases');
-    this.role = framework.role.bind(this);
-    this.roles = framework.roles;
-    bindSubFunctions(this, 'roles');
-    this.udfunction = framework.udfunction.bind(this);
-    this.udfunctions = framework.udfunctions;
-    bindSubFunctions(this, 'udfunctions');
-    this.session = framework.session.bind(this);
-    this.sessions = framework.sessions;
-    bindSubFunctions(this, 'sessions');
-    this.index = framework.index.bind(this);
-    this.indexes = framework.indexes;
-    bindSubFunctions(this, 'indexes');
-    this.credential = framework.credential.bind(this);
-    this.credentials = framework.credentials;
-    bindSubFunctions(this, 'credentials');
-    this.key = framework.key.bind(this);
-    this.keys = framework.keys;
-    bindSubFunctions(this, 'keys');
-    this.token = framework.token.bind(this);
-    this.tokens = framework.tokens;
-    bindSubFunctions(this, 'tokens');
+    self.document = framework.document.bind(self);
+    self.documents = framework.documents.bind(self);
+    self.collection = framework.collection.bind(self);
+    self.collections = framework.collections;
+    bindSubFunctions(self, 'collections');
+    self.database = framework.database.bind(self);
+    self.databases = framework.databases;
+    bindSubFunctions(self, 'databases');
+    self.role = framework.role.bind(self);
+    self.roles = framework.roles;
+    bindSubFunctions(self, 'roles');
+    self.udfunction = framework.udfunction.bind(self);
+    self.udfunctions = framework.udfunctions;
+    bindSubFunctions(self, 'udfunctions');
+    self.session = framework.session.bind(self);
+    self.sessions = framework.sessions;
+    bindSubFunctions(self, 'sessions');
+    self.index = framework.index.bind(self);
+    self.indexes = framework.indexes;
+    bindSubFunctions(self, 'indexes');
+    self.credential = framework.credential.bind(self);
+    self.credentials = framework.credentials;
+    bindSubFunctions(self, 'credentials');
+    self.key = framework.key.bind(self);
+    self.keys = framework.keys;
+    bindSubFunctions(self, 'keys');
+    self.token = framework.token.bind(self);
+    self.tokens = framework.tokens;
+    bindSubFunctions(self, 'tokens');
 
-    this.foundation = framework.foundation.bind(this);
-    this.dismantle = framework.dismantle.bind(this);
-    // this.relation = framework.relation.bind(this);
+    self.foundation = framework.foundation.bind(self);
+    self.dismantle = framework.dismantle.bind(self);
+    // self.relation = framework.relation.bind(self);
 
-    // this.privateKey = framework.privateKey.bind(this);
-    // this.defaults = framework.defaults;
+    // self.privateKey = framework.privateKey.bind(self);
+    // self.defaults = framework.defaults;
   }
 }
 
