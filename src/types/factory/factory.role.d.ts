@@ -6,7 +6,9 @@ export type FactoryRole<OT = FactoryRoleApi> = (name: FaunaString) => OT;
 
 export interface FactoryRoleMembershipApi<OT = Expr> {
   distinct?(membership: FaunaRoleMembership): OT;
+  distinctList?(membershipList: FaunaRoleMembership[]): OT;
   difference?(resource: FaunaRef): OT;
+  differenceList?(resourceList: FaunaRef[]): OT;
   set(membership: FaunaRoleMembership): OT;
   setMany(membershipList: FaunaRoleMembership[]): OT;
   remove(resource: FaunaRef): OT;
@@ -15,7 +17,9 @@ export interface FactoryRoleMembershipApi<OT = Expr> {
 
 export interface FactoryRolePrivilegeApi<OT = Expr> {
   distinct?(privilege: FaunaRolePrivilege): OT;
+  distinctList?(privilegeList: FaunaRolePrivilege[]): OT;
   difference?(resource: FaunaRef): OT;
+  differenceList?(resourceList: FaunaRef[]): OT;
   set(privilege: FaunaRolePrivilege): OT;
   setMany(privilegeList: FaunaRolePrivilege[]): OT;
   remove(resource: FaunaRef): OT;

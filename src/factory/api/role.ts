@@ -6,7 +6,7 @@ import { FactoryRole } from '~/types/factory/factory.role';
 import { action } from './action';
 import { BiotaFunctionName } from './constructors';
 import { document } from './document';
-
+import { FaunaRolePrivilege } from '~/types/fauna';
 
 // tslint:disable-next-line: only-arrow-functions
 export const role: FactoryContext<FactoryRole> = function (context): FactoryRole {
@@ -352,6 +352,77 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           const online = { name: BiotaFunctionName('RolePrivilegeDistinct'), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
+        distinctList(privilegeList = []) {
+          const inputs = { name, privilegeList };
+          // ---
+          const query = Query(
+            {
+              current_privilege_raw: q.Select('privileges', q.Get(q.Role(q.Var('name'))), []),
+              current_privilege_list: q.If(
+                q.IsObject(q.Var('current_privilege_raw')),
+                [q.Var('current_privilege_raw')],
+                q.Var('current_privilege_raw'),
+              ),
+              merged_privileges: q.Map(
+                q.Var('current_privilege_list'),
+                q.Lambda(
+                  ['privilege'],
+                  q.Let(
+                    {
+                      found_privilege: q.Select(
+                        0,
+                        q.Filter(
+                          q.Var('privilegeList'),
+                          q.Lambda(
+                            ['privilegeOfList'],
+                            q.Equals(q.Select('resource', q.Var('privilege'), null), q.Select('resource', q.Var('privilegeOfList'), null)),
+                          ),
+                        ),
+                        null,
+                      ),
+                    },
+                    q.If(
+                      q.IsObject(q.Var('found_privilege')),
+                      {
+                        resource: q.Select('resource', q.Var('found_privilege'), null),
+                        actions: q.Merge(q.Select('actions', q.Var('privilege'), null), q.Select('actions', q.Var('found_privilege'), {})),
+                      },
+                      q.Var('privilege'),
+                    ),
+                  ),
+                ),
+              ),
+              new_privilegeList_items: q.Filter(
+                q.Var('privilegeList'),
+                q.Lambda(
+                  'privilegeOfList',
+                  q.Let(
+                    {
+                      found_privilege: q.Select(
+                        0,
+                        q.Filter(
+                          q.Var('current_privilege_list'),
+                          q.Lambda(
+                            ['privilege'],
+                            q.Equals(q.Select('resource', q.Var('privilegeOfList'), null), q.Select('resource', q.Var('privilege'), null)),
+                          ),
+                        ),
+                        null,
+                      ),
+                    },
+                    q.Not(q.IsObject(q.Var('found_privilege'))),
+                  ),
+                ),
+              ),
+              new_privileges: q.Union(q.Var('merged_privileges'), q.Var('new_privilegeList_items')),
+            },
+            q.Var('new_privileges'),
+          );
+          // ---
+          const offline = 'factory.role.privilege.distinctList';
+          const online = { name: BiotaFunctionName('RolePrivilegeDistinctList'), role: null };
+          return MethodDispatch({ context, inputs, query })(offline, online);
+        },
         difference(resource) {
           const inputs = { name, resource };
           // ---
@@ -398,18 +469,13 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              iterations: q.Map(
-                q.Var('privilegeList'),
-                q.Lambda(
-                  ['privilege'],
-                  ResultData(
-                    role(q.Var('ctx'))(q.Var('name')).upsert({
-                      privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.distinct(q.Var('privilege'))),
-                    }),
+              doc: ResultData(
+                role(q.Var('ctx'))(q.Var('name')).upsert({
+                  privileges: ResultData(
+                    role(q.Var('ctx'))(q.Var('name')).privilege.distinctList(q.Var('privilegeList') as FaunaRolePrivilege[]),
                   ),
-                ),
+                }),
               ),
-              doc: q.Select(q.Subtract(q.Count(q.Var('iterations')), 1), q.Var('iterations'), null),
             },
             q.Var('doc'),
           );
