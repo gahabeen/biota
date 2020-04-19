@@ -6,7 +6,7 @@ import { FactoryRole } from '~/types/factory/factory.role';
 import { action } from './action';
 import { BiotaFunctionName } from './constructors';
 import { document } from './document';
-import { FaunaRolePrivilege } from '~/types/fauna';
+import { FaunaRolePrivilege, FaunaRoleMembership } from '~/types/fauna';
 
 // tslint:disable-next-line: only-arrow-functions
 export const role: FactoryContext<FactoryRole> = function (context): FactoryRole {
@@ -49,8 +49,25 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ---
         const query = Query(
           {
+            membership: q.Select('membership', q.Var('options'), null),
+            membership_list: q.If(q.IsObject(q.Var('membership')), [q.Var('membership')], q.Var('membership')),
+            distinct_membership: ResultData(
+              role(q.Var('ctx'))(q.Var('name')).membership.distinctList(q.Var('membership_list') as FaunaRoleMembership[]),
+            ),
+            privileges: q.Select('privileges', q.Var('options'), null),
+            privileges_list: q.If(q.IsObject(q.Var('privileges')), [q.Var('privileges')], q.Var('privileges')),
+            distinct_privileges: ResultData(
+              role(q.Var('ctx'))(q.Var('name')).privilege.distinctList(q.Var('privileges_list') as FaunaRolePrivilege[]),
+            ),
             annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
-            doc: q.Update(q.Role(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Update(
+              q.Role(q.Var('name')),
+              q.Merge(q.Var('options'), {
+                data: q.Var('annotated'),
+                membership: q.Var('distinct_membership'),
+                privileges: q.Var('distinct_privileges'),
+              }),
+            ),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -202,6 +219,76 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           const online = { name: BiotaFunctionName('RoleMembershipDistinct'), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
+        distinctList(membershipList = []) {
+          const inputs = { name, membershipList };
+          // ---
+          const query = Query(
+            {
+              current_membership_raw: q.Select('membership', q.Get(q.Role(q.Var('name'))), []),
+              current_membership_list: q.If(
+                q.IsObject(q.Var('current_membership_raw')),
+                [q.Var('current_membership_raw')],
+                q.Var('current_membership_raw'),
+              ),
+              merged_memberships: q.Map(
+                q.Var('current_membership_list'),
+                q.Lambda(
+                  ['membership'],
+                  q.Let(
+                    {
+                      found_membership: q.Select(
+                        0,
+                        q.Filter(
+                          q.Var('membershipList'),
+                          q.Lambda(
+                            ['membershipOfList'],
+                            q.Equals(
+                              q.Select('resource', q.Var('membership'), null),
+                              q.Select('resource', q.Var('membershipOfList'), null),
+                            ),
+                          ),
+                        ),
+                        {},
+                      ),
+                    },
+                    q.Merge(q.Var('membership'), q.Var('found_membership')),
+                  ),
+                ),
+              ),
+              new_membershipList_items: q.Filter(
+                q.Var('membershipList'),
+                q.Lambda(
+                  'membershipOfList',
+                  q.Let(
+                    {
+                      found_membership: q.Select(
+                        0,
+                        q.Filter(
+                          q.Var('current_membership_list'),
+                          q.Lambda(
+                            ['membership'],
+                            q.Equals(
+                              q.Select('resource', q.Var('membershipOfList'), null),
+                              q.Select('resource', q.Var('membership'), null),
+                            ),
+                          ),
+                        ),
+                        null,
+                      ),
+                    },
+                    q.Not(q.IsObject(q.Var('found_membership'))),
+                  ),
+                ),
+              ),
+              new_memberships: q.Union(q.Var('merged_memberships'), q.Var('new_membershipList_items')),
+            },
+            q.Var('new_memberships'),
+          );
+          // ---
+          const offline = 'factory.role.membership.distinctList';
+          const online = { name: BiotaFunctionName('RoleMembershipDistinctList'), role: null };
+          return MethodDispatch({ context, inputs, query })(offline, online);
+        },
         difference(resource) {
           const inputs = { name, resource };
           // ---
@@ -248,18 +335,13 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              iterations: q.Map(
-                q.Var('membershipList'),
-                q.Lambda(
-                  ['membership'],
-                  ResultData(
-                    role(q.Var('ctx'))(q.Var('name')).upsert({
-                      membership: ResultData(role(q.Var('ctx'))(q.Var('name')).membership.distinct(q.Var('membership'))),
-                    }),
+              doc: ResultData(
+                role(q.Var('ctx'))(q.Var('name')).upsert({
+                  membership: ResultData(
+                    role(q.Var('ctx'))(q.Var('name')).membership.distinctList(q.Var('membershipList') as FaunaRoleMembership[]),
                   ),
-                ),
+                }),
               ),
-              doc: q.Select(q.Subtract(q.Count(q.Var('iterations')), 1), q.Var('iterations'), null),
             },
             q.Var('doc'),
           );
