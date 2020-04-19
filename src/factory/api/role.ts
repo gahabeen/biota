@@ -181,9 +181,10 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Role(q.Var('name'))), role(q.Var('ctx'))(q.Var('name')).forget(), false),
+            doc: q.If(q.Exists(q.Role(q.Var('name'))), role(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.role.drop';

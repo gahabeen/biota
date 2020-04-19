@@ -168,9 +168,10 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Database(q.Var('name'))), database(q.Var('ctx'))(q.Var('name')).forget(), false),
+            doc: q.If(q.Exists(q.Database(q.Var('name'))), database(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.database.drop';

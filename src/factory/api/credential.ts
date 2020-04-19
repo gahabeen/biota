@@ -3,7 +3,7 @@ import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryCredential } from '~/types/factory/factory.credential';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
 import { action } from './action';
-import { BiotaFunctionName } from './constructors';
+import { BiotaFunctionName, ResultData, ResultAction } from './constructors';
 
 // tslint:disable-next-line: only-arrow-functions
 export const credential: FactoryContext<FactoryCredential> = function (context): FactoryCredential {
@@ -123,9 +123,10 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
         // ----
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Var('ref')), credentialApi(q.Var('ref')).forget(), false),
+            doc: q.If(q.Exists(q.Var('ref')), credentialApi(q.Var('ref')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = 'factory.credential.drop';

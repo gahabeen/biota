@@ -164,9 +164,10 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Index(q.Var('name'))), index(q.Var('ctx'))(q.Var('name')).forget(), false),
+            doc: q.If(q.Exists(q.Index(q.Var('name'))), index(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.index.drop';

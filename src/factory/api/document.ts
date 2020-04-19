@@ -241,9 +241,10 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         const query = Query(
           {
             refExists: refExists(q.Var('ref')),
-            doc: q.If(q.Exists(q.Var('ref')), document(q.Var('ctx'))(q.Var('ref')).forget(), false),
+            doc: q.If(q.Exists(q.Var('ref')), document(q.Var('ctx'))(q.Var('ref')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = `factory.${prefix.toLowerCase()}.drop`;

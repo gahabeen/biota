@@ -207,9 +207,10 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Collection(q.Var('name'))), collection(q.Var('ctx'))(q.Var('name')).forget(), false),
+            doc: q.If(q.Exists(q.Collection(q.Var('name'))), collection(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.collection.drop';

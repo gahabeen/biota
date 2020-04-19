@@ -164,9 +164,10 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Ref(q.Tokens(), q.Var('id'))), token(q.Var('ctx'))(q.Var('id')).forget(), false),
+            doc: q.If(q.Exists(q.Ref(q.Tokens(), q.Var('id'))), token(q.Var('ctx'))(q.Var('id')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.token.drop';

@@ -165,9 +165,10 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Var('ref')), key(q.Var('ctx'))(q.Var('ref')).forget(), false),
+            doc: q.If(q.Exists(q.Var('ref')), key(q.Var('ctx'))(q.Var('ref')).forget(), {}),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.key.drop';
