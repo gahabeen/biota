@@ -6,7 +6,7 @@ import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
-import { ResultData } from '~/factory/constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
 
 // tslint:disable-next-line: only-arrow-functions
 export const database: FactoryContext<FactoryDatabase> = function (context): FactoryDatabase {
@@ -72,11 +72,12 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
           {
             doc: q.If(
               q.Exists(q.Database(q.Var('name'))),
-              ResultData(database(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
-              ResultData(database(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              database(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
+              database(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.database.upsert';
@@ -118,11 +119,12 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
           {
             doc: q.If(
               q.Exists(q.Database(q.Var('name'))),
-              ResultData(database(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
-              ResultData(database(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              database(q.Var('ctx'))(q.Var('name')).replace(q.Var('options')),
+              database(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.database.repsert';

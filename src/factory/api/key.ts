@@ -6,7 +6,7 @@ import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
-import { ResultData } from '~/factory/constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
 
 // tslint:disable-next-line: only-arrow-functions
 export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
@@ -69,11 +69,12 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(key(q.Var('ctx'))(q.Var('ref')).update(q.Var('options'))),
-              ResultData(key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              key(q.Var('ctx'))(q.Var('ref')).update(q.Var('options')),
+              key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.key.upsert';
@@ -115,11 +116,12 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(key(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
-              ResultData(key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              key(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options')),
+              key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.key.repsert';
@@ -193,7 +195,9 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'))),
+            doc: ResultData(
+              document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds')),
+            ),
           },
           q.Var('doc'),
         );

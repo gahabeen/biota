@@ -3,7 +3,7 @@ import { FactoryCollection } from '~/types/factory/factory.collection';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { action } from '~/factory/api/action';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
-import { ResultData } from '~/factory/constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { ContextExtend } from './constructors';
 
@@ -90,11 +90,12 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
           {
             doc: q.If(
               q.Exists(q.Collection(q.Var('name'))),
-              ResultData(collection(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
-              ResultData(collection(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              collection(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
+              collection(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.collection.upsert';
@@ -138,11 +139,12 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
           {
             doc: q.If(
               q.Exists(q.Collection(q.Var('name'))),
-              ResultData(collection(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
-              ResultData(collection(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              collection(q.Var('ctx'))(q.Var('name')).replace(q.Var('options')),
+              collection(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.collection.repsert';

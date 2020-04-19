@@ -6,7 +6,7 @@ import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
-import { ResultData } from '~/factory/constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
 
 // tslint:disable-next-line: only-arrow-functions
 export const index: FactoryContext<FactoryIndex> = function (context): FactoryIndex {
@@ -68,11 +68,12 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
           {
             doc: q.If(
               q.Exists(q.Index(q.Var('name'))),
-              ResultData(index(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
-              ResultData(index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              index(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
+              index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.index.upsert';
@@ -114,11 +115,12 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
           {
             doc: q.If(
               q.Exists(q.Index(q.Var('name'))),
-              ResultData(index(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
-              ResultData(index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              index(q.Var('ctx'))(q.Var('name')).replace(q.Var('options')),
+              index(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.index.repsert';

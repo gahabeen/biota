@@ -70,8 +70,8 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
           {
             doc: q.If(
               q.Exists(q.Function(q.Var('name'))),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              udfunction(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
+              udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
           ResultData(q.Var('doc')),
@@ -117,11 +117,12 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
           {
             doc: q.If(
               q.Exists(q.Function(q.Var('name'))),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
-              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              udfunction(q.Var('ctx'))(q.Var('name')).replace(q.Var('options')),
+              udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.udfunction.repsert';

@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
-import { ResultData } from '~/factory/constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryRole } from '~/types/factory/factory.role';
 import { action } from './action';
@@ -85,11 +85,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           {
             doc: q.If(
               q.Exists(q.Role(q.Var('name'))),
-              ResultData(role(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
-              ResultData(role(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              role(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
+              role(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.role.upsert';
@@ -131,11 +132,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           {
             doc: q.If(
               q.Exists(q.Role(q.Var('name'))),
-              ResultData(role(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
-              ResultData(role(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
+              role(q.Var('ctx'))(q.Var('name')).replace(q.Var('options')),
+              role(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.role.repsert';

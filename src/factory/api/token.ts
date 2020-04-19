@@ -4,7 +4,7 @@ import { FactoryToken } from '~/types/factory/factory.token';
 
 import { Query, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
-import { ResultData } from '~/factory/constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
 import { action } from './action';
 import { document } from './document';
 
@@ -68,11 +68,12 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
           {
             doc: q.If(
               q.Exists(q.Ref(q.Tokens(), q.Var('id'))),
-              ResultData(token(q.Var('ctx'))(q.Var('id')).update(q.Var('options'))),
-              ResultData(token(q.Var('ctx'))(q.Var('id')).insert(q.Var('options'))),
+              token(q.Var('ctx'))(q.Var('id')).update(q.Var('options')),
+              token(q.Var('ctx'))(q.Var('id')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.token.upsert';
@@ -114,11 +115,12 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
           {
             doc: q.If(
               q.Exists(q.Ref(q.Tokens(), q.Var('id'))),
-              ResultData(token(q.Var('ctx'))(q.Var('id')).replace(q.Var('options'))),
-              ResultData(token(q.Var('ctx'))(q.Var('id')).insert(q.Var('options'))),
+              token(q.Var('ctx'))(q.Var('id')).replace(q.Var('options')),
+              token(q.Var('ctx'))(q.Var('id')).insert(q.Var('options')),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.token.repsert';

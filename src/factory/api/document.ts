@@ -4,7 +4,7 @@ import { action } from '~/factory/api/action';
 import { ContextNoLogNoAnnotation, ContextProp } from '~/factory/constructors/context';
 import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, Query } from '~/factory/constructors/method';
-import { ResultData } from '~/factory/constructors/result';
+import { ResultData, ResultAction } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import * as helpers from '~/helpers';
 import { FactoryContext } from '~/types/factory/factory.context';
@@ -97,12 +97,12 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             refExists: refExists(q.Var('ref')),
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(document(q.Var('ctx'))(q.Var('ref')).update(q.Var('data'))),
-              ResultData(document(q.Var('ctx'))(q.Var('ref')).insert(q.Var('data'))),
+              document(q.Var('ctx'))(q.Var('ref')).update(q.Var('data')),
+              document(q.Var('ctx'))(q.Var('ref')).insert(q.Var('data')),
             ),
           },
-          q.Var('doc'),
-          // already logging actions: update or insert
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = `factory.${prefix.toLowerCase()}.upsert`;
@@ -146,12 +146,12 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             refExists: refExists(q.Var('ref')),
             doc: q.If(
               q.Exists(q.Var('ref')),
-              ResultData(document(q.Var('ctx'))(q.Var('ref')).replace(q.Var('data'))),
-              ResultData(document(q.Var('ctx'))(q.Var('ref')).insert(q.Var('data'))),
+              document(q.Var('ctx'))(q.Var('ref')).replace(q.Var('data')),
+              document(q.Var('ctx'))(q.Var('ref')).insert(q.Var('data')),
             ),
           },
-          q.Var('doc'),
-          // already logging actions: replace or insert
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = `factory.${prefix.toLowerCase()}.repsert`;
