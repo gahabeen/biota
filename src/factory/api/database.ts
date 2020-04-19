@@ -72,8 +72,8 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
           {
             doc: q.If(
               q.Exists(q.Database(q.Var('name'))),
-              database(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
-              database(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
+              ResultData(database(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
+              ResultData(database(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),

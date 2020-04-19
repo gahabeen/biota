@@ -6,7 +6,7 @@ import { execute } from '~/tools/tasks';
 export function upsert(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function upsertMethod(id: FaunaId, data: object) {
+  return async function upsertMethod(data: object) {
     return execute(
       [
         {

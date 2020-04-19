@@ -6,7 +6,7 @@ import { execute } from '~/tools/tasks';
 export function replace(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function replaceMethod(id: FaunaId, data: object) {
+  return async function replaceMethod(data: object) {
     return execute(
       [
         {

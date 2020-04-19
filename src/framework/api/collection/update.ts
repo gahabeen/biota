@@ -6,7 +6,7 @@ import { execute } from '~/tools/tasks';
 export function update(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function updateMethod(id: FaunaId, data: object) {
+  return async function updateMethod(data: object) {
     return execute(
       [
         {

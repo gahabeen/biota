@@ -16,9 +16,10 @@ export const scaffold: FrameworkRolesApi['scaffold'] = async function (this: Bio
         tasks.push({
           name: `Creating (base) role: ${foundationRoles[role].name}`,
           task() {
-            return self.role(foundationRoles[role].name).upsert({
+            return self.role(foundationRoles[role].name).repsert({
               name: foundationRoles[role].name,
               privileges: [],
+              membership: [],
             });
           },
         });

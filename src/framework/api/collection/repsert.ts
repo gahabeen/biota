@@ -6,7 +6,7 @@ import { execute } from '~/tools/tasks';
 export function repsert(this: Biota, collectionName: string) {
   const self = this;
 
-  return async function repsertMethod(id: FaunaId, data: object) {
+  return async function repsertMethod(data: object) {
     return execute(
       [
         {

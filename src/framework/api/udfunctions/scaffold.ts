@@ -21,14 +21,14 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
         if (UDFunctionDefinition && UDFunctionDefinition.name) {
           // if (UDFunctionDefinition.name === 'biota.UserLogin') {
           UDFs.push(UDFunctionDefinition.name);
-          // tasks.push({
-          //   name: `Scaffolding function: ${UDFunctionDefinition.name}`,
-          //   task() {
-          //     return self.udfunction(UDFunctionDefinition.name).upsert(UDFunctionDefinition);
-          //   },
-          // });
-          // }
+          tasks.push({
+            name: `Scaffolding function: ${UDFunctionDefinition.name}`,
+            task() {
+              return self.udfunction(UDFunctionDefinition.name).upsert(UDFunctionDefinition);
+            },
+          });
         }
+        // }
       } else if (typeof definition === 'object') {
         return loadStep(definition);
       }

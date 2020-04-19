@@ -14,14 +14,13 @@ import { Pagination } from '../constructors/pagination';
 export const collection: FactoryContext<FactoryCollection> = function (context): FactoryCollection {
   // tslint:disable-next-line: only-arrow-functions
   return (name = null) => {
-    const ref = q.Collection(name);
     return {
       findAll(pagination = {}) {
-        const inputs = { ref, pagination };
+        const inputs = { name, pagination };
         // ---
         const query = Query(
           {
-            docs: q.Map(q.Paginate(q.Documents(q.Var('ref')), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
+            docs: q.Map(q.Paginate(q.Documents(q.Var('name')), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
           },
           q.Var('docs'),
         );
@@ -31,11 +30,11 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       get() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            doc: q.Get(q.Var('ref')),
+            doc: q.Get(q.Collection(q.Var('name'))),
           },
           q.Var('doc'),
         );
@@ -49,7 +48,9 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
+            annotated: ResultData(
+              document(q.Var('ctx'), { prefix: 'Collection' })().annotate('insert', q.Select('data', q.Var('options'), {})),
+            ),
             doc: q.CreateCollection(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
@@ -63,12 +64,14 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       update(options) {
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
-            doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            annotated: ResultData(
+              document(q.Var('ctx'), { prefix: 'Collection' })().annotate('update', q.Select('data', q.Var('options'), {})),
+            ),
+            doc: q.Update(q.Collection(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -81,14 +84,14 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       upsert(options) {
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              collection(q.Var('ctx'))(q.Var('ref')).update(q.Var('options')),
-              collection(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options')),
+              q.Exists(q.Collection(q.Var('name'))),
+              ResultData(collection(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
+              ResultData(collection(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -100,11 +103,11 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       replace(options) {
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
-            current_doc: ResultData(collection(q.Var('ctx'))(q.Var('ref')).get()),
+            current_doc: ResultData(collection(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
               document(q.Var('ctx'))().annotate(
                 'replace',
@@ -116,7 +119,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
                 }),
               ),
             ),
-            doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Replace(q.Collection(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -129,14 +132,14 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       repsert(options) {
-        const inputs = { ref, options };
+        const inputs = { name, options };
         // ---
         const query = Query(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              ResultData(collection(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options'))),
-              ResultData(collection(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options'))),
+              q.Exists(q.Collection(q.Var('name'))),
+              ResultData(collection(q.Var('ctx'))(q.Var('name')).replace(q.Var('options'))),
+              ResultData(collection(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
             ),
           },
           q.Var('doc'),
@@ -148,11 +151,11 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       delete() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.delete()),
           },
           q.Var('doc'),
         );
@@ -164,11 +167,11 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
 
       restore() {
         // alias
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.restore()),
           },
           q.Var('doc'),
         );
@@ -179,14 +182,14 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       forget() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(collection(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
-            doc: q.Delete(q.Var('ref')),
+            annotated: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })().annotate('forget')),
+            annotated_doc: ResultData(collection(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
+            action: action(q.Var('ctx'))('forget', q.Var('name')).log(),
+            doc: q.Delete(q.Var('name')),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -198,11 +201,11 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
 
       drop() {
-        const inputs = { ref };
+        const inputs = { name };
         // ---
         const query = Query(
           {
-            doc: q.If(q.Exists(q.Var('ref')), collection(q.Var('ctx'))(q.Var('ref')).forget(), false),
+            doc: q.If(q.Exists(q.Collection(q.Var('name'))), collection(q.Var('ctx'))(q.Var('name')).forget(), false),
           },
           q.Var('doc'),
         );
@@ -214,11 +217,11 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
 
       expireAt(at) {
         // alias
-        const inputs = { ref, at };
+        const inputs = { name, at };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
@@ -229,11 +232,15 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
       expireIn(delay) {
         // alias
-        const inputs = { ref, delay };
+        const inputs = { name, delay };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'))),
+            doc: ResultData(
+              document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(
+                q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'),
+              ),
+            ),
           },
           q.Var('doc'),
         );
@@ -244,11 +251,11 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       },
       expireNow() {
         // alias
-        const inputs = { ref };
+        const inputs = { name };
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
+            doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );

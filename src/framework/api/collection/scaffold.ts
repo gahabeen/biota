@@ -1,13 +1,13 @@
-import { FaunaCollectionOptions } from '~/types/fauna';
-import { FrameworkCollectionScaffoldOptions } from '~/types/framework/framework.collection';
-import { Biota } from '~/biota';
 import { query as q } from 'faunadb';
+import { Biota } from '~/biota';
+import { collection } from '~/factory/api/collection';
+import { PrivilegeRights } from '~/factory/constructors/privilege';
 // import { upsert } from '~/factory/api/fql/base';
 import { BiotaRoleName } from '~/factory/constructors/role';
 import { execute } from '~/tools/tasks';
-import { collection } from '~/factory/api/collection';
-import { collections } from '~/factory/api/collections';
-import { PrivilegeRights } from '~/factory/constructors/privilege';
+import { FaunaCollectionOptions } from '~/types/fauna';
+import { FrameworkCollectionScaffoldOptions } from '~/types/framework/framework.collection';
+// import { upsert } from '~/factory/api/fql/base';
 
 export function scaffold(this: Biota, collectionName: string) {
   const self = this;

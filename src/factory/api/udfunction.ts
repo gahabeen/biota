@@ -70,8 +70,8 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
           {
             doc: q.If(
               q.Exists(q.Function(q.Var('name'))),
-              udfunction(q.Var('ctx'))(q.Var('name')).update(q.Var('options')),
-              udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options')),
+              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).update(q.Var('options'))),
+              ResultData(udfunction(q.Var('ctx'))(q.Var('name')).insert(q.Var('options'))),
             ),
           },
           ResultData(q.Var('doc')),
@@ -195,7 +195,9 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'))),
+            doc: ResultData(
+              document(q.Var('ctx'))(q.Var('name')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds')),
+            ),
           },
           q.Var('doc'),
         );
