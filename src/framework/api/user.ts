@@ -15,26 +15,67 @@ import { remember } from '~/framework/api/user/remember';
 import { update } from '~/framework/api/user/update';
 import { upsert } from '~/framework/api/user/upsert';
 import { history } from '~/framework/api/user/history';
+import { register } from '~/framework/api/user/register';
+import { registerWithAuthAccount } from '~/framework/api/user/registerWithAuthAccount';
+import { login } from '~/framework/api/user/login';
+import { loginWithAuthAccount } from '~/framework/api/user/loginWithAuthAccount';
+import { logout } from '~/framework/api/user/logout';
+import { changePassword } from '~/framework/api/user/changePassword';
+import { authAccountSet } from '~/framework/api/user/auth_account_set';
+import { authAccountRemove } from '~/framework/api/user/auth_account_remove';
+import { authAccountDistinct } from '~/framework/api/user/auth_account_distinct';
+import { authAccountDifference } from '~/framework/api/user/auth_account_difference';
+import { authEmailSet } from '~/framework/api/user/auth_email_set';
+import { authEmailRemove } from '~/framework/api/user/auth_email_remove';
 
-export const user: FrameworkUser = function (idOrRef) {
+import { authGoogleLoginUrl } from '~/framework/api/user/auth_google_loginUrl';
+import { authGoogleRegisterUrl } from '~/framework/api/user/auth_google_registerUrl';
+import { authGoogleSyncUrl } from '~/framework/api/user/auth_google_syncUrl';
+import { authGoogleAuthenticate } from '~/framework/api/user/auth_google_authenticate';
+
+export const user: FrameworkUser = function (id = null) {
   const self = this;
 
   return {
-    activity: activity.call(self, idOrRef),
-    history: history.call(self, idOrRef),
-    get: get.call(self, idOrRef),
-    insert: insert.call(self, idOrRef),
-    replace: replace.call(self, idOrRef),
-    update: update.call(self, idOrRef),
-    repsert: repsert.call(self, idOrRef),
-    upsert: upsert.call(self, idOrRef),
-    delete: delete_.call(self, idOrRef),
-    forget: forget.call(self, idOrRef),
-    drop: drop.call(self, idOrRef),
-    restore: restore.call(self, idOrRef),
-    remember: remember.call(self, idOrRef),
-    expireAt: expireAt.call(self, idOrRef),
-    expireIn: expireIn.call(self, idOrRef),
-    expireNow: expireNow.call(self, idOrRef),
+    register: register.call(self, id),
+    registerWithAuthAccount: registerWithAuthAccount.call(self, id),
+    login: login.call(self, id),
+    loginWithAuthAccount: loginWithAuthAccount.call(self, id),
+    logout: logout.call(self, id),
+    changePassword: changePassword.call(self, id),
+    auth: {
+      google: {
+        loginUrl: authGoogleLoginUrl.call(self, id),
+        registerUrl: authGoogleRegisterUrl.call(self, id),
+        syncUrl: authGoogleSyncUrl.call(self, id),
+        authenticate: authGoogleAuthenticate.call(self, id),
+      },
+      account: {
+        set: authAccountSet.call(self, id),
+        remove: authAccountRemove.call(self, id),
+        distinct: authAccountDistinct.call(self, id),
+        difference: authAccountDifference.call(self, id),
+      },
+      email: {
+        set: authEmailSet.call(self, id),
+        remove: authEmailRemove.call(self, id),
+      },
+    },
+    activity: activity.call(self, id),
+    history: history.call(self, id),
+    get: get.call(self, id),
+    insert: insert.call(self, id),
+    replace: replace.call(self, id),
+    update: update.call(self, id),
+    repsert: repsert.call(self, id),
+    upsert: upsert.call(self, id),
+    delete: delete_.call(self, id),
+    forget: forget.call(self, id),
+    drop: drop.call(self, id),
+    restore: restore.call(self, id),
+    remember: remember.call(self, id),
+    expireAt: expireAt.call(self, id),
+    expireIn: expireIn.call(self, id),
+    expireNow: expireNow.call(self, id),
   };
 };

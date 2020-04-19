@@ -3,6 +3,7 @@ import { Expr } from 'faunadb';
 import { FactoryUDFunctionsApi } from '~/types/factory/factory.udfunctions';
 
 export interface FrameworkUDFunctionsApi {
+  dismantle: () => Promise<any>;
   scaffold: () => Promise<any>;
   activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;
   findAll: FactoryUDFunctionsApi<Promise<any>>['findAll'];

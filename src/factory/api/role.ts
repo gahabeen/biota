@@ -33,7 +33,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
-            doc: q.CreateFunction(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
+            doc: q.CreateRole(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -49,12 +49,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ---
         const query = Query(
           {
-            membership: q.Select('membership', q.Var('options'), null),
+            membership: q.Select('membership', q.Var('options'), []),
             membership_list: q.If(q.IsObject(q.Var('membership')), [q.Var('membership')], q.Var('membership')),
             distinct_membership: ResultData(
               role(q.Var('ctx'))(q.Var('name')).membership.distinctList(q.Var('membership_list') as FaunaRoleMembership[]),
             ),
-            privileges: q.Select('privileges', q.Var('options'), null),
+            privileges: q.Select('privileges', q.Var('options'), []),
             privileges_list: q.If(q.IsObject(q.Var('privileges')), [q.Var('privileges')], q.Var('privileges')),
             distinct_privileges: ResultData(
               role(q.Var('ctx'))(q.Var('name')).privilege.distinctList(q.Var('privileges_list') as FaunaRolePrivilege[]),
@@ -149,9 +149,10 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ---
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.delete()),
+            doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.delete(),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ---
         const offline = 'factory.role.delete';
@@ -166,7 +167,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
             annotated_doc: ResultData(role(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))('forget', q.Var('annotated_doc')).log(),
-            doc: q.Delete(q.Var('name')),
+            doc: q.Delete(q.Role(q.Var('name'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -189,6 +190,21 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ---
         const offline = 'factory.role.drop';
         const online = { name: BiotaFunctionName('RoleClean'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      remember() {
+        const inputs = { name };
+        // ----
+        const query = Query(
+          {
+            doc: document(q.Var('ctx'), { prefix: 'Role' })(q.Role(q.Var('name'))).remember(),
+          },
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
+        );
+        // ----
+        const offline = `factory.role.remember`;
+        const online = { name: BiotaFunctionName(`RoleRemember`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       membership: {
@@ -320,13 +336,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              doc: ResultData(
-                role(q.Var('ctx'))(q.Var('name')).upsert({
-                  membership: ResultData(role(q.Var('ctx'))(q.Var('name')).membership.distinct(q.Var('membership'))),
-                }),
-              ),
+              doc: role(q.Var('ctx'))(q.Var('name')).upsert({
+                membership: ResultData(role(q.Var('ctx'))(q.Var('name')).membership.distinct(q.Var('membership'))),
+              }),
             },
-            q.Var('doc'),
+            ResultData(q.Var('doc')),
+            ResultAction(q.Var('doc')),
           );
           // ---
           const offline = 'factory.role.membership.set';
@@ -338,15 +353,14 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              doc: ResultData(
-                role(q.Var('ctx'))(q.Var('name')).upsert({
-                  membership: ResultData(
-                    role(q.Var('ctx'))(q.Var('name')).membership.distinctList(q.Var('membershipList') as FaunaRoleMembership[]),
-                  ),
-                }),
-              ),
+              doc: role(q.Var('ctx'))(q.Var('name')).upsert({
+                membership: ResultData(
+                  role(q.Var('ctx'))(q.Var('name')).membership.distinctList(q.Var('membershipList') as FaunaRoleMembership[]),
+                ),
+              }),
             },
-            q.Var('doc'),
+            ResultData(q.Var('doc')),
+            ResultAction(q.Var('doc')),
           );
           // ---
           const offline = 'factory.role.membership.setMany';
@@ -358,13 +372,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              doc: ResultData(
-                role(q.Var('ctx'))(q.Var('name')).upsert({
-                  membership: ResultData(role(q.Var('ctx'))(q.Var('name')).membership.difference(q.Var('resource'))),
-                }),
-              ),
+              doc: role(q.Var('ctx'))(q.Var('name')).upsert({
+                membership: ResultData(role(q.Var('ctx'))(q.Var('name')).membership.difference(q.Var('resource'))),
+              }),
             },
-            q.Var('doc'),
+            ResultData(q.Var('doc')),
+            ResultAction(q.Var('doc')),
           );
           // ---
           const offline = 'factory.role.membership.remove';
@@ -536,13 +549,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              doc: ResultData(
-                role(q.Var('ctx'))(q.Var('name')).upsert({
-                  privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.distinct(q.Var('privilege'))),
-                }),
-              ),
+              doc: role(q.Var('ctx'))(q.Var('name')).upsert({
+                privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.distinct(q.Var('privilege'))),
+              }),
             },
-            q.Var('doc'),
+            ResultData(q.Var('doc')),
+            ResultAction(q.Var('doc')),
           );
           // ---
           const offline = 'factory.role.privilege.set';
@@ -554,15 +566,14 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              doc: ResultData(
-                role(q.Var('ctx'))(q.Var('name')).upsert({
-                  privileges: ResultData(
-                    role(q.Var('ctx'))(q.Var('name')).privilege.distinctList(q.Var('privilegeList') as FaunaRolePrivilege[]),
-                  ),
-                }),
-              ),
+              doc: role(q.Var('ctx'))(q.Var('name')).upsert({
+                privileges: ResultData(
+                  role(q.Var('ctx'))(q.Var('name')).privilege.distinctList(q.Var('privilegeList') as FaunaRolePrivilege[]),
+                ),
+              }),
             },
-            q.Var('doc'),
+            ResultData(q.Var('doc')),
+            ResultAction(q.Var('doc')),
           );
           // ---
           const offline = 'factory.role.privilege.setMany';
@@ -574,13 +585,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              doc: ResultData(
-                role(q.Var('ctx'))(q.Var('name')).upsert({
-                  privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.distinct(q.Var('privilege'))),
-                }),
-              ),
+              doc: role(q.Var('ctx'))(q.Var('name')).upsert({
+                privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.distinct(q.Var('privilege'))),
+              }),
             },
-            q.Var('doc'),
+            ResultData(q.Var('doc')),
+            ResultAction(q.Var('doc')),
           );
           // ---
           const offline = 'factory.role.privilege.set';
@@ -592,13 +602,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           // ---
           const query = Query(
             {
-              doc: ResultData(
-                role(q.Var('ctx'))(q.Var('name')).upsert({
-                  privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.difference(q.Var('resource'))),
-                }),
-              ),
+              doc: role(q.Var('ctx'))(q.Var('name')).upsert({
+                privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.difference(q.Var('resource'))),
+              }),
             },
-            q.Var('doc'),
+            ResultData(q.Var('doc')),
+            ResultAction(q.Var('doc')),
           );
           // ---
           const offline = 'factory.role.privilege.remove';
@@ -637,9 +646,10 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Var('at'))),
+            doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Var('at')),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = 'factory.role.expireAt';
@@ -652,11 +662,12 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ----
         const query = Query(
           {
-            doc: ResultData(
-              document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds')),
+            doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(
+              q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'),
             ),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = 'factory.role.expireIn';
@@ -669,9 +680,10 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Now())),
+            doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Now()),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = 'factory.role.expireNow';
@@ -684,9 +696,10 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // ----
         const query = Query(
           {
-            doc: ResultData(document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.restore()),
+            doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.restore(),
           },
-          q.Var('doc'),
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
         );
         // ----
         const offline = 'factory.collection.restore';

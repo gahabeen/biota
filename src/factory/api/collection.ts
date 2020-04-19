@@ -191,7 +191,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })().annotate('forget')),
             annotated_doc: ResultData(collection(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))('forget', q.Var('name')).log(),
-            doc: q.Delete(q.Var('name')),
+            doc: q.Delete(q.Collection(q.Var('name'))),
           },
           q.Var('doc'),
           q.Var('action'),

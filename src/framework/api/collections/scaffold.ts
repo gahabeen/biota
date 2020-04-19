@@ -18,5 +18,6 @@ export const scaffold: FrameworkCollectionsApi['scaffold'] = async function (thi
 
   return execute(tasks, {
     domain: 'Biota.collections.scaffold',
+    singleResult: false,
   });
 };

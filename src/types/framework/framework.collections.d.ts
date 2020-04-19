@@ -3,6 +3,7 @@ import { Expr } from 'faunadb';
 import { FactoryCollectionsApi } from '~/types/factory/factory.collections';
 
 export interface FrameworkCollectionsApi {
+  dismantle: () => Promise<any>;
   scaffold: () => Promise<any>;
   activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;
   findAll: FactoryCollectionsApi<Promise<any>>['findAll'];

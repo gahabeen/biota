@@ -16,6 +16,7 @@ import { updateMany } from '~/framework/api/roles/updateMany';
 import { upsertMany } from '~/framework/api/roles/upsertMany';
 import { dropMany } from '~/framework/api/roles/dropMany';
 import { scaffold } from '~/framework/api/roles/scaffold';
+import { dismantle } from '~/framework/api/roles/dismantle';
 
 export const roles: FrameworkRolesApi = {
   activity,
@@ -34,4 +35,5 @@ export const roles: FrameworkRolesApi = {
   upsertMany,
   dropMany,
   scaffold,
+  dismantle,
 };

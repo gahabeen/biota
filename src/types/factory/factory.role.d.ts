@@ -36,6 +36,7 @@ export interface FactoryRoleApi<OT = Expr> {
   delete(): OT;
   forget(): OT;
   drop(): OT;
+  remember(): OT;
   membership: FactoryRoleMembershipApi;
   privilege: FactoryRolePrivilegeApi;
   restore(): OT;

@@ -11,7 +11,7 @@ import { ResultData, ResultAction } from '~/factory/constructors/result';
 // tslint:disable-next-line: only-arrow-functions
 export const index: FactoryContext<FactoryIndex> = function (context): FactoryIndex {
   // tslint:disable-next-line: only-arrow-functions
-  return (name) => {
+  return (name = null) => {
     return {
       get() {
         const inputs = { name };
@@ -50,7 +50,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         const query = Query(
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('update', q.Select('data', q.Var('options'), {}))),
-            doc: q.Update(q.Index(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Update(q.Index(q.Var('name')), q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),
@@ -149,7 +149,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('forget')),
             annotated_doc: ResultData(index(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))('forget', q.Var('name')).log(),
-            doc: q.Delete(q.Var('name')),
+            doc: q.Delete(q.Index(q.Var('name'))),
           },
           q.Var('doc'),
           q.Var('action'),

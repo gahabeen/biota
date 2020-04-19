@@ -8,6 +8,7 @@ export interface FrameworkRolesScaffoldOptions {
 }
 
 export interface FrameworkRolesApi {
+  dismantle: () => Promise<any>;
   scaffold: (options?: FrameworkRolesScaffoldOptions) => Promise<any>;
   activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;
   findAll: FactoryRolesApi<Promise<any>>['findAll'];

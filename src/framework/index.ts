@@ -21,8 +21,11 @@ export * from './api/udfunction';
 export * from './api/udfunctions';
 export * from './api/key';
 export * from './api/keys';
+export * from './api/token';
+export * from './api/tokens';
 export * from './api/credential';
 export * from './api/credentials';
 
 export * from './api/foundation';
+export * from './api/dismantle';
 // export * from './api/relation';

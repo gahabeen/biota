@@ -54,7 +54,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
             annotated: ResultData(
               document(q.Var('ctx'), { prefix: 'Database' })().annotate('update', q.Select('data', q.Var('options'), {})),
             ),
-            doc: q.Update(q.Var('name'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Update(q.Database(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
           },
           q.Var('doc'),

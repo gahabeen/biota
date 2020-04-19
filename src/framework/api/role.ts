@@ -23,6 +23,7 @@ import { privilegeRemove } from '~/framework/api/role/privilege_remove';
 import { privilegeRemoveMany } from '~/framework/api/role/privilege_removeMany';
 import { privilegescaffoldMany } from './role/privilege_scaffoldMany';
 import { privilegeScaffold } from './role/privilege_scaffold';
+import { remember } from './role/remember';
 
 export function role(roleName: string): FrameworkRoleApi {
   const self = this;
@@ -38,6 +39,7 @@ export function role(roleName: string): FrameworkRoleApi {
     delete: delete_.call(self, roleName),
     forget: forget.call(self, roleName),
     drop: drop.call(self, roleName),
+    remember: remember.call(self, roleName),
     restore: restore.call(self, roleName),
     expireAt: expireAt.call(self, roleName),
     expireIn: expireIn.call(self, roleName),

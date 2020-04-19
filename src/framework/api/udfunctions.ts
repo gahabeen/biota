@@ -16,6 +16,7 @@ import { updateMany } from '~/framework/api/udfunctions/updateMany';
 import { upsertMany } from '~/framework/api/udfunctions/upsertMany';
 import { dropMany } from '~/framework/api/udfunctions/dropMany';
 import { scaffold } from '~/framework/api/udfunctions/scaffold';
+import { dismantle } from '~/framework/api/udfunctions/dismantle';
 
 export const udfunctions: FrameworkUDFunctionsApi = {
   activity,
@@ -34,4 +35,5 @@ export const udfunctions: FrameworkUDFunctionsApi = {
   upsertMany,
   dropMany,
   scaffold,
+  dismantle,
 };

@@ -3,6 +3,7 @@ import { Expr } from 'faunadb';
 import { FactoryIndexesApi } from '~/types/factory/factory.indexes';
 
 export interface FrameworkIndexesApi {
+  dismantle: () => Promise<any>;
   scaffold: () => Promise<any>;
   activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;
   findIndex: FactoryIndexesApi<Promise<any>>['findIndex'];

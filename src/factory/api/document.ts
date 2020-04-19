@@ -15,8 +15,12 @@ import { Pagination } from '../constructors/pagination';
 export const document: FactoryContext<FactoryDocument> = function (context, options): FactoryDocument {
   const { prefix = 'Document' } = options || {};
   // tslint:disable-next-line: only-arrow-functions
-  return (collection = null, id = null) => {
-    const ref = q.If(q.IsString(id), q.Ref(q.Collection(collection), id), q.Collection(collection));
+  return (collectionOrRef = null, id = null) => {
+    const ref = q.If(
+      q.IsRef(collectionOrRef),
+      collectionOrRef,
+      q.If(q.IsString(id), q.Ref(q.Collection(collectionOrRef), id), q.Collection(collectionOrRef)),
+    );
     const refExists = (refExpr: Expr) => {
       return q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: refExpr }), true);
     };

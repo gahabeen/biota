@@ -1,11 +1,10 @@
-import { query as q, Expr } from 'faunadb';
-import { FaunaRoleOptions } from '~/types/fauna';
-import { BiotaCollectionName } from '~/factory/constructors/collection';
-import { Role, BiotaRoleName } from '~/factory/constructors/role';
-import { BiotaFunctionName } from '~/factory/constructors/udfunction';
-import { Identity } from '~/factory/api/ql';
+import { Expr, query as q } from 'faunadb';
 import { TS_2500_YEARS } from '~/consts';
+import { Identity } from '~/factory/api/ql';
+import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { CustomPrivilege, PrivilegeRights } from '~/factory/constructors/privilege';
+import { BiotaRoleName, Role } from '~/factory/constructors/role';
+import { FaunaRoleOptions } from '~/types/fauna';
 
 // tslint:disable-next-line: variable-name
 const is_document_available = q.Let(
@@ -102,9 +101,9 @@ export const user: FaunaRoleOptions = Role({
      * Functions
      */
 
-    CustomPrivilege({
-      resource: q.Function(BiotaFunctionName('SearchQuery')),
-      actions: { call: true },
-    }),
+    // CustomPrivilege({
+    //   resource: q.Function(BiotaFunctionName('SearchQuery')),
+    //   actions: { call: true },
+    // }),
   ],
 });

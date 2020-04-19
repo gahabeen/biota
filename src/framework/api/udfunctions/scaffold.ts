@@ -71,5 +71,6 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
 
   return execute(tasks, {
     domain: 'Biota.udfunctions.scaffold',
+    singleResult: false
   });
 };

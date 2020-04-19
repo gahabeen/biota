@@ -18,8 +18,8 @@ export const scaffold: FrameworkRolesApi['scaffold'] = async function (this: Bio
           task() {
             return self.role(foundationRoles[role].name).repsert({
               name: foundationRoles[role].name,
-              privileges: [],
               membership: [],
+              privileges: [],
             });
           },
         });
@@ -40,5 +40,6 @@ export const scaffold: FrameworkRolesApi['scaffold'] = async function (this: Bio
 
   return execute(tasks, {
     domain: 'Biota.roles.scaffold',
+    singleResult: false
   });
 };

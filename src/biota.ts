@@ -24,7 +24,7 @@ import { FrameworkSessionsApi } from './types/framework/framework.sessions';
 import { FactoryTokenApi } from './types/factory/factory.token';
 import { FrameworkTokensApi } from './types/framework/framework.tokens';
 import { bindSubFunctions } from './helpers';
-import { FrameworkFoundation } from './types/framework/framework.foundation';
+import { FrameworkFoundation, FoundationOptions } from './types/framework/framework.foundation';
 
 // interface BiotaRunningAS {
 //   role?: FaunaRef;
@@ -53,7 +53,6 @@ export class Biota {
   get context(): FactoryContextDefinition {
     return this._context;
   }
-
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
@@ -80,7 +79,8 @@ export class Biota {
   token: (idOrRefOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
   tokens: FrameworkTokensApi;
 
-  foundation: FrameworkFoundation;
+  foundation: (options?: FoundationOptions) => Promise<any>;
+  dismantle: () => Promise<any>;
   // relation: FrameworkRelation;
 
   defaults: any;
@@ -147,8 +147,21 @@ export class Biota {
     this.session = framework.session.bind(this);
     this.sessions = framework.sessions;
     bindSubFunctions(this, 'sessions');
+    this.index = framework.index.bind(this);
+    this.indexes = framework.indexes;
+    bindSubFunctions(this, 'indexes');
+    this.credential = framework.credential.bind(this);
+    this.credentials = framework.credentials;
+    bindSubFunctions(this, 'credentials');
+    this.key = framework.key.bind(this);
+    this.keys = framework.keys;
+    bindSubFunctions(this, 'keys');
+    this.token = framework.token.bind(this);
+    this.tokens = framework.tokens;
+    bindSubFunctions(this, 'tokens');
 
     this.foundation = framework.foundation.bind(this);
+    this.dismantle = framework.dismantle.bind(this);
     // this.relation = framework.relation.bind(this);
 
     // this.privateKey = framework.privateKey.bind(this);

@@ -200,12 +200,12 @@ export function PrivilegeActions(
             ['list', 'value'],
             q.Let(
               {
-                newObjRoot: q.Select(helpers.path(root), q.Var('newObj'), {}),
-                oldObjRoot: q.Select(helpers.path(root), q.Var('newObj'), {}),
+                newDocRoot: q.Select(helpers.path(root), q.Var('newDoc'), {}),
+                oldDocRoot: q.Select(helpers.path(root), q.Var('newDoc'), {}),
                 key1: q.Select(0, q.Var('value'), null),
                 value1: q.Select(1, q.Var('value'), null),
-                hasKey2: q.Contains([q.Var('key1')], q.Var('newObjRoot')),
-                value2: q.Select(q.Var('key1'), q.Var('newObjRoot'), null),
+                hasKey2: q.Contains([q.Var('key1')], q.Var('newDocRoot')),
+                value2: q.Select(q.Var('key1'), q.Var('newDocRoot'), null),
               },
               q.If(
                 q.And(q.Var('hasKey2'), q.Equals(q.Var('value1'), q.Var('value2'))),
@@ -215,7 +215,7 @@ export function PrivilegeActions(
             ),
           ),
           [],
-          q.ToArray(q.Var('oldObjRoot')),
+          q.ToArray(q.Var('oldDoc')),
         ),
       },
       q.IsEmpty(
@@ -893,14 +893,14 @@ export function PrivilegeActions(
 
   return Object.assign(
     {
-      create: buildAction(actions.create),
-      delete: buildAction(actions.delete),
-      read: buildAction(actions.read),
-      write: buildAction(actions.write),
-      history_read: buildAction(actions.history_read),
-      history_write: buildAction(actions.history_write),
-      unrestricted_read: buildAction(actions.unrestricted_read),
-      call: buildAction(actions.call),
+      create: q.Query(q.Lambda(['doc'], buildAction(actions.create))),
+      delete: q.Query(q.Lambda(['ref'], buildAction(actions.delete))),
+      read: q.Query(q.Lambda(['ref'], buildAction(actions.read))),
+      write: q.Query(q.Lambda(['oldDoc', 'newDoc'], buildAction(actions.write))),
+      history_read: q.Query(q.Lambda(['ref'], buildAction(actions.history_read))),
+      history_write: q.Query(q.Lambda(['ref', 'ts', 'action', 'doc'], buildAction(actions.history_write))),
+      unrestricted_read: q.Query(q.Lambda(['_'], buildAction(actions.unrestricted_read))),
+      call: q.Query(q.Lambda(['args'], buildAction(actions.call))),
     },
     definition.global,
   );

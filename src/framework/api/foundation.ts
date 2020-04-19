@@ -8,6 +8,19 @@ export async function foundation(this: Biota, options: FoundationOptions) {
   const tasks = [];
 
   /**
+   *  Collections (creation)
+   */
+
+  if (options.collections) {
+    tasks.push({
+      name: `Scaffolding collections`,
+      task() {
+        return self.collections.scaffold();
+      },
+    });
+  }
+
+  /**
    *  Roles (base)
    */
 
@@ -34,19 +47,6 @@ export async function foundation(this: Biota, options: FoundationOptions) {
   }
 
   /**
-   *  Collections (creation)
-   */
-
-  if (options.collections) {
-    tasks.push({
-      name: `Scaffolding collections`,
-      task() {
-        return self.collections.scaffold();
-      },
-    });
-  }
-
-  /**
    *  Indexes
    */
 
@@ -55,19 +55,6 @@ export async function foundation(this: Biota, options: FoundationOptions) {
       name: `Scaffolding indexes`,
       task() {
         return self.indexes.scaffold();
-      },
-    });
-  }
-
-  /**
-   *  Collections
-   */
-
-  if (options.collections) {
-    tasks.push({
-      name: `Scaffolding Collections`,
-      task() {
-        return self.collections.scaffold();
       },
     });
   }
@@ -87,5 +74,6 @@ export async function foundation(this: Biota, options: FoundationOptions) {
 
   return execute(tasks, {
     domain: 'Biota.foundation',
+    singleResult: false
   });
 }

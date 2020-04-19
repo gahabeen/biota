@@ -17,10 +17,10 @@ export interface FactoryDocumentAuthEmailApi<OT = Expr> {
 
 export interface FactoryDocumentAuthApi<OT = Expr> {
   email: FactoryDocumentAuthEmailApi<OT>;
-  accounts: FactoryDocumentAuthAccountsApi<OT>;
+  account: FactoryDocumentAuthAccountsApi<OT>;
 }
 
-export type FactoryUser<OT = FactoryUserApi> = (idOrRef?: FaunaId | FaunaRef) => OT;
+export type FactoryUser<OT = FactoryUserApi> = (id?: FaunaId) => OT;
 
 export interface FactoryUserApi<OT = Expr> extends FactoryDocumentApi<Expr> {
   register(email: FaunaString, password: FaunaString, data?: FaunaDocumentOptions['data']): OT;
@@ -29,5 +29,5 @@ export interface FactoryUserApi<OT = Expr> extends FactoryDocumentApi<Expr> {
   loginWithAuthAccount(account: DocumentAuthAccount): OT;
   logout(everywhere: boolean): OT;
   changePassword(currentPassword: FaunaString, password: FaunaString): OT;
-  auth: FactoryDocumentAuthApi;
+  auth: FactoryDocumentAuthApi<OT>;
 }

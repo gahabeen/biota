@@ -174,7 +174,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const query = Query(
           {
             userRef: q.Select('ref', ResultData(user(q.Var('ctx'))().insert({})), null),
-            user_auth_account: ResultData(user(q.Var('ctx'))(q.Var('userRef')).auth.accounts.set(q.Var('account') as DocumentAuthAccount)),
+            user_auth_account: ResultData(user(q.Var('ctx'))(q.Var('userRef')).auth.account.set(q.Var('account') as DocumentAuthAccount)),
             user_owner: ResultData(user(q.Var('ctx'))(q.Var('userRef')).membership.owner.set(q.Var('userRef'))),
             user_user_role: ResultData(
               user(q.Var('ctx'))(q.Var('userRef'))
@@ -239,7 +239,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
         },
-        accounts: {
+        account: {
           distinct(account) {
             const inputs = { ref, account };
             // ----
@@ -314,7 +314,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                 doc: ResultData(
                   user(q.Var('ctx'))(q.Var('ref')).upsert({
                     _auth: {
-                      accounts: user(q.Var('ctx'))(q.Var('ref')).auth.accounts.distinct(q.Var('account') as DocumentAuthAccount),
+                      accounts: user(q.Var('ctx'))(q.Var('ref')).auth.account.distinct(q.Var('account') as DocumentAuthAccount),
                     },
                   }),
                 ),
@@ -334,7 +334,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                 doc: ResultData(
                   user(q.Var('ctx'))(q.Var('ref')).upsert({
                     _auth: {
-                      accounts: user(q.Var('ctx'))(q.Var('ref')).auth.accounts.difference(q.Var('provider'), q.Var('accountId')),
+                      accounts: user(q.Var('ctx'))(q.Var('ref')).auth.account.difference(q.Var('provider'), q.Var('accountId')),
                     },
                   }),
                 ),

@@ -27,6 +27,7 @@ export interface FrameworkRoleApi {
   delete: FactoryRoleApi<Promise<any>>['delete'];
   forget: FactoryRoleApi<Promise<any>>['forget'];
   drop: FactoryRoleApi<Promise<any>>['drop'];
+  remember: FactoryRoleApi<Promise<any>>['remember'];
   restore: FactoryRoleApi<Promise<any>>['restore'];
   expireAt: FactoryRoleApi<Promise<any>>['expireAt'];
   expireIn: FactoryRoleApi<Promise<any>>['expireIn'];
