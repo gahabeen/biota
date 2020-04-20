@@ -3,7 +3,7 @@ import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryIndex } from '~/types/factory/factory.index';
 
 import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
-import { BiotaFunctionName } from './constructors';
+import { BiotaFunctionName, DocumentRef } from './constructors';
 import { action } from './action';
 import { document } from './document';
 import { ResultData, ResultAction } from '~/factory/constructors/result';
@@ -34,7 +34,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('insert', q.Select('data', q.Var('options'), {}))),
             doc: q.CreateIndex(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -51,7 +51,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('update', q.Select('data', q.Var('options'), {}))),
             doc: q.Update(q.Index(q.Var('name')), q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -98,7 +98,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
               ),
             ),
             doc: q.Replace(q.Index(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -148,7 +148,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('forget')),
             annotated_doc: ResultData(index(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('name')).log(),
+            action: action(q.Var('ctx'))().log('forget', DocumentRef(q.Var('annotated_doc'))),
             doc: q.Delete(q.Index(q.Var('name'))),
           },
           q.Var('doc'),

@@ -4,12 +4,13 @@ import { action } from '~/factory/api/action';
 import { ContextNoLogNoAnnotation, ContextProp } from '~/factory/constructors/context';
 import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
-import { ResultData, ResultAction } from '~/factory/constructors/result';
+import { ResultAction, ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import * as helpers from '~/helpers';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryDocument } from '~/types/factory/factory.document';
 import { Pagination } from '../constructors/pagination';
+import { DocumentRef } from './constructors';
 
 // tslint:disable-next-line: only-arrow-functions
 export const document: FactoryContext<FactoryDocument> = function (context, options): FactoryDocument {
@@ -70,7 +71,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             refExists: refExists(q.Var('collection'), q.Var('id')),
             annotated: ResultData(document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('insert', q.Var('data'))),
             doc: q.Create(q.Var('ref'), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -88,7 +89,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             refExists: refExists(q.Var('collection'), q.Var('id')),
             annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Var('data'))),
             doc: q.Update(q.Ref(q.Collection(q.Var('collection')), q.Var('id')), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -137,7 +138,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               ),
             ),
             doc: q.Replace(q.Ref(q.Collection(q.Var('collection')), q.Var('id')), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -209,7 +210,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             refExists: refExists(q.Var('collection'), q.Var('id')),
             annotated: ResultData(document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('forget')),
             annotated_doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
+            action: action(q.Var('ctx'))().log('forget', q.Var('ref')),
             doc: q.Delete(q.Var('ref')),
           },
           q.Var('doc'),
@@ -239,7 +240,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('remember', q.Select('data', q.Var('previousState'), {})),
             ),
             doc: q.Insert(q.Var('ref'), q.Now(), 'update', { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))('remember', q.Var('ref')).log(),
+            action: action(q.Var('ctx'))().log('remember', q.Var('ref')),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -380,7 +381,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                   doc: ResultData(
                     document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
                   ),
-                  action: action(q.Var('ctx'))('roles_change', q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).log(),
+                  action: action(q.Var('ctx'))().log('roles_change', DocumentRef(q.Var('doc'))),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -410,7 +411,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                       q.Var('annotated'),
                     ),
                   ),
-                  action: action(q.Var('ctx'))('roles_change', q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).log(),
+                  action: action(q.Var('ctx'))().log('roles_change', DocumentRef(q.Var('doc'))),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -446,7 +447,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                   ),
                   ThrowError(q.Var('ctx'), "User isn't a document reference", { user: q.Var('user') }),
                 ),
-                action: action(q.Var('ctx'))('owner_change', q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).log(),
+                action: action(q.Var('ctx'))().log('owner_change', DocumentRef(q.Var('doc'))),
               },
               q.Var('doc'),
               q.Var('action'),
@@ -474,7 +475,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                     q.Var('annotated'),
                   ),
                 ),
-                action: action(q.Var('ctx'))('owner_change', q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).log(),
+                action: action(q.Var('ctx'))().log('owner_change', DocumentRef(q.Var('doc'))),
               },
               q.Var('doc'),
               q.Var('action'),
@@ -546,7 +547,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                       q.Var('annotated'),
                     ),
                   ),
-                  action: action(q.Var('ctx'))('assignees_change', q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).log(),
+                  action: action(q.Var('ctx'))().log('assignees_change', DocumentRef(q.Var('doc'))),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -574,7 +575,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                   doc: ResultData(
                     document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
                   ),
-                  action: action(q.Var('ctx'))('assignees_change', q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).log(),
+                  action: action(q.Var('ctx'))().log('assignees_change', DocumentRef(q.Var('doc'))),
                 },
                 q.Var('doc'),
                 q.Var('action'),
@@ -604,7 +605,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               doc: ResultData(
                 document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
               ),
-              action: action(q.Var('ctx'))('delete', q.Var('doc')).log(),
+              action: action(q.Var('ctx'))().log('delete', DocumentRef(q.Var('doc'))),
             },
             q.Var('doc'),
             q.Var('action'),
@@ -632,7 +633,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated'))),
                 ThrowError(q.Var('ctx'), "[at] isn't a valid time", { at: q.Var('at') }),
               ),
-              action: action(q.Var('ctx'))('expire', q.Var('doc')).log(),
+              action: action(q.Var('ctx'))().log('expire', DocumentRef(q.Var('doc'))),
             },
             q.Var('doc'),
             q.Var('action'),
@@ -673,7 +674,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                   q.Var('doc'),
                 ),
               ),
-              action: action(q.Var('ctx'))('restore', q.Var('doc')).log(),
+              action: action(q.Var('ctx'))().log('restore', DocumentRef(q.Var('doc'))),
             },
             q.Var('doc'),
             q.Var('action'),

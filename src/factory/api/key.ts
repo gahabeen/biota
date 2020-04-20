@@ -3,7 +3,7 @@ import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryKey } from '~/types/factory/factory.key';
 
 import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
-import { BiotaFunctionName } from './constructors';
+import { BiotaFunctionName, DocumentRef } from './constructors';
 import { action } from './action';
 import { document } from './document';
 import { ResultData, ResultAction } from '~/factory/constructors/result';
@@ -35,7 +35,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
             doc: q.CreateKey(q.Merge(q.Var('options'), { data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -52,7 +52,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
             doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -99,7 +99,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
               ),
             ),
             doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -149,7 +149,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
             annotated_doc: ResultData(key(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
+            action: action(q.Var('ctx'))().log('forget', DocumentRef(q.Var('annotated_doc'))),
             doc: q.Delete(q.Var('ref')),
           },
           q.Var('doc'),

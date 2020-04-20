@@ -2,9 +2,13 @@ import { FaunaPaginateOptions, FaunaPaginateMapper } from '~/types/fauna';
 import { Expr } from 'faunadb';
 import { FactoryUDFunctionsApi } from '~/types/factory/factory.udfunctions';
 
+export interface FrameworkUDFunctionsOptions {
+  onlyNecessary?: boolean
+}
+
 export interface FrameworkUDFunctionsApi {
   dismantle: () => Promise<any>;
-  scaffold: () => Promise<any>;
+  scaffold: (options: FrameworkUDFunctionsOptions) => Promise<any>;
   activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;
   findAll: FactoryUDFunctionsApi<Promise<any>>['findAll'];
   getMany: FactoryUDFunctionsApi<Promise<any>>['getMany'];

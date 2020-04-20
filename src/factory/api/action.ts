@@ -11,16 +11,10 @@ import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 // tslint:disable-next-line: only-arrow-functions
 export const action: FactoryContext<FactoryAction> = function (context): FactoryAction {
   // tslint:disable-next-line: only-arrow-functions
-  return (name = null, refOrDoc = null) => {
-    const ref = q.If(
-      q.IsRef(refOrDoc),
-      refOrDoc,
-      q.If(q.IsObject(refOrDoc), q.If(q.Contains('ref', refOrDoc), q.Select('ref', refOrDoc, null), null), null),
-    );
-
+  return (id = null) => {
     return {
-      ...document(context, { prefix: 'Action' })(ref),
-      log() {
+      ...document(context, { prefix: 'Action' })(BiotaCollectionName('actions'), id),
+      log(name = null, ref = null) {
         const inputs = { name, ref };
         // ----
         const query = MethodQuery(

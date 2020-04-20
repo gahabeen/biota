@@ -1,14 +1,11 @@
-import { Expr, query as q } from 'faunadb';
-import { DocumentAuthAccount } from '~/types/document';
-import { FactoryContext } from '~/types/factory/factory.context';
-import { FactoryUser } from '~/types/factory/factory.user';
-import { PAGINATION_SIZE_MAX, DEFAULT_EXPIRATION_DURATION } from '~/consts';
+import { query as q } from 'faunadb';
+import { PAGINATION_SIZE_MAX } from '~/consts';
 import { action } from '~/factory/api/action';
 import { credential } from '~/factory/api/credential';
 import { document } from '~/factory/api/document';
 import { indexes } from '~/factory/api/indexes';
-import { users } from '~/factory/api/users';
 import { session } from '~/factory/api/session';
+import { users } from '~/factory/api/users';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { ContextProp } from '~/factory/constructors/context';
 import { ThrowError } from '~/factory/constructors/error';
@@ -16,6 +13,9 @@ import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { BiotaRoleName } from '~/factory/constructors/role';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
+import { DocumentAuthAccount } from '~/types/document';
+import { FactoryContext } from '~/types/factory/factory.context';
+import { FactoryUser } from '~/types/factory/factory.user';
 
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (context): FactoryUser {
@@ -50,7 +50,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             identified_user: q.Identify(q.Var('userRef'), q.Var('password')),
             is_identified_user: q.If(q.Var('identified_user'), true, ThrowError(q.Var('ctx'), 'User email or password is wrong')),
             session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
-            action: action(q.Var('ctx'))('login', q.Var('userRef')).log(),
+            action: action(q.Var('ctx'))().log('login', q.Var('userRef')),
           },
           q.Var('session'),
           q.Var('action'),
@@ -82,14 +82,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                       ),
                       q.Lambda(['session'], document(q.Var('ctx'))(q.Var('session')).delete()),
                     ),
-                    action: action(q.Var('ctx'))('logout_everywhere', ContextProp(q.Var('ctx'), 'identity')).log(),
+                    action: action(q.Var('ctx'))().log('logout_everywhere', ContextProp(q.Var('ctx'), 'identity')),
                   },
                   q.Var('logging_out'),
                 ),
                 q.Let(
                   {
                     logging_out: ResultData(document(q.Var('ctx'))(ContextProp(q.Var('ctx'), 'hasSession')).delete()),
-                    action: action(q.Var('ctx'))('logout', ContextProp(q.Var('ctx'), 'identity')).log(),
+                    action: action(q.Var('ctx'))().log('logout', ContextProp(q.Var('ctx'), 'identity')),
                   },
                   q.Var('logging_out'),
                 ),
@@ -124,7 +124,9 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserChangePassword'), role: BiotaRoleName('auth') };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      // #bug - Not secure
+      /**
+       * This should only be run on SERVER SIDE
+       */
       loginWithAuthAccount(account = null, expireIn = null) {
         const inputs = { account, expireIn };
         // ----
@@ -169,7 +171,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
             ),
             user_credentials: ResultData(credential(q.Var('ctx'))(q.Var('userRef')).insert(q.Var('password'))),
             session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
-            action: action(q.Var('ctx'))('register', q.Var('userRef')).log(),
+            action: action(q.Var('ctx'))().log('register', q.Var('userRef')),
           },
           q.Var('session'),
           q.Var('action'),
@@ -179,7 +181,9 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         const online = { name: BiotaFunctionName('UserRegister'), role: BiotaRoleName('auth') };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      // #bug - Not secure
+      /**
+       * This should only be run on SERVER SIDE
+       */
       registerWithAuthAccount(account = null, expireIn = null) {
         const inputs = { account, expireIn };
         // ----
@@ -194,7 +198,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                 .set(),
             ),
             session: ResultData(session(q.Var('ctx'))().start(q.Var('expireIn'), q.Var('userRef'))),
-            action: action(q.Var('ctx'))('register', q.Var('userRef')).log(),
+            action: action(q.Var('ctx'))().log('register', q.Var('userRef')),
           },
           q.Var('session'),
           q.Var('action'),

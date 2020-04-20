@@ -3,7 +3,7 @@ import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryCredential } from '~/types/factory/factory.credential';
 import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { action } from './action';
-import { BiotaFunctionName, ResultData, ResultAction } from './constructors';
+import { BiotaFunctionName, ResultData, ResultAction, DocumentRef } from './constructors';
 
 // tslint:disable-next-line: only-arrow-functions
 export const credential: FactoryContext<FactoryCredential> = function (context): FactoryCredential {
@@ -38,7 +38,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
         const query = MethodQuery(
           {
             doc: q.Create(q.Credentials(), { instance: q.Var('instance'), password: q.Var('password') }),
-            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -58,7 +58,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
               current_password: q.Var('currentPassword'),
               password: q.Var('password'),
             }),
-            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -74,7 +74,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
         const query = MethodQuery(
           {
             doc: q.Replace(q.Var('ref'), { instance: q.Var('instance'), password: q.Var('password') }),
-            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -107,7 +107,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
         // ----
         const query = MethodQuery(
           {
-            action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
+            action: action(q.Var('ctx'))().log('forget', q.Var('ref')),
             doc: q.Delete(q.Var('ref')),
           },
           q.Var('doc'),

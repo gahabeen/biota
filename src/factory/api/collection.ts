@@ -5,7 +5,7 @@ import { action } from '~/factory/api/action';
 import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData, ResultAction } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
-import { ContextExtend } from './constructors';
+import { ContextExtend, DocumentRef } from './constructors';
 
 import { document } from '~/factory/api/document';
 import { Pagination } from '../constructors/pagination';
@@ -52,7 +52,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
               document(q.Var('ctx'), { prefix: 'Collection' })().annotate('insert', q.Select('data', q.Var('options'), {})),
             ),
             doc: q.CreateCollection(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -72,7 +72,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
               document(q.Var('ctx'), { prefix: 'Collection' })().annotate('update', q.Select('data', q.Var('options'), {})),
             ),
             doc: q.Update(q.Collection(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('update', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -121,7 +121,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
               ),
             ),
             doc: q.Replace(q.Collection(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
-            action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
+            action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -190,7 +190,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })().annotate('forget')),
             annotated_doc: ResultData(collection(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))('forget', q.Var('name')).log(),
+            action: action(q.Var('ctx'))().log('forget', DocumentRef(q.Var('annotated_doc'))),
             doc: q.Delete(q.Collection(q.Var('name'))),
           },
           q.Var('doc'),
