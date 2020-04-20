@@ -1,13 +1,11 @@
 import { FaunaDatabaseOptions } from '~/types/fauna';
 
 export function Database(database: FaunaDatabaseOptions): FaunaDatabaseOptions {
-  let { name, data = {}, api_version } = database || {};
+  const { name, data = {}, api_version } = database || {};
 
-  let self = {
+  return {
     name,
     data,
     api_version,
   };
-
-  return self;
 }

@@ -63,10 +63,10 @@ export class Biota {
   logout: FrameworkCurrentApi['user']['logout'];
   current: FrameworkCurrentApi;
 
-  user: (idOrRef?: FaunaId | FaunaRef) => FrameworkUserApi;
+  user: (id?: FaunaId) => FrameworkUserApi;
   users: (collectionName?: string) => FrameworkUsersApi;
-  document: (collectionOrRef?: FaunaString | FaunaRef, id?: FaunaString) => FrameworkDocumentApi;
-  documents: (collectionOrRef?: FaunaString | FaunaRef) => FrameworkDocumentsApi;
+  document: (collectionName?: FaunaString | FaunaRef, id?: FaunaString) => FrameworkDocumentApi;
+  documents: (collectionName?: FaunaString | FaunaRef) => FrameworkDocumentsApi;
   collection: (name?: FaunaString) => FrameworkCollectionApi;
   collections: FrameworkCollectionsApi;
   database: (name?: FaunaString) => FrameworkDatabaseApi;

@@ -5,7 +5,7 @@ import { document } from '~/factory/api/document';
 import { ContextProp } from '~/factory/constructors/context';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { ThrowError } from '~/factory/constructors/error';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 
 // tslint:disable-next-line: only-arrow-functions
@@ -23,7 +23,7 @@ export const action: FactoryContext<FactoryAction> = function (context): Factory
       log() {
         const inputs = { name, ref };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               ContextProp(q.Var('ctx'), 'logActions'),

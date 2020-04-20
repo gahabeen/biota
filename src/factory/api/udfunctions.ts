@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryUDFunctionsApi } from '~/types/factory/factory.udfunctions';
 
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { ResultData } from '~/factory/constructors/result';
 import { udfunction } from './udfunction';
@@ -14,7 +14,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     findAll(pagination) {
       const inputs = { pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Paginate(q.Functions(), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },
@@ -28,7 +28,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     getMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).get()))),
         },
@@ -42,7 +42,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     insertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -59,7 +59,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     updateMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -76,7 +76,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     upsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -93,7 +93,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     replaceMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -110,7 +110,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     repsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -127,7 +127,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     deleteMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).delete()))),
         },
@@ -141,7 +141,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     restoreMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).restore()))),
         },
@@ -155,7 +155,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     forgetMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).forget()))),
         },
@@ -169,7 +169,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     dropMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).drop()))),
         },
@@ -183,7 +183,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     expireManyAt(nameList, at) {
       const inputs = { nameList, at };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).expireAt(q.Var('at'))))),
         },
@@ -197,7 +197,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     expireManyIn(nameList, delay) {
       const inputs = { nameList, delay };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).expireIn(q.Var('delay'))))),
         },
@@ -211,7 +211,7 @@ export const udfunctions: FactoryContext<FactoryUDFunctionsApi> = function (cont
     expireManyNow(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(udfunction(q.Var('ctx'))(q.Var('name')).expireNow()))),
         },

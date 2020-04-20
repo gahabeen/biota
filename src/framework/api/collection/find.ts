@@ -3,7 +3,7 @@ import * as qs from 'querystring';
 import { Fauna, FaunaPaginateMapper, FaunaPaginateOptions } from '~/types/fauna';
 import { FrameworkCollectionSearchParams } from '~/types/framework/framework.collection';
 import { Biota } from '~/biota';
-import { Identity } from '~/factory/api/ql';
+import { Identity } from '~/factory/constructors/identity';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { execute } from '~/tools/tasks';
 

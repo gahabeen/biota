@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryCollection } from '~/types/factory/factory.collection';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { action } from '~/factory/api/action';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData, ResultAction } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { ContextExtend } from './constructors';
@@ -18,7 +18,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       findAll(pagination = {}) {
         const inputs = { name, pagination };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             docs: q.Map(q.Paginate(q.Documents(q.Var('name')), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
           },
@@ -32,7 +32,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       get() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Get(q.Collection(q.Var('name'))),
           },
@@ -46,7 +46,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       insert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(
               document(q.Var('ctx'), { prefix: 'Collection' })().annotate('insert', q.Select('data', q.Var('options'), {})),
@@ -66,7 +66,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       update(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(
               document(q.Var('ctx'), { prefix: 'Collection' })().annotate('update', q.Select('data', q.Var('options'), {})),
@@ -86,7 +86,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       upsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Collection(q.Var('name'))),
@@ -106,7 +106,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       replace(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             current_doc: ResultData(collection(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
@@ -135,7 +135,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       repsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Collection(q.Var('name'))),
@@ -155,7 +155,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       delete() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.delete()),
           },
@@ -171,7 +171,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.restore()),
           },
@@ -186,7 +186,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       forget() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })().annotate('forget')),
             annotated_doc: ResultData(collection(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
@@ -205,7 +205,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       drop() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Collection(q.Var('name'))), collection(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
@@ -222,7 +222,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // alias
         const inputs = { name, at };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(q.Var('at'))),
           },
@@ -237,7 +237,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // alias
         const inputs = { name, delay };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(
               document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(
@@ -256,7 +256,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(q.Now())),
           },

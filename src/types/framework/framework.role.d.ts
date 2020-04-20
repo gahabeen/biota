@@ -1,4 +1,4 @@
-import { FaunaPaginateOptions } from '../fauna';
+import { FaunaPaginateOptions, FaunaRolePrivilegeActions } from '../fauna';
 import { FactoryRoleApi, FactoryRole, FactoryRolePrivilegeApi } from '~/types/factory/factory.role';
 import { Expr } from 'faunadb';
 import { FactoryRuleDefinition, FactoryRuleDefinitionPaths } from '../factory/factory.rule';
@@ -8,6 +8,7 @@ export type FrameworkRole = FactoryRole<FrameworkRoleApi>;
 export interface FaunaRolePrivilegeScaffoldOptions {
   resource?: Expr;
   rights?: FactoryRuleDefinition;
+  actions?: FaunaRolePrivilegeActions;
   immutablePaths?: FactoryRuleDefinitionPaths;
 }
 

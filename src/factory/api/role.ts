@@ -1,5 +1,5 @@
 import { query as q } from 'faunadb';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData, ResultAction } from '~/factory/constructors/result';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryRole } from '~/types/factory/factory.role';
@@ -16,7 +16,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       get() {
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Get(q.Role(q.Var('name'))),
           },
@@ -30,7 +30,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       insert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
             doc: q.CreateRole(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
@@ -47,7 +47,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       update(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             membership: q.Select('membership', q.Var('options'), []),
             membership_list: q.If(q.IsObject(q.Var('membership')), [q.Var('membership')], q.Var('membership')),
@@ -81,7 +81,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       upsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Role(q.Var('name'))),
@@ -100,7 +100,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       replace(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             current_doc: ResultData(role(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
@@ -128,7 +128,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       repsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Role(q.Var('name'))),
@@ -147,7 +147,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       delete() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.delete(),
           },
@@ -162,7 +162,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       forget() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
             annotated_doc: ResultData(role(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
@@ -180,7 +180,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       drop() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Role(q.Var('name'))), role(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
@@ -195,7 +195,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       remember() {
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: document(q.Var('ctx'), { prefix: 'Role' })(q.Role(q.Var('name'))).remember(),
           },
@@ -211,7 +211,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         distinct(membership) {
           const inputs = { name, membership };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               membership_resource: q.Select('resource', q.Var('membership')),
               current_membership_raw: q.Select('membership', q.Get(q.Role(q.Var('name'))), []),
@@ -241,7 +241,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         distinctList(membershipList = []) {
           const inputs = { name, membershipList };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               current_membership_raw: q.Select('membership', q.Get(q.Role(q.Var('name'))), []),
               current_membership_list: q.If(
@@ -311,7 +311,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         difference(resource) {
           const inputs = { name, resource };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               current_membership_raw: q.Select('membership', q.Get(q.Role(q.Var('name'))), []),
               current_membership: q.If(
@@ -334,7 +334,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         set(membership) {
           const inputs = { name, membership };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               doc: role(q.Var('ctx'))(q.Var('name')).upsert({
                 membership: ResultData(role(q.Var('ctx'))(q.Var('name')).membership.distinct(q.Var('membership'))),
@@ -351,7 +351,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         setMany(membershipList) {
           const inputs = { name, membershipList };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               doc: role(q.Var('ctx'))(q.Var('name')).upsert({
                 membership: ResultData(
@@ -370,7 +370,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         remove(resource) {
           const inputs = { name, resource };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               doc: role(q.Var('ctx'))(q.Var('name')).upsert({
                 membership: ResultData(role(q.Var('ctx'))(q.Var('name')).membership.difference(q.Var('resource'))),
@@ -387,7 +387,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         removeMany(resourceList) {
           const inputs = { name, resourceList };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               iterations: q.Map(
                 q.Var('resourceList'),
@@ -414,7 +414,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         distinct(privilege) {
           const inputs = { name, privilege };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               privilege_resource: q.Select('resource', q.Var('privilege')),
               has_privilege_resource: q.If(q.IsRef(q.Var('privilege_resource')), true, q.Abort("Privilege doesn't have a resource")),
@@ -453,7 +453,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         distinctList(privilegeList = []) {
           const inputs = { name, privilegeList };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               current_privilege_raw: q.Select('privileges', q.Get(q.Role(q.Var('name'))), []),
               current_privilege_list: q.If(
@@ -524,7 +524,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         difference(resource) {
           const inputs = { name, resource };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               current_privileges_raw: q.Select('privileges', q.Get(q.Role(q.Var('name'))), []),
               current_privileges: q.If(
@@ -547,7 +547,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         set(privilege) {
           const inputs = { name, privilege };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               doc: role(q.Var('ctx'))(q.Var('name')).upsert({
                 privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.distinct(q.Var('privilege'))),
@@ -564,7 +564,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         setMany(privilegeList) {
           const inputs = { name, privilegeList };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               doc: role(q.Var('ctx'))(q.Var('name')).upsert({
                 privileges: ResultData(
@@ -583,7 +583,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         scaffold(privilege) {
           const inputs = { name, privilege };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               doc: role(q.Var('ctx'))(q.Var('name')).upsert({
                 privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.distinct(q.Var('privilege'))),
@@ -600,7 +600,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         remove(resource) {
           const inputs = { name, resource };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               doc: role(q.Var('ctx'))(q.Var('name')).upsert({
                 privileges: ResultData(role(q.Var('ctx'))(q.Var('name')).privilege.difference(q.Var('resource'))),
@@ -617,7 +617,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         removeMany(resourceList) {
           const inputs = { name, resourceList };
           // ---
-          const query = Query(
+          const query = MethodQuery(
             {
               iterations: q.Map(
                 q.Var('resourceList'),
@@ -644,7 +644,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // alias
         const inputs = { name, at };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Var('at')),
           },
@@ -660,7 +660,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // alias
         const inputs = { name, delay };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(
               q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds'),
@@ -678,7 +678,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Now()),
           },
@@ -694,7 +694,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.restore(),
           },

@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryKeysApi } from '~/types/factory/factory.keys';
 
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName, ResultData } from './constructors';
 import { key } from './key';
 import { Pagination } from '../constructors/pagination';
@@ -13,7 +13,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     findAll(pagination) {
       const inputs = { pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Paginate(q.Keys(), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },
@@ -27,7 +27,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     getMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).get()))),
         },
@@ -41,7 +41,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     insertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -58,7 +58,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     updateMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -75,7 +75,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     upsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -92,7 +92,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     replaceMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -109,7 +109,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     repsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -126,7 +126,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     deleteMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).delete()))),
         },
@@ -140,7 +140,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     restoreMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).restore()))),
         },
@@ -154,7 +154,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     forgetMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).forget()))),
         },
@@ -168,7 +168,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     dropMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).drop()))),
         },
@@ -182,7 +182,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     expireManyAt(nameList, at) {
       const inputs = { nameList, at };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).expireAt(q.Var('at'))))),
         },
@@ -196,7 +196,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     expireManyIn(nameList, delay) {
       const inputs = { nameList, delay };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).expireIn(q.Var('delay'))))),
         },
@@ -210,7 +210,7 @@ export const keys: FactoryContext<FactoryKeysApi> = function (context): FactoryK
     expireManyNow(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(key(q.Var('ctx'))(q.Var('name')).expireNow()))),
         },

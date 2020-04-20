@@ -3,20 +3,6 @@ import { FactoryContextDefinition } from '~/types/factory/factory.context';
 import { FaunaString } from '~/types/fauna';
 import * as helpers from '~/helpers';
 
-// export function ContextDefault(context: FactoryContextDefinition = {}) {
-//   return {
-//     offline: q.Select('offline', context, false),
-//     identity: q.Select('identity', context, false),
-//     hasIdentity: q.IsDoc(q.Var('identity')),
-//     session: q.Select('session', context, false),
-//     hasSession: q.Var('hasSession'),
-//     callstack: q.Select('callstack', context, 'Biota'),
-//     logActions: q.If(q.IsBoolean(q.Var('logActions')), q.Var('logActions'), false),
-//     annotateDocuments: q.If(q.IsBoolean(q.Var('annotateDocuments')), q.Var('annotateDocuments'), false),
-//     skipErrors: q.If(q.IsBoolean(q.Var('skipErrors')), q.Var('skipErrors'), false),
-//   };
-// }
-
 export function ContextExtend(
   context: FactoryContextDefinition = {},
   functionName: FaunaString = null,

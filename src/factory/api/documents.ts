@@ -1,6 +1,6 @@
 import { Expr, query as q } from 'faunadb';
 import { document } from '~/factory/api/document';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryDocumentsApi } from '~/types/factory/factory.documents';
@@ -33,7 +33,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
 
       const inputs = { collectionName, pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Paginate(q.Documents(q.Collection(q.Var('collectionName'))), Pagination(q.Var('pagination'))),
         },
@@ -47,7 +47,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     getMany(refList) {
       const inputs = { refList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).get()))),
         },
@@ -61,7 +61,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     insertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -81,7 +81,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     updateMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -101,7 +101,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     upsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -121,7 +121,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     replaceMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -141,7 +141,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     repsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -161,7 +161,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     deleteMany(refList) {
       const inputs = { refList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).delete()))),
         },
@@ -175,7 +175,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     restoreMany(refList) {
       const inputs = { refList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).restore()))),
         },
@@ -189,7 +189,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     forgetMany(refList) {
       const inputs = { refList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).forget()))),
         },
@@ -203,7 +203,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     dropMany(refList) {
       const inputs = { refList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).drop()))),
         },
@@ -217,7 +217,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     expireManyAt(refList, at) {
       const inputs = { refList, at };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).expireAt(q.Var('at'))))),
         },
@@ -231,7 +231,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     expireManyIn(refList, delay) {
       const inputs = { refList, delay };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).expireIn(q.Var('delay'))))),
         },
@@ -245,7 +245,7 @@ export const documents: FactoryContext<FactoryDocumentsApi> = function (context)
     expireManyNow(refList) {
       const inputs = { refList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('refList'), q.Lambda(['ref'], ResultData(document(q.Var('ctx'))(q.Var('ref')).expireNow()))),
         },

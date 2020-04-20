@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryKey } from '~/types/factory/factory.key';
 
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
@@ -17,7 +17,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       get() {
         const inputs = { ref };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Get(q.Var('ref')),
           },
@@ -31,7 +31,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       insert(options) {
         const inputs = { options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
             doc: q.CreateKey(q.Merge(q.Var('options'), { data: q.Var('annotated') })),
@@ -48,7 +48,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       update(options) {
         const inputs = { ref, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
             doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
@@ -65,7 +65,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       upsert(options) {
         const inputs = { ref, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
@@ -84,7 +84,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       replace(options) {
         const inputs = { ref, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             current_doc: ResultData(key(q.Var('ctx'))(q.Var('ref')).get()),
             annotated: ResultData(
@@ -112,7 +112,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       repsert(options) {
         const inputs = { ref, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
@@ -131,7 +131,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       delete() {
         const inputs = { ref };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
           },
@@ -145,7 +145,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       forget() {
         const inputs = { ref };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
             annotated_doc: ResultData(key(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
@@ -163,7 +163,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
       drop() {
         const inputs = { ref };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Var('ref')), key(q.Var('ctx'))(q.Var('ref')).forget(), {}),
           },
@@ -179,7 +179,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // alias
         const inputs = { ref, at };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
           },
@@ -194,7 +194,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // alias
         const inputs = { ref, delay };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(
               document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds')),
@@ -211,7 +211,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // alias
         const inputs = { ref };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
           },
@@ -226,7 +226,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // alias
         const inputs = { ref };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
           },

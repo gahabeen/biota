@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryCredential } from '~/types/factory/factory.credential';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { action } from './action';
 import { BiotaFunctionName, ResultData, ResultAction } from './constructors';
 
@@ -21,7 +21,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
       get() {
         const inputs = { ref };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Get(q.Var('ref')),
           },
@@ -35,7 +35,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
       insert(password) {
         const inputs = { instance, password };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Create(q.Credentials(), { instance: q.Var('instance'), password: q.Var('password') }),
             action: action(q.Var('ctx'))('insert', q.Var('doc')).log(),
@@ -51,7 +51,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
       update(currentPassword, password) {
         const inputs = { ref, instance, currentPassword, password };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Update(q.Var('ref'), {
               instance: q.Var('instance'),
@@ -71,7 +71,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
       replace(password) {
         const inputs = { ref, instance, password };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Replace(q.Var('ref'), { instance: q.Var('instance'), password: q.Var('password') }),
             action: action(q.Var('ctx'))('replace', q.Var('doc')).log(),
@@ -87,7 +87,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
       repsert(password) {
         const inputs = { ref, password };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Var('ref')),
@@ -105,7 +105,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
       forget() {
         const inputs = { ref };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             action: action(q.Var('ctx'))('forget', q.Var('ref')).log(),
             doc: q.Delete(q.Var('ref')),
@@ -121,7 +121,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
       drop() {
         const inputs = { ref };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Var('ref')), credentialApi(q.Var('ref')).forget(), {}),
           },

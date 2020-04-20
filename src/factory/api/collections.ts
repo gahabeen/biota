@@ -1,21 +1,19 @@
 import { query as q } from 'faunadb';
-import { FactoryContext } from '~/types/factory/factory.context';
-import { FactoryCollectionsApi } from '~/types/factory/factory.collections';
-
-import { Query, MethodDispatch } from '~/factory/constructors/method';
-import { BiotaFunctionName } from './constructors';
 import { collection } from '~/factory/api/collection';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
+import { FactoryCollectionsApi } from '~/types/factory/factory.collections';
+import { FactoryContext } from '~/types/factory/factory.context';
 import { Pagination } from '../constructors/pagination';
+import { BiotaFunctionName } from './constructors';
 
 // tslint:disable-next-line: only-arrow-functions
 export const collections: FactoryContext<FactoryCollectionsApi> = function (context): FactoryCollectionsApi {
   return {
     findAll(pagination) {
-
       const inputs = { pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Paginate(q.Collections(), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },
@@ -29,7 +27,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     getMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).get()))),
         },
@@ -43,7 +41,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     insertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('optionsList'), q.Lambda(['options'], ResultData(collection(q.Var('ctx'))().insert(q.Var('options'))))),
         },
@@ -57,7 +55,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     updateMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('optionsList'), q.Lambda(['options'], ResultData(collection(q.Var('ctx'))().update(q.Var('options'))))),
         },
@@ -71,7 +69,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     upsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('optionsList'), q.Lambda(['options'], ResultData(collection(q.Var('ctx'))().upsert(q.Var('options'))))),
         },
@@ -85,7 +83,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     replaceMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('optionsList'), q.Lambda(['options'], ResultData(collection(q.Var('ctx'))().replace(q.Var('options'))))),
         },
@@ -99,7 +97,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     repsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('optionsList'), q.Lambda(['options'], ResultData(collection(q.Var('ctx'))().repsert(q.Var('options'))))),
         },
@@ -113,7 +111,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     deleteMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).delete()))),
         },
@@ -127,7 +125,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     restoreMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).restore()))),
         },
@@ -141,7 +139,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     forgetMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).forget()))),
         },
@@ -155,7 +153,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     dropMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).drop()))),
         },
@@ -169,7 +167,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     expireManyAt(nameList, at) {
       const inputs = { nameList, at };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).expireAt(q.Var('at'))))),
         },
@@ -183,7 +181,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     expireManyIn(nameList, delay) {
       const inputs = { nameList, delay };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).expireIn(q.Var('delay'))))),
         },
@@ -197,7 +195,7 @@ export const collections: FactoryContext<FactoryCollectionsApi> = function (cont
     expireManyNow(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(collection(q.Var('ctx'))(q.Var('name')).expireNow()))),
         },

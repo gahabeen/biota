@@ -6,8 +6,8 @@ export function BiotaRoleName(name: string) {
 }
 
 export function Role(role: FaunaRoleOptions): FaunaRoleOptions {
-  let { name, membership, privileges } = role || {};
-  let self = {
+  const { name, membership, privileges } = role || {};
+  const self = {
     name,
     membership,
     privileges: privileges || [],

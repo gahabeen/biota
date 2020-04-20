@@ -5,7 +5,7 @@ import { pathString } from '~/helpers/path';
 import { index } from '.';
 import { BiotaIndexName } from '~/factory/constructors';
 import { ThrowError } from '~/factory/constructors/error';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
 import { Pagination } from '../constructors/pagination';
@@ -16,7 +16,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     findIndex(resource, termsByPath) {
       const inputs = { resource, termsByPath };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           indexes: q.Paginate(
             q.Intersection(
@@ -42,7 +42,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     searchQuery(resource, searchTerms) {
       const inputs = { resource, searchTerms };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           searchTerms: q.ToArray(q.Var('searchTerms')),
           termIndexes: q.Map(
@@ -98,7 +98,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     findByResource(resource, pagination) {
       const inputs = { resource, pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Paginate(q.Match(q.Index(BiotaIndexName('indexes__by__resource')), q.Var('resource')), Pagination(q.Var('pagination'))),
         },
@@ -112,7 +112,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     findByTerm(term, pagination) {
       const inputs = { term, pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Paginate(q.Match(q.Index(BiotaIndexName('indexes__by__terms')), q.Var('term')), Pagination(q.Var('pagination'))),
         },
@@ -126,7 +126,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     findAll(pagination) {
       const inputs = { pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Paginate(q.Indexes(), pagination), q.Lambda('x', q.Get(q.Var('x')))),
         },
@@ -140,7 +140,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     getMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).get()))),
         },
@@ -154,7 +154,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     insertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -171,7 +171,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     updateMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -188,7 +188,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     upsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -205,7 +205,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     replaceMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -222,7 +222,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     repsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -239,7 +239,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     deleteMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).delete()))),
         },
@@ -253,7 +253,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     restoreMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).restore()))),
         },
@@ -267,7 +267,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     forgetMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).forget()))),
         },
@@ -281,7 +281,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     dropMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).drop()))),
         },
@@ -295,7 +295,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     expireManyAt(nameList, at) {
       const inputs = { nameList, at };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).expireAt(q.Var('at'))))),
         },
@@ -309,7 +309,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     expireManyIn(nameList, delay) {
       const inputs = { nameList, delay };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).expireIn(q.Var('delay'))))),
         },
@@ -323,7 +323,7 @@ export const indexes: FactoryContext<FactoryIndexesApi> = function (context): Fa
     expireManyNow(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(index(q.Var('ctx'))(q.Var('name')).expireNow()))),
         },

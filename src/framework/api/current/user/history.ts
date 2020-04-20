@@ -4,7 +4,7 @@ import { execute } from '~/tools/tasks';
 import { FactoryUser } from '~/types/factory/factory.user';
 import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { query as q } from 'faunadb';
-import { Identity } from '~/factory/api/ql';
+import { Identity } from '~/factory/constructors/identity';
 
 export const currentUserHistory: FrameworkUserApi['history'] = function (this: Biota, pagination) {
   const self = this;

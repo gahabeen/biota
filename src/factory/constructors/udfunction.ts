@@ -1,8 +1,8 @@
 // types
-import { query as q, Expr } from 'faunadb';
-import { FactoryContextDefinition } from '~/types/factory/factory.context';
-import { FaunaObject, FaunaUDFunctionOptions, WrapFunction } from '~/types/fauna';
+import { Expr, query as q } from 'faunadb';
 import { CONVENTION } from '~/consts';
+import { FactoryContextDefinition } from '~/types/factory/factory.context';
+import { FaunaObject, FaunaUDFunctionOptions } from '~/types/fauna';
 import { ContextExtend } from './context';
 
 export function BiotaFunctionName(name: string) {
@@ -50,7 +50,7 @@ export function UDFunctionFromMethod(methodRaw: any) {
         if (obj.raw) {
           obj = obj.raw;
         }
-      // tslint:disable-next-line: no-empty
+        // tslint:disable-next-line: no-empty
       } catch (error) {}
       return obj;
     }
@@ -108,11 +108,7 @@ export function CallFunction(
       Args: Object.keys(params || {}),
       // UDFunctionQuery: q.Let({}), //q.Format('%@', query),
     },
-    q.Call(
-      definition.name,
-      ContextExtend(context, 'udf.CallFunction >' + definition.name, params),
-      params,
-    ),
+    q.Call(definition.name, ContextExtend(context, 'udf.CallFunction >' + definition.name, params), params),
     // q.Call(
     //   BiotaFunctionName('CallFunction'),
     //   ContextExtend(context, 'udf.CallFunction >' + definition.name),
@@ -123,13 +119,11 @@ export function CallFunction(
 }
 
 export function UDFunction(fn: FaunaUDFunctionOptions): FaunaUDFunctionOptions {
-  let { name = '', body, data, role } = fn || {};
-  let self = {
+  const { name = '', body, data, role } = fn || {};
+  return {
     name,
     body,
     data,
     role,
   };
-
-  return self;
 }

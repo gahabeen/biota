@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryHistoryApi } from '~/types/factory/factory.history';
 
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 
 // tslint:disable-next-line: only-arrow-functions
@@ -11,7 +11,7 @@ export const history: FactoryContext<FactoryHistoryApi> = function (context): Fa
     at(ts, expression) {
       const inputs = { ts, expression };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           doc: q.At(q.Var('ts'), q.Var('expression')),
         },
@@ -25,7 +25,7 @@ export const history: FactoryContext<FactoryHistoryApi> = function (context): Fa
     events(ref) {
       const inputs = { ref };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           doc: q.Events(q.Var('ref')),
         },

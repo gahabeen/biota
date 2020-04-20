@@ -7,9 +7,7 @@ import { Result } from './result';
 
 type MethodDispatchOption = { context: FactoryContextDefinition; inputs: object; query: Expr };
 
-// type QueryNext = (ctx: Expr) => Expr;
-
-export function Query(query: Expr, result: Expr, action: Expr = null) {
+export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
   const actionData = q.Let(
     {
       action,

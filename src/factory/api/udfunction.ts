@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
 
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
@@ -17,7 +17,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       get() {
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Get(q.Function(q.Var('name'))),
           },
@@ -31,7 +31,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       insert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('insert', q.Select('data', q.Var('options'), {}))),
             definition: q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') }),
@@ -49,7 +49,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       update(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
             doc: q.Update(q.Function(q.Var('name')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
@@ -66,7 +66,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       upsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Function(q.Var('name'))),
@@ -85,7 +85,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       replace(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             current_doc: ResultData(udfunction(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
@@ -113,7 +113,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       repsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Function(q.Var('name'))),
@@ -132,7 +132,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       delete() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.delete()),
           },
@@ -146,7 +146,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       forget() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
             annotated_doc: ResultData(udfunction(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
@@ -164,7 +164,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       drop() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Function(q.Var('name'))), udfunction(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
@@ -180,7 +180,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         // alias
         const inputs = { name, at };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.Var('at'))),
           },
@@ -195,7 +195,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         // alias
         const inputs = { name, delay };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(
               document(q.Var('ctx'))(q.Var('name')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds')),
@@ -212,7 +212,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.Now())),
           },
@@ -227,7 +227,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.restore()),
           },

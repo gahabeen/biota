@@ -4,7 +4,7 @@ import { FactoryUsersApi } from '~/types/factory/factory.users';
 import { BiotaIndexName } from '~/factory/constructors';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { ThrowError } from '~/factory/constructors/error';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { user } from './user';
@@ -20,7 +20,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
 
       const inputs = { account, provider, accountId };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           user: q.Select(
             0,
@@ -43,7 +43,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     getByAuthEmail(email) {
       const inputs = { email };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           user: q.Select(0, q.Paginate(q.Match(q.Index(BiotaIndexName('users__by__auth_email')), q.Var('email'))), null),
           userIsValid: q.If(q.IsDoc(q.Var('user')), true, ThrowError(q.Var('ctx'), "Could'nt find the user", { email: q.Var('email') })),
@@ -58,7 +58,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     findAll(pagination) {
       const inputs = { pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Paginate(q.Documents(q.Collection(BiotaCollectionName('users'))), Pagination(q.Var('pagination'))),
@@ -75,7 +75,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     getMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).get()))),
         },
@@ -89,7 +89,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     insertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -106,7 +106,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     updateMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -123,7 +123,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     upsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -140,7 +140,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     replaceMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -157,7 +157,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     repsertMany(optionsList) {
       const inputs = { optionsList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(
             q.Var('optionsList'),
@@ -174,7 +174,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     deleteMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).delete()))),
         },
@@ -188,7 +188,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     restoreMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).restore()))),
         },
@@ -202,7 +202,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     forgetMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).forget()))),
         },
@@ -216,7 +216,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     dropMany(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).drop()))),
         },
@@ -230,7 +230,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     expireManyAt(nameList, at) {
       const inputs = { nameList, at };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).expireAt(q.Var('at'))))),
         },
@@ -244,7 +244,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     expireManyIn(nameList, delay) {
       const inputs = { nameList, delay };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).expireIn(q.Var('delay'))))),
         },
@@ -258,7 +258,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
     expireManyNow(nameList) {
       const inputs = { nameList };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Var('nameList'), q.Lambda(['name'], ResultData(user(q.Var('ctx'))(q.Var('name')).expireNow()))),
         },

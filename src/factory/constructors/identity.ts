@@ -1,8 +1,5 @@
-// types
-// external
-import * as fauna from 'faunadb';
+import { query as q } from 'faunadb';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
-const q = fauna.query;
 
 export function Identity(allowSession: boolean = false) {
   return q.If(
@@ -12,7 +9,7 @@ export function Identity(allowSession: boolean = false) {
       q.Identity(),
       q.If(
         q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
-        q.Select(['data', '_membership', 'owner'], q.Get(q.Identity())),
+        q.Select(['data', '_membership', 'owner'], q.Get(q.Identity()), null),
         q.Identity(),
       ),
     ),

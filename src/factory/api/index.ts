@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryIndex } from '~/types/factory/factory.index';
 
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
@@ -16,7 +16,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       get() {
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Get(q.Index(q.Var('name'))),
           },
@@ -30,7 +30,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       insert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('insert', q.Select('data', q.Var('options'), {}))),
             doc: q.CreateIndex(q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
@@ -47,7 +47,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       update(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('update', q.Select('data', q.Var('options'), {}))),
             doc: q.Update(q.Index(q.Var('name')), q.Merge(q.Var('options'), { name: q.Var('name'), data: q.Var('annotated') })),
@@ -64,7 +64,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       upsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Index(q.Var('name'))),
@@ -83,7 +83,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       replace(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             current_doc: ResultData(index(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
@@ -111,7 +111,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       repsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Index(q.Var('name'))),
@@ -130,7 +130,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       delete() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Index(q.Var('name'))).validity.delete()),
           },
@@ -144,7 +144,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       forget() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Index' })().annotate('forget')),
             annotated_doc: ResultData(index(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
@@ -162,7 +162,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       drop() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Index(q.Var('name'))), index(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
@@ -178,7 +178,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         // alias
         const inputs = { name, at };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(q.Var('at'))),
           },
@@ -193,7 +193,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         // alias
         const inputs = { name, delay };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(
               document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(
@@ -212,7 +212,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(q.Now())),
           },
@@ -227,7 +227,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.restore()),
           },

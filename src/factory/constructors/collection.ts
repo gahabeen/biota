@@ -1,6 +1,4 @@
-// types
 import { FaunaCollectionOptions } from '~/types/fauna';
-// biota
 import { CONVENTION } from '~/consts';
 
 export function BiotaCollectionName(name: string) {
@@ -16,7 +14,7 @@ export function collectionNamePlural(name: string) {
 }
 
 export function Collection(collection: FaunaCollectionOptions): FaunaCollectionOptions {
-  let { name, data, history_days, ttl_days } = collection || {};
+  const { name, data, history_days, ttl_days } = collection || {};
   return {
     name,
     data,

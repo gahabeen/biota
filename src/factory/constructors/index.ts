@@ -6,7 +6,7 @@ export function BiotaIndexName(name: string) {
 }
 
 export function Index(index: FaunaIndexOptions): FaunaIndexOptions {
-  let {
+  const {
     name,
     source = {
       collection: undefined,
@@ -20,7 +20,7 @@ export function Index(index: FaunaIndexOptions): FaunaIndexOptions {
     data = {},
   } = index || {};
 
-  let self = {
+  const self = {
     name,
     source,
     terms,
@@ -63,8 +63,8 @@ export function ToCursor(index: FaunaIndexOptions): FaunaIndexOptions {
 }
 
 export function ToReverse(index: FaunaIndexOptions): FaunaIndexOptions {
-  let { terms, data } = index || {};
-  let [firstTerm = {}, ...otherTerms] = terms || [];
+  const { terms, data } = index || {};
+  const [firstTerm = {}, ...otherTerms] = terms || [];
   firstTerm.reverse = true;
   return {
     ...index,

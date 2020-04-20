@@ -1,6 +1,6 @@
 import { Expr, query as q } from 'faunadb';
 import { Fauna } from '~/types/db';
-import { Identity } from '~/factory/api/ql';
+import { Identity } from '~/factory/constructors/identity';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 
 export const CallIsPrivateKeyValid = (identity: Expr, privateKey: Expr) => {

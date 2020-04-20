@@ -6,8 +6,8 @@ import { token } from '~/factory/api/token';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { ContextProp } from '~/factory/constructors/context';
 import { ThrowError } from '~/factory/constructors/error';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
-import { ResultData } from '~/factory/constructors/result';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
+import { ResultData, ResultRef } from '~/factory/constructors/result';
 import { BiotaFunctionName } from './constructors';
 import { DEFAULT_EXPIRATION_DURATION } from '~/consts';
 
@@ -20,7 +20,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
       start(expireIn, user = ContextProp(q.Var('ctx'), 'identity')) {
         const inputs = { expireIn, user };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Let(
               {
@@ -33,8 +33,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
               },
               q.Let(
                 {
-                  session: ResultData(session(q.Var('ctx'))().insert({})),
-                  sessionRef: q.Select('ref', q.Var('session')),
+                  sessionRef: ResultRef(session(q.Var('ctx'))().insert({})),
                   session_owner: ResultData(session(q.Var('ctx'))(q.Var('sessionRef')).membership.owner.set(q.Var('user'))),
                   session_expire: ResultData(session(q.Var('ctx'))(q.Var('sessionRef')).expireAt(q.Var('expire_at'))),
                   authed_session: ResultData(token(q.Var('ctx'))().insert({ instance: q.Var('sessionRef') })),

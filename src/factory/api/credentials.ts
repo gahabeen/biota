@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
 import { BiotaIndexName } from '~/factory/constructors';
-import { MethodDispatch, Query } from '~/factory/constructors/method';
+import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryCredentialsApi } from '~/types/factory/factory.credentials';
 import { Pagination } from '../constructors/pagination';
@@ -13,7 +13,7 @@ export const credentials: FactoryContext<FactoryCredentialsApi> = function (cont
     findByInstance(instance, pagination) {
       const inputs = { instance, pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Paginate(
             q.Match(q.Index(BiotaIndexName('credentials__by__instance')), q.Var('instance')),
@@ -30,7 +30,7 @@ export const credentials: FactoryContext<FactoryCredentialsApi> = function (cont
     findAll(pagination) {
       const inputs = { pagination };
       // ---
-      const query = Query(
+      const query = MethodQuery(
         {
           docs: q.Map(q.Paginate(q.Documents(q.Credentials()), Pagination(q.Var('pagination'))), q.Lambda('x', q.Get(q.Var('x')))),
         },

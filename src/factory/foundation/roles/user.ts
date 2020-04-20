@@ -1,8 +1,8 @@
 import { Expr, query as q } from 'faunadb';
 import { TS_2500_YEARS } from '~/consts';
-import { Identity } from '~/factory/api/ql';
+import { Identity } from '~/factory/constructors/identity';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
-import { CustomPrivilege, PrivilegeRights } from '~/factory/constructors/privilege';
+import { CustomPrivilege, Privilege } from '~/factory/constructors/privilege';
 import { BiotaRoleName, Role } from '~/factory/constructors/role';
 import { FaunaRoleOptions } from '~/types/fauna';
 
@@ -81,7 +81,7 @@ export const user: FaunaRoleOptions = Role({
       },
     }),
 
-    PrivilegeRights({
+    Privilege({
       resource: q.Collection(BiotaCollectionName('users')),
       rights: {
         get: ['self', 'owner', 'assignee'],
@@ -89,7 +89,7 @@ export const user: FaunaRoleOptions = Role({
       },
     }),
 
-    PrivilegeRights({
+    Privilege({
       resource: q.Collection(BiotaCollectionName('user_sessions')),
       rights: {
         get: ['self', 'owner', 'assignee'],

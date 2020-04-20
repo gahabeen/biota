@@ -1,7 +1,7 @@
 import { query as q } from 'faunadb';
 import { Biota } from '~/biota';
 import { collection } from '~/factory/api/collection';
-import { PrivilegeRights } from '~/factory/constructors/privilege';
+import { Privilege } from '~/factory/constructors/privilege';
 // import { upsert } from '~/factory/api/fql/base';
 import { BiotaRoleName } from '~/factory/constructors/role';
 import { execute } from '~/tools/tasks';
@@ -59,7 +59,7 @@ export function scaffold(this: Biota, collectionName: string) {
         name: `Adding collection ${collectionName} to [${role}] role`,
         async task() {
           return self.role(role).privilege.set(
-            PrivilegeRights({
+            Privilege({
               resource: q.Collection(collectionName),
               rights: {
                 insert: true,

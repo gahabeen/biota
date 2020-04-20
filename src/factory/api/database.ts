@@ -2,7 +2,7 @@ import { query as q } from 'faunadb';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryDatabase } from '~/types/factory/factory.database';
 
-import { Query, MethodDispatch } from '~/factory/constructors/method';
+import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
 import { BiotaFunctionName } from './constructors';
 import { action } from './action';
 import { document } from './document';
@@ -16,7 +16,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       get() {
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.Get(q.Database(q.Var('name'))),
           },
@@ -30,7 +30,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       insert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(
               document(q.Var('ctx'), { prefix: 'Database' })().annotate('insert', q.Select('data', q.Var('options'), {})),
@@ -49,7 +49,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       update(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(
               document(q.Var('ctx'), { prefix: 'Database' })().annotate('update', q.Select('data', q.Var('options'), {})),
@@ -68,7 +68,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       upsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Database(q.Var('name'))),
@@ -87,7 +87,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       replace(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             current_doc: ResultData(database(q.Var('ctx'))(q.Var('name')).get()),
             annotated: ResultData(
@@ -115,7 +115,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       repsert(options) {
         const inputs = { name, options };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(
               q.Exists(q.Database(q.Var('name'))),
@@ -134,7 +134,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       delete() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.delete()),
           },
@@ -148,7 +148,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       forget() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'), { prefix: 'Database' })().annotate('forget')),
             annotated_doc: ResultData(database(q.Var('ctx'))(q.Var('name')).upsert(q.Var('annotated'))),
@@ -166,7 +166,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       drop() {
         const inputs = { name };
         // ---
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Database(q.Var('name'))), database(q.Var('ctx'))(q.Var('name')).forget(), {}),
           },
@@ -182,7 +182,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
         // alias
         const inputs = { name, at };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.expire(q.Var('at'))),
           },
@@ -197,7 +197,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
         // alias
         const inputs = { name, delay };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(
               document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.expire(
@@ -216,7 +216,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.expire(q.Now())),
           },
@@ -231,7 +231,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
         // alias
         const inputs = { name };
         // ----
-        const query = Query(
+        const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.restore()),
           },

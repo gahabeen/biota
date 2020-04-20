@@ -1,6 +1,6 @@
 import { query as q } from 'faunadb';
 import { Biota } from '~/biota';
-import { Identity } from '~/factory/api/ql';
+import { Identity } from '~/factory/constructors/identity';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 import { FrameworkCurrentUserApi } from '~/types/framework/framework.current.user';

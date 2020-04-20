@@ -39,4 +39,8 @@ export interface FactoryRuleDefinition<T = FactoryRuleAuthor[] | boolean> {
   removeAssignee?: T;
   setRole?: T;
   removeRole?: T;
+  setAuthEmail?: T;
+  removeAuthEmail?: T;
+  setAuthAccount?: T;
+  removeAuthAccount?: T;
 }
