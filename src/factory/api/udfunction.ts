@@ -60,6 +60,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         );
         // ---
         const offline = 'factory.udfunction.update';
+        // const online = null
         const online = { name: BiotaFunctionName('UDFunctionUpdate'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },

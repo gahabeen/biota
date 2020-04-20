@@ -5,8 +5,7 @@ import { execute } from '~/tools/tasks';
 
 export const update: FactoryUDFunction<FrameworkUDFunctionApi['update']> = function (udfunctionName) {
   const self = this;
-
-  return async function updateMethod(data) {
+  return async function updateMethod(data = {}) {
     return execute(
       [
         {

@@ -5,6 +5,8 @@ import { ContextProp, ContextExtend } from '../api/constructors';
 import { CallFunction } from './udfunction';
 import { Result } from './result';
 
+import * as fs from 'fs';
+
 type MethodDispatchOption = { context: FactoryContextDefinition; inputs: object; query: Expr };
 
 export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
@@ -27,7 +29,7 @@ export function MethodDispatch(options: MethodDispatchOption) {
   // return (offline: OfflineNext, online: OnlineNext) => {
   return (offline: string, online: FaunaUDFunctionOptions) => {
     return q.If(
-      q.And(q.Exists(q.Function(online.name)), q.Not(ContextProp(context, 'offline'))),
+      q.And(online && online.name ? q.Exists(q.Function(online.name)) : false, q.Not(ContextProp(context, 'offline'))),
       online ? Online(online)(context, inputs) : null,
       Offline(offline)(context, inputs, query),
     ); // query
@@ -49,6 +51,7 @@ type OfflineNext = (context: FactoryContextDefinition, inputs: object, query: Ex
 export function Offline(name: string) {
   const offlineNext: OfflineNext = (context = {}, inputs = {}, query = null): Expr => {
     const ctx = ContextExtend(context, name, inputs);
+    fs.writeFileSync('inputs.json', JSON.stringify(inputs));
     return q.Let(
       {
         ctx,

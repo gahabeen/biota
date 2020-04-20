@@ -13,8 +13,6 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
 
   const { onlyNecessary } = options || {};
 
-  console.log('onlyNecessary', onlyNecessary);
-
   const loadStep = (step: any) => {
     if (typeof step === 'function') {
       let definition = step();
@@ -23,15 +21,15 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
       if (definition instanceof Expr) {
         const UDFunctionDefinition = UDFunctionFromMethod(definition);
         if (UDFunctionDefinition && UDFunctionDefinition.name) {
-          // if ((onlyNecessary && UDFunctionDefinition.role instanceof Expr) || !onlyNecessary) {
-          UDFs.push(UDFunctionDefinition.name);
-          tasks.push({
-            name: `Scaffolding function: ${UDFunctionDefinition.name}`,
-            task() {
-              return self.udfunction(UDFunctionDefinition.name).upsert(UDFunctionDefinition);
-            },
-          });
-          // }
+          if ((onlyNecessary && UDFunctionDefinition.role) || !onlyNecessary) {
+            UDFs.push(UDFunctionDefinition.name);
+            tasks.push({
+              name: `Scaffolding function: ${UDFunctionDefinition.name}`,
+              task() {
+                return self.udfunction(UDFunctionDefinition.name).upsert(UDFunctionDefinition);
+              },
+            });
+          }
         }
       } else if (typeof definition === 'object') {
         return loadStep(definition);

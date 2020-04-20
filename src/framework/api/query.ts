@@ -19,10 +19,13 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
       // tslint:disable-next-line: no-empty
     } catch (error) {}
 
-    const { errors } = response || ({} as any);
+    let { errors } = response || ({} as any);
 
-    const errorResponse = {
-      errors: errors.map((error) => {
+    if (errors && !Array.isArray(errors)) errors = [errors];
+    let errorsArray = [];
+
+    if (Array.isArray(errors)) {
+      errorsArray = errors.map((error) => {
         let newError: any = {};
         let context = {};
         let params = {};
@@ -73,7 +76,11 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
         newError.location = location;
 
         return newError;
-      }),
+      });
+    }
+
+    const errorResponse = {
+      errors: errorsArray,
       response,
       request,
       // err

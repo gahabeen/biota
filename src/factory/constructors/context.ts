@@ -34,7 +34,7 @@ export function ContextExtend(
         hasSession: q.Var('hasSession'),
         callstack: q.If(
           q.IsString(q.Var('functionName')),
-          q.Union(q.Var('callstack'), [[q.Var('functionName'), q.Format('%@', params)]]),
+          q.Union(q.Var('callstack'), [[q.Var('functionName')]]), // #bug q.Format('%@', params)
           q.Var('callstack'),
         ),
         // callstack: q.If(q.IsString(q.Var('functionName')), q.Concat([q.Var('callstack'), q.Var('functionName')], '%'), q.Var('callstack')),
