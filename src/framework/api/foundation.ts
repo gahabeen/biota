@@ -15,7 +15,7 @@ export async function foundation(this: Biota, options: FoundationOptions) {
     tasks.push({
       name: `Scaffolding collections`,
       task() {
-        return self.collections.scaffold();
+        return self.collections.scaffold().then((res) => ({ collections: res }));
       },
     });
   }
@@ -28,7 +28,7 @@ export async function foundation(this: Biota, options: FoundationOptions) {
     tasks.push({
       name: `Scaffolding (base) roles`,
       task() {
-        return self.roles.scaffold({ baseOnly: true });
+        return self.roles.scaffold({ baseOnly: true }).then((res) => ({ roles: res }));
       },
     });
   }
@@ -37,14 +37,12 @@ export async function foundation(this: Biota, options: FoundationOptions) {
    *  Functions
    */
 
-  if (options.udfunctions) {
-    tasks.push({
-      name: `Scaffolding UDFunctions`,
-      task() {
-        return self.udfunctions.scaffold();
-      },
-    });
-  }
+  tasks.push({
+    name: `Scaffolding UDFunctions`,
+    task() {
+      return self.udfunctions.scaffold({ onlyNecessary: !options.udfunctions }).then((res) => ({ udfunctions: res }));
+    },
+  });
 
   /**
    *  Indexes
@@ -54,7 +52,7 @@ export async function foundation(this: Biota, options: FoundationOptions) {
     tasks.push({
       name: `Scaffolding indexes`,
       task() {
-        return self.indexes.scaffold();
+        return self.indexes.scaffold().then((res) => ({ indexes: res }));
       },
     });
   }
@@ -67,13 +65,13 @@ export async function foundation(this: Biota, options: FoundationOptions) {
     tasks.push({
       name: `Scaffolding roles`,
       task() {
-        return self.roles.scaffold();
+        return self.roles.scaffold().then((res) => ({ roles: res }));
       },
     });
   }
 
   return execute(tasks, {
     domain: 'Biota.foundation',
-    singleResult: false
+    singleResult: false,
   });
 }

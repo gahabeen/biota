@@ -9,6 +9,7 @@ import { ResultData } from '~/factory/constructors/result';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { user } from './user';
 import { Pagination } from '../constructors/pagination';
+import { BiotaRoleName } from '../constructors/role';
 
 // tslint:disable-next-line: only-arrow-functions
 export const users: FactoryContext<FactoryUsersApi> = function (context): FactoryUsersApi {
@@ -37,7 +38,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       );
       // ---
       const offline = 'factory.users.getByAuthAccount';
-      const online = { name: BiotaFunctionName('UsersGetByAuthAccount'), role: null };
+      const online = { name: BiotaFunctionName('UsersGetByAuthAccount'), role: q.Role(BiotaRoleName('auth')) };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getByAuthEmail(email) {
@@ -52,7 +53,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       );
       // ---
       const offline = 'factory.users.getByAuthEmail';
-      const online = { name: BiotaFunctionName('UsersGetByAuthEmail'), role: null };
+      const online = { name: BiotaFunctionName('UsersGetByAuthEmail'), role: q.Role(BiotaRoleName('auth')) };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findAll(pagination) {

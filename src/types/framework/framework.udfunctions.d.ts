@@ -8,8 +8,8 @@ export interface FrameworkUDFunctionsOptions {
 
 export interface FrameworkUDFunctionsApi {
   dismantle: () => Promise<any>;
-  scaffold: (options: FrameworkUDFunctionsOptions) => Promise<any>;
-  activity: (pagination: FaunaPaginateOptions | Expr) => Promise<any>;
+  scaffold: (options?: FrameworkUDFunctionsOptions) => Promise<any>;
+  activity: (pagination?: FaunaPaginateOptions | Expr) => Promise<any>;
   findAll: FactoryUDFunctionsApi<Promise<any>>['findAll'];
   getMany: FactoryUDFunctionsApi<Promise<any>>['getMany'];
   insertMany: FactoryUDFunctionsApi<Promise<any>>['insertMany'];

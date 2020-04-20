@@ -1,9 +1,8 @@
+import { Biota } from './biota';
 import { factory } from './factory';
+import { query as q } from 'faunadb';
+import { Page } from './tools/page';
 
-export { Biota } from './biota';
-export { query as q } from 'faunadb';
-export { Page } from './tools/page';
-
-export { factory };
 export const c = factory.constructors;
 export const ql = factory.ql;
+export { factory, Page, Biota, q };

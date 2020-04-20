@@ -5,13 +5,11 @@ import { Biota } from '~/biota';
 
 export const scaffold: FrameworkRolesApi['scaffold'] = async function (this: Biota, options) {
   const self = this;
-  const { defaultRoles, baseOnly = false } = options || {};
-
-  const roles = defaultRoles || ['user', 'system'];
+  const { baseOnly = false } = options || {};
   const tasks = [];
 
   if (baseOnly) {
-    for (const role of roles) {
+    for (const role of Object.keys(foundationRoles)) {
       if (foundationRoles[role]) {
         tasks.push({
           name: `Creating (base) role: ${foundationRoles[role].name}`,
@@ -26,7 +24,7 @@ export const scaffold: FrameworkRolesApi['scaffold'] = async function (this: Bio
       }
     }
   } else {
-    for (const role of roles) {
+    for (const role of Object.keys(foundationRoles)) {
       if (foundationRoles[role]) {
         tasks.push({
           name: `Creating (base) role: ${foundationRoles[role].name}`,
@@ -40,6 +38,6 @@ export const scaffold: FrameworkRolesApi['scaffold'] = async function (this: Bio
 
   return execute(tasks, {
     domain: 'Biota.roles.scaffold',
-    singleResult: false
+    singleResult: false,
   });
 };

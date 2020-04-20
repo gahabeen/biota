@@ -50,7 +50,7 @@ export function PrivilegeRights(
       q.Not(q.IsEmpty(q.Filter(q.Var('assignees'), q.Lambda('assignee', q.Equals(q.Var('assignee'), Identity()))))),
     );
   };
-  const changedPathsOnlyAt = (root: string, allowedChangedSubPaths: string[]) => {
+  const changedPathsOnlyAt = (root: string, allowedChangedSubPaths: string[], oldDoc = q.Var('newDoc'), newDoc = q.Var('newDoc')) => {
     return q.Let(
       {
         foundChangedPaths: q.Reduce(
@@ -58,8 +58,8 @@ export function PrivilegeRights(
             ['list', 'value'],
             q.Let(
               {
-                newDocRoot: q.Select(helpers.path(root), q.Var('newDoc'), {}),
-                oldDocRoot: q.Select(helpers.path(root), q.Var('newDoc'), {}),
+                newDocRoot: q.Select(helpers.path(root), newDoc, {}),
+                oldDocRoot: q.Select(helpers.path(root), newDoc, {}),
                 key1: q.Select(0, q.Var('value'), null),
                 value1: q.Select(1, q.Var('value'), null),
                 hasKey2: q.Contains([q.Var('key1')], q.Var('newDocRoot')),
@@ -73,7 +73,7 @@ export function PrivilegeRights(
             ),
           ),
           [],
-          q.ToArray(q.Var('oldDoc')),
+          q.ToArray(oldDoc),
         ),
       },
       q.IsEmpty(
@@ -91,11 +91,11 @@ export function PrivilegeRights(
       ),
     );
   };
-  const PathHasntChanged = (path: string) => {
-    return q.Equals(q.Select(helpers.path(path), q.Var('oldDoc'), {}), q.Select(helpers.path(path), q.Var('newDoc'), {}));
+  const PathHasntChanged = (path: string, oldDoc = q.Var('oldDoc'), newDoc = q.Var('newDoc')) => {
+    return q.Equals(q.Select(helpers.path(path), oldDoc, {}), q.Select(helpers.path(path), newDoc, {}));
   };
-  const PathChangedWith = (path: string, value: any) => {
-    return q.Equals(q.Select(helpers.path(path), q.Var('oldDoc'), {}), value);
+  const PathChangedWith = (path: string, value: any, doc = q.Var('newDoc')) => {
+    return q.Equals(q.Select(helpers.path(path), doc, {}), value);
   };
 
   const documentIsNotExpired = (doc: Expr) => {
@@ -251,13 +251,16 @@ export function PrivilegeRights(
    * insert
    */
   const insertBaseRules = [
-    PathHasntChanged('_activity'),
-    PathHasntChanged('_auth'),
+    PathHasntChanged('_activity', {}, q.Var('doc')),
+    PathHasntChanged('_auth', {}, q.Var('doc')),
     q.And(
-      changedPathsOnlyAt('_activity', ['inserted_by', 'inserted_at']),
-      q.Or(PathChangedWith('_activity.inserted_by', Identity()), PathChangedWith('_activity.inserted_at', q.Now())),
+      changedPathsOnlyAt('_activity', ['inserted_by', 'inserted_at'], {}, q.Var('doc')),
+      q.Or(
+        PathChangedWith('_activity.inserted_by', Identity(), q.Var('doc')),
+        PathChangedWith('_activity.inserted_at', q.Now(), q.Var('doc')),
+      ),
     ),
-    q.And(changedPathsOnlyAt('_membership', ['owner']), PathChangedWith('_membership.owner', Identity())),
+    q.And(changedPathsOnlyAt('_membership', ['owner'], {}, q.Var('doc')), PathChangedWith('_membership.owner', Identity(), q.Var('doc'))),
   ];
 
   if (definition.self.insert) {

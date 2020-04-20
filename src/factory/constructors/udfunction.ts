@@ -62,17 +62,17 @@ export function UDFunctionFromMethod(methodRaw: any) {
   let args = [];
   if (getRaw(methodRaw).if && getRaw(methodRaw).then && getRaw(methodRaw).else) {
     try {
-      definition = getRaw(getRaw(getRaw(methodRaw).else).let[0].UDFunctionDefinition).object as FaunaUDFunctionOptions;
+      definition = getRaw(getRaw(getRaw(methodRaw).then).let[0].UDFunctionDefinition).object as FaunaUDFunctionOptions;
     } catch (error) {
       // nothing
     }
     try {
-      args = getRaw(getRaw(getRaw(methodRaw).else).let[1].Args) || [];
+      args = getRaw(getRaw(getRaw(methodRaw).then).let[1].Args) || [];
     } catch (error) {
       // nothing
     }
     try {
-      const query = getRaw(getRaw(methodRaw).then).in;
+      const query = getRaw(getRaw(methodRaw).else).in;
       definition.body = q.Query(
         q.Lambda(
           ['ctx', 'params'],

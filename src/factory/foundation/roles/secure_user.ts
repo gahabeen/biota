@@ -1,9 +1,8 @@
 import { query as q } from 'faunadb';
+import { BiotaCollectionName } from '~/factory/api/constructors';
 import { Privilege } from '~/factory/constructors/privilege';
 import { BiotaRoleName } from '~/factory/constructors/role';
 import { FaunaRoleOptions } from '~/types/fauna';
-import { BiotaIndexName } from '~/factory/constructors';
-import { BiotaCollectionName } from '~/factory/api/constructors';
 
 export const system: FaunaRoleOptions = {
   name: BiotaRoleName('secure_user'),
@@ -14,7 +13,7 @@ export const system: FaunaRoleOptions = {
   ],
   privileges: [
     Privilege({
-      resource: q.Collection(BiotaCollectionName('users_session')),
+      resource: q.Collection(BiotaCollectionName('user_sessions')),
       rights: {
         insert: ['owner'],
       },

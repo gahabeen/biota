@@ -25,8 +25,12 @@ export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
 export function MethodDispatch(options: MethodDispatchOption) {
   const { context, inputs, query } = options;
   // return (offline: OfflineNext, online: OnlineNext) => {
-  return (offline: string, online: string | FaunaUDFunctionOptions) => {
-    return q.If(ContextProp(context, 'offline'), Offline(offline)(context, inputs, query), online ? Online(online)(context, inputs) : null); // query
+  return (offline: string, online: FaunaUDFunctionOptions) => {
+    return q.If(
+      q.And(q.Exists(q.Function(online.name)), q.Not(ContextProp(context, 'offline'))),
+      online ? Online(online)(context, inputs) : null,
+      Offline(offline)(context, inputs, query),
+    ); // query
   };
 }
 

@@ -1,7 +1,7 @@
 import { Expr, query as q } from 'faunadb';
 import { Biota } from '~/biota';
 import { factoryApi } from '~/factory';
-import { UDFunctionFromMethod } from '~/factory/api/constructors';
+import { UDFunctionFromMethod, BiotaRoleName } from '~/factory/api/constructors';
 import { splitEvery } from '~/helpers';
 import { execute } from '~/tools/tasks';
 import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
@@ -13,6 +13,8 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
 
   const { onlyNecessary } = options || {};
 
+  console.log('onlyNecessary', onlyNecessary);
+
   const loadStep = (step: any) => {
     if (typeof step === 'function') {
       let definition = step();
@@ -21,15 +23,15 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
       if (definition instanceof Expr) {
         const UDFunctionDefinition = UDFunctionFromMethod(definition);
         if (UDFunctionDefinition && UDFunctionDefinition.name) {
-          if ((onlyNecessary && UDFunctionDefinition.role) || !onlyNecessary) {
-            UDFs.push(UDFunctionDefinition.name);
-            tasks.push({
-              name: `Scaffolding function: ${UDFunctionDefinition.name}`,
-              task() {
-                return self.udfunction(UDFunctionDefinition.name).upsert(UDFunctionDefinition);
-              },
-            });
-          }
+          // if ((onlyNecessary && UDFunctionDefinition.role instanceof Expr) || !onlyNecessary) {
+          UDFs.push(UDFunctionDefinition.name);
+          tasks.push({
+            name: `Scaffolding function: ${UDFunctionDefinition.name}`,
+            task() {
+              return self.udfunction(UDFunctionDefinition.name).upsert(UDFunctionDefinition);
+            },
+          });
+          // }
         }
       } else if (typeof definition === 'object') {
         return loadStep(definition);
@@ -61,7 +63,31 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
         //     console.log(res);
         //     return res;
         //   });
-        return self.role('biota.user').privilege.setMany(
+        return self.role(BiotaRoleName('user')).privilege.setMany(
+          UDFsBatch.map((UDF) => ({
+            resource: q.Function(UDF),
+            actions: { call: true },
+          })),
+        );
+      },
+    });
+    tasks.push({
+      name: `Adding privileges to Auth for ${UDFsBatch.length} functions`,
+      task() {
+        // return self
+        //   .query(
+        //     q.Count(
+        //       q.Filter(
+        //         UDFs.map((UDF) => q.Function(UDF)),
+        //         q.Lambda(['udf'], q.Exists(q.Var('udf'))),
+        //       ),
+        //     ),
+        //   )
+        //   .then((res: any) => {
+        //     console.log(res);
+        //     return res;
+        //   });
+        return self.role(BiotaRoleName('auth')).privilege.setMany(
           UDFsBatch.map((UDF) => ({
             resource: q.Function(UDF),
             actions: { call: true },

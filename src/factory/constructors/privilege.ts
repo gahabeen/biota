@@ -13,7 +13,7 @@ export function CustomPrivilege(privilege: FaunaRolePrivilege): FaunaRolePrivile
 export function Privilege(options: FaunaRolePrivilegeScaffoldOptions): FaunaRolePrivilege {
   const { resource, actions = {}, rights = {}, immutablePaths = {} } = options || {};
   const transpiledActions = PrivilegeRights(rights, immutablePaths);
-  const mergedActions = { ...actions, ...transpiledActions };
+  const mergedActions = { ...transpiledActions, ...actions };
 
   return {
     resource,
