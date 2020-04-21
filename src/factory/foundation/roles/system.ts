@@ -1,69 +1,40 @@
 import { query as q } from 'faunadb';
-import { FaunaRoleOptions } from '~/types/fauna';
-import { BiotaIndexName } from '~/factory/constructors/index';
-import { BiotaRoleName } from '~/factory/constructors/role';
-import { BiotaFunctionName } from '~/factory/constructors/udfunction';
-import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { Privilege } from '~/factory/constructors/privilege';
+import { BiotaRoleName } from '~/factory/constructors/role';
+import { FaunaRoleOptions } from '~/types/fauna';
+import { BiotaIndexName } from '~/factory/constructors';
+import { BiotaCollectionName, BiotaFunctionName } from '~/factory/api/constructors';
 
-export const system: FaunaRoleOptions = {
+export const auth: FaunaRoleOptions = {
   name: BiotaRoleName('system'),
   privileges: [
-    /**
-     * Collections
-     */
-
-    // Privilege({
-    //   resource: q.Indexes(),
-    //   actions: { read: 'all', unrestricted_read: 'all' },
-    // }),
-
-    // Privilege({
-    //   resource: q.Collection(BiotaCollectionName('users')),
-    //   actions: { create: 'all', read: 'all', write: 'all', delete: 'all' },
-    // }),
-
-    // Privilege({
-    //   resource: q.Collection(BiotaCollectionName('actions')),
-    //   actions: { create: 'all', read: 'all', write: 'all', delete: 'all' },
-    // }),
-
-    // Privilege({
-    //   resource: q.Collection(BiotaCollectionName('user_sessions')),
-    //   actions: { create: 'all', read: 'all', write: 'all', delete: 'all' },
-    // }),
-
-    // Privilege({
-    //   resource: q.Tokens(),
-    //   actions: { create: 'all', read: 'all', write: 'all', delete: 'all' },
-    // }),
-
-    // /**
-    //  * Indexes
-    //  */
-
-    // Privilege({
-    //   resource: q.Index(BiotaIndexName('indexes__by__resource')),
-    //   actions: { read: 'all', unrestricted_read: 'all' },
-    // }),
-
-    // Privilege({
-    //   resource: q.Index(BiotaIndexName('indexes__by__terms')),
-    //   actions: { read: 'all', unrestricted_read: 'all' },
-    // }),
-
-    // /**
-    //  * Functions
-    //  */
-
-    // Privilege({
-    //   resource: q.Function(BiotaFunctionName('FindIndex')),
-    //   actions: { call: 'all' },
-    // }),
-
-    // Privilege({
-    //   resource: q.Function(BiotaFunctionName('IsPrivateKeyValid')),
-    //   actions: { call: 'all' },
-    // }),
+    Privilege({
+      resource: q.Functions(),
+      actions: { read: true },
+    }),
+    Privilege({
+      resource: q.Index(BiotaIndexName('users__by__auth_email')),
+      actions: { unrestricted_read: true },
+    }),
+    Privilege({
+      resource: q.Tokens(),
+      actions: { create: true, write: true, read: true },
+    }),
+    Privilege({
+      resource: q.Credentials(),
+      actions: { create: true, write: true, read: true },
+    }),
+    Privilege({
+      resource: q.Collection(BiotaCollectionName('actions')),
+      actions: { create: true, write: true, read: true },
+    }),
+    Privilege({
+      resource: q.Collection(BiotaCollectionName('user_sessions')),
+      actions: { create: true, write: true, read: true },
+    }),
+    Privilege({
+      resource: q.Collection(BiotaCollectionName('users')),
+      actions: { create: true, write: true, read: true },
+    }),
   ],
 };

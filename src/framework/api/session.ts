@@ -16,11 +16,15 @@ import { update } from '~/framework/api/session/update';
 import { upsert } from '~/framework/api/session/upsert';
 import { history } from '~/framework/api/session/history';
 import { start } from '~/framework/api/session/start';
+import { passport } from '~/framework/api/session/passport';
+import { identity } from '~/framework/api/session/identity';
 
 export const session: FrameworkSession = function (idOrRef) {
   const self = this;
 
   return {
+    passport: passport.call(self, idOrRef),
+    identity: identity.call(self, idOrRef),
     start: start.call(self, idOrRef),
     activity: activity.call(self, idOrRef),
     history: history.call(self, idOrRef),

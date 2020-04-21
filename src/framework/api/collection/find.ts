@@ -1,15 +1,15 @@
-import { query as q } from 'faunadb';
+import { query as q, Expr } from 'faunadb';
 import * as qs from 'querystring';
+import { Biota } from '~/biota';
+import { indexes } from '~/factory/api/indexes';
+import { execute } from '~/tools/tasks';
 import { Fauna, FaunaPaginateMapper, FaunaPaginateOptions } from '~/types/fauna';
 import { FrameworkCollectionSearchParams } from '~/types/framework/framework.collection';
-import { Biota } from '~/biota';
-import { Identity } from '~/factory/constructors/identity';
-import { BiotaFunctionName } from '~/factory/constructors/udfunction';
-import { execute } from '~/tools/tasks';
 
-export function parseSearchQuery(collection: string, searchQuery: object) {
-  const buildQuery = (sq: Fauna.Expr) => {
-    return q.Call(BiotaFunctionName('SearchQuery'), Identity(), q.Collection(collection), sq);
+export function parseSearchQuery(context: Expr, collection: string, searchQuery: object) {
+  const buildQuery = (searchTerms: Fauna.Expr) => {
+    return indexes(context).searchQuery(q.Collection(collection), searchTerms);
+    // return q.Call(BiotaFunctionName('SearchQuery'), Identity(), q.Collection(collection), sq);
   };
 
   // const safe = (x: object) => JSON.parse(JSON.stringify(x));
@@ -92,7 +92,7 @@ export function find(this: Biota, collectionName: string) {
         {
           name: `Find (${qs.stringify(searchQuery).slice(0, 20)}...) in (${collectionName})`,
           task() {
-            const paginate = q.Paginate(parseSearchQuery(collectionName, searchQuery), paginateOptions);
+            const paginate = q.Paginate(parseSearchQuery(self.context, collectionName, searchQuery), paginateOptions);
             return self.query(mapper ? q.Map(paginate, mapper) : paginate);
           },
         },

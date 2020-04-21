@@ -4,6 +4,8 @@ import { FaunaPaginateOptions } from '../fauna';
 export type FrameworkSession = FactorySession<FrameworkSessionApi>;
 
 export interface FrameworkSessionApi {
+  passport: FactorySessionApi<Promise<any>>['passport'];
+  identity: FactorySessionApi<Promise<any>>['identity'];
   start: FactorySessionApi<Promise<any>>['start'];
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;
   history: FactorySessionApi<Promise<any>>['history'];

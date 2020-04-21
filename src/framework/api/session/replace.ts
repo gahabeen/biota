@@ -3,16 +3,16 @@ import { FrameworkSessionApi } from '~/types/framework/framework.session';
 import { session } from '~/factory/api/session';
 import { execute } from '~/tools/tasks';
 
-export const replace: FactorySession<FrameworkSessionApi['replace']> = function (idOrRef) {
+export const replace: FactorySession<FrameworkSessionApi['replace']> = function (id) {
   const self = this;
 
   return async function replaceMethod(options) {
     return execute(
       [
         {
-          name: `Replace (${idOrRef})`,
+          name: `Replace (${id})`,
           task() {
-            return self.query(session(self.context)(idOrRef).replace(options));
+            return self.query(session(self.context)(id).replace(options));
           },
         },
       ],

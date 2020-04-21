@@ -8,7 +8,7 @@ import { ContextProp } from '~/factory/constructors/context';
 import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData, ResultRef } from '~/factory/constructors/result';
-import { BiotaFunctionName, ReferenceId } from './constructors';
+import { BiotaFunctionName, ReferenceId, BiotaRoleName } from './constructors';
 import { DEFAULT_EXPIRATION_DURATION } from '~/consts';
 
 // tslint:disable-next-line: only-arrow-functions
@@ -17,6 +17,51 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
   return (id = null) => {
     return {
       ...document(context, { prefix: 'Session' })(BiotaCollectionName('user_sessions'), id),
+      passport() {
+        const inputs = {};
+        // ----
+        const query = MethodQuery(
+          {
+            is_session_identity: q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
+            session: q.If(q.Var('is_session_identity'), q.Identity(), null),
+            user: q.If(q.Var('is_session_identity'), q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null), null),
+          },
+          {
+            session: q.Var('session'),
+            user: q.Var('user'),
+          },
+        );
+        // ----
+        const offline = 'factory.session.passport';
+        const online = {
+          name: BiotaFunctionName('SessionPassport'),
+          role: q.Role(BiotaRoleName('system')),
+          data: { meta: { addToRoles: [BiotaRoleName('system')] } },
+        };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      identity() {
+        const inputs = { id };
+        // ----
+        const query = MethodQuery(
+          {
+            session: q.Ref(q.Collection(BiotaCollectionName('user_sessions')), q.Var('id')),
+            user: q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null),
+          },
+          {
+            session: q.Var('session'),
+            user: q.Var('user'),
+          },
+        );
+        // ----
+        const offline = 'factory.session.identity';
+        const online = {
+          name: BiotaFunctionName('SessionIdentity'),
+          role: q.Role(BiotaRoleName('system')),
+          data: { meta: { addToRoles: [BiotaRoleName('system')] } },
+        };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
       start(expireIn, user = ContextProp(q.Var('ctx'), 'identity')) {
         const inputs = { expireIn, user };
         // ----

@@ -74,7 +74,7 @@ export function UDFunctionFromMethod(methodRaw: any) {
       // nothing
     }
     try {
-      args = getRaw(getRaw(getRaw(methodRaw).then).let[1].Args) || [];
+      args = getRaw(getRaw(getRaw(methodRaw).then).let[1].inputs) || [];
     } catch (error) {
       // nothing
     }
@@ -105,26 +105,27 @@ export function UDFunctionFromMethod(methodRaw: any) {
   }
 }
 export function CallFunction(
-  nameOrDefinition: string | FaunaUDFunctionOptions,
+  definition: FaunaUDFunctionOptions,
   context: FactoryContextDefinition,
   params: FaunaObject,
   // query?: Expr,
 ) {
-  const definition = typeof nameOrDefinition === 'object' ? nameOrDefinition : { name: nameOrDefinition };
-  return q.Let(
-    {
-      UDFunctionDefinition: definition,
-      Args: Object.keys(params || {}),
-      // UDFunctionQuery: q.Let({}), //q.Format('%@', query),
-    },
-    q.Call(definition.name, ContextExtend(context, 'udf.CallFunction >' + definition.name, params), params),
-    // q.Call(
-    //   BiotaFunctionName('CallFunction'),
-    //   ContextExtend(context, 'udf.CallFunction >' + definition.name),
-    //   q.Select('name', q.Var('UDFunctionDefinition'), null),
-    //   params,
-    // ),
-  );
+  return q.Call(definition.name, ContextExtend(context, 'udf.CallFunction >' + definition.name, params), params);
+
+  // return q.Let(
+  //   {
+  //     UDFunctionDefinition: definition,
+  //     inputs: Object.keys(params || {}),
+  //     // UDFunctionQuery: q.Let({}), //q.Format('%@', query),
+  //   },
+  //   q.Call(definition.name, ContextExtend(context, 'udf.CallFunction >' + definition.name, params), params),
+  //   // q.Call(
+  //   //   BiotaFunctionName('CallFunction'),
+  //   //   ContextExtend(context, 'udf.CallFunction >' + definition.name),
+  //   //   q.Select('name', q.Var('UDFunctionDefinition'), null),
+  //   //   params,
+  //   // ),
+  // );
 }
 
 export function UDFunction(fn: FaunaUDFunctionOptions): FaunaUDFunctionOptions {

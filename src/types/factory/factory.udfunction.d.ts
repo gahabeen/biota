@@ -4,6 +4,7 @@ import { FaunaUDFunctionOptions, FaunaString } from '../fauna';
 export type FactoryUDFunction<OT = FactoryUDFunctionApi> = (name: FaunaString) => OT;
 
 export interface FactoryUDFunctionApi<OT = Expr> {
+  exists(): OT;
   get(): OT;
   insert(options: FaunaUDFunctionOptions): OT;
   update(options: FaunaUDFunctionOptions): OT;

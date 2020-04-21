@@ -118,7 +118,7 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
         //     console.log(res);
         //     return res;
         //   });
-        return self.role(BiotaRoleName('auth')).privilege.setMany(
+        return self.role(BiotaRoleName('system')).privilege.setMany(
           loadedUDFsBatch.map((UDF) => ({
             resource: q.Function(UDF),
             actions: { call: true },

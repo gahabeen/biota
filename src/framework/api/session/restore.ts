@@ -4,16 +4,16 @@ import { Biota } from '~/biota';
 import { session } from '~/factory/api/session';
 import { execute } from '~/tools/tasks';
 
-export const restore: FactorySession<FrameworkSessionApi['restore']> = function (this: Biota, idOrRef) {
+export const restore: FactorySession<FrameworkSessionApi['restore']> = function (this: Biota, id) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Restore [${idOrRef}]`,
+          name: `Restore [${id}]`,
           task() {
-            return self.query(session(self.context)(idOrRef).restore());
+            return self.query(session(self.context)(id).restore());
           },
         },
       ],

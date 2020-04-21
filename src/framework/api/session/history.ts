@@ -4,16 +4,16 @@ import { execute } from '~/tools/tasks';
 import { FactorySession } from '~/types/factory/factory.session';
 import { FrameworkSessionApi } from '~/types/framework/framework.session';
 
-export const history: FactorySession<FrameworkSessionApi['history']> = function (this: Biota, idOrRef) {
+export const history: FactorySession<FrameworkSessionApi['history']> = function (this: Biota, id) {
   const self = this;
 
   return async (pagination) => {
     return execute(
       [
         {
-          name: `History of [${idOrRef}]`,
+          name: `History of [${id}]`,
           task() {
-            return self.query(session(self.context)(idOrRef).history(pagination));
+            return self.query(session(self.context)(id).history(pagination));
           },
         },
       ],

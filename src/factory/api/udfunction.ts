@@ -1,19 +1,32 @@
 import { query as q } from 'faunadb';
+import { MethodDispatch, MethodQuery, SafeMethodDispatch } from '~/factory/constructors/method';
+import { ResultAction, ResultData } from '~/factory/constructors/result';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryUDFunction } from '~/types/factory/factory.udfunction';
-
-import { MethodQuery, MethodDispatch } from '~/factory/constructors/method';
-import { BiotaFunctionName, DocumentRef } from './constructors';
+import { BiotaRoleName } from '../constructors/role';
 import { action } from './action';
+import { BiotaFunctionName, DocumentRef } from './constructors';
 import { document } from './document';
-import { ResultData, ResultAction } from '~/factory/constructors/result';
-import { ThrowError } from '../constructors/error';
 
 // tslint:disable-next-line: only-arrow-functions
 export const udfunction: FactoryContext<FactoryUDFunction> = function (context): FactoryUDFunction {
   // tslint:disable-next-line: only-arrow-functions
   return (name = null) => {
     return {
+      exists() {
+        const inputs = { name };
+        // ----
+        const query = MethodQuery(
+          {
+            doc: q.Exists(q.Function(q.Var('name'))),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const offline = 'factory.udfunction.exists';
+        const online = { name: BiotaFunctionName('UDFunctionExists'), role: q.Role(BiotaRoleName('system')) };
+        return SafeMethodDispatch({ context, inputs, query })(offline, online);
+      },
       get() {
         const inputs = { name };
         // ----

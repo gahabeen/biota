@@ -1,11 +1,11 @@
-import { query as q, Expr } from 'faunadb';
+import { Expr, query as q } from 'faunadb';
+import * as fs from 'fs';
+import { udfunction } from '~/factory/api/udfunction';
 import { FactoryContextDefinition } from '~/types/factory/factory.context';
 import { FaunaUDFunctionOptions } from '~/types/fauna';
-import { ContextProp, ContextExtend } from '../api/constructors';
+import { ContextExtend, ContextProp } from '../api/constructors';
+import { Result, ResultData } from './result';
 import { CallFunction } from './udfunction';
-import { Result } from './result';
-
-import * as fs from 'fs';
 
 type MethodDispatchOption = { context: FactoryContextDefinition; inputs: object; query: Expr };
 
@@ -24,24 +24,44 @@ export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
   return q.Let(query, Result(result, actionData));
 }
 
-export function MethodDispatch(options: MethodDispatchOption) {
+export function SafeMethodDispatch(options: MethodDispatchOption) {
   const { context, inputs, query } = options;
-  // return (offline: OfflineNext, online: OnlineNext) => {
   return (offline: string, online: FaunaUDFunctionOptions) => {
     return q.If(
-      q.And(online && online.name ? q.Exists(q.Function(online.name)) : false, q.Not(ContextProp(context, 'offline'))),
+      q.Not(ContextProp(context, 'offline')),
       online ? Online(online)(context, inputs) : null,
       Offline(offline)(context, inputs, query),
-    ); // query
+    );
+  };
+}
+
+export function MethodDispatch(options: MethodDispatchOption) {
+  const { context, inputs, query } = options;
+  return (offline: string, online: FaunaUDFunctionOptions) => {
+    let fnCondition: any = false;
+    if (online?.name) fnCondition = ResultData(udfunction(context)(online.name).exists());
+    return q.If(
+      q.And(fnCondition, q.Not(ContextProp(context, 'offline'))),
+      online ? Online(online)(context, inputs) : null,
+      Offline(offline)(context, inputs, query),
+    );
   };
 }
 
 type OnlineNext = (context: FactoryContextDefinition, inputs: object) => Expr;
 // , query: Expr
-export function Online(nameOrDefinition: string | FaunaUDFunctionOptions) {
+export function Online(definition: FaunaUDFunctionOptions) {
+  const meta = definition.data?.meta || {};
+
   const onlineNext: OnlineNext = (context = {}, inputs = {}): Expr => {
-    // , query = null
-    return CallFunction(nameOrDefinition, context, inputs); // query
+    return q.Let(
+      {
+        UDFunctionDefinition: definition,
+        inputs: Object.keys(inputs || {}),
+        meta,
+      },
+      CallFunction(definition, context, inputs),
+    );
   };
   return onlineNext;
 }

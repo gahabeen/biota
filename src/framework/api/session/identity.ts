@@ -3,21 +3,21 @@ import { FrameworkSessionApi } from '~/types/framework/framework.session';
 import { session } from '~/factory/api/session';
 import { execute } from '~/tools/tasks';
 
-export const update: FactorySession<FrameworkSessionApi['update']> = function (id) {
+export const identity: FactorySession<FrameworkSessionApi['identity']> = function (id) {
   const self = this;
 
-  return async function updateMethod(data) {
+  return async function identityMethod() {
     return execute(
       [
         {
-          name: `Update (${id})`,
+          name: `Get identity`,
           task() {
-            return self.query(session(self.context)(id).update(data));
+            return self.query(session(self.context)().identity());
           },
         },
       ],
       {
-        domain: 'Biota.session.update',
+        domain: 'Biota.session.identity',
       },
     );
   };

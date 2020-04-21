@@ -1,6 +1,6 @@
 import * as Fauna from 'faunadb';
 import { ExprArg } from 'faunadb';
-import { Fn } from './db';
+import { Fn, FreeObject } from './db';
 export { Fauna };
 
 // declare module 'faunadb.query' {
@@ -114,18 +114,18 @@ export interface FaunaKeyOptions {
   name?: string;
   database?: FaunaRef;
   role?: string;
-  data?: object;
+  data?: FreeObject;
 }
 
 export interface FaunaTokenOptions {
   instance?: FaunaRef;
-  data?: object;
+  data?: FreeObject;
 }
 
 export interface FaunaUDFunctionOptions {
   name?: string;
   body?: Fauna.Expr;
-  data?: object;
+  data?: FreeObject;
   role?: FaunaRef | string;
 }
 

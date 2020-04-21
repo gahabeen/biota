@@ -9,6 +9,10 @@ export const public_: FaunaRoleOptions = {
   name: BiotaRoleName('public'),
   privileges: [
     Privilege({
+      resource: q.Function(BiotaFunctionName('UDFunctionExists')),
+      actions: { call: true },
+    }),
+    Privilege({
       resource: q.Function(BiotaFunctionName('UserLogin')),
       actions: { call: true },
     }),

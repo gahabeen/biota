@@ -3,16 +3,16 @@ import { FrameworkSessionApi } from '~/types/framework/framework.session';
 import { session } from '~/factory/api/session';
 import { execute } from '~/tools/tasks';
 
-export const drop: FactorySession<FrameworkSessionApi['drop']> = function (idOrRef) {
+export const drop: FactorySession<FrameworkSessionApi['drop']> = function (id) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Drop (${idOrRef})`,
+          name: `Drop (${id})`,
           task() {
-            return self.query(session(self.context)(idOrRef).drop());
+            return self.query(session(self.context)(id).drop());
           },
         },
       ],

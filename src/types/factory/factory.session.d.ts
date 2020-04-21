@@ -5,5 +5,7 @@ import { FactoryDocumentApi } from './factory.document';
 export type FactorySession<OT = FactorySessionApi> = (idOrRef?: FaunaString | FaunaRef) => OT;
 
 export interface FactorySessionApi<OT = Expr> extends FactoryDocumentApi<Expr> {
+  passport(): OT;
+  identity(): OT;
   start(user: FaunaRef, expireAt: FaunaNumber): OT;
 }

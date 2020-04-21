@@ -38,7 +38,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       );
       // ---
       const offline = 'factory.users.getByAuthAccount';
-      const online = { name: BiotaFunctionName('UsersGetByAuthAccount'), role: q.Role(BiotaRoleName('auth')) };
+      const online = { name: BiotaFunctionName('UsersGetByAuthAccount'), role: q.Role(BiotaRoleName('system')) };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     getByAuthEmail(email) {
@@ -53,7 +53,7 @@ export const users: FactoryContext<FactoryUsersApi> = function (context): Factor
       );
       // ---
       const offline = 'factory.users.getByAuthEmail';
-      const online = { name: BiotaFunctionName('UsersGetByAuthEmail'), role: q.Role(BiotaRoleName('auth')) };
+      const online = { name: BiotaFunctionName('UsersGetByAuthEmail'), role: q.Role(BiotaRoleName('system')) };
       return MethodDispatch({ context, inputs, query })(offline, online);
     },
     findAll(pagination) {

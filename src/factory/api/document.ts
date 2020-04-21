@@ -106,8 +106,8 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             refExists: refExists(q.Var('collection'), q.Var('id')),
             doc: q.If(
               q.Exists(q.Ref(q.Collection(q.Var('collection')), q.Var('id'))),
-              document(q.Var('ctx'))(q.Collection(q.Var('collection')), q.Var('id')).update(q.Var('data')),
-              document(q.Var('ctx'))(q.Collection(q.Var('collection')), q.Var('id')).insert(q.Var('data')),
+              document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).update(q.Var('data')),
+              document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).insert(q.Var('data')),
             ),
           },
           ResultData(q.Var('doc')),
@@ -124,7 +124,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
-            current_doc: ResultData(document(q.Var('ctx'))(q.Collection(q.Var('collection')), q.Var('id')).get()),
+            current_doc: ResultData(document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).get()),
             annotated: ResultData(
               document(q.Var('ctx'))().annotate(
                 'replace',
@@ -406,9 +406,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                     }),
                   ),
                   doc: ResultData(
-                    document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).upsert(
-                      q.Var('annotated'),
-                    ),
+                    document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
                   ),
                   action: action(q.Var('ctx'))().log('roles_change', DocumentRef(q.Var('doc'))),
                 },
@@ -439,11 +437,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 ),
                 doc: q.If(
                   q.IsDoc(q.Var('user')),
-                  ResultData(
-                    document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).upsert(
-                      q.Var('annotated'),
-                    ),
-                  ),
+                  ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated'))),
                   ThrowError(q.Var('ctx'), "User isn't a document reference", { user: q.Var('user') }),
                 ),
                 action: action(q.Var('ctx'))().log('owner_change', DocumentRef(q.Var('doc'))),
@@ -470,9 +464,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                   }),
                 ),
                 doc: ResultData(
-                  document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).upsert(
-                    q.Var('annotated'),
-                  ),
+                  document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
                 ),
                 action: action(q.Var('ctx'))().log('owner_change', DocumentRef(q.Var('doc'))),
               },
@@ -542,9 +534,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                     }),
                   ),
                   doc: ResultData(
-                    document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).upsert(
-                      q.Var('annotated'),
-                    ),
+                    document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
                   ),
                   action: action(q.Var('ctx'))().log('assignees_change', DocumentRef(q.Var('doc'))),
                 },
@@ -665,9 +655,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                       }),
                     ),
                     doc: ResultData(
-                      document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Ref(q.Collection(q.Var('collection')), q.Var('id'))).upsert(
-                        q.Var('annotated'),
-                      ),
+                      document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
                     ),
                   },
                   q.Var('doc'),

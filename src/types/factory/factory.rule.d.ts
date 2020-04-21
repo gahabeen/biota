@@ -12,6 +12,7 @@ export interface FactoryRuleDefinitionPaths {
 }
 export interface FactoryRuleDefinition<T = FactoryRuleAuthor[] | boolean> {
   immutablePaths?: string[];
+  exists?: T;
   get?: T;
   getHistory?: T;
   getHistoryWhenDeleted?: T;

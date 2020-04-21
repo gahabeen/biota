@@ -4,16 +4,16 @@ import { session } from '~/factory/api/session';
 import { execute } from '~/tools/tasks';
 
 // tslint:disable-next-line: variable-name
-export const delete_: FactorySession<FrameworkSessionApi['delete']> = function (idOrRef) {
+export const delete_: FactorySession<FrameworkSessionApi['delete']> = function (id) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Delete (${idOrRef})`,
+          name: `Delete (${id})`,
           task() {
-            return self.query(session(self.context)(idOrRef).delete());
+            return self.query(session(self.context)(id).delete());
           },
         },
       ],

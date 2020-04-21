@@ -1,10 +1,10 @@
 import { Expr, query as q } from 'faunadb';
 import { TS_2500_YEARS } from '~/consts';
+import { PassportUser, PassportSession } from '~/factory/constructors/identity';
 import * as helpers from '~/helpers';
+import { ActionRuleDefinition, BiotaActionsDefinition } from '~/types/factory/factory.constructors.privilege';
 import { FactoryRuleDefinition, FactoryRuleDefinitionPaths } from '~/types/factory/factory.rule';
 import { FaunaRef, FaunaRolePrivilegeActions } from '~/types/fauna';
-import { Identity } from '~/factory/constructors/identity';
-import { BiotaActionsDefinition, ActionRuleDefinition } from '~/types/factory/factory.constructors.privilege';
 
 export function PrivilegeRights(
   rights: FactoryRuleDefinition = {},
@@ -39,15 +39,34 @@ export function PrivilegeRights(
     }
   }
 
-  const RefIsSelf = (ref: FaunaRef) => q.If(q.IsRef(ref), q.Equals(ref, Identity()), false);
-  const DocOfOwner = (doc: Expr) => q.Equals(q.Select(helpers.path('_membership.owner'), doc), Identity());
+  const RefIsSelf = (ref: FaunaRef) => q.If(q.IsRef(ref), q.Or(q.Equals(ref, PassportUser()), q.Equals(ref, PassportSession())), false);
+  const DocOfOwner = (doc: Expr) =>
+    q.Let(
+      {
+        owner: q.Select(helpers.path('_membership.owner'), doc),
+      },
+      q.And(q.IsRef(q.Var('owner')), q.Or(q.Equals(q.Var('owner'), PassportUser()), q.Equals(q.Var('owner'), PassportSession()))),
+    );
   const DocOfAssignee = (doc: Expr) => {
     return q.Let(
       {
         raw_assignees: q.Select(helpers.path('_membership.assignees'), doc, []),
         assignees: q.If(q.IsArray(q.Var('raw_assignees')), q.Var('raw_assignees'), []),
       },
-      q.Not(q.IsEmpty(q.Filter(q.Var('assignees'), q.Lambda('assignee', q.Equals(q.Var('assignee'), Identity()))))),
+      q.Not(
+        q.IsEmpty(
+          q.Filter(
+            q.Var('assignees'),
+            q.Lambda(
+              'assignee',
+              q.And(
+                q.IsRef(q.Var('assignee')),
+                q.Or(q.Equals(q.Var('assignee'), PassportUser()), q.Equals(q.Var('assignee'), PassportSession())),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   };
   const changedPathsOnlyAt = (root: string, allowedChangedSubPaths: string[], oldDoc = q.Var('newDoc'), newDoc = q.Var('newDoc')) => {
@@ -256,11 +275,14 @@ export function PrivilegeRights(
     q.And(
       changedPathsOnlyAt('_activity', ['inserted_by', 'inserted_at'], {}, q.Var('doc')),
       q.Or(
-        PathChangedWith('_activity.inserted_by', Identity(), q.Var('doc')),
+        PathChangedWith('_activity.inserted_by', PassportUser(), q.Var('doc')),
         PathChangedWith('_activity.inserted_at', q.Now(), q.Var('doc')),
       ),
     ),
-    q.And(changedPathsOnlyAt('_membership', ['owner'], {}, q.Var('doc')), PathChangedWith('_membership.owner', Identity(), q.Var('doc'))),
+    q.And(
+      changedPathsOnlyAt('_membership', ['owner'], {}, q.Var('doc')),
+      PathChangedWith('_membership.owner', PassportUser(), q.Var('doc')),
+    ),
   ];
 
   if (definition.self.insert) {
@@ -294,7 +316,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
-      q.Or(PathChangedWith('_activity.updated_by', Identity()), PathChangedWith('_activity.updated_at', q.Now())),
+      q.Or(PathChangedWith('_activity.updated_by', PassportUser()), PathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
@@ -321,7 +343,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
-      q.Or(PathChangedWith('_activity.updated_by', Identity()), PathChangedWith('_activity.updated_at', q.Now())),
+      q.Or(PathChangedWith('_activity.updated_by', PassportUser()), PathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
@@ -348,7 +370,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
-      q.Or(PathChangedWith('_activity.updated_by', Identity()), PathChangedWith('_activity.updated_at', q.Now())),
+      q.Or(PathChangedWith('_activity.updated_by', PassportUser()), PathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
@@ -375,7 +397,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
-      q.Or(PathChangedWith('_activity.replaced_by', Identity()), PathChangedWith('_activity.replaced_at', q.Now())),
+      q.Or(PathChangedWith('_activity.replaced_by', PassportUser()), PathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
@@ -402,7 +424,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
-      q.Or(PathChangedWith('_activity.replaced_by', Identity()), PathChangedWith('_activity.replaced_at', q.Now())),
+      q.Or(PathChangedWith('_activity.replaced_by', PassportUser()), PathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
@@ -429,7 +451,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
-      q.Or(PathChangedWith('_activity.replaced_by', Identity()), PathChangedWith('_activity.replaced_at', q.Now())),
+      q.Or(PathChangedWith('_activity.replaced_by', PassportUser()), PathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
@@ -455,7 +477,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['deleted_by', 'deleted_at']),
-      q.Or(PathChangedWith('_activity.deleted_by', Identity()), PathChangedWith('_activity.deleted_at', q.Now())),
+      q.Or(PathChangedWith('_activity.deleted_by', PassportUser()), PathChangedWith('_activity.deleted_at', q.Now())),
     ),
     q.And(
       changedPathsOnlyAt('_validity', ['deleted']),
@@ -486,7 +508,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
-      q.Or(PathChangedWith('_activity.forgotten_by', Identity()), PathChangedWith('_activity.forgotten_at', q.Now())),
+      q.Or(PathChangedWith('_activity.forgotten_by', PassportUser()), PathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
@@ -513,7 +535,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
-      q.Or(PathChangedWith('_activity.forgotten_by', Identity()), PathChangedWith('_activity.forgotten_at', q.Now())),
+      q.Or(PathChangedWith('_activity.forgotten_by', PassportUser()), PathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
@@ -540,7 +562,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
-      q.Or(PathChangedWith('_activity.forgotten_by', Identity()), PathChangedWith('_activity.forgotten_at', q.Now())),
+      q.Or(PathChangedWith('_activity.forgotten_by', PassportUser()), PathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
@@ -566,7 +588,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['expiration_changed_by', 'expiration_changed_at']),
-      q.Or(PathChangedWith('_activity.expiration_changed_by', Identity()), PathChangedWith('_activity.expiration_changed_at', q.Now())),
+      q.Or(PathChangedWith('_activity.expiration_changed_by', PassportUser()), PathChangedWith('_activity.expiration_changed_at', q.Now())),
     ),
     changedPathsOnlyAt('_validity', ['expires_at']),
   ];
@@ -592,7 +614,7 @@ export function PrivilegeRights(
     PathHasntChanged('_membership'),
     q.And(
       changedPathsOnlyAt('_activity', ['restored_by', 'restored_at']),
-      q.Or(PathChangedWith('_activity.restored_by', Identity()), PathChangedWith('_activity.restored_at', q.Now())),
+      q.Or(PathChangedWith('_activity.restored_by', PassportUser()), PathChangedWith('_activity.restored_at', q.Now())),
     ),
     changedPathsOnlyAt('_validity', ['deleted', 'expires_at']),
   ];
@@ -619,7 +641,7 @@ export function PrivilegeRights(
     PathHasntChanged('_validity'),
     q.And(
       changedPathsOnlyAt('_activity', ['remembered_by', 'remembered_at']),
-      q.Or(PathChangedWith('_activity.remembered_by', Identity()), PathChangedWith('_activity.remembered_at', q.Now())),
+      q.Or(PathChangedWith('_activity.remembered_by', PassportUser()), PathChangedWith('_activity.remembered_at', q.Now())),
     ),
   ];
 
@@ -645,7 +667,7 @@ export function PrivilegeRights(
     PathHasntChanged('_validity'),
     q.And(
       changedPathsOnlyAt('_activity', ['owner_changed_by', 'owner_changed_at']),
-      q.Or(PathChangedWith('_activity.owner_changed_by', Identity()), PathChangedWith('_activity.owner_changed_at', q.Now())),
+      q.Or(PathChangedWith('_activity.owner_changed_by', PassportUser()), PathChangedWith('_activity.owner_changed_at', q.Now())),
     ),
   ];
 
@@ -694,7 +716,7 @@ export function PrivilegeRights(
     PathHasntChanged('_validity'),
     q.And(
       changedPathsOnlyAt('_activity', ['assignees_changed_by', 'assignees_changed_at']),
-      q.Or(PathChangedWith('_activity.assignees_changed_by', Identity()), PathChangedWith('_activity.assignees_changed_at', q.Now())),
+      q.Or(PathChangedWith('_activity.assignees_changed_by', PassportUser()), PathChangedWith('_activity.assignees_changed_at', q.Now())),
     ),
   ];
 
@@ -764,7 +786,7 @@ export function PrivilegeRights(
     PathHasntChanged('_validity'),
     q.And(
       changedPathsOnlyAt('_activity', ['roles_changed_by', 'roles_changed_at']),
-      q.Or(PathChangedWith('_activity.roles_changed_by', Identity()), PathChangedWith('_activity.roles_changed_at', q.Now())),
+      q.Or(PathChangedWith('_activity.roles_changed_by', PassportUser()), PathChangedWith('_activity.roles_changed_at', q.Now())),
     ),
   ];
 
@@ -832,7 +854,7 @@ export function PrivilegeRights(
     PathHasntChanged('_validity'),
     q.And(
       changedPathsOnlyAt('_activity', ['auth_email_changed_by', 'auth_email_changed_at']),
-      q.Or(PathChangedWith('_activity.auth_email_changed_by', Identity()), PathChangedWith('_activity.auth_email_changed_at', q.Now())),
+      q.Or(PathChangedWith('_activity.auth_email_changed_by', PassportUser()), PathChangedWith('_activity.auth_email_changed_at', q.Now())),
     ),
   ];
 
@@ -883,7 +905,7 @@ export function PrivilegeRights(
     q.And(
       changedPathsOnlyAt('_activity', ['auth_accounts_changed_by', 'auth_accounts_changed_at']),
       q.Or(
-        PathChangedWith('_activity.auth_accounts_changed_by', Identity()),
+        PathChangedWith('_activity.auth_accounts_changed_by', PassportUser()),
         PathChangedWith('_activity.auth_accounts_changed_at', q.Now()),
       ),
     ),
