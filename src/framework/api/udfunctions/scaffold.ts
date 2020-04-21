@@ -9,30 +9,54 @@ import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions
 export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (this: Biota, options) {
   const self = this;
   const tasks = [];
-  const UDFs = [];
+  const loadedUDFs = new Set();
+  const dependenciesUDFs = new Set();
 
-  const { onlyNecessary } = options || {};
+  const { onlyNecessary, onlyNames = [] } = options || {};
 
   const loadStep = (step: any) => {
     if (typeof step === 'function') {
-      let definition = step();
-      if (typeof definition === 'function') definition = definition();
+      let stepContent = step();
+      if (typeof stepContent === 'function') stepContent = stepContent();
 
-      if (definition instanceof Expr) {
-        const UDFunctionDefinition = UDFunctionFromMethod(definition);
-        if (UDFunctionDefinition && UDFunctionDefinition.name) {
-          if ((onlyNecessary && UDFunctionDefinition.role) || !onlyNecessary) {
-            UDFs.push(UDFunctionDefinition.name);
-            tasks.push({
-              name: `Scaffolding function: ${UDFunctionDefinition.name}`,
-              task() {
-                return self.udfunction(UDFunctionDefinition.name).upsert(UDFunctionDefinition);
-              },
-            });
+      const addDependency = (name: string) => {
+        if (!loadedUDFs.has(name)) {
+          dependenciesUDFs.add(name);
+        }
+      };
+
+      const markDependencyAsLoaded = (name: string) => {
+        if (dependenciesUDFs.has(name)) {
+          dependenciesUDFs.delete(name);
+        }
+      };
+
+      if (stepContent instanceof Expr) {
+        const { definition, subsequentFunctionsToCall } = UDFunctionFromMethod(stepContent);
+        if (definition && definition.name) {
+          if (!loadedUDFs.has(definition.name)) {
+            if (
+              dependenciesUDFs.has(definition.name) ||
+              (onlyNames.length > 0 && onlyNames.includes(definition.name)) ||
+              (onlyNames.length === 0 && ((onlyNecessary && definition.role) || !onlyNecessary))
+            ) {
+              // if (subsequentFunctionsToCall.length > 0) {
+              //   console.log('subsequentFunctionsToCall', subsequentFunctionsToCall);
+              // }
+              subsequentFunctionsToCall.map(addDependency);
+              markDependencyAsLoaded(definition.name);
+              loadedUDFs.add(definition.name);
+              tasks.push({
+                name: `Scaffolding function: ${definition.name}`,
+                task() {
+                  return self.udfunction(definition.name).upsert(definition);
+                },
+              });
+            }
           }
         }
-      } else if (typeof definition === 'object') {
-        return loadStep(definition);
+      } else if (typeof stepContent === 'object') {
+        return loadStep(stepContent);
       }
     } else if (typeof step === 'object') {
       return Object.values(step).map((item) => loadStep(item));
@@ -43,16 +67,25 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
     loadStep(factoryApi[key]);
   }
 
-  const UDFsBatches = splitEvery(50, UDFs);
-  for (const UDFsBatch of UDFsBatches) {
+  let maxLoops = 5;
+  while (dependenciesUDFs.size > 0 && maxLoops > 0) {
+    // console.log('dependenciesUDFs.size', dependenciesUDFs.size);
+    for (const key of Object.keys(factoryApi)) {
+      loadStep(factoryApi[key]);
+    }
+    maxLoops -= 1;
+  }
+
+  const loadedUDFsBatches = splitEvery(50, Array.from(loadedUDFs));
+  for (const loadedUDFsBatch of loadedUDFsBatches) {
     tasks.push({
-      name: `Adding privileges to User for ${UDFsBatch.length} functions`,
+      name: `Adding privileges to User for ${loadedUDFsBatch.length} functions`,
       task() {
         // return self
         //   .query(
         //     q.Count(
         //       q.Filter(
-        //         UDFs.map((UDF) => q.Function(UDF)),
+        //         loadedUDFs.map((UDF) => q.Function(UDF)),
         //         q.Lambda(['udf'], q.Exists(q.Var('udf'))),
         //       ),
         //     ),
@@ -62,7 +95,7 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
         //     return res;
         //   });
         return self.role(BiotaRoleName('user')).privilege.setMany(
-          UDFsBatch.map((UDF) => ({
+          loadedUDFsBatch.map((UDF) => ({
             resource: q.Function(UDF),
             actions: { call: true },
           })),
@@ -70,13 +103,13 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
       },
     });
     tasks.push({
-      name: `Adding privileges to Auth for ${UDFsBatch.length} functions`,
+      name: `Adding privileges to Auth for ${loadedUDFsBatch.length} functions`,
       task() {
         // return self
         //   .query(
         //     q.Count(
         //       q.Filter(
-        //         UDFs.map((UDF) => q.Function(UDF)),
+        //         loadedUDFs.map((UDF) => q.Function(UDF)),
         //         q.Lambda(['udf'], q.Exists(q.Var('udf'))),
         //       ),
         //     ),
@@ -86,7 +119,7 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
         //     return res;
         //   });
         return self.role(BiotaRoleName('auth')).privilege.setMany(
-          UDFsBatch.map((UDF) => ({
+          loadedUDFsBatch.map((UDF) => ({
             resource: q.Function(UDF),
             actions: { call: true },
           })),

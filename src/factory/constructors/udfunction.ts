@@ -12,7 +12,9 @@ export function BiotaFunctionName(name: string) {
 export function Input(params: Expr, query: Expr) {
   return q.Let(params, query);
 }
-const removeOfflineCode = (obj: any) => {
+const removeOfflineQuery = (obj: any) => {
+  const functionsToCall = [];
+
   function reducer(item: any) {
     if (item instanceof Expr) {
       return new Expr(reducer((item as any).raw));
@@ -27,7 +29,8 @@ const removeOfflineCode = (obj: any) => {
         //     return reducer(reducer((item.else as any).raw));
         //   }
         // }
-        if (safeItem.if && typeof safeItem?.then?.in?.call === "string") {
+        if (safeItem.if && typeof safeItem?.then?.in?.call === 'string') {
+          functionsToCall.push(safeItem?.then?.in?.call);
           return reducer(reducer((item.then as any).raw));
         }
       } catch (error) {
@@ -43,7 +46,7 @@ const removeOfflineCode = (obj: any) => {
     }
   }
 
-  return reducer(obj);
+  return { query: reducer(obj), functionsToCall };
 };
 
 export function UDFunctionFromMethod(methodRaw: any) {
@@ -63,6 +66,7 @@ export function UDFunctionFromMethod(methodRaw: any) {
   // methodRaw = safe(methodRaw);
   let definition: FaunaUDFunctionOptions = {};
   let args = [];
+  const subsequentFunctionsToCall = [];
   if (getRaw(methodRaw).if && getRaw(methodRaw).then && getRaw(methodRaw).else) {
     try {
       definition = getRaw(getRaw(getRaw(methodRaw).then).let[0].UDFunctionDefinition).object as FaunaUDFunctionOptions;
@@ -75,7 +79,9 @@ export function UDFunctionFromMethod(methodRaw: any) {
       // nothing
     }
     try {
-      const query = getRaw(getRaw(methodRaw).else).in;
+      const fullQuery = getRaw(getRaw(methodRaw).else).in;
+      const { query, functionsToCall } = removeOfflineQuery(fullQuery);
+      subsequentFunctionsToCall.push(...functionsToCall);
       definition.body = q.Query(
         q.Lambda(
           ['ctx', 'params'],
@@ -84,7 +90,7 @@ export function UDFunctionFromMethod(methodRaw: any) {
               letObj[key] = q.Select(key, q.Var('params'), null);
               return letObj;
             }, {}),
-            removeOfflineCode(query),
+            query,
           ),
         ),
       );
@@ -93,9 +99,9 @@ export function UDFunctionFromMethod(methodRaw: any) {
     }
   }
   if (definition.name) {
-    return definition;
+    return { definition, subsequentFunctionsToCall };
   } else {
-    return null;
+    return { definition: null, subsequentFunctionsToCall };
   }
 }
 export function CallFunction(
