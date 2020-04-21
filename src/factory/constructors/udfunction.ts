@@ -21,11 +21,14 @@ const removeOfflineCode = (obj: any) => {
     } else if (item && typeof item === 'object') {
       try {
         const safeItem = JSON.parse(JSON.stringify(item));
-        if (safeItem.if && safeItem.if.select) {
-          const select = Array.isArray(safeItem.if.select) ? safeItem.if.select : [safeItem.if.select];
-          if (select.includes('offline')) {
-            return reducer(reducer((item.else as any).raw));
-          }
+        // if (safeItem.if && safeItem.if.select) {
+        //   const select = Array.isArray(safeItem.if.select) ? safeItem.if.select : [safeItem.if.select];
+        //   if (select.includes('offline')) {
+        //     return reducer(reducer((item.else as any).raw));
+        //   }
+        // }
+        if (safeItem.if && typeof safeItem?.then?.in?.call === "string") {
+          return reducer(reducer((item.then as any).raw));
         }
       } catch (error) {
         // console.error(error);
