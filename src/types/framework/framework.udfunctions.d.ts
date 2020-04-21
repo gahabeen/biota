@@ -3,7 +3,8 @@ import { Expr } from 'faunadb';
 import { FactoryUDFunctionsApi } from '~/types/factory/factory.udfunctions';
 
 export interface FrameworkUDFunctionsOptions {
-  onlyNecessary?: boolean
+  onlyNecessary?: boolean;
+  onlyNames?: string[];
 }
 
 export interface FrameworkUDFunctionsApi {

@@ -4,6 +4,7 @@ import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { Biota } from '~/biota';
+import { ReferenceId } from '~/factory/api/constructors';
 
 // tslint:disable-next-line: variable-name
 export const curentUserDelete: FrameworkUserApi['delete'] = function (this: Biota) {
@@ -14,7 +15,7 @@ export const curentUserDelete: FrameworkUserApi['delete'] = function (this: Biot
       {
         name: `Delete current user`,
         task() {
-          return self.query(user(self.context)(q.Select('id', Identity(), null)).delete());
+          return self.query(user(self.context)(ReferenceId(Identity())).delete());
         },
       },
     ],

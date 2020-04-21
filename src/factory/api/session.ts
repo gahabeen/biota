@@ -8,7 +8,7 @@ import { ContextProp } from '~/factory/constructors/context';
 import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { ResultData, ResultRef } from '~/factory/constructors/result';
-import { BiotaFunctionName } from './constructors';
+import { BiotaFunctionName, ReferenceId } from './constructors';
 import { DEFAULT_EXPIRATION_DURATION } from '~/consts';
 
 // tslint:disable-next-line: only-arrow-functions
@@ -34,8 +34,9 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
               q.Let(
                 {
                   sessionRef: ResultRef(session(q.Var('ctx'))().insert({})),
-                  session_owner: ResultData(session(q.Var('ctx'))(q.Var('sessionRef')).membership.owner.set(q.Var('user'))),
-                  session_expire: ResultData(session(q.Var('ctx'))(q.Var('sessionRef')).expireAt(q.Var('expire_at'))),
+                  sessionId: ReferenceId(q.Var('sessionRef')),
+                  session_owner: ResultData(session(q.Var('ctx'))(q.Var('sessionId')).membership.owner.set(q.Var('user'))),
+                  session_expire: ResultData(session(q.Var('ctx'))(q.Var('sessionId')).expireAt(q.Var('expire_at'))),
                   authed_session: ResultData(token(q.Var('ctx'))().insert({ instance: q.Var('sessionRef') })),
                 },
                 q.If(

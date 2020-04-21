@@ -1,6 +1,6 @@
-import { query as q } from 'faunadb';
-import { Identity } from '~/factory/constructors/identity';
+import { ReferenceId } from '~/factory/api/constructors';
 import { user } from '~/factory/api/user';
+import { Identity } from '~/factory/constructors/identity';
 import { execute } from '~/tools/tasks';
 import { FrameworkUserApi } from '~/types/framework/framework.user';
 
@@ -12,7 +12,7 @@ export const currentUserForget: FrameworkUserApi['forget'] = function () {
       {
         name: `Forget current user`,
         task() {
-          return self.query(user(self.context)(q.Select('id', Identity(), null)).forget());
+          return self.query(user(self.context)(ReferenceId(Identity())).forget());
         },
       },
     ],

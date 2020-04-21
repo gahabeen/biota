@@ -4,6 +4,7 @@ import { Identity } from '~/factory/constructors/identity';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { ReferenceId } from '~/factory/api/constructors';
 
 export const currentUserRestore: FrameworkUserApi['restore'] = function (this: Biota) {
   const self = this;
@@ -13,7 +14,7 @@ export const currentUserRestore: FrameworkUserApi['restore'] = function (this: B
       {
         name: `Restore current user`,
         task() {
-          return self.query(user(self.context)(q.Select('id', Identity(), null)).restore());
+          return self.query(user(self.context)(ReferenceId(Identity())).restore());
         },
       },
     ],

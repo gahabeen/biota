@@ -10,6 +10,10 @@ export function Reference(collectionOrRef: FaunaString | FaunaRef, id?: FaunaStr
   );
 }
 
+export function ReferenceId(ref: FaunaRef) {
+  return q.If(q.IsRef(ref), q.Select('id', ref, null), null);
+}
+
 export function Ref(collectionOrRef: Fauna.Expr | string, id?: string | number) {
   if (typeof collectionOrRef === 'string') {
     const [collection, withId] = collectionOrRef.split('/');

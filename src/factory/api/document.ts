@@ -68,7 +68,6 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
               q.Collection(q.Var('collection')),
             ),
-            refExists: refExists(q.Var('collection'), q.Var('id')),
             annotated: ResultData(document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('insert', q.Var('data'))),
             doc: q.Create(q.Var('ref'), { data: q.Var('annotated') }),
             action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
