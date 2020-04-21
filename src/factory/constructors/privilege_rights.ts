@@ -39,14 +39,17 @@ export function PrivilegeRights(
     }
   }
 
-  const RefIsSelf = (ref: FaunaRef) => q.If(q.IsRef(ref), q.Or(q.Equals(ref, PassportUser()), q.Equals(ref, PassportSession())), false);
-  const DocOfOwner = (doc: Expr) =>
-    q.Let(
+  const RefIsSelf = (ref: FaunaRef) => {
+    return q.If(q.IsRef(ref), q.Or(q.Equals(ref, PassportUser()), q.Equals(ref, PassportSession())), false);
+  };
+  const DocOfOwner = (doc: Expr) => {
+    return q.Let(
       {
         owner: q.Select(helpers.path('_membership.owner'), doc),
       },
       q.And(q.IsRef(q.Var('owner')), q.Or(q.Equals(q.Var('owner'), PassportUser()), q.Equals(q.Var('owner'), PassportSession()))),
     );
+  };
   const DocOfAssignee = (doc: Expr) => {
     return q.Let(
       {
@@ -116,23 +119,18 @@ export function PrivilegeRights(
   const PathChangedWith = (path: string, value: any, doc = q.Var('newDoc')) => {
     return q.Equals(q.Select(helpers.path(path), doc, {}), value);
   };
-
   const documentIsNotExpired = (doc: Expr) => {
     return q.GTE(q.Select(helpers.path('_validity.expires_at'), doc, q.ToTime(TS_2500_YEARS)), q.Now());
   };
-
   const documentIsExpired = (doc: Expr) => {
     return q.Not(documentIsNotExpired(doc));
   };
-
   const documentIsNotDeleted = (doc: Expr) => {
     return q.Equals(q.Select(helpers.path('_validity.deleted'), doc, false), false);
   };
-
   const documentIsDeleted = (doc: Expr) => {
     return q.Not(documentIsNotDeleted(doc));
   };
-
   const documentIsAvailable = (doc: Expr) => {
     return q.And(documentIsNotExpired(doc), documentIsNotDeleted(doc));
   };

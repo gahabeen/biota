@@ -5,12 +5,17 @@ import { UDFunctionFromMethod, BiotaRoleName } from '~/factory/api/constructors'
 import { splitEvery } from '~/helpers';
 import { execute } from '~/tools/tasks';
 import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
+import { FaunaUDFunctionOptions } from '~/types/fauna';
 
 export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (this: Biota, options) {
   const self = this;
   const tasks = [];
   const loadedUDFs = new Set();
   const dependenciesUDFs = new Set();
+  const addToRole = {
+    [BiotaRoleName('user')]: new Set(),
+    [BiotaRoleName('system')]: new Set(),
+  };
 
   const { onlyNecessary, onlyNames = [] } = options || {};
 
@@ -32,7 +37,9 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
       };
 
       if (stepContent instanceof Expr) {
-        const { definition, subsequentFunctionsToCall } = UDFunctionFromMethod(stepContent);
+        const { definition, subsequentFunctionsToCall, data } = UDFunctionFromMethod(stepContent);
+        const { meta } = (data as any) || {};
+        const { addToRoles } = meta || {};
         if (definition && definition.name) {
           if (!loadedUDFs.has(definition.name)) {
             if (
@@ -40,12 +47,18 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
               (onlyNames.length > 0 && onlyNames.includes(definition.name)) ||
               (onlyNames.length === 0 && ((onlyNecessary && definition.role) || !onlyNecessary))
             ) {
-              // if (subsequentFunctionsToCall.length > 0) {
-              //   console.log('subsequentFunctionsToCall', subsequentFunctionsToCall);
-              // }
               subsequentFunctionsToCall.map(addDependency);
               markDependencyAsLoaded(definition.name);
               loadedUDFs.add(definition.name);
+              if (Array.isArray(addToRoles)) {
+                for (const role of Object.keys(addToRole)) {
+                  if (!addToRole[role]) addToRole[role] = new Set();
+                  addToRole[role].add(definition.name);
+                }
+              } else {
+                addToRole[BiotaRoleName('user')].add(definition.name);
+                addToRole[BiotaRoleName('system')].add(definition.name);
+              }
               tasks.push({
                 name: `Scaffolding function: ${definition.name}`,
                 task() {
@@ -76,56 +89,19 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
     maxLoops -= 1;
   }
 
-  const loadedUDFsBatches = splitEvery(50, Array.from(loadedUDFs));
-  for (const loadedUDFsBatch of loadedUDFsBatches) {
-    tasks.push({
-      name: `Adding privileges to User for ${loadedUDFsBatch.length} functions`,
-      task() {
-        // return self
-        //   .query(
-        //     q.Count(
-        //       q.Filter(
-        //         loadedUDFs.map((UDF) => q.Function(UDF)),
-        //         q.Lambda(['udf'], q.Exists(q.Var('udf'))),
-        //       ),
-        //     ),
-        //   )
-        //   .then((res: any) => {
-        //     console.log(res);
-        //     return res;
-        //   });
-        return self.role(BiotaRoleName('user')).privilege.setMany(
-          loadedUDFsBatch.map((UDF) => ({
-            resource: q.Function(UDF),
-            actions: { call: true },
-          })),
-        );
-      },
-    });
-    tasks.push({
-      name: `Adding privileges to Auth for ${loadedUDFsBatch.length} functions`,
-      task() {
-        // return self
-        //   .query(
-        //     q.Count(
-        //       q.Filter(
-        //         loadedUDFs.map((UDF) => q.Function(UDF)),
-        //         q.Lambda(['udf'], q.Exists(q.Var('udf'))),
-        //       ),
-        //     ),
-        //   )
-        //   .then((res: any) => {
-        //     console.log(res);
-        //     return res;
-        //   });
-        return self.role(BiotaRoleName('system')).privilege.setMany(
-          loadedUDFsBatch.map((UDF) => ({
-            resource: q.Function(UDF),
-            actions: { call: true },
-          })),
-        );
-      },
-    });
+  for (const role of Object.keys(addToRole)) {
+    for (const batch of splitEvery(50, Array.from(addToRole[role])))
+      tasks.push({
+        name: `Adding privileges to ${role} for ${batch.length} functions`,
+        task() {
+          return self.role(role).privilege.setMany(
+            batch.map((udf: FaunaUDFunctionOptions) => ({
+              resource: q.Function(udf),
+              actions: { call: true },
+            })),
+          );
+        },
+      });
   }
 
   return execute(tasks, {

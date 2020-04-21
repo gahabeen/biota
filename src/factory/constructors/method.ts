@@ -7,7 +7,7 @@ import { ContextExtend, ContextProp } from '../api/constructors';
 import { Result, ResultData } from './result';
 import { CallFunction } from './udfunction';
 
-type MethodDispatchOption = { context: FactoryContextDefinition; inputs: object; query: Expr };
+type MethodDispatchOption = { context: FactoryContextDefinition; inputs: object; query: Expr; test?: Expr };
 
 export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
   const actionData = q.Let(

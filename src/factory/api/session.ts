@@ -22,7 +22,12 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
         // ----
         const query = MethodQuery(
           {
-            is_session_identity: q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
+            has_identity: q.HasIdentity(),
+            is_session_identity: q.If(
+              q.Var('has_identity'),
+              q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
+              null,
+            ),
             session: q.If(q.Var('is_session_identity'), q.Identity(), null),
             user: q.If(q.Var('is_session_identity'), q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null), null),
           },
@@ -36,7 +41,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
         const online = {
           name: BiotaFunctionName('SessionPassport'),
           role: q.Role(BiotaRoleName('system')),
-          data: { meta: { addToRoles: [BiotaRoleName('system')] } },
+          // data: { meta: { addToRoles: [BiotaRoleName('system')] } },
         };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
@@ -58,7 +63,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
         const online = {
           name: BiotaFunctionName('SessionIdentity'),
           role: q.Role(BiotaRoleName('system')),
-          data: { meta: { addToRoles: [BiotaRoleName('system')] } },
+          // data: { meta: { addToRoles: [BiotaRoleName('system')] } },
         };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },

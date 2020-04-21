@@ -24,7 +24,11 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         );
         // ----
         const offline = 'factory.udfunction.exists';
-        const online = { name: BiotaFunctionName('UDFunctionExists'), role: q.Role(BiotaRoleName('system')) };
+        const online = {
+          name: BiotaFunctionName('UDFunctionExists'),
+          role: q.Role(BiotaRoleName('system')),
+          // data: { meta: { addToRoles: [BiotaRoleName('user')] } },
+        };
         return SafeMethodDispatch({ context, inputs, query })(offline, online);
       },
       get() {

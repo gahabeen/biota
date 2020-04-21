@@ -66,6 +66,7 @@ export function UDFunctionFromMethod(methodRaw: any) {
   // methodRaw = safe(methodRaw);
   let definition: FaunaUDFunctionOptions = {};
   let args = [];
+  let data = {};
   const subsequentFunctionsToCall = [];
   if (getRaw(methodRaw).if && getRaw(methodRaw).then && getRaw(methodRaw).else) {
     try {
@@ -75,6 +76,11 @@ export function UDFunctionFromMethod(methodRaw: any) {
     }
     try {
       args = getRaw(getRaw(getRaw(methodRaw).then).let[1].inputs) || [];
+    } catch (error) {
+      // nothing
+    }
+    try {
+      data = getRaw(getRaw(getRaw(methodRaw).then).let[1].data) || [];
     } catch (error) {
       // nothing
     }
@@ -99,9 +105,9 @@ export function UDFunctionFromMethod(methodRaw: any) {
     }
   }
   if (definition.name) {
-    return { definition, subsequentFunctionsToCall };
+    return { definition, subsequentFunctionsToCall, data };
   } else {
-    return { definition: null, subsequentFunctionsToCall };
+    return { definition: null, subsequentFunctionsToCall, data };
   }
 }
 export function CallFunction(
