@@ -11,7 +11,9 @@ export function toJSON(object: any, pretty: any) {
 }
 
 export function parseJSON(json: string) {
-  return JSON.parse(json, json_parse);
+    if(json){
+        return JSON.parse(json, json_parse);
+    }
 }
 
 function json_parse(_: string, val: { [x: string]: any }) {

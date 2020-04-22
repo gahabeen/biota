@@ -1,6 +1,7 @@
 import { FaunaRef } from '~/types/fauna';
 import { Biota } from '~/biota';
 
-export async function as(this: Biota, roleOrIdentity: FaunaRef, identity?: FaunaRef) {
-  return;
+export function as(this: Biota, identity: FaunaRef) {
+  this.alternativeIdentity = identity;
+  return this;
 }

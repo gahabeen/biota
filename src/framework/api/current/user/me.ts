@@ -1,6 +1,7 @@
 import { Biota } from '~/biota';
+import { ReferenceId } from '~/factory/api/constructors';
 import { user } from '~/factory/api/user';
-import { PassportUser } from '~/factory/constructors/identity';
+import { AlternativeOrIdentity } from '~/factory/constructors/identity';
 import { execute } from '~/tools/tasks';
 import { FrameworkCurrentUserApi } from '~/types/framework/framework.current.user';
 
@@ -11,7 +12,7 @@ export const currentUserMe: FrameworkCurrentUserApi['me'] = function (this: Biot
       {
         name: `Get current user`,
         task() {
-          return self.query(user(self.context)(PassportUser()).get());
+          return self.query(user(self.context)(ReferenceId(AlternativeOrIdentity(self.context))).get());
         },
       },
     ],

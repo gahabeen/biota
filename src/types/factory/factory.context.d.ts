@@ -10,12 +10,14 @@ export interface FactoryContextOptions {
 export type FactoryContextDefinition =
   | {
       identity?: FaunaRef;
+      hasIdentity?: FaunaBoolean;
+      alternativeIdentity?: FaunaRef;
+      hasAlternativeIdentity?: FaunaBoolean;
       session?: FaunaRef;
+      hasSession?: FaunaBoolean;
       checkRole?: FaunaRef;
       callstack?: FaunaString;
       offline?: FaunaBoolean;
-      hasIdentity?: FaunaBoolean;
-      hasSession?: FaunaBoolean;
       logActions?: FaunaBoolean;
       annotateDocuments?: FaunaBoolean;
       skipErrors?: FaunaBoolean;

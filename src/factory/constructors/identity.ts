@@ -1,6 +1,7 @@
-import { query as q } from 'faunadb';
+import { query as q, Expr } from 'faunadb';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { BiotaFunctionName } from './udfunction';
+import { ContextProp } from './context';
 
 export function Identity(allowSession: boolean = false) {
   return q.If(
@@ -18,14 +19,24 @@ export function Identity(allowSession: boolean = false) {
   );
 }
 
+export function AlternativeOrIdentity(context: Expr) {
+  return q.Let(
+    {
+      context,
+      alternativeIdentity: ContextProp(q.Var('context'), 'alternativeIdentity'),
+    },
+    q.If(q.IsRef(q.Var('alternativeIdentity')), q.Var('alternativeIdentity'), PassportUser()),
+  );
+}
+
 export function Passport() {
-  return q.Call(BiotaFunctionName('SessionPassport'), {}, {});
+  return q.If(q.Exists(q.Function(BiotaFunctionName('SessionPassport'))), q.Call(BiotaFunctionName('SessionPassport'), {}, {}), {});
 }
 
 export function PassportUser() {
-  return q.Select('user', q.Call(BiotaFunctionName('SessionPassport'), {}, {}), null);
+  return q.Select('user', Passport(), false);
 }
 
 export function PassportSession() {
-  return q.Select('sessions', q.Call(BiotaFunctionName('SessionPassport'), {}, {}), null);
+  return q.Select('sessions', Passport(), false);
 }

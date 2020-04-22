@@ -26,7 +26,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
             is_session_identity: q.If(
               q.Var('has_identity'),
               q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
-              null,
+              false,
             ),
             session: q.If(q.Var('is_session_identity'), q.Identity(), null),
             user: q.If(q.Var('is_session_identity'), q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null), null),

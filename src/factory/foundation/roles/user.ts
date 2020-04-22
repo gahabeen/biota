@@ -1,6 +1,6 @@
 import { Expr, query as q } from 'faunadb';
 import { TS_2500_YEARS } from '~/consts';
-import { BiotaFunctionName } from '~/factory/api/constructors';
+import { BiotaFunctionName, BiotaRule } from '~/factory/api/constructors';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { PassportUser } from '~/factory/constructors/identity';
 import { CustomPrivilege, Privilege } from '~/factory/constructors/privilege';
@@ -71,11 +71,14 @@ export const user: FaunaRoleOptions = Role({
         read: q.Query(
           q.Lambda(
             'ref',
-            q.Let(
-              {
-                user: q.Select(['data', 'user'], q.Get(q.Var('ref'))),
-              },
-              q.If(q.IsRef(q.Var('user')), q.Equals(q.Var('user'), PassportUser()), false),
+            BiotaRule(
+              'user_field_matches_current_user',
+              q.Let(
+                {
+                  user: q.Select(['data', 'user'], q.Get(q.Var('ref'))),
+                },
+                q.If(q.IsRef(q.Var('user')), q.Equals(q.Var('user'), PassportUser()), false),
+              ),
             ),
           ),
         ),

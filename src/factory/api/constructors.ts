@@ -11,5 +11,7 @@ export * from '~/factory/constructors/privilege';
 export * from '~/factory/constructors/reference';
 export * from '~/factory/constructors/result';
 export * from '~/factory/constructors/role';
+export * from '~/factory/constructors/role_test';
+export * from '~/factory/constructors/query';
 export * from '~/factory/constructors/udfunction';
 export * from '~/factory/constructors/document';

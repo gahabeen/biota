@@ -42,6 +42,8 @@ export function MethodDispatch(options: MethodDispatchOption) {
     if (online?.name) fnCondition = ResultData(udfunction(context)(online.name).exists());
     return q.If(
       q.And(fnCondition, q.Not(ContextProp(context, 'offline'))),
+      // "online",
+      // "offline"
       online ? Online(online)(context, inputs) : null,
       Offline(offline)(context, inputs, query),
     );

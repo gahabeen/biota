@@ -43,19 +43,24 @@ import { FrameworkCurrentApi } from './types/framework/framework.current';
  * ```
  */
 export class Biota {
-  client: any; //Fauna.Client;
+  client: Fauna.Client;
   private _secret: string;
   private _context: FactoryContextDefinition;
-  // _runningAs: BiotaRunningAS;
   private documentOptions: BiotaOptionsDocument;
-
+  set alternativeIdentity(identity: FaunaRef) {
+    // #bug weid that typescript fails to recognize alternativeIdentity
+    (this._context as any).alternativeIdentity = identity;
+  }
   // tslint:disable-next-line: variable-name
   privateKey: (private_key: string) => Promise<any>;
   get context(): FactoryContextDefinition {
     return this._context;
   }
+
   query: (fqlQuery: Fauna.Expr) => any;
   paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
+
+  as: (identity: Fauna.Expr) => this;
 
   me: FrameworkCurrentApi['user']['me'];
   login: FrameworkCurrentApi['user']['login'];
@@ -99,11 +104,10 @@ export class Biota {
 
     self._secret = secret;
     self._context = {
+      alternativeIdentity: null,
       offline,
       annotateDocuments: annotate,
       logActions,
-      asRole: null,
-      asIdentity: null,
     };
 
     const { paths = {}, protectedPaths = {} } = document || {};
@@ -179,6 +183,8 @@ export class Biota {
     self.register = self.current.user.register;
     self.login = self.current.user.login;
     self.logout = self.current.user.logout;
+
+    self.as = framework.as.bind(self);
 
     // self.privateKey = framework.privateKey.bind(self);
     // self.defaults = framework.defaults;

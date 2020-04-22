@@ -1,10 +1,21 @@
 import { Expr, query as q } from 'faunadb';
 import { TS_2500_YEARS } from '~/consts';
-import { PassportUser, PassportSession } from '~/factory/constructors/identity';
+import { Passport } from '~/factory/constructors/identity';
 import * as helpers from '~/helpers';
 import { ActionRuleDefinition, BiotaActionsDefinition } from '~/types/factory/factory.constructors.privilege';
 import { FactoryRuleDefinition, FactoryRuleDefinitionPaths } from '~/types/factory/factory.rule';
 import { FaunaRef, FaunaRolePrivilegeActions } from '~/types/fauna';
+
+export function BiotaRule(name: string, rule: Expr) {
+  return q.Let(
+    {
+      $BiotaRule: true,
+      name,
+      rule,
+    },
+    q.Var('rule'),
+  );
+}
 
 export function PrivilegeRights(
   rights: FactoryRuleDefinition = {},
@@ -26,45 +37,64 @@ export function PrivilegeRights(
     if (typeof actionRule === 'boolean') {
       return actionRule;
     } else {
+      const context = {
+        $BiotaRuleContext: true,
+        passport: Passport(),
+        passportUser: q.Select('user', q.Var('passport'), null),
+        passportSession: q.Select('session', q.Var('passport'), null),
+      };
       const andRules = actionRule.and || [];
       const orRules = actionRule.or.length > 0 ? q.Or(...actionRule.or) : null;
       if (orRules) andRules.push(orRules);
       if (andRules.length > 1) {
-        return q.And(...andRules);
+        return q.Let(context, q.And(...andRules));
       } else if (andRules.length === 1) {
-        return andRules[0];
+        return q.Let(context, andRules[0]);
       } else {
         return false;
       }
     }
   }
 
-  const RefIsSelf = (ref: FaunaRef) => {
-    return q.If(q.IsRef(ref), q.Or(q.Equals(ref, PassportUser()), q.Equals(ref, PassportSession())), false);
-  };
-  const DocOfOwner = (doc: Expr) => {
-    return q.Let(
-      {
-        owner: q.Select(helpers.path('_membership.owner'), doc),
-      },
-      q.And(q.IsRef(q.Var('owner')), q.Or(q.Equals(q.Var('owner'), PassportUser()), q.Equals(q.Var('owner'), PassportSession()))),
+  const referenceIsSelf = (ref: FaunaRef) => {
+    return BiotaRule(
+      'reference_is_self',
+      q.If(q.IsRef(ref), q.Or(q.Equals(ref, q.Var('passportUser')), q.Equals(ref, q.Var('passportSession'))), false),
     );
   };
-  const DocOfAssignee = (doc: Expr) => {
-    return q.Let(
-      {
-        raw_assignees: q.Select(helpers.path('_membership.assignees'), doc, []),
-        assignees: q.If(q.IsArray(q.Var('raw_assignees')), q.Var('raw_assignees'), []),
-      },
-      q.Not(
-        q.IsEmpty(
-          q.Filter(
-            q.Var('assignees'),
-            q.Lambda(
-              'assignee',
-              q.And(
-                q.IsRef(q.Var('assignee')),
-                q.Or(q.Equals(q.Var('assignee'), PassportUser()), q.Equals(q.Var('assignee'), PassportSession())),
+  const documentOfOwner = (doc: Expr) => {
+    return BiotaRule(
+      'document_is_owner',
+      q.Let(
+        {
+          owner: q.Select(helpers.path('_membership.owner'), doc, null),
+        },
+
+        q.And(
+          q.IsRef(q.Var('owner')),
+          q.Or(q.Equals(q.Var('owner'), q.Var('passportUser')), q.Equals(q.Var('owner'), q.Var('passportSession'))),
+        ),
+      ),
+    );
+  };
+  const documentOfAssignee = (doc: Expr) => {
+    return BiotaRule(
+      'document_of_assignee',
+      q.Let(
+        {
+          raw_assignees: q.Select(helpers.path('_membership.assignees'), doc, []),
+          assignees: q.If(q.IsArray(q.Var('raw_assignees')), q.Var('raw_assignees'), []),
+        },
+        q.Not(
+          q.IsEmpty(
+            q.Filter(
+              q.Var('assignees'),
+              q.Lambda(
+                'assignee',
+                q.And(
+                  q.IsRef(q.Var('assignee')),
+                  q.Or(q.Equals(q.Var('assignee'), q.Var('passportUser')), q.Equals(q.Var('assignee'), q.Var('passportSession'))),
+                ),
               ),
             ),
           ),
@@ -72,6 +102,25 @@ export function PrivilegeRights(
       ),
     );
   };
+  const documentIsNotExpired = (doc: Expr) => {
+    return BiotaRule(
+      'document_is_not_expired',
+      q.GTE(q.Select(helpers.path('_validity.expires_at'), doc, q.ToTime(TS_2500_YEARS)), q.Now()),
+    );
+  };
+  const documentIsExpired = (doc: Expr) => {
+    return BiotaRule('document_is_expired', q.Not(documentIsNotExpired(doc)));
+  };
+  const documentIsNotDeleted = (doc: Expr) => {
+    return BiotaRule('document_is_not_deleted', q.Equals(q.Select(helpers.path('_validity.deleted'), doc, false), false));
+  };
+  const documentIsDeleted = (doc: Expr) => {
+    return BiotaRule('document_is_not_deleted', q.Not(documentIsNotDeleted(doc)));
+  };
+  const documentIsAvailable = (doc: Expr) => {
+    return BiotaRule('document_is_available', q.And(documentIsNotExpired(doc), documentIsNotDeleted(doc)));
+  };
+
   const changedPathsOnlyAt = (root: string, allowedChangedSubPaths: string[], oldDoc = q.Var('newDoc'), newDoc = q.Var('newDoc')) => {
     return q.Let(
       {
@@ -113,26 +162,14 @@ export function PrivilegeRights(
       ),
     );
   };
-  const PathHasntChanged = (path: string, oldDoc = q.Var('oldDoc'), newDoc = q.Var('newDoc')) => {
-    return q.Equals(q.Select(helpers.path(path), oldDoc, {}), q.Select(helpers.path(path), newDoc, {}));
+  const pathHasntChanged = (path: string, oldDoc = q.Var('oldDoc'), newDoc = q.Var('newDoc')) => {
+    return BiotaRule(
+      'path_hasnt_changed_at_' + path,
+      q.Equals(q.Select(helpers.path(path), oldDoc, {}), q.Select(helpers.path(path), newDoc, {})),
+    );
   };
-  const PathChangedWith = (path: string, value: any, doc = q.Var('newDoc')) => {
-    return q.Equals(q.Select(helpers.path(path), doc, {}), value);
-  };
-  const documentIsNotExpired = (doc: Expr) => {
-    return q.GTE(q.Select(helpers.path('_validity.expires_at'), doc, q.ToTime(TS_2500_YEARS)), q.Now());
-  };
-  const documentIsExpired = (doc: Expr) => {
-    return q.Not(documentIsNotExpired(doc));
-  };
-  const documentIsNotDeleted = (doc: Expr) => {
-    return q.Equals(q.Select(helpers.path('_validity.deleted'), doc, false), false);
-  };
-  const documentIsDeleted = (doc: Expr) => {
-    return q.Not(documentIsNotDeleted(doc));
-  };
-  const documentIsAvailable = (doc: Expr) => {
-    return q.And(documentIsNotExpired(doc), documentIsNotDeleted(doc));
+  const pathChangedWith = (path: string, value: any, doc = q.Var('newDoc')) => {
+    return BiotaRule('path_changed_at_' + path, q.Equals(q.Select(helpers.path(path), doc, {}), value));
   };
 
   /**
@@ -151,15 +188,15 @@ export function PrivilegeRights(
   };
 
   if (Array.isArray(definition.self.immutablePaths)) {
-    addImmutablePaths(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), definition.self.immutablePaths);
+    addImmutablePaths(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), definition.self.immutablePaths);
   }
 
   if (Array.isArray(definition.owner.immutablePaths)) {
-    addImmutablePaths(DocOfOwner(q.Var('oldDoc')), definition.owner.immutablePaths);
+    addImmutablePaths(documentOfOwner(q.Var('oldDoc')), definition.owner.immutablePaths);
   }
 
   if (Array.isArray(definition.assignee.immutablePaths)) {
-    addImmutablePaths(DocOfAssignee(q.Var('oldDoc')), definition.self.immutablePaths);
+    addImmutablePaths(documentOfAssignee(q.Var('oldDoc')), definition.self.immutablePaths);
   }
 
   /**
@@ -168,15 +205,15 @@ export function PrivilegeRights(
   const getBaseRules = [documentIsAvailable(q.Get(q.Var('ref')))];
 
   if (definition.self.get) {
-    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getBaseRules));
+    actions.read.or.push(BiotaRule('get_as_self', q.And(referenceIsSelf(q.Var('ref')), ...getBaseRules)));
   }
 
   if (definition.owner.get) {
-    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getBaseRules));
+    actions.read.or.push(BiotaRule('get_as_owner', q.And(documentOfOwner(q.Get(q.Var('ref'))), ...getBaseRules)));
   }
 
   if (definition.assignee.get) {
-    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getBaseRules));
+    actions.read.or.push(BiotaRule('get_as_assignee', q.And(documentOfAssignee(q.Get(q.Var('ref'))), ...getBaseRules)));
   }
 
   /**
@@ -185,15 +222,15 @@ export function PrivilegeRights(
   const getWhenDeletedBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
 
   if (definition.self.getWhenDeleted) {
-    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getWhenDeletedBaseRules));
+    actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getWhenDeletedBaseRules));
   }
 
   if (definition.owner.getWhenDeleted) {
-    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getWhenDeletedBaseRules));
+    actions.read.or.push(q.And(documentOfOwner(q.Get(q.Var('ref'))), ...getWhenDeletedBaseRules));
   }
 
   if (definition.assignee.getWhenDeleted) {
-    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getWhenDeletedBaseRules));
+    actions.read.or.push(q.And(documentOfAssignee(q.Get(q.Var('ref'))), ...getWhenDeletedBaseRules));
   }
 
   /**
@@ -202,15 +239,15 @@ export function PrivilegeRights(
   const getWhenExpiredBaseRules = [documentIsExpired(q.Get(q.Var('ref')))];
 
   if (definition.self.getWhenExpired) {
-    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getWhenExpiredBaseRules));
+    actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getWhenExpiredBaseRules));
   }
 
   if (definition.owner.getWhenExpired) {
-    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getWhenExpiredBaseRules));
+    actions.read.or.push(q.And(documentOfOwner(q.Get(q.Var('ref'))), ...getWhenExpiredBaseRules));
   }
 
   if (definition.assignee.getWhenExpired) {
-    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getWhenExpiredBaseRules));
+    actions.read.or.push(q.And(documentOfAssignee(q.Get(q.Var('ref'))), ...getWhenExpiredBaseRules));
   }
 
   /**
@@ -219,15 +256,15 @@ export function PrivilegeRights(
   const getHistoryBaseRules = [documentIsAvailable(q.Get(q.Var('ref')))];
 
   if (definition.self.getHistory) {
-    actions.history_read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getHistoryBaseRules));
+    actions.history_read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getHistoryBaseRules));
   }
 
   if (definition.owner.getHistory) {
-    actions.history_read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getHistoryBaseRules));
+    actions.history_read.or.push(q.And(documentOfOwner(q.Get(q.Var('ref'))), ...getHistoryBaseRules));
   }
 
   if (definition.assignee.getHistory) {
-    actions.history_read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getHistoryBaseRules));
+    actions.history_read.or.push(q.And(documentOfAssignee(q.Get(q.Var('ref'))), ...getHistoryBaseRules));
   }
 
   /**
@@ -236,15 +273,15 @@ export function PrivilegeRights(
   const getHistoryWhenDeletedBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
 
   if (definition.self.getHistoryWhenDeleted) {
-    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getHistoryWhenDeletedBaseRules));
+    actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getHistoryWhenDeletedBaseRules));
   }
 
   if (definition.owner.getHistoryWhenDeleted) {
-    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getHistoryWhenDeletedBaseRules));
+    actions.read.or.push(q.And(documentOfOwner(q.Get(q.Var('ref'))), ...getHistoryWhenDeletedBaseRules));
   }
 
   if (definition.assignee.getHistoryWhenDeleted) {
-    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getHistoryWhenDeletedBaseRules));
+    actions.read.or.push(q.And(documentOfAssignee(q.Get(q.Var('ref'))), ...getHistoryWhenDeletedBaseRules));
   }
 
   /**
@@ -253,46 +290,49 @@ export function PrivilegeRights(
   const getHistoryWhenExpiredBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
 
   if (definition.self.getHistoryWhenExpired) {
-    actions.read.or.push(q.And(RefIsSelf(q.Var('ref')), ...getHistoryWhenExpiredBaseRules));
+    actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getHistoryWhenExpiredBaseRules));
   }
 
   if (definition.owner.getHistoryWhenExpired) {
-    actions.read.or.push(q.And(DocOfOwner(q.Get(q.Var('ref'))), ...getHistoryWhenExpiredBaseRules));
+    actions.read.or.push(q.And(documentOfOwner(q.Get(q.Var('ref'))), ...getHistoryWhenExpiredBaseRules));
   }
 
   if (definition.assignee.getHistoryWhenExpired) {
-    actions.read.or.push(q.And(DocOfAssignee(q.Get(q.Var('ref'))), ...getHistoryWhenExpiredBaseRules));
+    actions.read.or.push(q.And(documentOfAssignee(q.Get(q.Var('ref'))), ...getHistoryWhenExpiredBaseRules));
   }
 
   /**
    * insert
    */
   const insertBaseRules = [
-    PathHasntChanged('_activity', {}, q.Var('doc')),
-    PathHasntChanged('_auth', {}, q.Var('doc')),
+    pathHasntChanged('_activity', {}, q.Var('doc')),
+    pathHasntChanged('_auth', {}, q.Var('doc')),
     q.And(
-      changedPathsOnlyAt('_activity', ['inserted_by', 'inserted_at'], {}, q.Var('doc')),
+      BiotaRule(
+        'path_changed_only_at__activity_inserted_by_or_at',
+        changedPathsOnlyAt('_activity', ['inserted_by', 'inserted_at'], {}, q.Var('doc')),
+      ),
       q.Or(
-        PathChangedWith('_activity.inserted_by', PassportUser(), q.Var('doc')),
-        PathChangedWith('_activity.inserted_at', q.Now(), q.Var('doc')),
+        pathChangedWith('_activity.inserted_by', q.Var('passportUser'), q.Var('doc')),
+        pathChangedWith('_activity.inserted_at', q.Now(), q.Var('doc')),
       ),
     ),
     q.And(
-      changedPathsOnlyAt('_membership', ['owner'], {}, q.Var('doc')),
-      PathChangedWith('_membership.owner', PassportUser(), q.Var('doc')),
+      BiotaRule('path_changed_only_at__membership_owner', changedPathsOnlyAt('_membership', ['owner'], {}, q.Var('doc'))),
+      pathChangedWith('_membership.owner', q.Var('passportUser'), q.Var('doc')),
     ),
   ];
 
   if (definition.self.insert) {
-    actions.create.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('doc'))), ...insertBaseRules));
+    actions.create.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('doc'))), ...insertBaseRules));
   }
 
   if (definition.owner.insert) {
-    actions.create.or.push(q.And(DocOfOwner(q.Var('doc')), ...insertBaseRules));
+    actions.create.or.push(q.And(documentOfOwner(q.Var('doc')), ...insertBaseRules));
   }
 
   if (definition.assignee.insert) {
-    actions.create.or.push(q.And(DocOfAssignee(q.Var('doc')), ...insertBaseRules));
+    actions.create.or.push(q.And(documentOfAssignee(q.Var('doc')), ...insertBaseRules));
   }
 
   /**
@@ -300,7 +340,7 @@ export function PrivilegeRights(
    */
 
   // if (definition.self.insertHistory) {
-  //   actions.history_write.and.push(RefIsSelf(q.Select('ref', q.Var('doc'), null)));
+  //   actions.history_write.and.push(referenceIsSelf(q.Select('ref', q.Var('doc'), null)));
   // }
 
   /**
@@ -309,25 +349,25 @@ export function PrivilegeRights(
 
   const updateBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
-      q.Or(PathChangedWith('_activity.updated_by', PassportUser()), PathChangedWith('_activity.updated_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
+      q.Or(pathChangedWith('_activity.updated_by', q.Var('passportUser')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
   if (definition.self.update) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateBaseRules));
   }
 
   if (definition.owner.update) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...updateBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...updateBaseRules));
   }
 
   if (definition.assignee.update) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...updateBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...updateBaseRules));
   }
 
   /**
@@ -336,25 +376,25 @@ export function PrivilegeRights(
 
   const updateWhenDeletedBaseRules = [
     documentIsDeleted(q.Var('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
-      q.Or(PathChangedWith('_activity.updated_by', PassportUser()), PathChangedWith('_activity.updated_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
+      q.Or(pathChangedWith('_activity.updated_by', q.Var('passportUser')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
   if (definition.self.updateWhenDeleted) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenDeletedBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenDeletedBaseRules));
   }
 
   if (definition.owner.updateWhenDeleted) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...updateWhenDeletedBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...updateWhenDeletedBaseRules));
   }
 
   if (definition.assignee.updateWhenDeleted) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...updateWhenDeletedBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...updateWhenDeletedBaseRules));
   }
 
   /**
@@ -363,25 +403,25 @@ export function PrivilegeRights(
 
   const updateWhenExpiredBaseRules = [
     documentIsExpired(q.Var('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['updated_by', 'updated_at']),
-      q.Or(PathChangedWith('_activity.updated_by', PassportUser()), PathChangedWith('_activity.updated_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
+      q.Or(pathChangedWith('_activity.updated_by', q.Var('passportUser')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
   if (definition.self.updateWhenExpired) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenExpiredBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenExpiredBaseRules));
   }
 
   if (definition.owner.updateWhenExpired) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...updateWhenExpiredBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...updateWhenExpiredBaseRules));
   }
 
   if (definition.assignee.updateWhenExpired) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...updateWhenExpiredBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...updateWhenExpiredBaseRules));
   }
 
   /**
@@ -390,25 +430,25 @@ export function PrivilegeRights(
 
   const replaceBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
-      q.Or(PathChangedWith('_activity.replaced_by', PassportUser()), PathChangedWith('_activity.replaced_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
+      q.Or(pathChangedWith('_activity.replaced_by', q.Var('passportUser')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
   if (definition.self.replace) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceBaseRules));
   }
 
   if (definition.owner.replace) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...replaceBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...replaceBaseRules));
   }
 
   if (definition.assignee.replace) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...replaceBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...replaceBaseRules));
   }
 
   /**
@@ -417,25 +457,25 @@ export function PrivilegeRights(
 
   const replaceWhenDeletedBaseRules = [
     documentIsDeleted(q.Var('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
-      q.Or(PathChangedWith('_activity.replaced_by', PassportUser()), PathChangedWith('_activity.replaced_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_replaced_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
+      q.Or(pathChangedWith('_activity.replaced_by', q.Var('passportUser')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
   if (definition.self.replaceWhenDeleted) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenDeletedBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenDeletedBaseRules));
   }
 
   if (definition.owner.replaceWhenDeleted) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...replaceWhenDeletedBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...replaceWhenDeletedBaseRules));
   }
 
   if (definition.assignee.replaceWhenDeleted) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...replaceWhenDeletedBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...replaceWhenDeletedBaseRules));
   }
 
   /**
@@ -444,25 +484,25 @@ export function PrivilegeRights(
 
   const replaceWhenExpiredBaseRules = [
     documentIsExpired(q.Var('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at']),
-      q.Or(PathChangedWith('_activity.replaced_by', PassportUser()), PathChangedWith('_activity.replaced_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_replaced_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
+      q.Or(pathChangedWith('_activity.replaced_by', q.Var('passportUser')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
   if (definition.self.replaceWhenExpired) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenExpiredBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenExpiredBaseRules));
   }
 
   if (definition.owner.replaceWhenExpired) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...replaceWhenExpiredBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...replaceWhenExpiredBaseRules));
   }
 
   if (definition.assignee.replaceWhenExpired) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...replaceWhenExpiredBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...replaceWhenExpiredBaseRules));
   }
 
   /**
@@ -471,28 +511,28 @@ export function PrivilegeRights(
 
   const deleteBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['deleted_by', 'deleted_at']),
-      q.Or(PathChangedWith('_activity.deleted_by', PassportUser()), PathChangedWith('_activity.deleted_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_deleted_by_or_at', changedPathsOnlyAt('_activity', ['deleted_by', 'deleted_at'])),
+      q.Or(pathChangedWith('_activity.deleted_by', q.Var('passportUser')), pathChangedWith('_activity.deleted_at', q.Now())),
     ),
     q.And(
-      changedPathsOnlyAt('_validity', ['deleted']),
-      q.Or(PathChangedWith('_validity.deleted', true), PathChangedWith('_validity.deleted', false)),
+      BiotaRule('path_changed_only_at__validity_deleted', changedPathsOnlyAt('_validity', ['deleted'])),
+      q.Or(pathChangedWith('_validity.deleted', true), pathChangedWith('_validity.deleted', false)),
     ),
   ];
 
   if (definition.self.delete) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...deleteBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...deleteBaseRules));
   }
 
   if (definition.owner.delete) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...deleteBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...deleteBaseRules));
   }
 
   if (definition.assignee.delete) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...deleteBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...deleteBaseRules));
   }
 
   /**
@@ -501,25 +541,25 @@ export function PrivilegeRights(
 
   const forgetBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
-      q.Or(PathChangedWith('_activity.forgotten_by', PassportUser()), PathChangedWith('_activity.forgotten_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_forgotten_by_or_at', changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at'])),
+      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('passportUser')), pathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
   if (definition.self.forget) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetBaseRules));
   }
 
   if (definition.owner.forget) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...forgetBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...forgetBaseRules));
   }
 
   if (definition.assignee.forget) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...forgetBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...forgetBaseRules));
   }
 
   /**
@@ -528,25 +568,25 @@ export function PrivilegeRights(
 
   const forgetWhenDeletedBaseRules = [
     documentIsDeleted(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
-      q.Or(PathChangedWith('_activity.forgotten_by', PassportUser()), PathChangedWith('_activity.forgotten_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_forgotten_by_or_at', changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at'])),
+      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('passportUser')), pathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
   if (definition.self.forgetWhenDeleted) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenDeletedBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenDeletedBaseRules));
   }
 
   if (definition.owner.forgetWhenDeleted) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...forgetWhenDeletedBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...forgetWhenDeletedBaseRules));
   }
 
   if (definition.assignee.forgetWhenDeleted) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...forgetWhenDeletedBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...forgetWhenDeletedBaseRules));
   }
 
   /**
@@ -555,25 +595,25 @@ export function PrivilegeRights(
 
   const forgetWhenExpiredBaseRules = [
     documentIsExpired(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at']),
-      q.Or(PathChangedWith('_activity.forgotten_by', PassportUser()), PathChangedWith('_activity.forgotten_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_forgotten_by_or_at', changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at'])),
+      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('passportUser')), pathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
   if (definition.self.forgetWhenExpired) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenExpiredBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenExpiredBaseRules));
   }
 
   if (definition.owner.forgetWhenExpired) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...forgetWhenExpiredBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...forgetWhenExpiredBaseRules));
   }
 
   if (definition.assignee.forgetWhenExpired) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...forgetWhenExpiredBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...forgetWhenExpiredBaseRules));
   }
 
   /**
@@ -582,25 +622,31 @@ export function PrivilegeRights(
 
   const expireBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['expiration_changed_by', 'expiration_changed_at']),
-      q.Or(PathChangedWith('_activity.expiration_changed_by', PassportUser()), PathChangedWith('_activity.expiration_changed_at', q.Now())),
+      BiotaRule(
+        'path_changed_only_at__activity_expiration_changed_by_or_at',
+        changedPathsOnlyAt('_activity', ['expiration_changed_by', 'expiration_changed_at']),
+      ),
+      q.Or(
+        pathChangedWith('_activity.expiration_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.expiration_changed_at', q.Now()),
+      ),
     ),
-    changedPathsOnlyAt('_validity', ['expires_at']),
+    BiotaRule('path_changed_only_at__validity_expires_at', changedPathsOnlyAt('_validity', ['expires_at'])),
   ];
 
   if (definition.self.expire) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...expireBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...expireBaseRules));
   }
 
   if (definition.owner.expire) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...expireBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...expireBaseRules));
   }
 
   if (definition.assignee.expire) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...expireBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...expireBaseRules));
   }
 
   /**
@@ -608,25 +654,28 @@ export function PrivilegeRights(
    */
 
   const restoreBaseRules = [
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_membership'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_membership'),
     q.And(
-      changedPathsOnlyAt('_activity', ['restored_by', 'restored_at']),
-      q.Or(PathChangedWith('_activity.restored_by', PassportUser()), PathChangedWith('_activity.restored_at', q.Now())),
+      BiotaRule(
+        'path_changed_only_at__activity_expiration_restored_by_or_at',
+        changedPathsOnlyAt('_activity', ['restored_by', 'restored_at']),
+      ),
+      q.Or(pathChangedWith('_activity.restored_by', q.Var('passportUser')), pathChangedWith('_activity.restored_at', q.Now())),
     ),
-    changedPathsOnlyAt('_validity', ['deleted', 'expires_at']),
+    BiotaRule('path_changed_only_at__validity_deleted_or_expires_at', changedPathsOnlyAt('_validity', ['deleted', 'expires_at'])),
   ];
 
   if (definition.self.restore) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...restoreBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...restoreBaseRules));
   }
 
   if (definition.owner.restore) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...restoreBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...restoreBaseRules));
   }
 
   if (definition.assignee.restore) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...restoreBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...restoreBaseRules));
   }
 
   /**
@@ -634,25 +683,25 @@ export function PrivilegeRights(
    */
 
   const rememberBaseRules = [
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_membership'),
-    PathHasntChanged('_validity'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_membership'),
+    pathHasntChanged('_validity'),
     q.And(
-      changedPathsOnlyAt('_activity', ['remembered_by', 'remembered_at']),
-      q.Or(PathChangedWith('_activity.remembered_by', PassportUser()), PathChangedWith('_activity.remembered_at', q.Now())),
+      BiotaRule('path_changed_only_at__activity_remembered_by_or_at', changedPathsOnlyAt('_activity', ['remembered_by', 'remembered_at'])),
+      q.Or(pathChangedWith('_activity.remembered_by', q.Var('passportUser')), pathChangedWith('_activity.remembered_at', q.Now())),
     ),
   ];
 
   if (definition.self.restore) {
-    actions.history_write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...rememberBaseRules));
+    actions.history_write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...rememberBaseRules));
   }
 
   if (definition.owner.restore) {
-    actions.history_write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...rememberBaseRules));
+    actions.history_write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...rememberBaseRules));
   }
 
   if (definition.assignee.restore) {
-    actions.history_write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...rememberBaseRules));
+    actions.history_write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...rememberBaseRules));
   }
 
   /**
@@ -661,47 +710,55 @@ export function PrivilegeRights(
 
   const setRemoveOwnerBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
     q.And(
-      changedPathsOnlyAt('_activity', ['owner_changed_by', 'owner_changed_at']),
-      q.Or(PathChangedWith('_activity.owner_changed_by', PassportUser()), PathChangedWith('_activity.owner_changed_at', q.Now())),
+      BiotaRule(
+        'path_changed_only_at__activity_owner_changed_by_or_at',
+        changedPathsOnlyAt('_activity', ['owner_changed_by', 'owner_changed_at']),
+      ),
+      q.Or(pathChangedWith('_activity.owner_changed_by', q.Var('passportUser')), pathChangedWith('_activity.owner_changed_at', q.Now())),
     ),
   ];
 
   const setOwnerBaseRules = [
-    q.And(changedPathsOnlyAt('_membership', ['owner']), q.IsRef(q.Select(helpers.path('_membership.owner'), q.Var('newDoc'), null))),
+    q.And(
+      BiotaRule('path_changed_only_at__membership_owner', changedPathsOnlyAt('_membership', ['owner'])),
+      BiotaRule('is_ref_at__membership.owner', q.IsRef(q.Select(helpers.path('_membership.owner'), q.Var('newDoc'), null))),
+    ),
   ];
 
   if (definition.self.setOwner) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules));
   }
 
   if (definition.owner.setOwner) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules));
   }
 
   if (definition.assignee.setOwner) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules));
   }
 
   const removeOwnerBaseRules = [
     q.And(
-      changedPathsOnlyAt('_membership', ['owner']),
-      q.IsNull(q.Select(helpers.path('_membership.owner'), q.Var('newDoc'), 'this is not null')),
+      BiotaRule('path_changed_only_at__membership_owner', changedPathsOnlyAt('_membership', ['owner'])),
+      BiotaRule('is_null_at__membership.owner', q.IsNull(q.Select(helpers.path('_membership.owner'), q.Var('newDoc'), 'this is not null'))),
     ),
   ];
 
   if (definition.self.removeOwner) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveOwnerBaseRules, ...removeOwnerBaseRules));
+    actions.write.or.push(
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveOwnerBaseRules, ...removeOwnerBaseRules),
+    );
   }
 
   if (definition.owner.removeOwner) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...removeOwnerBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...removeOwnerBaseRules));
   }
 
   if (definition.assignee.removeOwner) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...removeOwnerBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...removeOwnerBaseRules));
   }
 
   /**
@@ -710,68 +767,82 @@ export function PrivilegeRights(
 
   const setRemoveAssigneeBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
     q.And(
-      changedPathsOnlyAt('_activity', ['assignees_changed_by', 'assignees_changed_at']),
-      q.Or(PathChangedWith('_activity.assignees_changed_by', PassportUser()), PathChangedWith('_activity.assignees_changed_at', q.Now())),
+      BiotaRule(
+        'path_changed_only_at__activity_assignees_changed_by_or_at',
+        changedPathsOnlyAt('_activity', ['assignees_changed_by', 'assignees_changed_at']),
+      ),
+      q.Or(
+        pathChangedWith('_activity.assignees_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.assignees_changed_at', q.Now()),
+      ),
     ),
   ];
 
   const setAssigneeBaseRules = [
     q.And(
-      changedPathsOnlyAt('_membership', ['assignees']),
-      q.Equals(
-        q.Count(
-          q.Difference(
-            q.Select(helpers.path('_membership.assignees'), q.Var('oldDoc'), []),
-            q.Select(helpers.path('_membership.assignees'), q.Var('newDoc'), []),
+      BiotaRule('path_changed_only_at__membership_assignees', changedPathsOnlyAt('_membership', ['assignees'])),
+      BiotaRule(
+        'no_elements_removed_at__membership.assignees',
+        q.Equals(
+          q.Count(
+            q.Difference(
+              q.Select(helpers.path('_membership.assignees'), q.Var('oldDoc'), []),
+              q.Select(helpers.path('_membership.assignees'), q.Var('newDoc'), []),
+            ),
           ),
+          0,
         ),
-        0,
       ),
     ),
   ];
 
   if (definition.self.setAssignee) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAssigneeBaseRules, ...setAssigneeBaseRules));
+    actions.write.or.push(
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAssigneeBaseRules, ...setAssigneeBaseRules),
+    );
   }
 
   if (definition.owner.setAssignee) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...setAssigneeBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...setAssigneeBaseRules));
   }
 
   if (definition.assignee.setAssignee) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...setAssigneeBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...setAssigneeBaseRules));
   }
 
   const removeAssigneeBaseRules = [
     q.And(
-      changedPathsOnlyAt('_membership', ['assignees']),
-      q.Equals(
-        q.Count(
-          q.Difference(
-            q.Select(helpers.path('_membership.assignees'), q.Var('newDoc'), []),
-            q.Select(helpers.path('_membership.assignees'), q.Var('oldDoc'), []),
+      BiotaRule('path_changed_only_at__membership_assignees', changedPathsOnlyAt('_membership', ['assignees'])),
+      BiotaRule(
+        'no_elements_added_at__membership.assignees',
+        q.Equals(
+          q.Count(
+            q.Difference(
+              q.Select(helpers.path('_membership.assignees'), q.Var('newDoc'), []),
+              q.Select(helpers.path('_membership.assignees'), q.Var('oldDoc'), []),
+            ),
           ),
+          0,
         ),
-        0,
       ),
     ),
   ];
 
   if (definition.self.removeAssignee) {
     actions.write.or.push(
-      q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAssigneeBaseRules, ...removeAssigneeBaseRules),
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAssigneeBaseRules, ...removeAssigneeBaseRules),
     );
   }
 
   if (definition.owner.removeAssignee) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...removeAssigneeBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...removeAssigneeBaseRules));
   }
 
   if (definition.assignee.removeAssignee) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...removeAssigneeBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...removeAssigneeBaseRules));
   }
 
   /**
@@ -780,66 +851,77 @@ export function PrivilegeRights(
 
   const setRemoveRoleBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_auth'),
-    PathHasntChanged('_validity'),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
     q.And(
-      changedPathsOnlyAt('_activity', ['roles_changed_by', 'roles_changed_at']),
-      q.Or(PathChangedWith('_activity.roles_changed_by', PassportUser()), PathChangedWith('_activity.roles_changed_at', q.Now())),
+      BiotaRule(
+        'path_changed_only_at__activity_roles_changed_by_or_at',
+        changedPathsOnlyAt('_activity', ['roles_changed_by', 'roles_changed_at']),
+      ),
+      q.Or(pathChangedWith('_activity.roles_changed_by', q.Var('passportUser')), pathChangedWith('_activity.roles_changed_at', q.Now())),
     ),
   ];
 
   const setRoleBaseRules = [
     q.And(
-      changedPathsOnlyAt('_membership', ['roles']),
-      q.Equals(
-        q.Count(
-          q.Difference(
-            q.Select(helpers.path('_membership.roles'), q.Var('oldDoc'), []),
-            q.Select(helpers.path('_membership.roles'), q.Var('newDoc'), []),
+      BiotaRule('path_changed_only_at__membership_roles', changedPathsOnlyAt('_membership', ['roles'])),
+      BiotaRule(
+        'no_elements_removed_at__membership.roles',
+        q.Equals(
+          q.Count(
+            q.Difference(
+              q.Select(helpers.path('_membership.roles'), q.Var('oldDoc'), []),
+              q.Select(helpers.path('_membership.roles'), q.Var('newDoc'), []),
+            ),
           ),
+          0,
         ),
-        0,
       ),
     ),
   ];
 
   if (definition.self.setRole) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveRoleBaseRules, ...setRoleBaseRules));
+    actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveRoleBaseRules, ...setRoleBaseRules));
   }
 
   if (definition.owner.setRole) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...setRoleBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...setRoleBaseRules));
   }
 
   if (definition.assignee.setRole) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...setRoleBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...setRoleBaseRules));
   }
 
   const removeRoleBaseRules = [
     q.And(
-      changedPathsOnlyAt('_membership', ['roles']),
-      q.Equals(
-        q.Count(
-          q.Difference(
-            q.Select(helpers.path('_membership.roles'), q.Var('newDoc'), []),
-            q.Select(helpers.path('_membership.roles'), q.Var('oldDoc'), []),
+      BiotaRule('path_changed_only_at__membership_roles', changedPathsOnlyAt('_membership', ['roles'])),
+      BiotaRule(
+        'no_elements_added_at__membership.roles',
+        q.Equals(
+          q.Count(
+            q.Difference(
+              q.Select(helpers.path('_membership.roles'), q.Var('newDoc'), []),
+              q.Select(helpers.path('_membership.roles'), q.Var('oldDoc'), []),
+            ),
           ),
+          0,
         ),
-        0,
       ),
     ),
   ];
 
   if (definition.self.removeRole) {
-    actions.write.or.push(q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveRoleBaseRules, ...removeRoleBaseRules));
+    actions.write.or.push(
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveRoleBaseRules, ...removeRoleBaseRules),
+    );
   }
 
   if (definition.owner.removeRole) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...removeRoleBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...removeRoleBaseRules));
   }
 
   if (definition.assignee.removeRole) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...removeRoleBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...removeRoleBaseRules));
   }
 
   /**
@@ -848,48 +930,60 @@ export function PrivilegeRights(
 
   const setRemoveAuthEmailBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_membership'),
-    PathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
+    pathHasntChanged('_validity'),
     q.And(
-      changedPathsOnlyAt('_activity', ['auth_email_changed_by', 'auth_email_changed_at']),
-      q.Or(PathChangedWith('_activity.auth_email_changed_by', PassportUser()), PathChangedWith('_activity.auth_email_changed_at', q.Now())),
+      BiotaRule(
+        'path_changed_only_at__activity_email_changed_by_or_at',
+        changedPathsOnlyAt('_activity', ['auth_email_changed_by', 'auth_email_changed_at']),
+      ),
+      q.Or(
+        pathChangedWith('_activity.auth_email_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.auth_email_changed_at', q.Now()),
+      ),
     ),
   ];
 
   const setAuthEmailBaseRules = [
-    q.And(changedPathsOnlyAt('_auth', ['email']), q.IsRef(q.Select(helpers.path('_auth.email'), q.Var('newDoc'), null))),
+    q.And(
+      BiotaRule('path_changed_only_at__auth_email', changedPathsOnlyAt('_auth', ['email'])),
+      BiotaRule('is_ref_at__auth.email', q.IsRef(q.Select(helpers.path('_auth.email'), q.Var('newDoc'), null))),
+    ),
   ];
 
   if (definition.self.setAuthEmail) {
     actions.write.or.push(
-      q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthEmailBaseRules, ...setAuthEmailBaseRules),
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthEmailBaseRules, ...setAuthEmailBaseRules),
     );
   }
 
   if (definition.owner.setAuthEmail) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...setAuthEmailBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...setAuthEmailBaseRules));
   }
 
   if (definition.assignee.setAuthEmail) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...setAuthEmailBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...setAuthEmailBaseRules));
   }
 
   const removeAuthEmailBaseRules = [
-    q.And(changedPathsOnlyAt('_auth', ['email']), q.IsNull(q.Select(helpers.path('_auth.email'), q.Var('newDoc'), 'this is not null'))),
+    q.And(
+      BiotaRule('path_changed_only_at__auth_email', changedPathsOnlyAt('_auth', ['email'])),
+      BiotaRule('is_null_at__auth.email', q.IsNull(q.Select(helpers.path('_auth.email'), q.Var('newDoc'), 'this is not null'))),
+    ),
   ];
 
   if (definition.self.removeAuthEmail) {
     actions.write.or.push(
-      q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthEmailBaseRules, ...removeAuthEmailBaseRules),
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthEmailBaseRules, ...removeAuthEmailBaseRules),
     );
   }
 
   if (definition.owner.removeAuthEmail) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...removeAuthEmailBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...removeAuthEmailBaseRules));
   }
 
   if (definition.assignee.removeAuthEmail) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...removeAuthEmailBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...removeAuthEmailBaseRules));
   }
 
   /**
@@ -898,73 +992,82 @@ export function PrivilegeRights(
 
   const setRemoveAuthAccountBaseRules = [
     documentIsAvailable(q.Get('oldDoc')),
-    PathHasntChanged('_membership'),
-    PathHasntChanged('_validity'),
+    pathHasntChanged('_membership'),
+    pathHasntChanged('_validity'),
     q.And(
-      changedPathsOnlyAt('_activity', ['auth_accounts_changed_by', 'auth_accounts_changed_at']),
+      BiotaRule(
+        'path_changed_only_at__activity_auth_accounts_changed_by_or_at',
+        changedPathsOnlyAt('_activity', ['auth_accounts_changed_by', 'auth_accounts_changed_at']),
+      ),
       q.Or(
-        PathChangedWith('_activity.auth_accounts_changed_by', PassportUser()),
-        PathChangedWith('_activity.auth_accounts_changed_at', q.Now()),
+        pathChangedWith('_activity.auth_accounts_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.auth_accounts_changed_at', q.Now()),
       ),
     ),
   ];
 
   const setAuthAccountBaseRules = [
     q.And(
-      changedPathsOnlyAt('_auth', ['accounts']),
-      q.Equals(
-        q.Count(
-          q.Difference(
-            q.Select(helpers.path('_auth.accounts'), q.Var('oldDoc'), []),
-            q.Select(helpers.path('_auth.accounts'), q.Var('newDoc'), []),
+      BiotaRule('path_changed_only_at__auth_accounts', changedPathsOnlyAt('_auth', ['accounts'])),
+      BiotaRule(
+        'no_elements_removed_at__membership.roles',
+        q.Equals(
+          q.Count(
+            q.Difference(
+              q.Select(helpers.path('_auth.accounts'), q.Var('oldDoc'), []),
+              q.Select(helpers.path('_auth.accounts'), q.Var('newDoc'), []),
+            ),
           ),
+          0,
         ),
-        0,
       ),
     ),
   ];
 
   if (definition.self.setAuthEmail) {
     actions.write.or.push(
-      q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules),
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules),
     );
   }
 
   if (definition.owner.setAuthEmail) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules));
   }
 
   if (definition.assignee.setAuthEmail) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules));
   }
 
   const removeAuthAccountBaseRules = [
     q.And(
-      changedPathsOnlyAt('_auth', ['accounts']),
-      q.Equals(
-        q.Count(
-          q.Difference(
-            q.Select(helpers.path('_auth.accounts'), q.Var('newDoc'), []),
-            q.Select(helpers.path('_auth.accounts'), q.Var('oldDoc'), []),
+      BiotaRule('path_changed_only_at__auth_accounts', changedPathsOnlyAt('_auth', ['accounts'])),
+      BiotaRule(
+        'no_elements_added_at__membership.roles',
+        q.Equals(
+          q.Count(
+            q.Difference(
+              q.Select(helpers.path('_auth.accounts'), q.Var('newDoc'), []),
+              q.Select(helpers.path('_auth.accounts'), q.Var('oldDoc'), []),
+            ),
           ),
+          0,
         ),
-        0,
       ),
     ),
   ];
 
   if (definition.self.removeAuthEmail) {
     actions.write.or.push(
-      q.And(RefIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules),
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules),
     );
   }
 
   if (definition.owner.removeAuthEmail) {
-    actions.write.or.push(q.And(DocOfOwner(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules));
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules));
   }
 
   if (definition.assignee.removeAuthEmail) {
-    actions.write.or.push(q.And(DocOfAssignee(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules));
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules));
   }
 
   return Object.assign(

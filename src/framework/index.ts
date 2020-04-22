@@ -1,6 +1,7 @@
 export * from './api/paginate';
 export * from './api/query';
 
+export * from './api/as';
 export * from './api/current';
 
 export * from './api/document';
