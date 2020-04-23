@@ -12,25 +12,26 @@ import { repsert } from '~/framework/api/index/repsert';
 import { restore } from '~/framework/api/index/restore';
 import { update } from '~/framework/api/index/update';
 import { upsert } from '~/framework/api/index/upsert';
+import { inputStringLiteral } from '~/helpers/literals';
 import { FrameworkIndex } from '~/types/framework/framework.index';
 
-export const index: FrameworkIndex = function (indexName = null) {
-  const self = this;
+export const index: FrameworkIndex = function (...args) {
+  const [indexName] = inputStringLiteral(args);
 
   return {
-    activity: activity.call(self, indexName),
-    get: get.call(self, indexName),
-    insert: insert.call(self, indexName),
-    replace: replace.call(self, indexName),
-    update: update.call(self, indexName),
-    repsert: repsert.call(self, indexName),
-    upsert: upsert.call(self, indexName),
-    delete: delete_.call(self, indexName),
-    forget: forget.call(self, indexName),
-    drop: drop.call(self, indexName),
-    restore: restore.call(self, indexName),
-    expireAt: expireAt.call(self, indexName),
-    expireIn: expireIn.call(self, indexName),
-    expireNow: expireNow.call(self, indexName),
+    activity: activity.call(this, indexName),
+    get: get.call(this, indexName),
+    insert: insert.call(this, indexName),
+    replace: replace.call(this, indexName),
+    update: update.call(this, indexName),
+    repsert: repsert.call(this, indexName),
+    upsert: upsert.call(this, indexName),
+    delete: delete_.call(this, indexName),
+    forget: forget.call(this, indexName),
+    drop: drop.call(this, indexName),
+    restore: restore.call(this, indexName),
+    expireAt: expireAt.call(this, indexName),
+    expireIn: expireIn.call(this, indexName),
+    expireNow: expireNow.call(this, indexName),
   };
 };

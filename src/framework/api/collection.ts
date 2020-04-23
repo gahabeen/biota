@@ -1,31 +1,31 @@
-import { FrameworkCollectionApi } from '~/types/framework/framework.collection';
 import { activity } from '~/framework/api/collection/activity';
+import { compute } from '~/framework/api/collection/compute';
 import { delete_ } from '~/framework/api/collection/delete';
 import { drop } from '~/framework/api/collection/drop';
-import { forget } from '~/framework/api/collection/forget';
-import { get } from '~/framework/api/collection/get';
-import { insert } from '~/framework/api/collection/insert';
-import { replace } from '~/framework/api/collection/replace';
-import { repsert } from '~/framework/api/collection/repsert';
-import { restore } from '~/framework/api/collection/restore';
-import { update } from '~/framework/api/collection/update';
-import { upsert } from '~/framework/api/collection/upsert';
-import { findAll } from '~/framework/api/collection/findAll';
-import { find } from '~/framework/api/collection/find';
 import { expireAt } from '~/framework/api/collection/expireAt';
 import { expireIn } from '~/framework/api/collection/expireIn';
 import { expireNow } from '~/framework/api/collection/expireNow';
-//
-import { scaffold } from '~/framework/api/collection/scaffold';
 import { field } from '~/framework/api/collection/field';
+import { find } from '~/framework/api/collection/find';
+import { findAll } from '~/framework/api/collection/findAll';
+import { forget } from '~/framework/api/collection/forget';
+import { get } from '~/framework/api/collection/get';
 import { index } from '~/framework/api/collection/index';
-import { compute } from '~/framework/api/collection/compute';
+import { insert } from '~/framework/api/collection/insert';
 import { insertBatch } from '~/framework/api/collection/insertBatch';
 import { paginate } from '~/framework/api/collection/paginate';
 import { paginateAll } from '~/framework/api/collection/paginateAll';
+import { replace } from '~/framework/api/collection/replace';
+import { repsert } from '~/framework/api/collection/repsert';
+import { restore } from '~/framework/api/collection/restore';
+import { scaffold } from '~/framework/api/collection/scaffold';
+import { update } from '~/framework/api/collection/update';
+import { upsert } from '~/framework/api/collection/upsert';
+import { inputStringLiteral } from '~/helpers/literals';
+import { FrameworkCollection } from '~/types/framework/framework.collection';
 
-export function collection(collectionName: string = null): FrameworkCollectionApi {
-  const self = this;
+export const collection: FrameworkCollection = function (...args) {
+  const [collectionName] = inputStringLiteral(args);
 
   return {
     scaffold: scaffold.call(self, collectionName),
@@ -53,4 +53,4 @@ export function collection(collectionName: string = null): FrameworkCollectionAp
     drop: drop.call(self, collectionName),
     restore: restore.call(self, collectionName),
   };
-}
+};

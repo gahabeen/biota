@@ -41,6 +41,7 @@ export interface FactoryDocumentMembershipApi<OT = Expr> {
 
 export interface FactoryDocumentApi<OT = Expr> {
   history(pagination?: FaunaPaginateOptions): OT;
+  snapshot(at: FaunaTime): OT;
   get(): OT;
   insert(data: FaunaData): OT;
   update(data: FaunaData): OT;

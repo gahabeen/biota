@@ -1,9 +1,9 @@
 import { Expr, query as q } from 'faunadb';
-import { parseJSON } from '~/helpers/fauna/parse';
-import { FaunaRef, FaunaRoleMembership, FaunaRoleOptions, FaunaRolePrivilege, Fauna, FaunaString } from '~/types/fauna';
+import { Fauna, FaunaRef, FaunaRoleMembership, FaunaRoleOptions, FaunaRolePrivilege, FaunaString } from '~/types/fauna';
 import { ParseQuery, RunExpr } from './query';
+// import { parseJSON } from '~/helpers/fauna/parse';
 
-export async function CurrentRoles(db: Fauna.Client, session: FaunaRef) {
+export async function CurrentRoles(db: Fauna.Client, session: FaunaRef): Promise<FaunaRoleOptions[]> {
   const roles = await db.query(q.Map(q.Paginate(q.Roles(), { size: 1000 }), (x) => q.Get(x))).then((res: any) => res.data);
   const parsedRoles = roles.map(ParseRole);
   const hasRoles = [];
@@ -51,6 +51,7 @@ export function ParseRole(role: FaunaRoleOptions): FaunaRoleOptions {
   return self;
 }
 
+// #improve Move it to a function, not a "constructor"
 export function TestRoleMembership(parsedRole: FaunaRoleOptions, session: Expr = null): Expr {
   const memberships = Array.isArray(parsedRole.membership) ? parsedRole.membership : [parsedRole.membership];
   if (memberships.length === 0) {
@@ -68,7 +69,35 @@ export function TestRoleMembership(parsedRole: FaunaRoleOptions, session: Expr =
   }
 }
 
+// const equalsResources = (res1: any, res2: any) => {
+//   // const safe = (x: any) => JSON.parse(JSON.stringify(x));
+//   const safe = (x: any) => JSON.parse(JSON.stringify(parseJSON(JSON.stringify(x))));
+//   console.log(safe(res1));
+//   console.log(safe(res2));
+//   return safe(res1) === safe(res2);
+// };
+
+// const equalsRefs = (ref1: any, ref2: any) => {
+//   return (
+//     (ref1?.id === ref2?.id || ref1?.['@ref']?.id === ref2?.['@ref']?.id) &&
+//     (ref1?.collection?.id === ref2?.collection?.id || ref1?.['@ref']?.collection?.['@ref']?.id === ref2?.['@ref']?.collection?.['@ref']?.id)
+//   );
+// };
+
+// export function pickRolePrivileges(parsedRoles: FaunaRoleOptions[], resource: Expr) {
+//   const privileges = [];
+//   for (const parsedRole of parsedRoles) {
+//     for (const privilege of parsedRole.privileges as FaunaRolePrivilege[]) {
+//       if (privilege.resource?.['@ref']?.id === 'biota.actions') {
+//         console.log('privilege.resource', privilege.resource, equalsResources(privilege.resource, q.Collection('biota.actions')));
+//       }
+//     }
+//   }
+//   return;
+// }
+
 export function TestRolePrivilege(parsedRoles: FaunaRoleOptions[], resource: Expr, action: FaunaString, inputs: any[]): Expr {
+  return;
   // const privileges = parsedRole.privileges || [];
   // return q.Map(privileges, q.Lambda(['privilege'], ''));
 }
@@ -97,8 +126,8 @@ export function RuleTestQuery(
         return {
           object: {
             name: input?.let?.name,
-            rule: input?.let?.rule,
-            expr: Expr.toString(input?.let?.rule),
+            result: input?.let?.rule,
+            rule: Expr.toString(input?.let?.rule),
           },
         };
       } else if ((input?.or || input?.and) && !onlyResult) {
@@ -106,12 +135,14 @@ export function RuleTestQuery(
           return {
             object: {
               __or: reducer(input.or),
+              result: q.Any(new Expr(input.or)),
             },
           };
         } else if (input?.and) {
           return {
             object: {
               __and: reducer(input.and),
+              result: q.All(new Expr(input.and)),
             },
           };
         }

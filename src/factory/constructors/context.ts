@@ -3,6 +3,16 @@ import { FactoryContextDefinition } from '~/types/factory/factory.context';
 import { FaunaString } from '~/types/fauna';
 import * as helpers from '~/helpers';
 import { PassportUser, PassportSession } from './identity';
+import { RoleTestDefinition } from '~/types/factory/factory.constructors.role_test';
+
+export function ContextTest(context: FactoryContextDefinition = {}, test: RoleTestDefinition) {
+  return q.Let(
+    {
+      teststack: q.Select('teststack', context, []),
+    },
+    q.Merge(context, { teststack: q.If(q.IsArray(q.Var('teststack')), q.Append([test], q.Var('teststack')), [test]) }),
+  );
+}
 
 export function ContextExtend(
   context: FactoryContextDefinition = {},
@@ -14,6 +24,8 @@ export function ContextExtend(
     {
       context,
       functionName,
+      test: q.Select('test', q.Var('context'), false),
+      teststack: q.Select('teststack', q.Var('context'), []),
       offline: q.Select('offline', q.Var('context'), false),
       currentIdentity: q.Select('identity', q.Var('context'), null),
       identity: q.If(q.IsRef(q.Var('currentIdentity')), q.Var('currentIdentity'), PassportUser()),
@@ -28,6 +40,8 @@ export function ContextExtend(
     },
     // q.Merge(
     {
+      test: q.Var('test'),
+      teststack: q.Var('teststack'),
       offline: q.Var('offline'),
       identity: q.Var('identity'),
       alternativeIdentity: q.Var('alternativeIdentity'),

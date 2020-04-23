@@ -43,12 +43,43 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         const online = { name: BiotaFunctionName(`${prefix}History`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      get() {
-        const inputs = { collection, id };
+      snapshot(at = null) {
+        const inputs = { collection, id, at };
+        // ----
+        const validation = {
+          refExists: refExists(q.Var('collection'), q.Var('id')),
+          check: q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: q.Var('ref') }), true),
+        };
+        // ----
+        const common = {
+          ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
+        };
         // ----
         const query = MethodQuery(
           {
-            ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
+            ...common,
+            ...validation,
+            doc: q.Get(q.Var('ref'), q.Var('at')),
+          },
+          q.Var('doc'),
+        );
+        // ----
+        const test = { action: 'read', inputs: q.Let(common, [q.Var('ref')]) };
+        // ----
+        const offline = `factory.${prefix.toLowerCase()}.snapshot`;
+        const online = { name: BiotaFunctionName(`${prefix}Snapshot`), role: null };
+        return MethodDispatch({ context, inputs, query, test })(offline, online);
+      },
+      get() {
+        const inputs = { collection, id };
+        // ----
+        const common = {
+          ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
+        };
+        // ----
+        const query = MethodQuery(
+          {
+            ...common,
             refExists: refExists(q.Var('collection'), q.Var('id')),
             check: q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: q.Var('ref') }), true),
             doc: q.Get(q.Var('ref')),
@@ -56,7 +87,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           q.Var('doc'),
         );
         // ----
-        const test = { action: 'read', inputs: [q.Ref(q.Collection(collection), id)] };
+        const test = { action: 'read', inputs: q.Let(common, [q.Var('ref')]) };
         // ----
         const offline = `factory.${prefix.toLowerCase()}.get`;
         const online = { name: BiotaFunctionName(`${prefix}Get`), role: null };
@@ -70,11 +101,15 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           annotated: ResultData(document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('insert', q.Var('data'))),
         };
         // ----
+        const log = {
+          action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
+        };
+        // ----
         const query = MethodQuery(
           {
             ...common,
             doc: q.Create(q.Var('ref'), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
+            ...log,
           },
           q.Var('doc'),
           q.Var('action'),
@@ -96,12 +131,16 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Var('data'))),
         };
         // ----
+        const log = {
+          action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
+        };
+        // ----
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
             ...common,
             doc: q.Update(q.Ref(q.Collection(q.Var('collection')), q.Var('id')), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
+            ...log,
           },
           q.Var('doc'),
           q.Var('action'),
@@ -154,12 +193,16 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           ),
         };
         // ----
+        const log = {
+          action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
+        };
+        // ----
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
             ...common,
             doc: q.Replace(q.Ref(q.Collection(q.Var('collection')), q.Var('id')), { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
+            ...log,
           },
           q.Var('doc'),
           q.Var('action'),
@@ -234,13 +277,17 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
         };
         // ----
+        const log = {
+          action: action(q.Var('ctx'))().log('forget', q.Var('ref')),
+        };
+        // ----
         const query = MethodQuery(
           {
             ...common,
             refExists: refExists(q.Var('collection'), q.Var('id')),
             annotated: ResultData(document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('forget')),
             annotated_doc: ResultData(document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('ref')).upsert(q.Var('annotated'))),
-            action: action(q.Var('ctx'))().log('forget', q.Var('ref')),
+            ...log,
             doc: q.Delete(q.Var('ref')),
           },
           q.Var('doc'),
@@ -259,6 +306,10 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       remember() {
         const inputs = { collection, id };
         // ----
+        const log = {
+          action: action(q.Var('ctx'))().log('remember', q.Var('ref')),
+        };
+        // ----
         const query = MethodQuery(
           {
             ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
@@ -275,7 +326,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('remember', q.Select('data', q.Var('previousState'), {})),
             ),
             doc: q.Insert(q.Var('ref'), q.Now(), 'update', { data: q.Var('annotated') }),
-            action: action(q.Var('ctx'))().log('remember', q.Var('ref')),
+            ...log,
           },
           q.Var('doc'),
           q.Var('action'),

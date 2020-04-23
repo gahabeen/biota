@@ -32,50 +32,51 @@ import { authGoogleLoginUrl } from '~/framework/api/user/auth_google_loginUrl';
 import { authGoogleRegisterUrl } from '~/framework/api/user/auth_google_registerUrl';
 import { authGoogleSyncUrl } from '~/framework/api/user/auth_google_syncUrl';
 import { authGoogleAuthenticate } from '~/framework/api/user/auth_google_authenticate';
+import { inputStringLiteral } from '~/helpers/literals';
 
-export const user: FrameworkUser = function (id = null) {
-  const self = this;
+export const user: FrameworkUser = function (...args) {
+  const [id] = inputStringLiteral(args);
 
   return {
-    register: register.call(self, id),
-    registerWithAuthAccount: registerWithAuthAccount.call(self, id),
-    login: login.call(self, id),
-    loginWithAuthAccount: loginWithAuthAccount.call(self, id),
-    logout: logout.call(self, id),
-    changePassword: changePassword.call(self, id),
+    register: register.call(this, id),
+    registerWithAuthAccount: registerWithAuthAccount.call(this, id),
+    login: login.call(this, id),
+    loginWithAuthAccount: loginWithAuthAccount.call(this, id),
+    logout: logout.call(this, id),
+    changePassword: changePassword.call(this, id),
     auth: {
       google: {
-        loginUrl: authGoogleLoginUrl.call(self, id),
-        registerUrl: authGoogleRegisterUrl.call(self, id),
-        syncUrl: authGoogleSyncUrl.call(self, id),
-        authenticate: authGoogleAuthenticate.call(self, id),
+        loginUrl: authGoogleLoginUrl.call(this, id),
+        registerUrl: authGoogleRegisterUrl.call(this, id),
+        syncUrl: authGoogleSyncUrl.call(this, id),
+        authenticate: authGoogleAuthenticate.call(this, id),
       },
       account: {
-        set: authAccountSet.call(self, id),
-        remove: authAccountRemove.call(self, id),
-        distinct: authAccountDistinct.call(self, id),
-        difference: authAccountDifference.call(self, id),
+        set: authAccountSet.call(this, id),
+        remove: authAccountRemove.call(this, id),
+        distinct: authAccountDistinct.call(this, id),
+        difference: authAccountDifference.call(this, id),
       },
       email: {
-        set: authEmailSet.call(self, id),
-        remove: authEmailRemove.call(self, id),
+        set: authEmailSet.call(this, id),
+        remove: authEmailRemove.call(this, id),
       },
     },
-    activity: activity.call(self, id),
-    history: history.call(self, id),
-    get: get.call(self, id),
-    insert: insert.call(self, id),
-    replace: replace.call(self, id),
-    update: update.call(self, id),
-    repsert: repsert.call(self, id),
-    upsert: upsert.call(self, id),
-    delete: delete_.call(self, id),
-    forget: forget.call(self, id),
-    drop: drop.call(self, id),
-    restore: restore.call(self, id),
-    remember: remember.call(self, id),
-    expireAt: expireAt.call(self, id),
-    expireIn: expireIn.call(self, id),
-    expireNow: expireNow.call(self, id),
+    activity: activity.call(this, id),
+    history: history.call(this, id),
+    get: get.call(this, id),
+    insert: insert.call(this, id),
+    replace: replace.call(this, id),
+    update: update.call(this, id),
+    repsert: repsert.call(this, id),
+    upsert: upsert.call(this, id),
+    delete: delete_.call(this, id),
+    forget: forget.call(this, id),
+    drop: drop.call(this, id),
+    restore: restore.call(this, id),
+    remember: remember.call(this, id),
+    expireAt: expireAt.call(this, id),
+    expireIn: expireIn.call(this, id),
+    expireNow: expireNow.call(this, id),
   };
 };

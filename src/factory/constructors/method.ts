@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { udfunction } from '~/factory/api/udfunction';
 import { FactoryContextDefinition } from '~/types/factory/factory.context';
 import { FaunaUDFunctionOptions } from '~/types/fauna';
-import { ContextExtend, ContextProp } from '../api/constructors';
+import { ContextExtend, ContextProp, ContextTest } from '../api/constructors';
 import { Result, ResultData } from './result';
 import { CallFunction } from './udfunction';
 
@@ -25,37 +25,37 @@ export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
 }
 
 export function SafeMethodDispatch(options: MethodDispatchOption) {
-  const { context, inputs, query } = options;
+  const { context, inputs, query, test } = options;
   return (offline: string, online: FaunaUDFunctionOptions) => {
     return q.If(
       q.Not(ContextProp(context, 'offline')),
-      online ? Online(online)(context, inputs) : null,
-      Offline(offline)(context, inputs, query),
+      online ? OnlineBuilder(online)(context, inputs) : null,
+      OfflineBuilder(offline)({ context, inputs, query, test }),
     );
   };
 }
 
 export function MethodDispatch(options: MethodDispatchOption) {
-  const { context, inputs, query } = options;
+  const { context, inputs, query, test } = options;
   return (offline: string, online: FaunaUDFunctionOptions) => {
     let fnCondition: any = false;
     if (online?.name) fnCondition = ResultData(udfunction(context)(online.name).exists());
     return q.If(
       q.And(fnCondition, q.Not(ContextProp(context, 'offline'))),
-      // "online",
-      // "offline"
-      online ? Online(online)(context, inputs) : null,
-      Offline(offline)(context, inputs, query),
+      online ? OnlineBuilder(online)(context, inputs) : null,
+      OfflineBuilder(offline)({ context, inputs, query, test }),
     );
   };
 }
 
-type OnlineNext = (context: FactoryContextDefinition, inputs: object) => Expr;
-// , query: Expr
-export function Online(definition: FaunaUDFunctionOptions) {
+type OnlineBuilderNext = (context: FactoryContextDefinition, inputs: object) => Expr;
+export function OnlineBuilder(definition: FaunaUDFunctionOptions) {
   const meta = definition.data?.meta || {};
 
-  const onlineNext: OnlineNext = (context = {}, inputs = {}): Expr => {
+  const onlineNext: OnlineBuilderNext = ({
+    context = {},
+    inputs = {},
+  }: { context?: FactoryContextDefinition; inputs?: object } = {}): Expr => {
     return q.Let(
       {
         UDFunctionDefinition: definition,
@@ -68,12 +68,17 @@ export function Online(definition: FaunaUDFunctionOptions) {
   return onlineNext;
 }
 
-type OfflineNext = (context: FactoryContextDefinition, inputs: object, query: Expr) => Expr;
+type OfflineBuilderNextOptions = { context?: FactoryContextDefinition; inputs?: object; query?: Expr; test?: Expr };
+type OfflineBuilderNext = (options: OfflineBuilderNextOptions) => Expr;
 
-export function Offline(name: string) {
-  const offlineNext: OfflineNext = (context = {}, inputs = {}, query = null): Expr => {
+export function OfflineBuilder(name: string) {
+  const offlineNext: OfflineBuilderNext = ({ context = {}, inputs = {}, query = null, test = null } = {}): Expr => {
     const ctx = ContextExtend(context, name, inputs);
-    fs.writeFileSync('inputs.json', JSON.stringify(inputs));
+    // return q.If(
+    //   q.And(ContextProp(ctx, 'test'), q.Not(q.IsNull(test))),
+    //   {
+    //     context: ContextTest(ctx, test),
+    //   },
     return q.Let(
       {
         ctx,
@@ -81,6 +86,7 @@ export function Offline(name: string) {
       },
       query,
     );
+    // );
   };
   return offlineNext;
 }

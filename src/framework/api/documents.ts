@@ -1,4 +1,3 @@
-import { FrameworkDocuments } from '~/types/framework/framework.documents';
 import { activity } from '~/framework/api/documents/activity';
 import { deleteMany } from '~/framework/api/documents/deleteMany';
 import { dropMany } from '~/framework/api/documents/dropMany';
@@ -14,25 +13,27 @@ import { repsertMany } from '~/framework/api/documents/repsertMany';
 import { restoreMany } from '~/framework/api/documents/restoreMany';
 import { updateMany } from '~/framework/api/documents/updateMany';
 import { upsertMany } from '~/framework/api/documents/upsertMany';
+import { inputStringLiteral } from '~/helpers/literals';
+import { FrameworkDocuments } from '~/types/framework/framework.documents';
 
-export const documents: FrameworkDocuments = function (collectionName = null) {
-  const self = this;
+export const documents: FrameworkDocuments = function (...args) {
+  const [collectionName] = inputStringLiteral(args);
 
   return {
-    activity: activity.call(self, collectionName),
-    findAll: findAll.call(self, collectionName),
-    deleteMany: deleteMany.call(self, collectionName),
-    expireManyAt: expireManyAt.call(self, collectionName),
-    expireManyIn: expireManyIn.call(self, collectionName),
-    expireManyNow: expireManyNow.call(self, collectionName),
-    forgetMany: forgetMany.call(self, collectionName),
-    getMany: getMany.call(self, collectionName),
-    insertMany: insertMany.call(self, collectionName),
-    replaceMany: replaceMany.call(self, collectionName),
-    repsertMany: repsertMany.call(self, collectionName),
-    restoreMany: restoreMany.call(self, collectionName),
-    updateMany: updateMany.call(self, collectionName),
-    upsertMany: upsertMany.call(self, collectionName),
-    dropMany: dropMany.call(self, collectionName),
+    activity: activity.call(this, collectionName),
+    findAll: findAll.call(this, collectionName),
+    deleteMany: deleteMany.call(this, collectionName),
+    expireManyAt: expireManyAt.call(this, collectionName),
+    expireManyIn: expireManyIn.call(this, collectionName),
+    expireManyNow: expireManyNow.call(this, collectionName),
+    forgetMany: forgetMany.call(this, collectionName),
+    getMany: getMany.call(this, collectionName),
+    insertMany: insertMany.call(this, collectionName),
+    replaceMany: replaceMany.call(this, collectionName),
+    repsertMany: repsertMany.call(this, collectionName),
+    restoreMany: restoreMany.call(this, collectionName),
+    updateMany: updateMany.call(this, collectionName),
+    upsertMany: upsertMany.call(this, collectionName),
+    dropMany: dropMany.call(this, collectionName),
   };
 };
