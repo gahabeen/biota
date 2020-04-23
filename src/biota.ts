@@ -1,6 +1,6 @@
 import * as fauna from 'faunadb';
 import * as framework from '~/framework';
-import { FactoryContextDefinition } from '~/types/factory/factory.context';
+import { FactoryContextDefinition, FactoryContextInterface } from '~/types/factory/factory.context';
 import { Fauna, FaunaId, FaunaRef, FaunaString } from '~/types/fauna';
 import { FrameworkCollectionApi } from '~/types/framework/framework.collection';
 import { FrameworkCollectionsApi } from '~/types/framework/framework.collections';
@@ -8,24 +8,24 @@ import { FrameworkDatabaseApi } from '~/types/framework/framework.database';
 import { FrameworkDatabasesApi } from '~/types/framework/framework.databases';
 import { FrameworkDocumentApi } from '~/types/framework/framework.document';
 import { FrameworkDocumentsApi } from '~/types/framework/framework.documents';
+import { FrameworkKeyApi } from '~/types/framework/framework.key';
 import { FrameworkRoleApi } from '~/types/framework/framework.role';
 import { FrameworkRolesApi } from '~/types/framework/framework.roles';
 import { FrameworkUserApi } from '~/types/framework/framework.user';
+import { bindSubFunctions } from './helpers';
+import { FactorySessionApi } from './types/factory/factory.session';
+import { FactoryTokenApi } from './types/factory/factory.token';
 import { FrameworkCredentialsApi } from './types/framework/framework.credentials';
+import { FrameworkCurrentApi } from './types/framework/framework.current';
+import { FoundationOptions } from './types/framework/framework.foundation';
 import { FrameworkIndexApi } from './types/framework/framework.index';
 import { FrameworkIndexesApi } from './types/framework/framework.indexes';
 import { FrameworkKeysApi } from './types/framework/framework.keys';
+import { FrameworkSessionsApi } from './types/framework/framework.sessions';
+import { FrameworkTokensApi } from './types/framework/framework.tokens';
 import { FrameworkUDFunctionApi } from './types/framework/framework.udfunction';
 import { FrameworkUDFunctionsApi } from './types/framework/framework.udfunctions';
 import { FrameworkUsersApi } from './types/framework/framework.users';
-import { FrameworkKeyApi } from '~/types/framework/framework.key';
-import { FactorySessionApi } from './types/factory/factory.session';
-import { FrameworkSessionsApi } from './types/framework/framework.sessions';
-import { FactoryTokenApi } from './types/factory/factory.token';
-import { FrameworkTokensApi } from './types/framework/framework.tokens';
-import { bindSubFunctions } from './helpers';
-import { FrameworkFoundation, FoundationOptions } from './types/framework/framework.foundation';
-import { FrameworkCurrentApi } from './types/framework/framework.current';
 
 // interface BiotaRunningAS {
 //   role?: FaunaRef;
@@ -45,20 +45,24 @@ import { FrameworkCurrentApi } from './types/framework/framework.current';
 export class Biota {
   client: Fauna.Client;
   private _secret: string;
-  private _context: FactoryContextDefinition;
+  private _context: FactoryContextInterface;
   private documentOptions: BiotaOptionsDocument;
   set alternativeIdentity(identity: FaunaRef) {
     // #bug weid that typescript fails to recognize alternativeIdentity
-    (this._context as any).alternativeIdentity = identity;
+    this._context.alternativeIdentity = identity;
   }
-  // tslint:disable-next-line: variable-name
-  privateKey: (private_key: string) => Promise<any>;
+  set test(test: boolean) {
+    // #bug weid that typescript fails to recognize alternativeIdentity
+    this._context.test = test;
+  }
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  privateKey: (private_key: string) => Promise<unknown>;
   get context(): FactoryContextDefinition {
     return this._context;
   }
 
-  query: (fqlQuery: Fauna.Expr) => any;
-  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
+  query: (fqlQuery: Fauna.Expr) => unknown;
+  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<unknown, unknown, unknown>;
 
   as: (identity: Fauna.Expr) => this;
 
@@ -91,19 +95,18 @@ export class Biota {
   token: (idOrRefOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
   tokens: FrameworkTokensApi;
 
-  foundation: (options?: FoundationOptions) => Promise<any>;
-  dismantle: () => Promise<any>;
+  foundation: (options?: FoundationOptions) => Promise<unknown>;
+  dismantle: () => Promise<unknown>;
   // relation: FrameworkRelation;
 
-  defaults: any;
+  defaults: unknown;
 
   constructor(options: BiotaOptions) {
-    const self = this;
-    const { secret, debug, document, offline } = options || {};
+    const { secret, document, offline } = options || {};
     const { annotate = true, logActions = true } = document || {};
 
-    self._secret = secret;
-    self._context = {
+    this._secret = secret;
+    this._context = {
       alternativeIdentity: null,
       offline,
       annotateDocuments: annotate,
@@ -111,15 +114,15 @@ export class Biota {
     };
 
     const { paths = {}, protectedPaths = {} } = document || {};
-    self.documentOptions = {};
-    self.documentOptions.protectedPaths = {
+    this.documentOptions = {};
+    this.documentOptions.protectedPaths = {
       _auth: true,
       _membership: true,
       _validity: true,
       _activity: true,
       ...protectedPaths,
     };
-    self.documentOptions.paths = {
+    this.documentOptions.paths = {
       _auth: '_auth',
       '_auth.email': '_auth.email',
       '_auth.accounts': '_auth.accounts',
@@ -135,59 +138,59 @@ export class Biota {
     };
 
     try {
-      self.client = new fauna.Client({ secret });
-      // tslint:disable-next-line: no-empty
+      this.client = new fauna.Client({ secret });
+      // eslint-disable-next-line no-empty
     } catch (error) {}
 
-    self.query = framework.query.bind(self);
-    self.paginate = framework.paginate.bind(self);
+    this.query = framework.query.bind(this);
+    this.paginate = framework.paginate.bind(this);
 
-    self.current = framework.current;
-    bindSubFunctions(self, 'current');
+    this.current = framework.current;
+    bindSubFunctions(this, 'current');
 
-    self.document = framework.document.bind(self);
-    self.documents = framework.documents.bind(self);
-    self.collection = framework.collection.bind(self);
-    self.collections = framework.collections;
-    bindSubFunctions(self, 'collections');
-    self.database = framework.database.bind(self);
-    self.databases = framework.databases;
-    bindSubFunctions(self, 'databases');
-    self.role = framework.role.bind(self);
-    self.roles = framework.roles;
-    bindSubFunctions(self, 'roles');
-    self.udfunction = framework.udfunction.bind(self);
-    self.udfunctions = framework.udfunctions;
-    bindSubFunctions(self, 'udfunctions');
-    self.session = framework.session.bind(self);
-    self.sessions = framework.sessions;
-    bindSubFunctions(self, 'sessions');
-    self.index = framework.index.bind(self);
-    self.indexes = framework.indexes;
-    bindSubFunctions(self, 'indexes');
-    self.credential = framework.credential.bind(self);
-    self.credentials = framework.credentials;
-    bindSubFunctions(self, 'credentials');
-    self.key = framework.key.bind(self);
-    self.keys = framework.keys;
-    bindSubFunctions(self, 'keys');
-    self.token = framework.token.bind(self);
-    self.tokens = framework.tokens;
-    bindSubFunctions(self, 'tokens');
+    this.document = framework.document.bind(this);
+    this.documents = framework.documents.bind(this);
+    this.collection = framework.collection.bind(this);
+    this.collections = framework.collections;
+    bindSubFunctions(this, 'collections');
+    this.database = framework.database.bind(this);
+    this.databases = framework.databases;
+    bindSubFunctions(this, 'databases');
+    this.role = framework.role.bind(this);
+    this.roles = framework.roles;
+    bindSubFunctions(this, 'roles');
+    this.udfunction = framework.udfunction.bind(this);
+    this.udfunctions = framework.udfunctions;
+    bindSubFunctions(this, 'udfunctions');
+    this.session = framework.session.bind(this);
+    this.sessions = framework.sessions;
+    bindSubFunctions(this, 'sessions');
+    this.index = framework.index.bind(this);
+    this.indexes = framework.indexes;
+    bindSubFunctions(this, 'indexes');
+    this.credential = framework.credential.bind(this);
+    this.credentials = framework.credentials;
+    bindSubFunctions(this, 'credentials');
+    this.key = framework.key.bind(this);
+    this.keys = framework.keys;
+    bindSubFunctions(this, 'keys');
+    this.token = framework.token.bind(this);
+    this.tokens = framework.tokens;
+    bindSubFunctions(this, 'tokens');
 
-    self.foundation = framework.foundation.bind(self);
-    self.dismantle = framework.dismantle.bind(self);
-    // self.relation = framework.relation.bind(self);
+    this.foundation = framework.foundation.bind(this);
+    this.dismantle = framework.dismantle.bind(this);
+    // this.relation = framework.relation.bind(this);
 
-    self.me = self.current.user.me;
-    self.register = self.current.user.register;
-    self.login = self.current.user.login;
-    self.logout = self.current.user.logout;
+    this.me = this.current.user.me;
+    this.register = this.current.user.register;
+    this.login = this.current.user.login;
+    this.logout = this.current.user.logout;
 
-    self.as = framework.as.bind(self);
+    this.as = framework.as.bind(this);
 
-    // self.privateKey = framework.privateKey.bind(self);
-    // self.defaults = framework.defaults;
+    // this.privateKey = framework.privateKey.bind(this);
+    // this.defaults = framework.defaults;
   }
 }
 
