@@ -15,6 +15,7 @@
     "name": "Gabin Desserprit"
   },
   "scripts": {
+    "pkg": "pkgfiles",
     "doc": "typedoc src --mode library",
     "test": "jest",
     "testw": "jest --watch",
@@ -25,10 +26,10 @@
     "build-browser": "node bin/browserify"
   },
   "dependencies": {
-    "axios": "^0.19.2",
     "debug": "^4.1.1",
     "faunadb": "^2.11.1",
-    "nanohash": "^0.0.15"
+    "nanohash": "^0.0.15",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
@@ -36,6 +37,7 @@
     "@types/jest": "^25.1.4",
     "@types/listr": "^0.14.2",
     "@types/node": "^13.7.6",
+    "@types/node-fetch": "^2.5.6",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "aliasify": "^2.1.0",
@@ -55,6 +57,7 @@
     "nyc": "^15.0.0",
     "open": "^7.0.3",
     "pathmodify": "^0.5.0",
+    "pkgfiles": "^2.3.2",
     "prettier": "^2.0.4",
     "tinyify": "^2.5.2",
     "ts-jest": "^25.2.1",

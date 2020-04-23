@@ -1,4 +1,5 @@
-import axios from 'axios';
+/* eslint-disable @typescript-eslint/camelcase */
+import fetch from 'node-fetch';
 import * as qs from 'querystring';
 import { OAUTH2 } from '~/consts';
 import { authenticate } from '~/framework/auth/authenticate';
@@ -35,12 +36,13 @@ export const github = {
   },
   tokenInfo(options: FrameworkAuthTokenInfoOptions) {},
   async userInfo(options: FrameworkAuthUserInfoOptions) {
-    return axios
-      .get(OAUTH2.GITHUB.USER_INFO, {
-        headers: {
-          Authorization: `Bearer ${options.access_token}`,
-        },
-      })
+    return fetch(OAUTH2.GITHUB.USER_INFO, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${options.access_token}`,
+      },
+    })
+      .then((res) => res.json())
       .then(({ data }) => data);
   },
   async userId(options: FrameworkAuthGetIdOptions) {

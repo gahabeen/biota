@@ -1,18 +1,17 @@
 import { FrameworkAuthAuthenticateResponse } from '~/types/framework/framework.user';
 import * as qs from 'querystring';
-import axios from 'axios';
+import fetch from 'node-fetch';
 
 export async function authenticate(url: string, query: object): Promise<FrameworkAuthAuthenticateResponse> {
-  const queryParams = new URLSearchParams();
+  const params = new URLSearchParams();
   for (const key of Object.keys(query)) {
-    queryParams.append(key, query[key]);
+    params.append(key, query[key]);
   }
-  return axios
-    .post(url, queryParams, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    })
+  return fetch(url, {
+    method: 'POST',
+    body: params,
+  })
+    .then((res) => res.json())
     .then(({ data }) => {
       if (typeof data === 'string') {
         return qs.parse(data);

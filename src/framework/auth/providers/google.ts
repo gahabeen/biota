@@ -1,4 +1,4 @@
-import axios from 'axios';
+import fetch from 'node-fetch';
 import { OAUTH2 } from '~/consts';
 import { authenticate } from '~/framework/auth/authenticate';
 import * as qs from '~/helpers/querystring';
@@ -47,21 +47,23 @@ export const google = {
     return authenticate(url, query);
   },
   async tokenInfo(options: FrameworkAuthTokenInfoOptions) {
-    return axios
-      .get(OAUTH2.GOOGLE.TOKEN_INFO, {
-        headers: {
-          Authorization: `Bearer ${options.access_token}`,
-        },
-      })
+    return fetch(OAUTH2.GOOGLE.TOKEN_INFO, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${options.access_token}`,
+      },
+    })
+      .then((res) => res.json())
       .then(({ data }) => data);
   },
   async userInfo(options: FrameworkAuthUserInfoOptions) {
-    return axios
-      .get(OAUTH2.GOOGLE.USER_INFO, {
-        headers: {
-          Authorization: `Bearer ${options.access_token}`,
-        },
-      })
+    return fetch(OAUTH2.GOOGLE.USER_INFO, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${options.access_token}`,
+      },
+    })
+      .then((res) => res.json())
       .then(({ data }) => data);
   },
   async userId(options: FrameworkAuthGetIdOptions) {
