@@ -1,0 +1,10 @@
+.github
+bin
+browser
+dist
+docs
+examples
+node_modules
+playground
+save
+tests
