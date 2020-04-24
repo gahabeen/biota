@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import fetch from 'node-fetch';
-import * as qs from 'querystring';
+// import * as qs from 'querystring';
 import { OAUTH2 } from '~/consts';
 import { authenticate } from '~/framework/auth/authenticate';
 import {
@@ -22,7 +22,8 @@ export const github = {
       state,
     };
     if (redirect_uri) query.redirect_uri = redirect_uri;
-    return `${url}?${qs.stringify(query as any)}`;
+    return
+    // return `${url}?${qs.stringify(query as any)}`;
   },
   async authenticate(options?: FrameworkAuthAuthenticateOptions): Promise<FrameworkAuthAuthenticateResponse> {
     const { client_id, client_secret, code } = options || {};

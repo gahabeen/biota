@@ -56,13 +56,13 @@ export class Biota {
     this._context.test = test;
   }
   // eslint-disable-next-line @typescript-eslint/camelcase
-  privateKey: (private_key: string) => Promise<unknown>;
+  privateKey: (private_key: string) => Promise<any>;
   get context(): FactoryContextDefinition {
     return this._context;
   }
 
-  query: (fqlQuery: Fauna.Expr) => unknown;
-  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<unknown, unknown, unknown>;
+  query: (fqlQuery: Fauna.Expr) => any;
+  paginate: (paginateQuery: Fauna.Expr, paginateOptions?: object) => AsyncGenerator<any, any, any>;
 
   as: (identity: Fauna.Expr) => this;
 
@@ -95,11 +95,11 @@ export class Biota {
   token: (idOrRefOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
   tokens: FrameworkTokensApi;
 
-  foundation: (options?: FoundationOptions) => Promise<unknown>;
-  dismantle: () => Promise<unknown>;
+  foundation: (options?: FoundationOptions) => Promise<any>;
+  dismantle: () => Promise<any>;
   // relation: FrameworkRelation;
 
-  defaults: unknown;
+  defaults: any;
 
   constructor(options: BiotaOptions) {
     const { secret, document, offline } = options || {};

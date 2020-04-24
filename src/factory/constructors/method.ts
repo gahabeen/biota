@@ -1,9 +1,8 @@
 import { Expr, query as q } from 'faunadb';
-import * as fs from 'fs';
 import { udfunction } from '~/factory/api/udfunction';
 import { FactoryContextDefinition } from '~/types/factory/factory.context';
 import { FaunaUDFunctionOptions } from '~/types/fauna';
-import { ContextExtend, ContextProp, ContextTest } from '../api/constructors';
+import { ContextExtend, ContextProp } from '../api/constructors';
 import { Result, ResultData } from './result';
 import { CallFunction } from './udfunction';
 
@@ -22,30 +21,6 @@ export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
     q.If(q.Var('isResult'), q.Select('data', q.Var('action'), null), q.Var('action')),
   );
   return q.Let(query, Result(result, actionData));
-}
-
-export function SafeMethodDispatch(options: MethodDispatchOption) {
-  const { context, inputs, query, test } = options;
-  return (offline: string, online: FaunaUDFunctionOptions) => {
-    return q.If(
-      q.Not(ContextProp(context, 'offline')),
-      online ? OnlineBuilder(online)(context, inputs) : null,
-      OfflineBuilder(offline)({ context, inputs, query, test }),
-    );
-  };
-}
-
-export function MethodDispatch(options: MethodDispatchOption) {
-  const { context, inputs, query, test } = options;
-  return (offline: string, online: FaunaUDFunctionOptions) => {
-    let fnCondition: any = false;
-    if (online?.name) fnCondition = ResultData(udfunction(context)(online.name).exists());
-    return q.If(
-      q.And(fnCondition, q.Not(ContextProp(context, 'offline'))),
-      online ? OnlineBuilder(online)(context, inputs) : null,
-      OfflineBuilder(offline)({ context, inputs, query, test }),
-    );
-  };
 }
 
 type OnlineBuilderNext = (context: FactoryContextDefinition, inputs: object) => Expr;
@@ -89,4 +64,28 @@ export function OfflineBuilder(name: string) {
     // );
   };
   return offlineNext;
+}
+
+export function SafeMethodDispatch(options: MethodDispatchOption) {
+  const { context, inputs, query, test } = options;
+  return (offline: string, online: FaunaUDFunctionOptions) => {
+    return q.If(
+      q.Not(ContextProp(context, 'offline')),
+      online ? OnlineBuilder(online)(context, inputs) : null,
+      OfflineBuilder(offline)({ context, inputs, query, test }),
+    );
+  };
+}
+
+export function MethodDispatch(options: MethodDispatchOption) {
+  const { context, inputs, query, test } = options;
+  return (offline: string, online: FaunaUDFunctionOptions) => {
+    let fnCondition: any = false;
+    if (online?.name) fnCondition = ResultData(udfunction(context)(online.name).exists());
+    return q.If(
+      q.And(fnCondition, q.Not(ContextProp(context, 'offline'))),
+      online ? OnlineBuilder(online)(context, inputs) : null,
+      OfflineBuilder(offline)({ context, inputs, query, test }),
+    );
+  };
 }

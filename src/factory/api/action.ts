@@ -8,9 +8,7 @@ import { ThrowError } from '~/factory/constructors/error';
 import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 
-// tslint:disable-next-line: only-arrow-functions
 export const action: FactoryContext<FactoryAction> = function (context): FactoryAction {
-  // tslint:disable-next-line: only-arrow-functions
   return (id = null) => {
     return {
       ...document(context, { prefix: 'Action' })(BiotaCollectionName('actions'), id),

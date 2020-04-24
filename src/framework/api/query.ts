@@ -1,7 +1,6 @@
-import Debug from 'debug';
 import { Fauna } from '~/types/db';
 import { Biota } from '~/biota';
-const debug = Debug('biota').extend('query');
+// const debug = Debug('biota').extend('query');
 
 export async function query(this: Biota, fqlQuery: Fauna.Expr) {
   return this.client.query(fqlQuery).catch((err) => {
@@ -66,7 +65,7 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
             context,
           };
 
-          debug(JSON.stringify(newError, null, 2));
+          // debug(JSON.stringify(newError, null, 2));
           // debug(JSON.stringify(newError, null, 2));
         } else {
           newError = error;

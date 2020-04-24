@@ -4,6 +4,7 @@ import { FactoryUDFunctionApi, FactoryUDFunction } from '~/types/factory/factory
 export type FrameworkUDFunction = FactoryUDFunction<FrameworkUDFunctionApi>;
 
 export interface FrameworkUDFunctionApi {
+  exists: FactoryUDFunctionApi<Promise<any>>['exists'];
   activity: (pagination?: FaunaPaginateOptions) => Promise<any>;
   get: FactoryUDFunctionApi<Promise<any>>['get'];
   insert: FactoryUDFunctionApi<Promise<any>>['insert'];

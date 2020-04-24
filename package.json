@@ -3,10 +3,9 @@
   "version": "0.1.17",
   "description": "a simple, yet powerful, framework for faunadb",
   "homepage": "https://gahabeen.github.io/biota",
-  "main": "dist/index.js",
-  "types": "dist/types.d.ts",
+  "main": "lib/index.js",
+  "types": "types/index.d.ts",
   "license": "MIT",
-  "typings": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/gahabeen/biota.git"
@@ -17,19 +16,22 @@
   "scripts": {
     "pkg": "pkgfiles",
     "doc": "typedoc src --mode library",
+    "dev": "ttsc -w",
     "test": "jest",
     "testw": "jest --watch",
-    "build": "ttsc",
-    "buildw": "ttsc -w",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json",
-    "build-browser": "node bin/browserify"
+    "browser": "node bin/browserify",
+    "clean": "shx rm -rf _bundles lib lib-esm",
+    "webpack": "webpack",
+    "build": "npm run clean && ttsc && ttsc -m es6 --outDir lib-esm && webpack"
   },
   "dependencies": {
     "debug": "^4.1.1",
     "faunadb": "^2.11.1",
     "nanohash": "^0.0.15",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "rimraf": "^3.0.2"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
@@ -41,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "aliasify": "^2.1.0",
+    "awesome-typescript-loader": "^5.2.1",
     "browserify": "^16.5.1",
     "delay": "^4.3.0",
     "docs-ts": "^0.4.0",
@@ -59,14 +62,21 @@
     "pathmodify": "^0.5.0",
     "pkgfiles": "^2.3.2",
     "prettier": "^2.0.4",
+    "shx": "^0.3.2",
+    "terser-webpack-plugin": "^2.3.5",
     "tinyify": "^2.5.2",
     "ts-jest": "^25.2.1",
+    "ts-loader": "^7.0.1",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
     "tsify": "^4.0.1",
     "ttypescript": "^1.5.10",
     "typedoc": "^0.17.0-3",
     "typescript": "^3.8.3",
     "typescript-transform-paths": "^1.1.14",
     "uglifyify": "^5.0.2",
+    "webpack": "^4.43.0",
+    "webpack-bundle-analyzer": "^3.7.0",
+    "webpack-cli": "^3.3.11",
     "yarn-run-all": "^3.1.1"
   },
   "resolutions": {

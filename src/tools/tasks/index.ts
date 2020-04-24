@@ -1,6 +1,6 @@
 import Debug from 'debug';
 import { Task, TaskExecuteOptions } from '~/types/task';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 import { splitEvery } from '~/helpers';
 
 export async function execute(tasks: Task[], options?: TaskExecuteOptions): Promise<any | any[]> {
@@ -18,7 +18,10 @@ export async function execute(tasks: Task[], options?: TaskExecuteOptions): Prom
         new Promise((resolve, reject) =>
           task
             .task(ctx)
-            .then((res: any = {}) => {
+            .then((res: any) => {
+              res = res || {
+                res,
+              };
               if (res.errors) {
                 reject(res);
               } else {
@@ -34,16 +37,16 @@ export async function execute(tasks: Task[], options?: TaskExecuteOptions): Prom
             debugError(`${indentation} error: ${task.name}: ${error.message}`);
 
             try {
-              if (process.env.SAVE_LOG) {
-                fs.appendFileSync('./erros.txt', domain);
-                fs.appendFileSync('./erros.txt', JSON.stringify(JSON.parse(error.requestResult.responseRaw), null, 2));
-              }
+              // if (process.env.SAVE_LOG) {
+              // fs.appendFileSync('./erros.txt', domain);
+              // fs.appendFileSync('./erros.txt', JSON.stringify(JSON.parse(error.requestResult.responseRaw), null, 2));
+              // }
               debugError(JSON.stringify(JSON.parse(error.requestResult.responseRaw), null, 2));
             } catch (error) {
-              if (process.env.SAVE_LOG) {
-                fs.appendFileSync('./erros.txt', domain);
-                fs.appendFileSync('./erros.txt', JSON.stringify(error, null, 2));
-              }
+              // if (process.env.SAVE_LOG) {
+              //   fs.appendFileSync('./erros.txt', domain);
+              //   fs.appendFileSync('./erros.txt', JSON.stringify(error, null, 2));
+              // }
               debugError(JSON.stringify(error, null, 2));
             }
 

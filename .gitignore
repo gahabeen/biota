@@ -1,7 +1,9 @@
 node_modules
+lib
+lib-esm
+_bundles
+
 .env
-playground
+
 yarn-error.log
-dist
 examples
-save

@@ -1,5 +1,4 @@
 import { query as q, Expr } from 'faunadb';
-import * as qs from 'querystring';
 import { Biota } from '~/biota';
 import { indexes } from '~/factory/api/indexes';
 import { execute } from '~/tools/tasks';
@@ -90,7 +89,8 @@ export function find(this: Biota, collectionName: string) {
     return execute(
       [
         {
-          name: `Find (${qs.stringify(searchQuery).slice(0, 20)}...) in (${collectionName})`,
+          // (${qs.stringify(searchQuery).slice(0, 20)}...)
+          name: `Find (...) in (${collectionName})`,
           task() {
             const paginate = q.Paginate(parseSearchQuery(self.context, collectionName, searchQuery), paginateOptions);
             return self.query(mapper ? q.Map(paginate, mapper) : paginate);

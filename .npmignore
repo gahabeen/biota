@@ -1,11 +1,10 @@
-src
 bin
 tests
-types
+.*
+**/tsconfig.json
+**/webpack.config.js
 node_modules
-.env
-playground
-yarn-error.log
-examples
+src
 docs
-save
+examples
+yarn-error.log

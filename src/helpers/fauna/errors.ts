@@ -1,3 +1,4 @@
+// eslint-disable-file
 import * as util from 'util';
 
 export function FaunaError(name: any, message: any) {
@@ -77,7 +78,7 @@ FaunaHTTPError.raiseForStatusCode = (requestResult: { statusCode: any }) => {
       case 503:
         throw new UnavailableError(requestResult);
       default:
-        throw new FaunaHTTPError('UnknownError', requestResult as any);
+        throw new FaunaHTTPError('anyError', requestResult as any);
     }
   }
 };

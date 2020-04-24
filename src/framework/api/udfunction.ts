@@ -1,6 +1,7 @@
 import { activity } from '~/framework/api/udfunction/activity';
 import { delete_ } from '~/framework/api/udfunction/delete';
 import { drop } from '~/framework/api/udfunction/drop';
+import { exists } from '~/framework/api/udfunction/exists';
 import { expireAt } from '~/framework/api/udfunction/expireAt';
 import { expireIn } from '~/framework/api/udfunction/expireIn';
 import { expireNow } from '~/framework/api/udfunction/expireNow';
@@ -17,7 +18,6 @@ import { FrameworkUDFunction } from '~/types/framework/framework.udfunction';
 
 export const udfunction: FrameworkUDFunction = function (...args) {
   const [udfunctionName] = inputStringLiteral(args);
-
   return {
     activity: activity.call(this, udfunctionName),
     get: get.call(this, udfunctionName),
@@ -33,5 +33,6 @@ export const udfunction: FrameworkUDFunction = function (...args) {
     expireAt: expireAt.call(this, udfunctionName),
     expireIn: expireIn.call(this, udfunctionName),
     expireNow: expireNow.call(this, udfunctionName),
+    exists: exists.call(this, udfunctionName),
   };
 };

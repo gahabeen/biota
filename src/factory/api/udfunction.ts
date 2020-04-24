@@ -7,6 +7,7 @@ import { BiotaRoleName } from '../constructors/role';
 import { action } from './action';
 import { BiotaFunctionName, DocumentRef } from './constructors';
 import { document } from './document';
+import { ThrowError } from '../constructors/error';
 
 // tslint:disable-next-line: only-arrow-functions
 export const udfunction: FactoryContext<FactoryUDFunction> = function (context): FactoryUDFunction {
@@ -18,6 +19,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
         // ----
         const query = MethodQuery(
           {
+            check: q.If(q.IsString(q.Var('name')), true, ThrowError(q.Var('ctx'), "Name isn't a string", { name: q.Var('name') })),
             doc: q.Exists(q.Function(q.Var('name'))),
           },
           q.Var('doc'),

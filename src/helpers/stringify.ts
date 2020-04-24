@@ -27,13 +27,13 @@ const renderRef = (obj) => {
     const ctor = ctors[obj.collection.id];
     if (ctor !== undefined) {
       if (obj.database !== undefined) args.push(renderRef(obj.database));
-      args = (args.join(', ') as unknown) as string[];
+      args = (args.join(', ') as any) as string[];
       return `${ctor}(${args})`;
     }
   }
 
   if (obj.collection !== undefined) args = [renderRef(obj.collection)].concat(args);
-  args = (args.join(', ') as unknown) as string[];
+  args = (args.join(', ') as any) as string[];
   return `Ref(${args})`;
 };
 
