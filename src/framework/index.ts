@@ -27,6 +27,6 @@ export * from './api/tokens';
 export * from './api/credential';
 export * from './api/credentials';
 
-export * from './api/foundation';
+export * from './api/scaffold';
 export * from './api/dismantle';
 // export * from './api/relation';

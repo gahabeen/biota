@@ -10,6 +10,7 @@ import { FrameworkCollectionScaffoldOptions } from '~/types/framework/framework.
 // import { upsert } from '~/factory/api/fql/base';
 
 export function scaffold(this: Biota, collectionName: string) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return async function scaffoldMethod(collectionOptions: FaunaCollectionOptions, options: FrameworkCollectionScaffoldOptions = {}) {

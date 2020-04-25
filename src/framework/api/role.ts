@@ -26,6 +26,7 @@ import { privilegeScaffold } from './role/privilege_scaffold';
 import { privilegescaffoldMany } from './role/privilege_scaffoldMany';
 import { remember } from './role/remember';
 
+// #bug
 export const role: FrameworkRole = function (...args) {
   const [roleName] = inputStringLiteral(args);
 

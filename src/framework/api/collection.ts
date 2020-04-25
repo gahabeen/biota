@@ -1,3 +1,4 @@
+import { Biota } from '~/biota';
 import { activity } from '~/framework/api/collection/activity';
 import { compute } from '~/framework/api/collection/compute';
 import { delete_ } from '~/framework/api/collection/delete';
@@ -24,33 +25,33 @@ import { upsert } from '~/framework/api/collection/upsert';
 import { inputStringLiteral } from '~/helpers/literals';
 import { FrameworkCollection } from '~/types/framework/framework.collection';
 
-export const collection: FrameworkCollection = function (...args) {
+export const collection: FrameworkCollection = function (this: Biota, ...args) {
   const [collectionName] = inputStringLiteral(args);
 
   return {
-    scaffold: scaffold.call(self, collectionName),
-    field: field.call(self, collectionName),
-    index: index.call(self, collectionName),
-    compute: compute.call(self, collectionName),
-    insertBatch: insertBatch.call(self, collectionName),
-    paginate: paginate.call(self, collectionName),
-    paginateAll: paginateAll.call(self, collectionName),
+    scaffold: scaffold.call(this, collectionName),
+    field: field.call(this, collectionName),
+    index: index.call(this, collectionName),
+    compute: compute.call(this, collectionName),
+    insertBatch: insertBatch.call(this, collectionName),
+    paginate: paginate.call(this, collectionName),
+    paginateAll: paginateAll.call(this, collectionName),
 
-    find: find.call(self, collectionName),
-    expireAt: expireAt.call(self, collectionName),
-    expireIn: expireIn.call(self, collectionName),
-    expireNow: expireNow.call(self, collectionName),
-    findAll: findAll.call(self, collectionName),
-    activity: activity.call(self, collectionName),
-    get: get.call(self, collectionName),
-    insert: insert.call(self, collectionName),
-    replace: replace.call(self, collectionName),
-    update: update.call(self, collectionName),
-    repsert: repsert.call(self, collectionName),
-    upsert: upsert.call(self, collectionName),
-    delete: delete_.call(self, collectionName),
-    forget: forget.call(self, collectionName),
-    drop: drop.call(self, collectionName),
-    restore: restore.call(self, collectionName),
+    find: find.call(this, collectionName),
+    expireAt: expireAt.call(this, collectionName),
+    expireIn: expireIn.call(this, collectionName),
+    expireNow: expireNow.call(this, collectionName),
+    findAll: findAll.call(this, collectionName),
+    activity: activity.call(this, collectionName),
+    get: get.call(this, collectionName),
+    insert: insert.call(this, collectionName),
+    replace: replace.call(this, collectionName),
+    update: update.call(this, collectionName),
+    repsert: repsert.call(this, collectionName),
+    upsert: upsert.call(this, collectionName),
+    delete: delete_.call(this, collectionName),
+    forget: forget.call(this, collectionName),
+    drop: drop.call(this, collectionName),
+    restore: restore.call(this, collectionName),
   };
 };

@@ -17,7 +17,7 @@ import { FactorySessionApi } from './types/factory/factory.session';
 import { FactoryTokenApi } from './types/factory/factory.token';
 import { FrameworkCredentialsApi } from './types/framework/framework.credentials';
 import { FrameworkCurrentApi } from './types/framework/framework.current';
-import { FoundationOptions } from './types/framework/framework.foundation';
+import { ScaffoldOptions } from './types/framework/framework.scaffold';
 import { FrameworkIndexApi } from './types/framework/framework.index';
 import { FrameworkIndexesApi } from './types/framework/framework.indexes';
 import { FrameworkKeysApi } from './types/framework/framework.keys';
@@ -95,7 +95,7 @@ export class Biota {
   token: (idOrRefOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
   tokens: FrameworkTokensApi;
 
-  foundation: (options?: FoundationOptions) => Promise<any>;
+  scaffold: (options?: ScaffoldOptions) => Promise<any>;
   dismantle: () => Promise<any>;
   // relation: FrameworkRelation;
 
@@ -178,7 +178,7 @@ export class Biota {
     this.tokens = framework.tokens;
     bindSubFunctions(this, 'tokens');
 
-    this.foundation = framework.foundation.bind(this);
+    this.scaffold = framework.scaffold.bind(this);
     this.dismantle = framework.dismantle.bind(this);
     // this.relation = framework.relation.bind(this);
 

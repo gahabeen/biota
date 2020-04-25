@@ -1,8 +1,9 @@
 import { Biota } from '~/biota';
 import { execute } from '~/tools/tasks';
-import { FoundationOptions } from '~/types/framework/framework.foundation';
+import { ScaffoldOptions } from '~/types/framework/framework.scaffold';
 
-export async function foundation(this: Biota, options: FoundationOptions) {
+export async function scaffold(this: Biota, options: ScaffoldOptions) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
   options = { roles: true, udfunctions: false, collections: true, indexes: true, ...options };
   const tasks = [];
@@ -71,7 +72,7 @@ export async function foundation(this: Biota, options: FoundationOptions) {
   }
 
   return execute(tasks, {
-    domain: 'Biota.foundation',
+    domain: 'Biota.scaffold',
     singleResult: false,
   });
 }

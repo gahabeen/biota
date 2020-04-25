@@ -22,12 +22,12 @@ import { FrameworkUDFunction } from './framework/framework.udfunction';
 import { FrameworkUDFunctionsApi } from './framework/framework.udfunctions';
 import { FrameworkUser } from './framework/framework.user';
 import { FrameworkUsersApi } from './framework/framework.users';
-import { FrameworkFoundation } from './framework/framework.foundation';
+import { FrameworkScaffold } from './framework/framework.scaffold';
 
 export interface Framework {
   as: FrameworkAs;
   current: FrameworkCurrentApi;
-  foundation: FrameworkFoundation;
+  foundation: FrameworkScaffold;
   collection: FrameworkCollection;
   collections: FrameworkCollectionsApi;
   credential: FrameworkCredential;

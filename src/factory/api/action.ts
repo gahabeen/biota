@@ -18,7 +18,11 @@ export const action: FactoryContext<FactoryAction> = function (context): Factory
         const query = MethodQuery(
           {
             doc: q.If(
-              ContextProp(q.Var('ctx'), 'logActions'),
+              q.And(
+                ContextProp(q.Var('ctx'), 'logActions'),
+                // Make sure not to try to log an action if collection doesn't exists
+                q.Exists(q.Collection(BiotaCollectionName('actions'))),
+              ),
               q.If(
                 q.And(q.IsString(q.Var('name')), q.IsRef(q.Var('ref'))),
                 q.Create(BiotaCollectionName('actions'), {

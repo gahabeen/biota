@@ -4,6 +4,7 @@ import { role } from '~/factory/api/role';
 import { execute } from '~/tools/tasks';
 
 export const drop: FactoryRole<FrameworkRoleApi['drop']> = function (roleName) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return async () => {

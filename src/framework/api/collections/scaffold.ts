@@ -4,6 +4,7 @@ import { execute } from '~/tools/tasks';
 import { FrameworkCollectionsApi } from '~/types/framework/framework.collections';
 
 export const scaffold: FrameworkCollectionsApi['scaffold'] = async function (this: Biota) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
   const tasks = [];
 

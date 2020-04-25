@@ -1,4 +1,3 @@
-import { FaunaId } from '~/types/fauna';
 import { Biota } from '~/biota';
 import { collection } from '~/factory/api/collection';
 import { execute } from '~/tools/tasks';

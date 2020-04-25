@@ -2,6 +2,9 @@ import { Expr, query as q } from 'faunadb';
 import { Fauna, FaunaRef, FaunaRoleMembership, FaunaRoleOptions, FaunaRolePrivilege, FaunaString } from '~/types/fauna';
 import { ParseQuery, RunExpr } from './query';
 // import { parseJSON } from '~/helpers/fauna/parse';
+import * as fs from 'fs';
+
+const safe = (x: any) => JSON.parse(JSON.stringify(x));
 
 export async function CurrentRoles(db: Fauna.Client, session: FaunaRef): Promise<FaunaRoleOptions[]> {
   const roles = await db.query(q.Map(q.Paginate(q.Roles(), { size: 1000 }), (x) => q.Get(x))).then((res: any) => res.data);
@@ -62,7 +65,9 @@ export function TestRoleMembership(parsedRole: FaunaRoleOptions, session: Expr =
         if (membership.predicate) {
           return RunExpr(RuleTestQuery((membership as any).predicate, { onlyResult: true }), [session]);
         } else {
-          return q.Equals(q.Select(['collection'], session, null), membership.resource);
+          // console.log(safe(session));
+          // console.log(membership.resource);
+          return q.Equals(q.Select(['ref', 'collection'], safe(session), -2), membership.resource['@ref'].id);
         }
       }),
     );
@@ -96,10 +101,47 @@ export function TestRoleMembership(parsedRole: FaunaRoleOptions, session: Expr =
 //   return;
 // }
 
-export function TestRolePrivilege(parsedRoles: FaunaRoleOptions[], resource: Expr, action: FaunaString, inputs: any[]): Expr {
-  return;
-  // const privileges = parsedRole.privileges || [];
-  // return q.Map(privileges, q.Lambda(['privilege'], ''));
+interface TestRolePrivilegeOptions {
+  roles: FaunaRoleOptions[];
+  session: Expr;
+  resource: Expr;
+  action: string;
+  inputs: any[];
+  onlyResult: boolean;
+}
+
+export function TestRolePrivilege(options: TestRolePrivilegeOptions): Expr {
+  const { roles, resource, action, inputs, onlyResult = true, session } = options || {};
+  const safeResource = safe(resource);
+  const [collection, id] = Object.entries(safeResource)[0];
+  const privileges = roles.reduce((list, role) => {
+    for (const privilege of role.privileges as FaunaRolePrivilege[]) {
+      if (
+        (privilege as any)?.resource?.['@ref']?.id === id &&
+        (privilege as any)?.resource?.['@ref']?.collection?.['@ref']?.id === `${collection}s`
+      ) {
+        list.push(privilege);
+      }
+    }
+    return list;
+  }, []);
+
+  if (privileges.length === 0) {
+    return false;
+  } else {
+    const resultFn = (x: any) => (onlyResult ? q.Any(x) : x);
+    return resultFn(
+      privileges.map((privilege: FaunaRolePrivilege) => {
+        if (privilege.actions[action]) {
+          const query = RunExpr(RuleTestQuery(privilege.actions[action], { onlyResult, session }), inputs);
+          fs.writeFileSync('query.json', JSON.stringify(query, null, 2));
+          return query;
+        } else {
+          return false;
+        }
+      }),
+    );
+  }
 }
 
 export function RuleTestQuery(
@@ -109,7 +151,6 @@ export function RuleTestQuery(
   const jsonRule = JSON.parse(JSON.stringify(rule));
   const lambda = jsonRule?.lambda || jsonRule?.['@query']?.lambda;
   const expression = jsonRule?.expr || jsonRule?.['@query']?.expr;
-
   const reducer = (input: any) => {
     if (Array.isArray(input)) {
       return input.map(reducer);
@@ -147,7 +188,10 @@ export function RuleTestQuery(
           };
         }
       } else {
-        return input;
+        return Object.entries(input).reduce((obj, [key, value]) => {
+          obj[key] = reducer(value);
+          return obj;
+        }, {});
       }
     } else {
       return input;
