@@ -5,6 +5,7 @@ import * as helpers from '~/helpers';
 import { ActionRuleDefinition, BiotaActionsDefinition } from '~/types/factory/factory.constructors.privilege';
 import { FactoryRuleDefinition, FactoryRuleDefinitionPaths } from '~/types/factory/factory.rule';
 import { FaunaRef, FaunaRolePrivilegeActions } from '~/types/fauna';
+import { BiotaCollectionName } from './collection';
 
 export function BiotaRule(name: string, rule: Expr) {
   return q.Let(
@@ -39,9 +40,18 @@ export function PrivilegeRights(
     } else {
       const context = {
         $BiotaRuleContext: true,
-        passport: Passport(),
-        passportUser: q.Select('user', q.Var('passport'), null),
-        passportSession: q.Select('session', q.Var('passport'), null),
+        has_identity: q.HasIdentity(),
+        is_session_identity: q.If(
+          q.Var('has_identity'),
+          q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
+          false,
+        ),
+        session: q.If(q.Var('is_session_identity'), q.Identity(), null),
+        user: q.If(
+          q.Var('is_session_identity'),
+          q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null),
+          null,
+        ),
       };
       const andRules = actionRule.and || [];
       const orRules = actionRule.or.length > 0 ? q.Or(...actionRule.or) : null;
@@ -59,7 +69,7 @@ export function PrivilegeRights(
   const referenceIsSelf = (ref: FaunaRef) => {
     return BiotaRule(
       'reference_is_self',
-      q.If(q.IsRef(ref), q.Or(q.Equals(ref, q.Var('passportUser')), q.Equals(ref, q.Var('passportSession'))), false),
+      q.If(q.IsRef(ref), q.Or(q.Equals(ref, q.Var('user')), q.Equals(ref, q.Var('session'))), false),
     );
   };
   const documentOfOwner = (doc: Expr) => {
@@ -72,7 +82,7 @@ export function PrivilegeRights(
 
         q.And(
           q.IsRef(q.Var('owner')),
-          q.Or(q.Equals(q.Var('owner'), q.Var('passportUser')), q.Equals(q.Var('owner'), q.Var('passportSession'))),
+          q.Or(q.Equals(q.Var('owner'), q.Var('user')), q.Equals(q.Var('owner'), q.Var('session'))),
         ),
       ),
     );
@@ -93,7 +103,7 @@ export function PrivilegeRights(
                 'assignee',
                 q.And(
                   q.IsRef(q.Var('assignee')),
-                  q.Or(q.Equals(q.Var('assignee'), q.Var('passportUser')), q.Equals(q.Var('assignee'), q.Var('passportSession'))),
+                  q.Or(q.Equals(q.Var('assignee'), q.Var('user')), q.Equals(q.Var('assignee'), q.Var('session'))),
                 ),
               ),
             ),
@@ -313,13 +323,13 @@ export function PrivilegeRights(
         changedPathsOnlyAt('_activity', ['inserted_by', 'inserted_at'], {}, q.Var('doc')),
       ),
       q.Or(
-        pathChangedWith('_activity.inserted_by', q.Var('passportUser'), q.Var('doc')),
+        pathChangedWith('_activity.inserted_by', q.Var('user'), q.Var('doc')),
         pathChangedWith('_activity.inserted_at', q.Now(), q.Var('doc')),
       ),
     ),
     q.And(
       BiotaRule('path_changed_only_at__membership_owner', changedPathsOnlyAt('_membership', ['owner'], {}, q.Var('doc'))),
-      pathChangedWith('_membership.owner', q.Var('passportUser'), q.Var('doc')),
+      pathChangedWith('_membership.owner', q.Var('user'), q.Var('doc')),
     ),
   ];
 
@@ -354,7 +364,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
-      q.Or(pathChangedWith('_activity.updated_by', q.Var('passportUser')), pathChangedWith('_activity.updated_at', q.Now())),
+      q.Or(pathChangedWith('_activity.updated_by', q.Var('user')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
@@ -381,7 +391,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
-      q.Or(pathChangedWith('_activity.updated_by', q.Var('passportUser')), pathChangedWith('_activity.updated_at', q.Now())),
+      q.Or(pathChangedWith('_activity.updated_by', q.Var('user')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
@@ -408,7 +418,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
-      q.Or(pathChangedWith('_activity.updated_by', q.Var('passportUser')), pathChangedWith('_activity.updated_at', q.Now())),
+      q.Or(pathChangedWith('_activity.updated_by', q.Var('user')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
   ];
 
@@ -435,7 +445,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
-      q.Or(pathChangedWith('_activity.replaced_by', q.Var('passportUser')), pathChangedWith('_activity.replaced_at', q.Now())),
+      q.Or(pathChangedWith('_activity.replaced_by', q.Var('user')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
@@ -462,7 +472,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_replaced_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
-      q.Or(pathChangedWith('_activity.replaced_by', q.Var('passportUser')), pathChangedWith('_activity.replaced_at', q.Now())),
+      q.Or(pathChangedWith('_activity.replaced_by', q.Var('user')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
@@ -489,7 +499,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_replaced_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
-      q.Or(pathChangedWith('_activity.replaced_by', q.Var('passportUser')), pathChangedWith('_activity.replaced_at', q.Now())),
+      q.Or(pathChangedWith('_activity.replaced_by', q.Var('user')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
   ];
 
@@ -515,7 +525,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_deleted_by_or_at', changedPathsOnlyAt('_activity', ['deleted_by', 'deleted_at'])),
-      q.Or(pathChangedWith('_activity.deleted_by', q.Var('passportUser')), pathChangedWith('_activity.deleted_at', q.Now())),
+      q.Or(pathChangedWith('_activity.deleted_by', q.Var('user')), pathChangedWith('_activity.deleted_at', q.Now())),
     ),
     q.And(
       BiotaRule('path_changed_only_at__validity_deleted', changedPathsOnlyAt('_validity', ['deleted'])),
@@ -546,7 +556,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_forgotten_by_or_at', changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at'])),
-      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('passportUser')), pathChangedWith('_activity.forgotten_at', q.Now())),
+      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('user')), pathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
@@ -573,7 +583,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_forgotten_by_or_at', changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at'])),
-      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('passportUser')), pathChangedWith('_activity.forgotten_at', q.Now())),
+      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('user')), pathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
@@ -600,7 +610,7 @@ export function PrivilegeRights(
     pathHasntChanged('_membership'),
     q.And(
       BiotaRule('path_changed_only_at__activity_forgotten_by_or_at', changedPathsOnlyAt('_activity', ['forgotten_by', 'forgotten_at'])),
-      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('passportUser')), pathChangedWith('_activity.forgotten_at', q.Now())),
+      q.Or(pathChangedWith('_activity.forgotten_by', q.Var('user')), pathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
 
@@ -630,7 +640,7 @@ export function PrivilegeRights(
         changedPathsOnlyAt('_activity', ['expiration_changed_by', 'expiration_changed_at']),
       ),
       q.Or(
-        pathChangedWith('_activity.expiration_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.expiration_changed_by', q.Var('user')),
         pathChangedWith('_activity.expiration_changed_at', q.Now()),
       ),
     ),
@@ -661,7 +671,7 @@ export function PrivilegeRights(
         'path_changed_only_at__activity_expiration_restored_by_or_at',
         changedPathsOnlyAt('_activity', ['restored_by', 'restored_at']),
       ),
-      q.Or(pathChangedWith('_activity.restored_by', q.Var('passportUser')), pathChangedWith('_activity.restored_at', q.Now())),
+      q.Or(pathChangedWith('_activity.restored_by', q.Var('user')), pathChangedWith('_activity.restored_at', q.Now())),
     ),
     BiotaRule('path_changed_only_at__validity_deleted_or_expires_at', changedPathsOnlyAt('_validity', ['deleted', 'expires_at'])),
   ];
@@ -688,7 +698,7 @@ export function PrivilegeRights(
     pathHasntChanged('_validity'),
     q.And(
       BiotaRule('path_changed_only_at__activity_remembered_by_or_at', changedPathsOnlyAt('_activity', ['remembered_by', 'remembered_at'])),
-      q.Or(pathChangedWith('_activity.remembered_by', q.Var('passportUser')), pathChangedWith('_activity.remembered_at', q.Now())),
+      q.Or(pathChangedWith('_activity.remembered_by', q.Var('user')), pathChangedWith('_activity.remembered_at', q.Now())),
     ),
   ];
 
@@ -717,7 +727,7 @@ export function PrivilegeRights(
         'path_changed_only_at__activity_owner_changed_by_or_at',
         changedPathsOnlyAt('_activity', ['owner_changed_by', 'owner_changed_at']),
       ),
-      q.Or(pathChangedWith('_activity.owner_changed_by', q.Var('passportUser')), pathChangedWith('_activity.owner_changed_at', q.Now())),
+      q.Or(pathChangedWith('_activity.owner_changed_by', q.Var('user')), pathChangedWith('_activity.owner_changed_at', q.Now())),
     ),
   ];
 
@@ -775,7 +785,7 @@ export function PrivilegeRights(
         changedPathsOnlyAt('_activity', ['assignees_changed_by', 'assignees_changed_at']),
       ),
       q.Or(
-        pathChangedWith('_activity.assignees_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.assignees_changed_by', q.Var('user')),
         pathChangedWith('_activity.assignees_changed_at', q.Now()),
       ),
     ),
@@ -858,7 +868,7 @@ export function PrivilegeRights(
         'path_changed_only_at__activity_roles_changed_by_or_at',
         changedPathsOnlyAt('_activity', ['roles_changed_by', 'roles_changed_at']),
       ),
-      q.Or(pathChangedWith('_activity.roles_changed_by', q.Var('passportUser')), pathChangedWith('_activity.roles_changed_at', q.Now())),
+      q.Or(pathChangedWith('_activity.roles_changed_by', q.Var('user')), pathChangedWith('_activity.roles_changed_at', q.Now())),
     ),
   ];
 
@@ -938,7 +948,7 @@ export function PrivilegeRights(
         changedPathsOnlyAt('_activity', ['auth_email_changed_by', 'auth_email_changed_at']),
       ),
       q.Or(
-        pathChangedWith('_activity.auth_email_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.auth_email_changed_by', q.Var('user')),
         pathChangedWith('_activity.auth_email_changed_at', q.Now()),
       ),
     ),
@@ -1000,7 +1010,7 @@ export function PrivilegeRights(
         changedPathsOnlyAt('_activity', ['auth_accounts_changed_by', 'auth_accounts_changed_at']),
       ),
       q.Or(
-        pathChangedWith('_activity.auth_accounts_changed_by', q.Var('passportUser')),
+        pathChangedWith('_activity.auth_accounts_changed_by', q.Var('user')),
         pathChangedWith('_activity.auth_accounts_changed_at', q.Now()),
       ),
     ),

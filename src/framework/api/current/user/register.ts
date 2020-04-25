@@ -16,7 +16,7 @@ export const currentUserRegister: FrameworkUserApi['register'] = function (this:
             if (secret) {
               return new Biota({ secret });
             } else {
-              return self;
+              return res;
             }
           });
         },

@@ -1,21 +1,21 @@
-import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
-import { udfunctions } from '~/factory/api/udfunctions';
+import { FrameworkKeysApi } from '~/types/framework/framework.Keys';
+import { keys } from '~/factory/api/Keys';
 import { execute } from '~/tools/tasks';
 
-export const repsertMany: FrameworkUDFunctionsApi['repsertMany'] = async function (optionsList) {
+export const repsertMany: FrameworkKeysApi['repsertMany'] = async function (optionsList) {
   const self = this;
 
   return execute(
     [
       {
-        name: `Replace many udfunctions`,
+        name: `Replace many Keys`,
         task() {
-          return self.query(udfunctions(self.context).repsertMany(optionsList));
+          return self.query(keys(self.context).repsertMany(optionsList));
         },
       },
     ],
     {
-      domain: 'Biota.udfunctions.repsertMany',
+      domain: 'Biota.Keys.repsertMany',
     },
   );
 };

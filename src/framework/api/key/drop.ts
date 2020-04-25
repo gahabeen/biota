@@ -4,6 +4,7 @@ import { key } from '~/factory/api/key';
 import { execute } from '~/tools/tasks';
 
 export const drop: FactoryKey<FrameworkKeyApi['drop']> = function (keyName) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return async () => {

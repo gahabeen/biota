@@ -3,7 +3,7 @@ import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { BiotaFunctionName } from './udfunction';
 import { ContextProp } from './context';
 
-export function Identity(allowSession: boolean = false) {
+export function Identity(allowSession = false) {
   return q.If(
     q.HasIdentity(),
     q.If(
@@ -29,14 +29,15 @@ export function AlternativeOrIdentity(context: Expr) {
   );
 }
 
-export function Passport() {
-  return q.If(q.Exists(q.Function(BiotaFunctionName('SessionPassport'))), q.Call(BiotaFunctionName('SessionPassport'), {}, {}), {});
+export function Passport(context = {}) {
+  return q.Call(BiotaFunctionName('SessionPassport'), context, {});
+  // return q.If(q.Exists(q.Function(BiotaFunctionName('SessionPassport'))), q.Call(BiotaFunctionName('SessionPassport'), {}, {}), {});
 }
 
-export function PassportUser() {
-  return q.Select('user', Passport(), false);
+export function PassportUser(context = {}) {
+  return q.Select(['data', 'user'], Passport(context), false);
 }
 
-export function PassportSession() {
-  return q.Select('sessions', Passport(), false);
+export function PassportSession(context = {}) {
+  return q.Select(['data', 'session'], Passport(context), false);
 }

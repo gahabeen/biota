@@ -1,7 +1,7 @@
 import { Expr } from 'faunadb';
 import { FaunaId, FaunaRef, FaunaString } from '~/types/fauna';
 
-export type FactoryCredential<OT = FactoryCredentialApi> = (idOrRefOrInstance?: FaunaId | FaunaRef) => OT;
+export type FactoryCredential<OT = FactoryCredentialApi> = (idOrInstance?: FaunaId | FaunaRef) => OT;
 
 export interface FactoryCredentialApi<OT = Expr> {
   get(): OT;

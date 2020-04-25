@@ -5,14 +5,14 @@ import { Biota } from '~/biota';
 import { BiotaCollectionName } from '~/factory/constructors/collection';
 import { execute } from '~/tools/tasks';
 
-export const activity: FactoryToken<FrameworkTokenApi['activity']> = function (this: Biota, idOrRefOrInstance) {
+export const activity: FactoryToken<FrameworkTokenApi['activity']> = function (this: Biota, idOrInstance) {
   const self = this;
 
   return async (pagination = {}) => {
     return execute(
       [
         {
-          name: `Activity for [${idOrRefOrInstance}]`,
+          name: `Activity for [${idOrInstance}]`,
           async task() {
             return {}
             // return self.collection(BiotaCollectionName('actions')).find(

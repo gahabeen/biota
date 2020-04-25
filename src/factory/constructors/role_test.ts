@@ -168,6 +168,7 @@ export function RuleTestQuery(
           object: {
             name: input?.let?.name,
             result: input?.let?.rule,
+            details: reducer(input?.let?.rule),
             rule: Expr.toString(input?.let?.rule),
           },
         };

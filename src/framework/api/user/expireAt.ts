@@ -3,16 +3,16 @@ import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 
-export const expireAt: FactoryUser<FrameworkUserApi['expireAt']> = function (idOrRef) {
+export const expireAt: FactoryUser<FrameworkUserApi['expireAt']> = function (id) {
   const self = this;
 
   return async (at) => {
     return execute(
       [
         {
-          name: `Expire [${idOrRef}] at ${at}`,
+          name: `Expire [${id}] at ${at}`,
           task() {
-            return self.query(user(self.context)(idOrRef).expireAt(at));
+            return self.query(user(self.context)(id).expireAt(at));
           },
         },
       ],

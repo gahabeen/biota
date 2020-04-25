@@ -1,21 +1,21 @@
-import { FrameworkKeysApi } from '~/types/framework/framework.keys';
-import { keys } from '~/factory/api/keys';
+import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
+import { udfunctions } from '~/factory/api/UDFunctions';
 import { execute } from '~/tools/tasks';
 
-export const expireManyAt: FrameworkKeysApi['expireManyAt'] = async function (refList, at) {
+export const expireManyAt: FrameworkUDFunctionsApi['expireManyAt'] = async function (refList, at) {
   const self = this;
 
   return execute(
     [
       {
-        name: `Expire many keys at ${at}`,
+        name: `Expire many UDFunctions at ${at}`,
         task() {
-          return self.query(keys(self.context).expireManyAt(refList, at));
+          return self.query(udfunctions(self.context).expireManyAt(refList, at));
         },
       },
     ],
     {
-      domain: 'Biota.keys.expireManyAt',
+      domain: 'Biota.UDFunctions.expireManyAt',
     },
   );
 };

@@ -17,7 +17,7 @@ export async function execute(tasks: Task[], options?: TaskExecuteOptions): Prom
       const taskProm = () =>
         new Promise((resolve, reject) =>
           task
-            .task(ctx)
+            .task(ctx, debug)
             .then((res: any) => {
               res = res || {
                 res,

@@ -1,21 +1,22 @@
-import { FrameworkKeysApi } from '~/types/framework/framework.keys';
-import { keys } from '~/factory/api/keys';
+import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
+import { udfunctions } from '~/factory/api/UDFunctions';
 import { execute } from '~/tools/tasks';
 
-export const restoreMany: FrameworkKeysApi['restoreMany'] = async function (refList) {
+export const restoreMany: FrameworkUDFunctionsApi['restoreMany'] = async function (refList) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return execute(
     [
       {
-        name: `Restore many keys`,
+        name: `Restore many UDFunctions`,
         task() {
-          return self.query(keys(self.context).restoreMany(refList));
+          return self.query(udfunctions(self.context).restoreMany(refList));
         },
       },
     ],
     {
-      domain: 'Biota.keys.restoreMany',
+      domain: 'Biota.UDFunctions.restoreMany',
     },
   );
 };

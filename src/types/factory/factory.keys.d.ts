@@ -1,5 +1,5 @@
 import { Expr } from 'faunadb';
-import { FaunaKeyOptions, FaunaNumber, FaunaPaginateOptions, FaunaRef, FaunaString, FaunaTime } from '~/types/fauna';
+import { FaunaKeyOptions, FaunaPaginateOptions, FaunaRef, FaunaString } from '~/types/fauna';
 
 export interface FactoryKeysApi<OT = Expr> {
   findAll(pagination: FaunaPaginateOptions | Expr): OT;
@@ -9,11 +9,12 @@ export interface FactoryKeysApi<OT = Expr> {
   upsertMany(optionsList: FaunaKeyOptions[]): OT;
   replaceMany(optionsList: FaunaKeyOptions[]): OT;
   repsertMany(optionsList: FaunaKeyOptions[]): OT;
-  deleteMany(refList: FaunaRef[]): OT;
+  // deleteMany(refList: FaunaRef[]): OT;
+  revokeMany(refList: FaunaRef[]): OT;
   forgetMany(refList: FaunaRef[]): OT;
-  restoreMany(refList: FaunaRef[]): OT;
-  expireManyAt(refList: FaunaRef[], at: FaunaTime): OT;
-  expireManyIn(refList: FaunaRef[], delay: FaunaNumber): OT;
-  expireManyNow(refList: FaunaRef[]): OT;
   dropMany(refList: FaunaRef[]): OT;
+  // restoreMany(refList: FaunaRef[]): OT;
+  // expireManyAt(refList: FaunaRef[], at: FaunaTime): OT;
+  // expireManyIn(refList: FaunaRef[], delay: FaunaNumber): OT;
+  // expireManyNow(refList: FaunaRef[]): OT;
 }

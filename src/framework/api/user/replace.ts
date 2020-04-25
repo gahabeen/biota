@@ -3,16 +3,16 @@ import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 
-export const replace: FactoryUser<FrameworkUserApi['replace']> = function (idOrRef) {
+export const replace: FactoryUser<FrameworkUserApi['replace']> = function (id) {
   const self = this;
 
   return async function replaceMethod(options) {
     return execute(
       [
         {
-          name: `Replace (${idOrRef})`,
+          name: `Replace (${id})`,
           task() {
-            return self.query(user(self.context)(idOrRef).replace(options));
+            return self.query(user(self.context)(id).replace(options));
           },
         },
       ],

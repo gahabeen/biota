@@ -1,21 +1,21 @@
-import { FrameworkKeysApi } from '~/types/framework/framework.keys';
-import { keys } from '~/factory/api/keys';
+import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
+import { udfunctions } from '~/factory/api/UDFunctions';
 import { execute } from '~/tools/tasks';
 
-export const replaceMany: FrameworkKeysApi['replaceMany'] = async function (optionsList) {
+export const replaceMany: FrameworkUDFunctionsApi['replaceMany'] = async function (optionsList) {
   const self = this;
 
   return execute(
     [
       {
-        name: `Replace many keys`,
+        name: `Replace many UDFunctions`,
         task() {
-          return self.query(keys(self.context).replaceMany(optionsList));
+          return self.query(udfunctions(self.context).replaceMany(optionsList));
         },
       },
     ],
     {
-      domain: 'Biota.keys.replaceMany',
+      domain: 'Biota.UDFunctions.replaceMany',
     },
   );
 };

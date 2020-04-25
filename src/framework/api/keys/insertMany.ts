@@ -1,21 +1,21 @@
-import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
-import { udfunctions } from '~/factory/api/udfunctions';
+import { FrameworkKeysApi } from '~/types/framework/framework.Keys';
+import { keys } from '~/factory/api/Keys';
 import { execute } from '~/tools/tasks';
 
-export const insertMany: FrameworkUDFunctionsApi['insertMany'] = async function (optionsList) {
+export const insertMany: FrameworkKeysApi['insertMany'] = async function (optionsList) {
   const self = this;
 
   return execute(
     [
       {
-        name: `Insert many udfunctions`,
+        name: `Insert many Keys`,
         task() {
-          return self.query(udfunctions(self.context).insertMany(optionsList));
+          return self.query(keys(self.context).insertMany(optionsList));
         },
       },
     ],
     {
-      domain: 'Biota.udfunctions.insertMany',
+      domain: 'Biota.Keys.insertMany',
     },
   );
 };

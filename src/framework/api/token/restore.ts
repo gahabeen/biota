@@ -4,16 +4,16 @@ import { Biota } from '~/biota';
 import { token } from '~/factory/api/token';
 import { execute } from '~/tools/tasks';
 
-export const restore: FactoryToken<FrameworkTokenApi['restore']> = function (this: Biota, idOrRefOrInstance) {
+export const restore: FactoryToken<FrameworkTokenApi['restore']> = function (this: Biota, idOrInstance) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Restore [${idOrRefOrInstance}]`,
+          name: `Restore [${idOrInstance}]`,
           task() {
-            return self.query(token(self.context)(idOrRefOrInstance).restore());
+            return self.query(token(self.context)(idOrInstance).restore());
           },
         },
       ],

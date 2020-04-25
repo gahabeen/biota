@@ -14,23 +14,23 @@ import { restore } from '~/framework/api/token/restore';
 import { update } from '~/framework/api/token/update';
 import { upsert } from '~/framework/api/token/upsert';
 
-export const token: FrameworkToken = function (idOrRefOrInstance) {
+export const token: FrameworkToken = function (idOrInstance) {
   const self = this;
 
   return {
-    activity: activity.call(self, idOrRefOrInstance),
-    get: get.call(self, idOrRefOrInstance),
-    insert: insert.call(self, idOrRefOrInstance),
-    replace: replace.call(self, idOrRefOrInstance),
-    update: update.call(self, idOrRefOrInstance),
-    repsert: repsert.call(self, idOrRefOrInstance),
-    upsert: upsert.call(self, idOrRefOrInstance),
-    delete: delete_.call(self, idOrRefOrInstance),
-    forget: forget.call(self, idOrRefOrInstance),
-    drop: drop.call(self, idOrRefOrInstance),
-    restore: restore.call(self, idOrRefOrInstance),
-    expireAt: expireAt.call(self, idOrRefOrInstance),
-    expireIn: expireIn.call(self, idOrRefOrInstance),
-    expireNow: expireNow.call(self, idOrRefOrInstance),
+    activity: activity.call(self, idOrInstance),
+    get: get.call(self, idOrInstance),
+    insert: insert.call(self, idOrInstance),
+    replace: replace.call(self, idOrInstance),
+    update: update.call(self, idOrInstance),
+    repsert: repsert.call(self, idOrInstance),
+    upsert: upsert.call(self, idOrInstance),
+    delete: delete_.call(self, idOrInstance),
+    forget: forget.call(self, idOrInstance),
+    drop: drop.call(self, idOrInstance),
+    restore: restore.call(self, idOrInstance),
+    expireAt: expireAt.call(self, idOrInstance),
+    expireIn: expireIn.call(self, idOrInstance),
+    expireNow: expireNow.call(self, idOrInstance),
   };
 };

@@ -1,21 +1,22 @@
-import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
-import { udfunctions } from '~/factory/api/udfunctions';
+import { FrameworkKeysApi } from '~/types/framework/framework.Keys';
+import { keys } from '~/factory/api/Keys';
 import { execute } from '~/tools/tasks';
 
-export const dropMany: FrameworkUDFunctionsApi['dropMany'] = async function (refList) {
+export const dropMany: FrameworkKeysApi['dropMany'] = async function (refList) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return execute(
     [
       {
-        name: `Drop many udfunctions`,
+        name: `Drop many Keys`,
         task() {
-          return self.query(udfunctions(self.context).dropMany(refList));
+          return self.query(keys(self.context).dropMany(refList));
         },
       },
     ],
     {
-      domain: 'Biota.udfunctions.dropMany',
+      domain: 'Biota.Keys.dropMany',
     },
   );
 };

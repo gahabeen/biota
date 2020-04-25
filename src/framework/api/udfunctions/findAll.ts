@@ -1,21 +1,21 @@
-import { FrameworkKeysApi } from '~/types/framework/framework.keys';
-import { keys } from '~/factory/api/keys';
+import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
+import { udfunctions } from '~/factory/api/UDFunctions';
 import { execute } from '~/tools/tasks';
 
-export const findAll: FrameworkKeysApi['findAll'] = async function (pagination = {}) {
+export const findAll: FrameworkUDFunctionsApi['findAll'] = async function (pagination = {}) {
   const self = this;
 
   return execute(
     [
       {
-        name: `Find all keys`,
+        name: `Find all UDFunctions`,
         task() {
-          return self.query(keys(self.context).findAll(pagination));
+          return self.query(udfunctions(self.context).findAll(pagination));
         },
       },
     ],
     {
-      domain: 'Biota.keys.findAll',
+      domain: 'Biota.UDFunctions.findAll',
     },
   );
 };

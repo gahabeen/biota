@@ -16,6 +16,8 @@ export interface FrameworkUserApi {
   changePassword: FactoryUserApi<Promise<any>>['changePassword'];
   auth: FrameworkUserAuthApi;
 
+  membership: FactoryUserApi<Promise<any>>['membership'];
+
   activity(pagination?: FaunaPaginateOptions): Promise<any>;
   history: FactoryUserApi<Promise<any>>['history'];
   get: FactoryUserApi<Promise<any>>['get'];

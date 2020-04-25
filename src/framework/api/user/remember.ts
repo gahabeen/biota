@@ -4,16 +4,16 @@ import { Biota } from '~/biota';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 
-export const remember: FactoryUser<FrameworkUserApi['remember']> = function (this: Biota, idOrRef) {
+export const remember: FactoryUser<FrameworkUserApi['remember']> = function (this: Biota, id) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Remember [${idOrRef}]`,
+          name: `Remember [${id}]`,
           task() {
-            return self.query(user(self.context)(idOrRef).remember());
+            return self.query(user(self.context)(id).remember());
           },
         },
       ],

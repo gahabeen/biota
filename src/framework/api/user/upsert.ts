@@ -3,16 +3,16 @@ import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 
-export const upsert: FactoryUser<FrameworkUserApi['upsert']> = function (idOrRef) {
+export const upsert: FactoryUser<FrameworkUserApi['upsert']> = function (id) {
   const self = this;
 
   return async function upsertMethod(data) {
     return execute(
       [
         {
-          name: `Update/Insert (${idOrRef})`,
+          name: `Update/Insert (${id})`,
           task() {
-            return self.query(user(self.context)(idOrRef).upsert(data));
+            return self.query(user(self.context)(id).upsert(data));
           },
         },
       ],

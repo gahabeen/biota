@@ -1,4 +1,6 @@
+import { query as q } from 'faunadb';
 import { Biota } from '~/biota';
+import { BiotaRoleName } from '~/factory/api/constructors';
 import { execute } from '~/tools/tasks';
 import { ScaffoldOptions } from '~/types/framework/framework.scaffold';
 
@@ -67,6 +69,22 @@ export async function scaffold(this: Biota, options: ScaffoldOptions) {
       name: `Scaffolding roles`,
       task() {
         return self.roles.scaffold().then((res) => ({ roles: res }));
+      },
+    });
+  }
+
+  /**
+   *  Create public key
+   */
+
+  if (options.roles) {
+    tasks.push({
+      name: `Create public key`,
+      task(_: any, debug: any) {
+        return self.key``.insert({ role: q.Role(BiotaRoleName('public')) }).then((res) => {
+          debug(`Public key: ${res?.data?.secret}`);
+          return res;
+        });
       },
     });
   }

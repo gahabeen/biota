@@ -1,4 +1,5 @@
 import { FrameworkUser } from '~/types/framework/framework.user';
+import { membership } from '~/framework/api/user/membership';
 import { activity } from '~/framework/api/user/activity';
 import { delete_ } from '~/framework/api/user/delete';
 import { drop } from '~/framework/api/user/drop';
@@ -27,7 +28,6 @@ import { authAccountDistinct } from '~/framework/api/user/auth_account_distinct'
 import { authAccountDifference } from '~/framework/api/user/auth_account_difference';
 import { authEmailSet } from '~/framework/api/user/auth_email_set';
 import { authEmailRemove } from '~/framework/api/user/auth_email_remove';
-
 import { authGoogleLoginUrl } from '~/framework/api/user/auth_google_loginUrl';
 import { authGoogleRegisterUrl } from '~/framework/api/user/auth_google_registerUrl';
 import { authGoogleSyncUrl } from '~/framework/api/user/auth_google_syncUrl';
@@ -78,5 +78,6 @@ export const user: FrameworkUser = function (...args) {
     expireAt: expireAt.call(this, id),
     expireIn: expireIn.call(this, id),
     expireNow: expireNow.call(this, id),
+    membership: membership.call(this, id),
   };
 };

@@ -5,16 +5,16 @@ import { execute } from '~/tools/tasks';
 import { FactoryToken } from '~/types/factory/factory.token';
 import { FrameworkTokenApi } from '~/types/framework/framework.token';
 
-export const forget: FactoryToken<FrameworkTokenApi['forget']> = function (this: Biota, idOrRefOrInstance) {
+export const forget: FactoryToken<FrameworkTokenApi['forget']> = function (this: Biota, idOrInstance) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Forget [${idOrRefOrInstance}]`,
+          name: `Forget [${idOrInstance}]`,
           task() {
-            return self.query(token(self.context)(idOrRefOrInstance).forget());
+            return self.query(token(self.context)(idOrInstance).forget());
           },
         },
       ],

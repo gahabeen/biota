@@ -113,7 +113,7 @@ export interface FaunaCredentials {
 export interface FaunaKeyOptions {
   name?: string;
   database?: FaunaRef;
-  role?: string;
+  role?: FaunaRef;
   data?: FreeObject;
 }
 

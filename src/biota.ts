@@ -73,7 +73,7 @@ export class Biota {
   current: FrameworkCurrentApi;
 
   user: (id?: FaunaId) => FrameworkUserApi;
-  users: (collectionName?: string) => FrameworkUsersApi;
+  users: FrameworkUsersApi;
   document: (collectionName?: FaunaString | FaunaRef, id?: FaunaString) => FrameworkDocumentApi;
   documents: (collectionName?: FaunaString | FaunaRef) => FrameworkDocumentsApi;
   collection: (name?: FaunaString) => FrameworkCollectionApi;
@@ -86,13 +86,13 @@ export class Biota {
   indexes: FrameworkIndexesApi;
   udfunction: (name: string) => FrameworkUDFunctionApi;
   udfunctions: FrameworkUDFunctionsApi;
-  credential: (idOrRefOrInstance?: FaunaId | FaunaRef) => FrameworkCredentialsApi;
+  credential: (idOrInstance?: FaunaId | FaunaRef) => FrameworkCredentialsApi;
   credentials: FrameworkCredentialsApi;
   key: (idOrRef: FaunaId | FaunaRef) => FrameworkKeyApi;
   keys: FrameworkKeysApi;
   session: (idOrRef: FaunaId | FaunaRef) => FactorySessionApi;
   sessions: FrameworkSessionsApi;
-  token: (idOrRefOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
+  token: (idOrInstance?: FaunaId | FaunaRef) => FactoryTokenApi;
   tokens: FrameworkTokensApi;
 
   scaffold: (options?: ScaffoldOptions) => Promise<any>;
@@ -177,6 +177,9 @@ export class Biota {
     this.token = framework.token.bind(this);
     this.tokens = framework.tokens;
     bindSubFunctions(this, 'tokens');
+    this.user = framework.user.bind(this);
+    this.users = framework.users;
+    bindSubFunctions(this, 'users');
 
     this.scaffold = framework.scaffold.bind(this);
     this.dismantle = framework.dismantle.bind(this);

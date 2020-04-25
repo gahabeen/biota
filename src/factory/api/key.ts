@@ -11,15 +11,15 @@ import { ResultData, ResultAction } from '~/factory/constructors/result';
 // tslint:disable-next-line: only-arrow-functions
 export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
   // tslint:disable-next-line: only-arrow-functions
-  return (idOrRef) => {
-    const ref = q.If(q.IsKey(idOrRef), idOrRef, q.Ref(q.Keys(), idOrRef));
+  return (id = null) => {
+    //q.Ref(q.Keys(), q.Var('id'))
     return {
       get() {
-        const inputs = { ref };
+        const inputs = { id };
         // ----
         const query = MethodQuery(
           {
-            doc: q.Get(q.Var('ref')),
+            doc: q.Get(q.Ref(q.Keys(), q.Var('id'))),
           },
           q.Var('doc'),
         );
@@ -46,12 +46,12 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(options) {
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Select('data', q.Var('options'), {}))),
-            doc: q.Update(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Update(q.Ref(q.Keys(), q.Var('id')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
@@ -63,14 +63,14 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       upsert(options) {
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = MethodQuery(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              key(q.Var('ctx'))(q.Var('ref')).update(q.Var('options')),
-              key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options')),
+              q.Exists(q.Ref(q.Keys(), q.Var('id'))),
+              key(q.Var('ctx'))(q.Var('id')).update(q.Var('options')),
+              key(q.Var('ctx'))(q.Var('id')).insert(q.Var('options')),
             ),
           },
           ResultData(q.Var('doc')),
@@ -82,11 +82,11 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(options) {
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = MethodQuery(
           {
-            current_doc: ResultData(key(q.Var('ctx'))(q.Var('ref')).get()),
+            current_doc: ResultData(key(q.Var('ctx'))(q.Var('id')).get()),
             annotated: ResultData(
               document(q.Var('ctx'))().annotate(
                 'replace',
@@ -98,7 +98,7 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
                 }),
               ),
             ),
-            doc: q.Replace(q.Var('ref'), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
+            doc: q.Replace(q.Ref(q.Keys(), q.Var('id')), q.Merge(q.Var('options'), { data: q.Var('annotated') })),
             action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
           },
           q.Var('doc'),
@@ -110,14 +110,14 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(options) {
-        const inputs = { ref, options };
+        const inputs = { id, options };
         // ---
         const query = MethodQuery(
           {
             doc: q.If(
-              q.Exists(q.Var('ref')),
-              key(q.Var('ctx'))(q.Var('ref')).replace(q.Var('options')),
-              key(q.Var('ctx'))(q.Var('ref')).insert(q.Var('options')),
+              q.Exists(q.Ref(q.Keys(), q.Var('id'))),
+              key(q.Var('ctx'))(q.Var('id')).replace(q.Var('options')),
+              key(q.Var('ctx'))(q.Var('id')).insert(q.Var('options')),
             ),
           },
           ResultData(q.Var('doc')),
@@ -128,29 +128,29 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         const online = { name: BiotaFunctionName('KeyRepsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      delete() {
-        const inputs = { ref };
-        // ---
-        const query = MethodQuery(
-          {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.delete()),
-          },
-          q.Var('doc'),
-        );
-        // ---
-        const offline = 'factory.key.delete';
-        const online = { name: BiotaFunctionName('KeyDelete'), role: null };
-        return MethodDispatch({ context, inputs, query })(offline, online);
-      },
+      // delete() {
+      //   const inputs = { id };
+      //   // ---
+      //   const query = MethodQuery(
+      //     {
+      //       doc: ResultData(document(q.Var('ctx'))(q.Ref(q.Keys(), q.Var('id'))).validity.delete()),
+      //     },
+      //     q.Var('doc'),
+      //   );
+      //   // ---
+      //   const offline = 'factory.key.delete';
+      //   const online = { name: BiotaFunctionName('KeyDelete'), role: null };
+      //   return MethodDispatch({ context, inputs, query })(offline, online);
+      // },
       forget() {
-        const inputs = { ref };
+        const inputs = { id };
         // ---
         const query = MethodQuery(
           {
             annotated: ResultData(document(q.Var('ctx'))().annotate('forget')),
-            annotated_doc: ResultData(key(q.Var('ctx'))(q.Var('ref')).upsert(q.Var('annotated'))),
+            annotated_doc: ResultData(key(q.Var('ctx'))(q.Var('id')).upsert(q.Var('annotated'))),
             action: action(q.Var('ctx'))().log('forget', DocumentRef(q.Var('annotated_doc'))),
-            doc: q.Delete(q.Var('ref')),
+            doc: q.Delete(q.Ref(q.Keys(), q.Var('id'))),
           },
           q.Var('doc'),
           q.Var('action'),
@@ -160,12 +160,27 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         const online = { name: BiotaFunctionName('KeyForget'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
-      drop() {
-        const inputs = { ref };
+      revoke() {
+        const inputs = { id };
         // ---
         const query = MethodQuery(
           {
-            doc: q.If(q.Exists(q.Var('ref')), key(q.Var('ctx'))(q.Var('ref')).forget(), {}),
+            doc: key(q.Var('ctx'))(q.Var('id')).forget(),
+          },
+          ResultData(q.Var('doc')),
+          ResultAction(q.Var('doc')),
+        );
+        // ---
+        const offline = 'factory.key.revoke';
+        const online = { name: BiotaFunctionName('KeyRevoke'), role: null };
+        return MethodDispatch({ context, inputs, query })(offline, online);
+      },
+      drop() {
+        const inputs = { id };
+        // ---
+        const query = MethodQuery(
+          {
+            doc: q.If(q.Exists(q.Ref(q.Keys(), q.Var('id'))), key(q.Var('ctx'))(q.Var('id')).forget(), {}),
           },
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
@@ -173,68 +188,6 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
         // ---
         const offline = 'factory.key.drop';
         const online = { name: BiotaFunctionName('KeyClean'), role: null };
-        return MethodDispatch({ context, inputs, query })(offline, online);
-      },
-      expireAt(at) {
-        // alias
-        const inputs = { ref, at };
-        // ----
-        const query = MethodQuery(
-          {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Var('at'))),
-          },
-          q.Var('doc'),
-        );
-        // ----
-        const offline = 'factory.key.expireAt';
-        const online = { name: BiotaFunctionName('KeyExpireAt'), role: null };
-        return MethodDispatch({ context, inputs, query })(offline, online);
-      },
-      expireIn(delay) {
-        // alias
-        const inputs = { ref, delay };
-        // ----
-        const query = MethodQuery(
-          {
-            doc: ResultData(
-              document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.TimeAdd(q.Now(), q.ToNumber(q.Var('delay')), 'milliseconds')),
-            ),
-          },
-          q.Var('doc'),
-        );
-        // ----
-        const offline = 'factory.key.expireIn';
-        const online = { name: BiotaFunctionName('KeyExpireIn'), role: null };
-        return MethodDispatch({ context, inputs, query })(offline, online);
-      },
-      expireNow() {
-        // alias
-        const inputs = { ref };
-        // ----
-        const query = MethodQuery(
-          {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.expire(q.Now())),
-          },
-          q.Var('doc'),
-        );
-        // ----
-        const offline = 'factory.key.expireNow';
-        const online = { name: BiotaFunctionName('KeyExpireNow'), role: null };
-        return MethodDispatch({ context, inputs, query })(offline, online);
-      },
-      restore() {
-        // alias
-        const inputs = { ref };
-        // ----
-        const query = MethodQuery(
-          {
-            doc: ResultData(document(q.Var('ctx'))(q.Var('ref')).validity.restore()),
-          },
-          q.Var('doc'),
-        );
-        // ----
-        const offline = 'factory.collection.restore';
-        const online = { name: BiotaFunctionName('KeyRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
     };

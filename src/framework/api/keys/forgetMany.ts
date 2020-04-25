@@ -1,21 +1,21 @@
-import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions';
-import { udfunctions } from '~/factory/api/udfunctions';
+import { FrameworkKeysApi } from '~/types/framework/framework.Keys';
+import { keys } from '~/factory/api/Keys';
 import { execute } from '~/tools/tasks';
 
-export const forgetMany: FrameworkUDFunctionsApi['forgetMany'] = async function (refList) {
+export const forgetMany: FrameworkKeysApi['forgetMany'] = async function (refList) {
   const self = this;
 
   return execute(
     [
       {
-        name: `Forget many udfunctions`,
+        name: `Forget many Keys`,
         task() {
-          return self.query(udfunctions(self.context).forgetMany(refList));
+          return self.query(keys(self.context).forgetMany(refList));
         },
       },
     ],
     {
-      domain: 'Biota.udfunctions.forgetMany',
+      domain: 'Biota.Keys.forgetMany',
     },
   );
 };

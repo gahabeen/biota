@@ -3,16 +3,16 @@ import { FrameworkCredentialApi } from '~/types/framework/framework.credential';
 import { credential } from '~/factory/api/credential';
 import { execute } from '~/tools/tasks';
 
-export const drop: FactoryCredential<FrameworkCredentialApi['drop']> = function (idOrRefOrInstance) {
+export const drop: FactoryCredential<FrameworkCredentialApi['drop']> = function (idOrInstance) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Drop (${idOrRefOrInstance})`,
+          name: `Drop (${idOrInstance})`,
           task() {
-            return self.query(credential(self.context)(idOrRefOrInstance).drop());
+            return self.query(credential(self.context)(idOrInstance).drop());
           },
         },
       ],

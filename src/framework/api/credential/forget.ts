@@ -3,16 +3,16 @@ import { FrameworkCredentialApi } from '~/types/framework/framework.credential';
 import { credential } from '~/factory/api/credential';
 import { execute } from '~/tools/tasks';
 
-export const forget: FactoryCredential<FrameworkCredentialApi['forget']> = function (idOrRefOrInstance) {
+export const forget: FactoryCredential<FrameworkCredentialApi['forget']> = function (idOrInstance) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Forget (${idOrRefOrInstance})`,
+          name: `Forget (${idOrInstance})`,
           task() {
-            return self.query(credential(self.context)(idOrRefOrInstance).forget());
+            return self.query(credential(self.context)(idOrInstance).forget());
           },
         },
       ],

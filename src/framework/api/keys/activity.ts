@@ -8,7 +8,7 @@ export async function activity(this: Biota, pagination: FaunaPaginateOptions = {
   return execute(
     [
       {
-        name: `Activity of udfunctions`,
+        name: `Activity of Keys`,
         async task() {
           return {};
           // return self.database(BiotaCollectionName('actions')).find(
@@ -23,7 +23,7 @@ export async function activity(this: Biota, pagination: FaunaPaginateOptions = {
       },
     ],
     {
-      domain: 'Biota.udfunctions.activity',
+      domain: 'Biota.Keys.activity',
     },
   );
 }

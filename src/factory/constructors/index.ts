@@ -74,7 +74,7 @@ export function ToReverse(index: FaunaIndexOptions): FaunaIndexOptions {
   };
 }
 
-export function NGramOnField(depth: number = 10, field: string[]): Fauna.Expr {
+export function NGramOnField(depth = 10, field: string[]): Fauna.Expr {
   return q.Union(
     q.Map(
       new Array(depth).fill(null).map((_, i) => i + 1),
@@ -83,7 +83,7 @@ export function NGramOnField(depth: number = 10, field: string[]): Fauna.Expr {
   );
 }
 
-export function SearchIndex(collection: string, depth: number = 10, fields: string[][]): Fauna.Expr {
+export function SearchIndex(collection: string, depth = 10, fields: string[][]): Fauna.Expr {
   return Index({
     name: `${collection}__search_on__${fields.map((field) => field.join('_')).join('_and_')}`,
     source: {

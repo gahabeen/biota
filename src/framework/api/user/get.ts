@@ -3,16 +3,16 @@ import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 
-export const get: FactoryUser<FrameworkUserApi['get']> = function (idOrRef) {
+export const get: FactoryUser<FrameworkUserApi['get']> = function (id) {
   const self = this;
 
   return async function getMethod() {
     return execute(
       [
         {
-          name: `Get (${idOrRef})`,
+          name: `Get (${id})`,
           task() {
-            return self.query(user(self.context)(idOrRef).get());
+            return self.query(user(self.context)(id).get());
           },
         },
       ],

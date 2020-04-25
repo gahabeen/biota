@@ -4,16 +4,16 @@ import { Biota } from '~/biota';
 import { token } from '~/factory/api/token';
 import { execute } from '~/tools/tasks';
 
-export const replace: FactoryToken<FrameworkTokenApi['replace']> = function (this: Biota, idOrRefOrInstance) {
+export const replace: FactoryToken<FrameworkTokenApi['replace']> = function (this: Biota, idOrInstance) {
   const self = this;
 
   return async (data: object) => {
     return execute(
       [
         {
-          name: `Replace [${idOrRefOrInstance}]`,
+          name: `Replace [${idOrInstance}]`,
           task() {
-            return self.query(token(self.context)(idOrRefOrInstance).replace(data));
+            return self.query(token(self.context)(idOrInstance).replace(data));
           },
         },
       ],

@@ -1,5 +1,5 @@
-import { FaunaPaginateOptions, FaunaPaginateMapper, FaunaString, FaunaDatabaseOptions, FaunaTime, FaunaNumber } from '~/types/fauna';
 import { Expr } from 'faunadb';
+import { FaunaPaginateOptions } from '~/types/fauna';
 import { FactoryKeysApi } from '../factory/factory.keys';
 
 export interface FrameworkKeysApi {
@@ -11,11 +11,12 @@ export interface FrameworkKeysApi {
   upsertMany: FactoryKeysApi<Promise<any>>['upsertMany'];
   replaceMany: FactoryKeysApi<Promise<any>>['replaceMany'];
   repsertMany: FactoryKeysApi<Promise<any>>['repsertMany'];
-  deleteMany: FactoryKeysApi<Promise<any>>['deleteMany'];
+  // deleteMany: FactoryKeysApi<Promise<any>>['deleteMany'];
+  revokeMany: FactoryKeysApi<Promise<any>>['revokeMany'];
   forgetMany: FactoryKeysApi<Promise<any>>['forgetMany'];
-  restoreMany: FactoryKeysApi<Promise<any>>['restoreMany'];
-  expireManyAt: FactoryKeysApi<Promise<any>>['expireManyAt'];
-  expireManyIn: FactoryKeysApi<Promise<any>>['expireManyIn'];
-  expireManyNow: FactoryKeysApi<Promise<any>>['expireManyNow'];
+  // restoreMany: FactoryKeysApi<Promise<any>>['restoreMany'];
+  // expireManyAt: FactoryKeysApi<Promise<any>>['expireManyAt'];
+  // expireManyIn: FactoryKeysApi<Promise<any>>['expireManyIn'];
+  // expireManyNow: FactoryKeysApi<Promise<any>>['expireManyNow'];
   dropMany: FactoryKeysApi<Promise<any>>['dropMany'];
 }

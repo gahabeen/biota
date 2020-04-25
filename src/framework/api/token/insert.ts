@@ -4,16 +4,16 @@ import { execute } from '~/tools/tasks';
 import { FactoryToken } from '~/types/factory/factory.token';
 import { FrameworkTokenApi } from '~/types/framework/framework.token';
 
-export const insert: FactoryToken<FrameworkTokenApi['insert']> = function (this: Biota, idOrRefOrInstance) {
+export const insert: FactoryToken<FrameworkTokenApi['insert']> = function (this: Biota, idOrInstance) {
   const self = this;
 
   return async (data: any) => {
     return execute(
       [
         {
-          name: `Insert [${idOrRefOrInstance})`,
+          name: `Insert [${idOrInstance})`,
           task() {
-            return self.query(token(self.context)(idOrRefOrInstance).insert(data));
+            return self.query(token(self.context)(idOrInstance).insert(data));
           },
         },
       ],

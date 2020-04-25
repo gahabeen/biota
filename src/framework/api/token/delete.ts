@@ -5,16 +5,16 @@ import { token } from '~/factory/api/token';
 import { execute } from '~/tools/tasks';
 
 // tslint:disable-next-line: variable-name
-export const delete_: FactoryToken<FrameworkTokenApi['delete']> = function (this: Biota, idOrRefOrInstance) {
+export const delete_: FactoryToken<FrameworkTokenApi['delete']> = function (this: Biota, idOrInstance) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Delete [${idOrRefOrInstance}]`,
+          name: `Delete [${idOrInstance}]`,
           task() {
-            return self.query(token(self.context)(idOrRefOrInstance).delete());
+            return self.query(token(self.context)(idOrInstance).delete());
           },
         },
       ],

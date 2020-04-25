@@ -3,7 +3,8 @@ import { FrameworkUserApi } from '~/types/framework/framework.user';
 import { user } from '~/factory/api/user';
 import { execute } from '~/tools/tasks';
 
-export const register: FactoryUser<FrameworkUserApi['register']> = function (id = null) {
+export const register: FactoryUser<FrameworkUserApi['register']> = function () {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return async (email, password, data) => {

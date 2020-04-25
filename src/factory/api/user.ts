@@ -16,6 +16,7 @@ import { BiotaFunctionName } from '~/factory/constructors/udfunction';
 import { DocumentAuthAccount } from '~/types/document';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryUser } from '~/types/factory/factory.user';
+import { ReferenceId } from '../constructors/reference';
 
 // tslint:disable-next-line: only-arrow-functions
 export const user: FactoryContext<FactoryUser> = function (context): FactoryUser {
@@ -144,11 +145,12 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         // ----
         const query = MethodQuery(
           {
-            userRef: ResultRef(user(q.Var('ctx'))(q.Collection(BiotaCollectionName('users'))).insert(q.Var('data'))),
-            user_email: ResultData(user(q.Var('ctx'))(q.Var('userRef')).auth.email.set(q.Var('email'))),
-            user_owner: ResultData(user(q.Var('ctx'))(q.Var('userRef')).membership.owner.set(q.Var('userRef'))),
+            userRef: ResultRef(user(q.Var('ctx'))().insert(q.Var('data'))),
+            userId: ReferenceId(q.Var('userRef')),
+            user_email: ResultData(user(q.Var('ctx'))(q.Var('userId')).auth.email.set(q.Var('email'))),
+            user_owner: ResultData(user(q.Var('ctx'))(q.Var('userId')).membership.owner.set(q.Var('userRef'))),
             user_user_role: ResultData(
-              user(q.Var('ctx'))(q.Var('userRef'))
+              user(q.Var('ctx'))(q.Var('userId'))
                 .membership.role(q.Role(BiotaRoleName('user')))
                 .set(),
             ),

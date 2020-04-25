@@ -20,5 +20,9 @@ export const public_: FaunaRoleOptions = {
       resource: q.Function(BiotaFunctionName('UserRegister')),
       actions: { call: true },
     }),
+    Privilege({
+      resource: q.Function(BiotaFunctionName('SessionPassport')),
+      actions: { call: true },
+    }),
   ],
 };

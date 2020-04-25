@@ -11,6 +11,7 @@ import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryDocument } from '~/types/factory/factory.document';
 import { Pagination } from '../constructors/pagination';
 import { DocumentRef } from './constructors';
+import { PassportUser } from '../constructors/identity';
 
 // tslint:disable-next-line: only-arrow-functions
 export const document: FactoryContext<FactoryDocument> = function (context, options): FactoryDocument {

@@ -3,16 +3,16 @@ import { FrameworkCredentialApi } from '~/types/framework/framework.credential';
 import { credential } from '~/factory/api/credential';
 import { execute } from '~/tools/tasks';
 
-export const repsert: FactoryCredential<FrameworkCredentialApi['repsert']> = function (idOrRefOrInstance) {
+export const repsert: FactoryCredential<FrameworkCredentialApi['repsert']> = function (idOrInstance) {
   const self = this;
 
   return async function repsertMethod(password) {
     return execute(
       [
         {
-          name: `Replace/Insert (${idOrRefOrInstance})`,
+          name: `Replace/Insert (${idOrInstance})`,
           task() {
-            return self.query(credential(self.context)(idOrRefOrInstance).repsert(password));
+            return self.query(credential(self.context)(idOrInstance).repsert(password));
           },
         },
       ],

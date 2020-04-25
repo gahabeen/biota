@@ -4,16 +4,16 @@ import { execute } from '~/tools/tasks';
 import { FrameworkTokenApi } from '~/types/framework/framework.token';
 import { FactoryToken } from '~/types/factory/factory.token';
 
-export const expireNow: FactoryToken<FrameworkTokenApi['expireNow']> = function (idOrRefOrInstance) {
+export const expireNow: FactoryToken<FrameworkTokenApi['expireNow']> = function (idOrInstance) {
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Expire [${idOrRefOrInstance}] now`,
+          name: `Expire [${idOrInstance}] now`,
           task() {
-            return self.query(token(self.context)(idOrRefOrInstance).expireNow());
+            return self.query(token(self.context)(idOrInstance).expireNow());
           },
         },
       ],

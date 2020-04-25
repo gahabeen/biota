@@ -3,21 +3,22 @@ import { FrameworkKeyApi } from '~/types/framework/framework.key';
 import { key } from '~/factory/api/key';
 import { execute } from '~/tools/tasks';
 
-export const expireNow: FactoryKey<FrameworkKeyApi['expireNow']> = function (keyName) {
+export const revoke: FactoryKey<FrameworkKeyApi['revoke']> = function (keyName) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return async () => {
     return execute(
       [
         {
-          name: `Expire [${keyName}] now`,
+          name: `Revoke (${keyName})`,
           task() {
-            return self.query(key(self.context)(keyName).expireNow());
+            return self.query(key(self.context)(keyName).revoke());
           },
         },
       ],
       {
-        domain: 'Biota.key.expireNow',
+        domain: 'Biota.key.revoke',
       },
     );
   };

@@ -8,13 +8,13 @@ import { BiotaFunctionName, ResultData, ResultAction, DocumentRef } from './cons
 // tslint:disable-next-line: only-arrow-functions
 export const credential: FactoryContext<FactoryCredential> = function (context): FactoryCredential {
   // tslint:disable-next-line: only-arrow-functions
-  return (idOrRefOrInstance) => {
+  return (idOrInstance) => {
     const credentialApi = credential(context);
-    const instance = q.If(q.IsDoc(idOrRefOrInstance), idOrRefOrInstance, null);
+    const instance = q.If(q.IsDoc(idOrInstance), idOrInstance, null);
     const ref = q.If(
-      q.IsCredentials(idOrRefOrInstance),
-      idOrRefOrInstance,
-      q.If(q.IsString(idOrRefOrInstance), q.Ref(q.Credentials(), idOrRefOrInstance), null),
+      q.IsCredentials(idOrInstance),
+      idOrInstance,
+      q.If(q.IsString(idOrInstance), q.Ref(q.Credentials(), idOrInstance), null),
     );
 
     return {

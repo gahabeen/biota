@@ -4,16 +4,16 @@ import { execute } from '~/tools/tasks';
 import { FactoryUser } from '~/types/factory/factory.user';
 import { FrameworkUserApi } from '~/types/framework/framework.user';
 
-export const history: FactoryUser<FrameworkUserApi['history']> = function (this: Biota, idOrRef) {
+export const history: FactoryUser<FrameworkUserApi['history']> = function (this: Biota, id) {
   const self = this;
 
   return async (pagination) => {
     return execute(
       [
         {
-          name: `History of [${idOrRef}]`,
+          name: `History of [${id}]`,
           task() {
-            return self.query(user(self.context)(idOrRef).history(pagination));
+            return self.query(user(self.context)(id).history(pagination));
           },
         },
       ],
