@@ -9,6 +9,38 @@ export const membership: FactoryUser<FrameworkUserApi['membership']> = function 
   const self = this;
 
   return {
+    public: {
+      async set() {
+        return execute(
+          [
+            {
+              name: `(Membership) Set public access on user [${id}]`,
+              task() {
+                return self.query(user(self.context)(id).membership.public.set());
+              },
+            },
+          ],
+          {
+            domain: 'Biota.user.membership.public.set',
+          },
+        );
+      },
+      remove() {
+        return execute(
+          [
+            {
+              name: `(Membership) Remove pubic access onuser  [${id}]`,
+              task() {
+                return self.query(user(self.context)(id).membership.public.remove());
+              },
+            },
+          ],
+          {
+            domain: 'Biota.user.membership.public.remove',
+          },
+        );
+      },
+    },
     role(roleOrRef) {
       return {
         async set() {

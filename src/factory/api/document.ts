@@ -410,6 +410,60 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       membership: {
+        public: {
+          set() {
+            const inputs = { collection, id };
+            // ----
+            const query = MethodQuery(
+              {
+                refExists: refExists(q.Var('collection'), q.Var('id')),
+                annotated: ResultData(
+                  document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('public_change', {
+                    _membership: {
+                      public: true,
+                    },
+                  }),
+                ),
+                doc: ResultData(
+                  document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
+                ),
+                action: action(q.Var('ctx'))().log('public_change', DocumentRef(q.Var('doc'))),
+              },
+              q.Var('doc'),
+              q.Var('action'),
+            );
+            // ----
+            const offline = `factory.${prefix.toLowerCase()}.membership.public.set`;
+            const online = { name: BiotaFunctionName(`${prefix}MembershipPublicSet`), role: null };
+            return MethodDispatch({ context, inputs, query })(offline, online);
+          },
+          remove() {
+            const inputs = { collection, id };
+            // ----
+            const query = MethodQuery(
+              {
+                refExists: refExists(q.Var('collection'), q.Var('id')),
+                annotated: ResultData(
+                  document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('public_change', {
+                    _membership: {
+                      public: false,
+                    },
+                  }),
+                ),
+                doc: ResultData(
+                  document(ContextNoLogNoAnnotation(q.Var('ctx')))(q.Var('collection'), q.Var('id')).upsert(q.Var('annotated')),
+                ),
+                action: action(q.Var('ctx'))().log('public_change', DocumentRef(q.Var('doc'))),
+              },
+              q.Var('doc'),
+              q.Var('action'),
+            );
+            // ----
+            const offline = `factory.${prefix.toLowerCase()}.membership.public.remove`;
+            const online = { name: BiotaFunctionName(`${prefix}MembershipPublicRemove`), role: null };
+            return MethodDispatch({ context, inputs, query })(offline, online);
+          },
+        },
         role(roleOrRef) {
           const roleRef = q.If(q.IsRole(roleOrRef), roleOrRef, q.Role(roleOrRef));
           return {
@@ -784,6 +838,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                       auth_accounts_changed_by: ContextProp(q.Var('ctx'), 'identity'),
                       auth_accounts_changed_at: q.Now(),
                     },
+                    public_change: { public_changed_by: ContextProp(q.Var('ctx'), 'identity'), public_changed_at: q.Now() },
                     roles_change: { roles_changed_by: ContextProp(q.Var('ctx'), 'identity'), roles_changed_at: q.Now() },
                     owner_change: { owner_changed_by: ContextProp(q.Var('ctx'), 'identity'), owner_changed_at: q.Now() },
                     assignees_change: { assignees_changed_by: ContextProp(q.Var('ctx'), 'identity'), assignees_changed_at: q.Now() },

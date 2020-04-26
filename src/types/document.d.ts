@@ -44,9 +44,10 @@ export interface DocumentAuth {
 }
 
 export interface DocumentMembership {
+  public?: boolean;
   owner?: FaunaRef;
   assignees?: FaunaRef[];
-  roles?: String[];
+  roles?: FaunaRef[];
 }
 
 export interface DocumentValidity {
@@ -73,6 +74,7 @@ export type DocumentActionName =
   | 'auth_accounts_change'
   | 'roles_change'
   | 'owner_change'
+  | 'public_change'
   | 'assignees_change';
 
 export interface DocumentActivity {

@@ -1,6 +1,5 @@
 import { Expr, query as q } from 'faunadb';
 import { TS_2500_YEARS } from '~/consts';
-import { Passport } from '~/factory/constructors/identity';
 import * as helpers from '~/helpers';
 import { ActionRuleDefinition, BiotaActionsDefinition } from '~/types/factory/factory.constructors.privilege';
 import { FactoryRuleDefinition, FactoryRuleDefinitionPaths } from '~/types/factory/factory.rule';
@@ -47,11 +46,7 @@ export function PrivilegeRights(
           false,
         ),
         session: q.If(q.Var('is_session_identity'), q.Identity(), null),
-        user: q.If(
-          q.Var('is_session_identity'),
-          q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null),
-          null,
-        ),
+        user: q.If(q.Var('is_session_identity'), q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null), null),
       };
       const andRules = actionRule.and || [];
       const orRules = actionRule.or.length > 0 ? q.Or(...actionRule.or) : null;
@@ -65,12 +60,11 @@ export function PrivilegeRights(
       }
     }
   }
-
   const referenceIsSelf = (ref: FaunaRef) => {
-    return BiotaRule(
-      'reference_is_self',
-      q.If(q.IsRef(ref), q.Or(q.Equals(ref, q.Var('user')), q.Equals(ref, q.Var('session'))), false),
-    );
+    return BiotaRule('reference_is_self', q.If(q.IsRef(ref), q.Or(q.Equals(ref, q.Var('user')), q.Equals(ref, q.Var('session'))), false));
+  };
+  const documentIsPublic = (doc: Expr) => {
+    return BiotaRule('document_is_public', q.Select(helpers.path('_membership.public'), doc, false));
   };
   const documentOfOwner = (doc: Expr) => {
     return BiotaRule(
@@ -80,10 +74,7 @@ export function PrivilegeRights(
           owner: q.Select(helpers.path('_membership.owner'), doc, null),
         },
 
-        q.And(
-          q.IsRef(q.Var('owner')),
-          q.Or(q.Equals(q.Var('owner'), q.Var('user')), q.Equals(q.Var('owner'), q.Var('session'))),
-        ),
+        q.And(q.IsRef(q.Var('owner')), q.Or(q.Equals(q.Var('owner'), q.Var('user')), q.Equals(q.Var('owner'), q.Var('session')))),
       ),
     );
   };
@@ -179,7 +170,11 @@ export function PrivilegeRights(
     );
   };
   const pathChangedWith = (path: string, value: any, doc = q.Var('newDoc')) => {
-    return BiotaRule('path_changed_at_' + path, q.Equals(q.Select(helpers.path(path), doc, {}), value));
+    if (Array.isArray(value)) {
+      return q.Or(...value.map((v) => BiotaRule('path_changed_at_' + path, q.Equals(q.Select(helpers.path(path), doc, {}), v))));
+    } else {
+      return BiotaRule('path_changed_at_' + path, q.Equals(q.Select(helpers.path(path), doc, {}), value));
+    }
   };
 
   /**
@@ -196,6 +191,10 @@ export function PrivilegeRights(
       );
     }
   };
+
+  if (Array.isArray(definition.public.immutablePaths)) {
+    addImmutablePaths(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), definition.public.immutablePaths);
+  }
 
   if (Array.isArray(definition.self.immutablePaths)) {
     addImmutablePaths(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), definition.self.immutablePaths);
@@ -214,6 +213,10 @@ export function PrivilegeRights(
    */
   const getBaseRules = [documentIsAvailable(q.Get(q.Var('ref')))];
 
+  if (definition.public.get) {
+    actions.read.or.push(BiotaRule('get_as_public', q.And(documentIsPublic(q.Get(q.Var('ref'))), ...getBaseRules)));
+  }
+
   if (definition.self.get) {
     actions.read.or.push(BiotaRule('get_as_self', q.And(referenceIsSelf(q.Var('ref')), ...getBaseRules)));
   }
@@ -230,6 +233,10 @@ export function PrivilegeRights(
    * getWhenDeleted
    */
   const getWhenDeletedBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
+
+  if (definition.public.getWhenDeleted) {
+    actions.read.or.push(BiotaRule('get_when_deleted_as_public', q.And(documentIsPublic(q.Get(q.Var('ref'))), ...getWhenDeletedBaseRules)));
+  }
 
   if (definition.self.getWhenDeleted) {
     actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getWhenDeletedBaseRules));
@@ -248,6 +255,10 @@ export function PrivilegeRights(
    */
   const getWhenExpiredBaseRules = [documentIsExpired(q.Get(q.Var('ref')))];
 
+  if (definition.public.getWhenExpired) {
+    actions.read.or.push(BiotaRule('get_when_expired_as_public', q.And(documentIsPublic(q.Get(q.Var('ref'))), ...getWhenExpiredBaseRules)));
+  }
+
   if (definition.self.getWhenExpired) {
     actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getWhenExpiredBaseRules));
   }
@@ -264,6 +275,10 @@ export function PrivilegeRights(
    * getHistory
    */
   const getHistoryBaseRules = [documentIsAvailable(q.Get(q.Var('ref')))];
+
+  if (definition.public.getHistory) {
+    actions.read.or.push(BiotaRule('get_history_as_public', q.And(documentIsPublic(q.Get(q.Var('ref'))), ...getHistoryBaseRules)));
+  }
 
   if (definition.self.getHistory) {
     actions.history_read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getHistoryBaseRules));
@@ -282,6 +297,12 @@ export function PrivilegeRights(
    */
   const getHistoryWhenDeletedBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
 
+  if (definition.public.getHistoryWhenDeleted) {
+    actions.read.or.push(
+      BiotaRule('get_history_when_deleted_as_public', q.And(documentIsPublic(q.Get(q.Var('ref'))), ...getHistoryWhenDeletedBaseRules)),
+    );
+  }
+
   if (definition.self.getHistoryWhenDeleted) {
     actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getHistoryWhenDeletedBaseRules));
   }
@@ -298,6 +319,12 @@ export function PrivilegeRights(
    * getHistoryWhenExpired
    */
   const getHistoryWhenExpiredBaseRules = [documentIsDeleted(q.Get(q.Var('ref')))];
+
+  if (definition.public.getHistoryWhenExpired) {
+    actions.read.or.push(
+      BiotaRule('get_history_when_expired_as_public', q.And(documentIsPublic(q.Get(q.Var('ref'))), ...getHistoryWhenExpiredBaseRules)),
+    );
+  }
 
   if (definition.self.getHistoryWhenExpired) {
     actions.read.or.push(q.And(referenceIsSelf(q.Var('ref')), ...getHistoryWhenExpiredBaseRules));
@@ -322,16 +349,26 @@ export function PrivilegeRights(
         'path_changed_only_at__activity_inserted_by_or_at',
         changedPathsOnlyAt('_activity', ['inserted_by', 'inserted_at'], {}, q.Var('doc')),
       ),
-      q.Or(
-        pathChangedWith('_activity.inserted_by', q.Var('user'), q.Var('doc')),
+      q.And(
+        pathChangedWith('_activity.inserted_by', [q.Var('user'), null], q.Var('doc')),
         pathChangedWith('_activity.inserted_at', q.Now(), q.Var('doc')),
       ),
     ),
-    q.And(
+    q.If(
       BiotaRule('path_changed_only_at__membership_owner', changedPathsOnlyAt('_membership', ['owner'], {}, q.Var('doc'))),
-      pathChangedWith('_membership.owner', q.Var('user'), q.Var('doc')),
+      pathChangedWith('_membership.owner', [q.Var('user'), null], q.Var('doc')),
+      pathHasntChanged('_membership.owner', {}, q.Var('doc')),
+    ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'], {}, q.Var('doc'))),
+      pathChangedWith('_membership.public', [true, false, null], q.Var('doc')),
+      pathHasntChanged('_membership.public', {}, q.Var('doc')),
     ),
   ];
+
+  if (definition.public.insert) {
+    actions.read.or.push(BiotaRule('insert_as_public', q.And(documentIsPublic(q.Var('doc')), ...insertBaseRules)));
+  }
 
   if (definition.self.insert) {
     actions.create.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('doc'))), ...insertBaseRules));
@@ -362,11 +399,21 @@ export function PrivilegeRights(
     pathHasntChanged('_auth'),
     pathHasntChanged('_validity'),
     pathHasntChanged('_membership'),
-    q.And(
+    q.If(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
-      q.Or(pathChangedWith('_activity.updated_by', q.Var('user')), pathChangedWith('_activity.updated_at', q.Now())),
+      q.And(pathChangedWith('_activity.updated_by', [q.Var('user'), null]), pathChangedWith('_activity.updated_at', q.Now())),
+      q.And(pathHasntChanged('_activity.updated_by'), pathHasntChanged('_activity.updated_at')),
+    ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      pathChangedWith('_membership.public', [true, false, null]),
+      pathHasntChanged('_membership.public'),
     ),
   ];
+
+  if (definition.public.update) {
+    actions.read.or.push(BiotaRule('update_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...updateBaseRules)));
+  }
 
   if (definition.self.update) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateBaseRules));
@@ -393,7 +440,18 @@ export function PrivilegeRights(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
       q.Or(pathChangedWith('_activity.updated_by', q.Var('user')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      pathChangedWith('_membership.public', [true, false, null]),
+      pathHasntChanged('_membership.public'),
+    ),
   ];
+
+  if (definition.public.updateWhenDeleted) {
+    actions.read.or.push(
+      BiotaRule('update_when_deleted_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...updateWhenDeletedBaseRules)),
+    );
+  }
 
   if (definition.self.updateWhenDeleted) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenDeletedBaseRules));
@@ -420,7 +478,18 @@ export function PrivilegeRights(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['updated_by', 'updated_at'])),
       q.Or(pathChangedWith('_activity.updated_by', q.Var('user')), pathChangedWith('_activity.updated_at', q.Now())),
     ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      pathChangedWith('_membership.public', [true, false, null]),
+      pathHasntChanged('_membership.public'),
+    ),
   ];
+
+  if (definition.public.updateWhenExpired) {
+    actions.read.or.push(
+      BiotaRule('update_when_expired_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...updateWhenExpiredBaseRules)),
+    );
+  }
 
   if (definition.self.updateWhenExpired) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...updateWhenExpiredBaseRules));
@@ -447,7 +516,16 @@ export function PrivilegeRights(
       BiotaRule('path_changed_only_at__activity_updated_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
       q.Or(pathChangedWith('_activity.replaced_by', q.Var('user')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      pathChangedWith('_membership.public', [true, false, null]),
+      pathHasntChanged('_membership.public'),
+    ),
   ];
+
+  if (definition.public.replace) {
+    actions.read.or.push(BiotaRule('replace_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...replaceBaseRules)));
+  }
 
   if (definition.self.replace) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceBaseRules));
@@ -474,7 +552,18 @@ export function PrivilegeRights(
       BiotaRule('path_changed_only_at__activity_replaced_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
       q.Or(pathChangedWith('_activity.replaced_by', q.Var('user')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      pathChangedWith('_membership.public', [true, false, null]),
+      pathHasntChanged('_membership.public'),
+    ),
   ];
+
+  if (definition.public.replaceWhenDeleted) {
+    actions.read.or.push(
+      BiotaRule('replace_when_deleted_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...replaceWhenDeletedBaseRules)),
+    );
+  }
 
   if (definition.self.replaceWhenDeleted) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenDeletedBaseRules));
@@ -489,7 +578,7 @@ export function PrivilegeRights(
   }
 
   /**
-   * replaceWhenDeleted
+   * replaceWhenExpired
    */
 
   const replaceWhenExpiredBaseRules = [
@@ -501,7 +590,18 @@ export function PrivilegeRights(
       BiotaRule('path_changed_only_at__activity_replaced_by_or_at', changedPathsOnlyAt('_activity', ['replaced_by', 'replaced_at'])),
       q.Or(pathChangedWith('_activity.replaced_by', q.Var('user')), pathChangedWith('_activity.replaced_at', q.Now())),
     ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      pathChangedWith('_membership.public', [true, false, null]),
+      pathHasntChanged('_membership.public'),
+    ),
   ];
+
+  if (definition.public.replaceWhenExpired) {
+    actions.read.or.push(
+      BiotaRule('replace_when_expired_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...replaceWhenExpiredBaseRules)),
+    );
+  }
 
   if (definition.self.replaceWhenExpired) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...replaceWhenExpiredBaseRules));
@@ -531,7 +631,16 @@ export function PrivilegeRights(
       BiotaRule('path_changed_only_at__validity_deleted', changedPathsOnlyAt('_validity', ['deleted'])),
       q.Or(pathChangedWith('_validity.deleted', true), pathChangedWith('_validity.deleted', false)),
     ),
+    q.If(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      pathChangedWith('_membership.public', [true, false, null]),
+      pathHasntChanged('_membership.public'),
+    ),
   ];
+
+  if (definition.public.delete) {
+    actions.read.or.push(BiotaRule('delete_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...deleteBaseRules)));
+  }
 
   if (definition.self.delete) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...deleteBaseRules));
@@ -560,6 +669,10 @@ export function PrivilegeRights(
     ),
   ];
 
+  if (definition.public.forget) {
+    actions.read.or.push(BiotaRule('forget_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...forgetBaseRules)));
+  }
+
   if (definition.self.forget) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetBaseRules));
   }
@@ -586,6 +699,12 @@ export function PrivilegeRights(
       q.Or(pathChangedWith('_activity.forgotten_by', q.Var('user')), pathChangedWith('_activity.forgotten_at', q.Now())),
     ),
   ];
+
+  if (definition.public.forgetWhenDeleted) {
+    actions.read.or.push(
+      BiotaRule('forget_when_deleted_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...forgetWhenDeletedBaseRules)),
+    );
+  }
 
   if (definition.self.forgetWhenDeleted) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenDeletedBaseRules));
@@ -614,6 +733,12 @@ export function PrivilegeRights(
     ),
   ];
 
+  if (definition.public.forgetWhenExpired) {
+    actions.read.or.push(
+      BiotaRule('forget_when_expired_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...forgetWhenExpiredBaseRules)),
+    );
+  }
+
   if (definition.self.forgetWhenExpired) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...forgetWhenExpiredBaseRules));
   }
@@ -639,13 +764,14 @@ export function PrivilegeRights(
         'path_changed_only_at__activity_expiration_changed_by_or_at',
         changedPathsOnlyAt('_activity', ['expiration_changed_by', 'expiration_changed_at']),
       ),
-      q.Or(
-        pathChangedWith('_activity.expiration_changed_by', q.Var('user')),
-        pathChangedWith('_activity.expiration_changed_at', q.Now()),
-      ),
+      q.Or(pathChangedWith('_activity.expiration_changed_by', q.Var('user')), pathChangedWith('_activity.expiration_changed_at', q.Now())),
     ),
     BiotaRule('path_changed_only_at__validity_expires_at', changedPathsOnlyAt('_validity', ['expires_at'])),
   ];
+
+  if (definition.public.expire) {
+    actions.read.or.push(BiotaRule('expire_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...expireBaseRules)));
+  }
 
   if (definition.self.expire) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...expireBaseRules));
@@ -676,6 +802,10 @@ export function PrivilegeRights(
     BiotaRule('path_changed_only_at__validity_deleted_or_expires_at', changedPathsOnlyAt('_validity', ['deleted', 'expires_at'])),
   ];
 
+  if (definition.public.restore) {
+    actions.read.or.push(BiotaRule('restore_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...restoreBaseRules)));
+  }
+
   if (definition.self.restore) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...restoreBaseRules));
   }
@@ -702,15 +832,19 @@ export function PrivilegeRights(
     ),
   ];
 
-  if (definition.self.restore) {
+  if (definition.public.remember) {
+    actions.read.or.push(BiotaRule('remember_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...rememberBaseRules)));
+  }
+
+  if (definition.self.remember) {
     actions.history_write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...rememberBaseRules));
   }
 
-  if (definition.owner.restore) {
+  if (definition.owner.remember) {
     actions.history_write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...rememberBaseRules));
   }
 
-  if (definition.assignee.restore) {
+  if (definition.assignee.remember) {
     actions.history_write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...rememberBaseRules));
   }
 
@@ -738,6 +872,12 @@ export function PrivilegeRights(
     ),
   ];
 
+  if (definition.public.setOwner) {
+    actions.read.or.push(
+      BiotaRule('set_owner_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules)),
+    );
+  }
+
   if (definition.self.setOwner) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveOwnerBaseRules, ...setOwnerBaseRules));
   }
@@ -756,6 +896,12 @@ export function PrivilegeRights(
       BiotaRule('is_null_at__membership.owner', q.IsNull(q.Select(helpers.path('_membership.owner'), q.Var('newDoc'), 'this is not null'))),
     ),
   ];
+
+  if (definition.public.removeOwner) {
+    actions.read.or.push(
+      BiotaRule('remove_owner_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveOwnerBaseRules, ...removeOwnerBaseRules)),
+    );
+  }
 
   if (definition.self.removeOwner) {
     actions.write.or.push(
@@ -784,10 +930,7 @@ export function PrivilegeRights(
         'path_changed_only_at__activity_assignees_changed_by_or_at',
         changedPathsOnlyAt('_activity', ['assignees_changed_by', 'assignees_changed_at']),
       ),
-      q.Or(
-        pathChangedWith('_activity.assignees_changed_by', q.Var('user')),
-        pathChangedWith('_activity.assignees_changed_at', q.Now()),
-      ),
+      q.Or(pathChangedWith('_activity.assignees_changed_by', q.Var('user')), pathChangedWith('_activity.assignees_changed_at', q.Now())),
     ),
   ];
 
@@ -808,6 +951,12 @@ export function PrivilegeRights(
       ),
     ),
   ];
+
+  if (definition.public.setAssignee) {
+    actions.read.or.push(
+      BiotaRule('set_assignee_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...setAssigneeBaseRules)),
+    );
+  }
 
   if (definition.self.setAssignee) {
     actions.write.or.push(
@@ -840,6 +989,15 @@ export function PrivilegeRights(
       ),
     ),
   ];
+
+  if (definition.public.removeAssignee) {
+    actions.read.or.push(
+      BiotaRule(
+        'remove_assignee_as_public',
+        q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveAssigneeBaseRules, ...removeAssigneeBaseRules),
+      ),
+    );
+  }
 
   if (definition.self.removeAssignee) {
     actions.write.or.push(
@@ -890,6 +1048,12 @@ export function PrivilegeRights(
     ),
   ];
 
+  if (definition.public.setRole) {
+    actions.read.or.push(
+      BiotaRule('set_role_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...setRoleBaseRules)),
+    );
+  }
+
   if (definition.self.setRole) {
     actions.write.or.push(q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveRoleBaseRules, ...setRoleBaseRules));
   }
@@ -920,6 +1084,12 @@ export function PrivilegeRights(
     ),
   ];
 
+  if (definition.public.removeRole) {
+    actions.read.or.push(
+      BiotaRule('remove_role_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveRoleBaseRules, ...removeRoleBaseRules)),
+    );
+  }
+
   if (definition.self.removeRole) {
     actions.write.or.push(
       q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveRoleBaseRules, ...removeRoleBaseRules),
@@ -947,10 +1117,7 @@ export function PrivilegeRights(
         'path_changed_only_at__activity_email_changed_by_or_at',
         changedPathsOnlyAt('_activity', ['auth_email_changed_by', 'auth_email_changed_at']),
       ),
-      q.Or(
-        pathChangedWith('_activity.auth_email_changed_by', q.Var('user')),
-        pathChangedWith('_activity.auth_email_changed_at', q.Now()),
-      ),
+      q.Or(pathChangedWith('_activity.auth_email_changed_by', q.Var('user')), pathChangedWith('_activity.auth_email_changed_at', q.Now())),
     ),
   ];
 
@@ -960,6 +1127,15 @@ export function PrivilegeRights(
       BiotaRule('is_ref_at__auth.email', q.IsRef(q.Select(helpers.path('_auth.email'), q.Var('newDoc'), null))),
     ),
   ];
+
+  if (definition.public.setAuthEmail) {
+    actions.read.or.push(
+      BiotaRule(
+        'set_auth_email_as_public',
+        q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...setAuthEmailBaseRules),
+      ),
+    );
+  }
 
   if (definition.self.setAuthEmail) {
     actions.write.or.push(
@@ -981,6 +1157,15 @@ export function PrivilegeRights(
       BiotaRule('is_null_at__auth.email', q.IsNull(q.Select(helpers.path('_auth.email'), q.Var('newDoc'), 'this is not null'))),
     ),
   ];
+
+  if (definition.public.removeAuthEmail) {
+    actions.read.or.push(
+      BiotaRule(
+        'remove_auth_email_as_public',
+        q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveAuthEmailBaseRules, ...removeAuthEmailBaseRules),
+      ),
+    );
+  }
 
   if (definition.self.removeAuthEmail) {
     actions.write.or.push(
@@ -1020,7 +1205,7 @@ export function PrivilegeRights(
     q.And(
       BiotaRule('path_changed_only_at__auth_accounts', changedPathsOnlyAt('_auth', ['accounts'])),
       BiotaRule(
-        'no_elements_removed_at__membership.roles',
+        'no_elements_removed_at__membership.accounts',
         q.Equals(
           q.Count(
             q.Difference(
@@ -1034,17 +1219,26 @@ export function PrivilegeRights(
     ),
   ];
 
-  if (definition.self.setAuthEmail) {
+  if (definition.public.setAuthAccount) {
+    actions.read.or.push(
+      BiotaRule(
+        'set_auth_account_as_public',
+        q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules),
+      ),
+    );
+  }
+
+  if (definition.self.setAuthAccount) {
     actions.write.or.push(
       q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules),
     );
   }
 
-  if (definition.owner.setAuthEmail) {
+  if (definition.owner.setAuthAccount) {
     actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules));
   }
 
-  if (definition.assignee.setAuthEmail) {
+  if (definition.assignee.setAuthAccount) {
     actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...setAuthAccountBaseRules));
   }
 
@@ -1052,7 +1246,7 @@ export function PrivilegeRights(
     q.And(
       BiotaRule('path_changed_only_at__auth_accounts', changedPathsOnlyAt('_auth', ['accounts'])),
       BiotaRule(
-        'no_elements_added_at__membership.roles',
+        'no_elements_added_at__membership.accounts',
         q.Equals(
           q.Count(
             q.Difference(
@@ -1066,18 +1260,98 @@ export function PrivilegeRights(
     ),
   ];
 
-  if (definition.self.removeAuthEmail) {
+  if (definition.public.removeAuthAccount) {
+    actions.read.or.push(
+      BiotaRule(
+        'remove_auth_account_as_public',
+        q.And(documentIsPublic(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules),
+      ),
+    );
+  }
+
+  if (definition.self.removeAuthAccount) {
     actions.write.or.push(
       q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules),
     );
   }
 
-  if (definition.owner.removeAuthEmail) {
+  if (definition.owner.removeAuthAccount) {
     actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules));
   }
 
-  if (definition.assignee.removeAuthEmail) {
+  if (definition.assignee.removeAuthAccount) {
     actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemoveAuthAccountBaseRules, ...removeAuthAccountBaseRules));
+  }
+
+  /**
+   * set/remove Public
+   */
+
+  const setRemovePublicBaseRules = [
+    documentIsPublic(q.Get('oldDoc')),
+    pathHasntChanged('_auth'),
+    pathHasntChanged('_validity'),
+    q.And(
+      BiotaRule(
+        'path_changed_only_at__activity_public_changed_by_or_at',
+        changedPathsOnlyAt('_activity', ['public_changed_by', 'public_changed_at']),
+      ),
+      q.Or(pathChangedWith('_activity.public_changed_by', q.Var('user')), pathChangedWith('_activity.public_changed_at', q.Now())),
+    ),
+  ];
+
+  const setPublicBaseRules = [
+    q.And(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      BiotaRule('is_true_at__membership.public', q.Equals(true, q.Select(helpers.path('_membership.public'), q.Var('newDoc'), false))),
+    ),
+  ];
+
+  if (definition.public.setPublic) {
+    actions.read.or.push(
+      BiotaRule('set_public_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...setRemovePublicBaseRules, ...setPublicBaseRules)),
+    );
+  }
+
+  if (definition.self.setPublic) {
+    actions.write.or.push(
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemovePublicBaseRules, ...setPublicBaseRules),
+    );
+  }
+
+  if (definition.owner.setPublic) {
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemovePublicBaseRules, ...setPublicBaseRules));
+  }
+
+  if (definition.assignee.setPublic) {
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemovePublicBaseRules, ...setPublicBaseRules));
+  }
+
+  const removePublicBaseRules = [
+    q.And(
+      BiotaRule('path_changed_only_at__membership_public', changedPathsOnlyAt('_membership', ['public'])),
+      BiotaRule('is_false_at__membership.public', q.Equals(false, q.Select(helpers.path('_membership.public'), q.Var('newDoc'), false))),
+    ),
+  ];
+
+  if (definition.public.removePublic) {
+    actions.read.or.push(
+      BiotaRule('remove_public_as_public', q.And(documentIsPublic(q.Var('oldDoc')), ...setRemovePublicBaseRules, ...removePublicBaseRules)),
+    );
+  }
+
+  if (definition.self.removePublic) {
+    actions.write.or.push(
+      q.And(referenceIsSelf(q.Select('ref', q.Var('oldDoc'), null)), ...setRemovePublicBaseRules, ...removePublicBaseRules),
+    );
+  }
+
+  if (definition.owner.removePublic) {
+    actions.write.or.push(q.And(documentOfOwner(q.Var('oldDoc')), ...setRemovePublicBaseRules, ...removePublicBaseRules));
+  }
+
+  if (definition.assignee.removePublic) {
+    actions.write.or.push(q.And(documentOfAssignee(q.Var('oldDoc')), ...setRemovePublicBaseRules, ...removePublicBaseRules));
   }
 
   return Object.assign(
@@ -1097,7 +1371,7 @@ export function PrivilegeRights(
 
 function transformActionsToBooleanRules(rules: FactoryRuleDefinition = {}, paths: FactoryRuleDefinitionPaths = {}): BiotaActionsDefinition {
   // tslint:disable-next-line: prefer-const
-  let defaultRuleDefinition: FactoryRuleDefinition<boolean> = {
+  const defaultRuleDefinition: FactoryRuleDefinition<boolean> = {
     immutablePaths: [],
     get: false,
     getHistory: false,
@@ -1133,6 +1407,7 @@ function transformActionsToBooleanRules(rules: FactoryRuleDefinition = {}, paths
   };
   const actions: BiotaActionsDefinition = {
     global: {},
+    public: { ...defaultRuleDefinition },
     self: { ...defaultRuleDefinition },
     owner: { ...defaultRuleDefinition },
     assignee: { ...defaultRuleDefinition },
@@ -1147,6 +1422,7 @@ function transformActionsToBooleanRules(rules: FactoryRuleDefinition = {}, paths
   };
   for (const key of Object.keys(rules)) {
     if (Array.isArray(rules[key])) {
+      if (rules[key].includes('public')) actions.public[key] = true;
       if (rules[key].includes('self')) actions.self[key] = true;
       if (rules[key].includes('owner')) actions.owner[key] = true;
       if (rules[key].includes('assignee')) actions.assignee[key] = true;
@@ -1154,6 +1430,9 @@ function transformActionsToBooleanRules(rules: FactoryRuleDefinition = {}, paths
     } else if (typeof rules[key] === 'boolean') {
       actions.global[key] = rules[key];
     }
+  }
+  if (((paths.public && paths.public.immutablePaths) || []).length > 0) {
+    actions.public.immutablePaths = paths.public.immutablePaths;
   }
   if (((paths.self && paths.self.immutablePaths) || []).length > 0) {
     actions.self.immutablePaths = paths.self.immutablePaths;

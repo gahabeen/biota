@@ -33,7 +33,13 @@ export interface FactoryDocumentMembershipRoleApi<OT = Expr> {
   remove(): OT;
 }
 
+export interface FactoryDocumentMembershipPublicApi<OT = Expr> {
+  set(): OT;
+  remove(): OT;
+}
+
 export interface FactoryDocumentMembershipApi<OT = Expr> {
+  public: FactoryDocumentMembershipPublicApi<OT>;
   role: FactoryDocumentMembershipRole<OT>;
   owner: FactoryDocumentMembershipOwnerApi<OT>;
   assignee: FactoryDocumentMembershipAssignee<OT>;

@@ -8,6 +8,13 @@ import { FaunaRoleOptions } from '~/types/fauna';
 export const public_: FaunaRoleOptions = {
   name: BiotaRoleName('public'),
   privileges: [
+    // EXAMPLE for public access
+    // Privilege({
+    //   resource: q.Collection('todos'),
+    //   rights: {
+    //     get: ['public'],
+    //   },
+    // }),
     Privilege({
       resource: q.Function(BiotaFunctionName('UDFunctionExists')),
       actions: { call: true },

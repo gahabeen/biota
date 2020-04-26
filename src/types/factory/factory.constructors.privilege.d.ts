@@ -4,6 +4,7 @@ import { Expr } from 'faunadb';
 
 export interface BiotaActionsDefinition {
   global?: FaunaRolePrivilegeActions;
+  public?: FactoryRuleDefinition<boolean>;
   self?: FactoryRuleDefinition<boolean>;
   owner?: FactoryRuleDefinition<boolean>;
   assignee?: FactoryRuleDefinition<boolean>;

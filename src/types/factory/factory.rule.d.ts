@@ -1,10 +1,11 @@
-export type FactoryRuleAuthor = 'self' | 'owner' | 'assignee' | 'admin';
+export type FactoryRuleAuthor = 'public' | 'self' | 'owner' | 'assignee' | 'admin';
 
 export interface FactoryRuleDefinitionPathsOptions {
   immutablePaths?: string[];
 }
 
 export interface FactoryRuleDefinitionPaths {
+  public?: FactoryRuleDefinitionPathsOptions;
   admin?: FactoryRuleDefinitionPathsOptions;
   self?: FactoryRuleDefinitionPathsOptions;
   owner?: FactoryRuleDefinitionPathsOptions;
@@ -36,6 +37,8 @@ export interface FactoryRuleDefinition<T = FactoryRuleAuthor[] | boolean> {
   remember?: T;
   setOwner?: T;
   removeOwner?: T;
+  setPublic?: T;
+  removePublic?: T;
   setAssignee?: T;
   removeAssignee?: T;
   setRole?: T;

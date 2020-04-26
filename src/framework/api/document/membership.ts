@@ -5,9 +5,42 @@ import { document } from '~/factory/api/document';
 import { execute } from '~/tools/tasks';
 
 export const membership: FactoryDocument<FrameworkDocumentApi['membership']> = function (this: Biota, collectionName, id) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   return {
+    public: {
+      async set() {
+        return execute(
+          [
+            {
+              name: `(Membership) Set public access on [${collectionName}/${id}]`,
+              task() {
+                return self.query(document(self.context)(collectionName, id).membership.public.set());
+              },
+            },
+          ],
+          {
+            domain: 'Biota.document.membership.public.set',
+          },
+        );
+      },
+      remove() {
+        return execute(
+          [
+            {
+              name: `(Membership) Remove pubic access on [${collectionName}/${id}]`,
+              task() {
+                return self.query(document(self.context)(collectionName, id).membership.public.remove());
+              },
+            },
+          ],
+          {
+            domain: 'Biota.document.membership.public.remove',
+          },
+        );
+      },
+    },
     role(roleOrRef) {
       return {
         async set() {
