@@ -1,29 +1,26 @@
-import { FaunaPaginateOptions } from '~/types/fauna';
 import { Biota } from '~/biota';
+import { documents } from '~/factory/api/documents';
 import { execute } from '~/tools/tasks';
+import { FactoryDocuments } from '~/types/factory/factory.documents';
+import { FrameworkDocumentsApi } from '~/types/framework/framework.documents';
 
-export async function activity(this: Biota, pagination: FaunaPaginateOptions = {}) {
+export const activity: FactoryDocuments<FrameworkDocumentsApi['activity']> = function (this: Biota, collectionName) {
   const self = this;
 
-  return execute(
-    [
-      {
-        name: `Activity of documents`,
-        async task() {
-          return {};
-          // return self.database(BiotaCollectionName('actions')).find(
-          //   {
-          //     database: {
-          //       $computed: q.Collection(databaseName),
-          //     },
-          //   },
-          //   pagination,
-          // );
+  return async (pagination) => {
+    return execute(
+      [
+        {
+          name: `Activity for documents in collection [${collectionName}]`,
+          task() {
+            return {};
+            // return self.query(documents(self.context)(collectionName).activity(pagination));
+          },
         },
+      ],
+      {
+        domain: 'Biota.document.expireAt',
       },
-    ],
-    {
-      domain: 'Biota.documents.activity',
-    },
-  );
-}
+    );
+  };
+};

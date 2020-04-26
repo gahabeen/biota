@@ -1,21 +1,26 @@
-import { FrameworkDocumentsApi } from '~/types/framework/framework.documents';
+import { Biota } from '~/biota';
 import { documents } from '~/factory/api/documents';
 import { execute } from '~/tools/tasks';
+import { FactoryDocuments } from '~/types/factory/factory.documents';
+import { FrameworkDocumentsApi } from '~/types/framework/framework.documents';
 
-export const restoreMany: FrameworkDocumentsApi['restoreMany'] = async function (refList) {
+export const restoreMany: FactoryDocuments<FrameworkDocumentsApi['restoreMany']> = function (this: Biota, collectionName) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
-  return execute(
-    [
-      {
-        name: `Restore many documents`,
-        task() {
-          return self.query(documents(self.context).restoreMany(refList));
+  return async (idList) => {
+    return execute(
+      [
+        {
+          name: `Restore many documents in collection [${collectionName}]`,
+          task() {
+            return self.query(documents(self.context)(collectionName).restoreMany(idList));
+          },
         },
+      ],
+      {
+        domain: 'Biota.documents.restoreMany',
       },
-    ],
-    {
-      domain: 'Biota.documents.restoreMany',
-    },
-  );
+    );
+  };
 };

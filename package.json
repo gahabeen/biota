@@ -31,6 +31,7 @@
     "faunadb": "^2.11.1",
     "nanohash": "^0.0.15",
     "node-fetch": "^2.6.0",
+    "pluralize": "^8.0.0",
     "rimraf": "^3.0.2"
   },
   "devDependencies": {

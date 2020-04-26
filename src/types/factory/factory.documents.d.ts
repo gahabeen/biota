@@ -1,18 +1,10 @@
 import { Expr } from 'faunadb';
-import {
-  FaunaDocumentOptionsWithRef,
-  FaunaNumber,
-  FaunaPaginateMapper,
-  FaunaPaginateOptions,
-  FaunaRef,
-  FaunaString,
-  FaunaTime,
-} from '../fauna';
+import { FaunaDocumentOptionsWithRef, FaunaNumber, FaunaPaginateOptions, FaunaRef, FaunaString, FaunaTime } from '../fauna';
 
-export type FactoryDocuments<OT = FactoryDocumentsApi> = (collectionOrRef?: string | Expr | FaunaRef) => OT;
+export type FactoryDocuments<OT = FactoryDocumentsApi> = (collection?: FaunaString) => OT;
 
 export interface FactoryDocumentsApi<OT = Expr> {
-  findAll(collectionName: FaunaString, pagination: FaunaPaginateOptions | Expr): OT;
+  findAll(pagination: FaunaPaginateOptions | Expr): OT;
   getMany(nameList: FaunaString[]): OT;
   insertMany(optionsList: FaunaDocumentOptionsWithRef[]): OT;
   updateMany(optionsList: FaunaDocumentOptionsWithRef[]): OT;

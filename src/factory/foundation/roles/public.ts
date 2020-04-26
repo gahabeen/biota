@@ -16,6 +16,12 @@ export const public_: FaunaRoleOptions = {
     //   },
     // }),
     Privilege({
+      resource: q.Collection('todos'),
+      rights: {
+        get: ['public'],
+      },
+    }),
+    Privilege({
       resource: q.Function(BiotaFunctionName('UDFunctionExists')),
       actions: { call: true },
     }),

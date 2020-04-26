@@ -20,7 +20,7 @@ import { FrameworkDocument } from '~/types/framework/framework.document';
 
 export const document: FrameworkDocument = function (...args) {
   const [collectionName, id] = inputStringLiteral(args);
-
+  console.log({ collectionName, id });
   return {
     activity: activity.call(this, collectionName, id),
     history: history.call(this, collectionName, id),
