@@ -16,7 +16,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
     return {
       exists() {
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             check: q.If(q.IsString(q.Var('name')), true, ThrowError(q.Var('ctx'), "Name isn't a string", { name: q.Var('name') })),
@@ -24,25 +24,25 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.udfunction.exists';
         const online = {
           name: BiotaFunctionName('UDFunctionExists'),
           role: q.Role(BiotaRoleName('system')),
-          // data: { meta: { addToRoles: [BiotaRoleName('user')] } },
+          data: { meta: { addToRoles: [BiotaRoleName('public'), BiotaRoleName('user')] } },
         };
         return SafeMethodDispatch({ context, inputs, query })(offline, online);
       },
       get() {
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Get(q.Function(q.Var('name'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.udfunction.get';
         const online = { name: BiotaFunctionName('UDFunctionGet'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -199,14 +199,14 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       expireAt(at) {
         // alias
         const inputs = { name, at };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.udfunction.expireAt';
         const online = { name: BiotaFunctionName('UDFunctionExpireAt'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -214,7 +214,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       expireIn(delay) {
         // alias
         const inputs = { name, delay };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(
@@ -223,7 +223,7 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.udfunction.expireIn';
         const online = { name: BiotaFunctionName('UDFunctionExpireIn'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -231,14 +231,14 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       expireNow() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.udfunction.expireNow';
         const online = { name: BiotaFunctionName('UDFunctionExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -246,14 +246,14 @@ export const udfunction: FactoryContext<FactoryUDFunction> = function (context):
       restore() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'))(q.Var('name')).validity.restore()),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.collection.restore';
         const online = { name: BiotaFunctionName('UDFunctionRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

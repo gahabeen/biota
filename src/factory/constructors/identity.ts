@@ -10,7 +10,7 @@ export function Identity(allowSession = false) {
       allowSession,
       q.Identity(),
       q.If(
-        q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
+        q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('sessions')),
         q.Select(['data', '_membership', 'owner'], q.Get(q.Identity()), null),
         q.Identity(),
       ),

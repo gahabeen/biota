@@ -16,14 +16,14 @@ export const key: FactoryContext<FactoryKey> = function (context): FactoryKey {
     return {
       get() {
         const inputs = { id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Get(q.Ref(q.Keys(), q.Var('id'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.key.get';
         const online = { name: BiotaFunctionName('KeyGet'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

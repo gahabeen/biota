@@ -15,14 +15,14 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
     return {
       get() {
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Get(q.Index(q.Var('name'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.index.get';
         const online = { name: BiotaFunctionName('IndexGet'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -177,14 +177,14 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       expireAt(at) {
         // alias
         const inputs = { name, at };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.index.expireAt';
         const online = { name: BiotaFunctionName('IndexExpireAt'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -192,7 +192,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       expireIn(delay) {
         // alias
         const inputs = { name, delay };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(
@@ -203,7 +203,7 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.index.expireIn';
         const online = { name: BiotaFunctionName('IndexExpireIn'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -211,14 +211,14 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       expireNow() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.index.expireNow';
         const online = { name: BiotaFunctionName('IndexExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -226,14 +226,14 @@ export const index: FactoryContext<FactoryIndex> = function (context): FactoryIn
       restore() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Index' })(q.Var('name')).validity.restore()),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.collection.restore';
         const online = { name: BiotaFunctionName('IndexRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

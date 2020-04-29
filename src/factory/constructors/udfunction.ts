@@ -62,12 +62,12 @@ export function UDFunctionFromMethod(methodRaw: any) {
     }
   };
 
-  // const safe = (obj: any) => JSON.parse(JSON.stringify(obj));
+  const safe = (obj: any) => JSON.parse(JSON.stringify(obj));
   // methodRaw = safe(methodRaw);
   let definition: FaunaUDFunctionOptions = {};
   let args = [];
-  let data = {};
-  const subsequentFunctionsToCall = [];
+  let meta = {};
+  const dependencies = [];
   if (getRaw(methodRaw).if && getRaw(methodRaw).then && getRaw(methodRaw).else) {
     try {
       definition = getRaw(getRaw(getRaw(methodRaw).then).let[0].UDFunctionDefinition).object as FaunaUDFunctionOptions;
@@ -80,14 +80,15 @@ export function UDFunctionFromMethod(methodRaw: any) {
       // nothing
     }
     try {
-      data = getRaw(getRaw(getRaw(methodRaw).then).let[1].data) || [];
+      meta = getRaw(getRaw(getRaw(methodRaw).then).let[2].meta) || [];
+      meta = safe((meta as any)?.object || meta);
     } catch (error) {
       // nothing
     }
     try {
       const fullQuery = getRaw(getRaw(methodRaw).else).in;
       const { query, functionsToCall } = removeOfflineQuery(fullQuery);
-      subsequentFunctionsToCall.push(...functionsToCall);
+      dependencies.push(...functionsToCall);
       definition.body = q.Query(
         q.Lambda(
           ['ctx', 'params'],
@@ -105,9 +106,9 @@ export function UDFunctionFromMethod(methodRaw: any) {
     }
   }
   if (definition.name) {
-    return { definition, subsequentFunctionsToCall, data };
+    return { definition, dependencies, meta };
   } else {
-    return { definition: null, subsequentFunctionsToCall, data };
+    return { definition: null, dependencies, meta };
   }
 }
 export function CallFunction(

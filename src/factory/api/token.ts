@@ -15,14 +15,14 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
     return {
       get() {
         const inputs = { id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Get(q.Ref(q.Tokens(), q.Var('id'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.token.get';
         const online = { name: BiotaFunctionName('TokenGet'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -177,14 +177,14 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       expireAt(at) {
         // alias
         const inputs = { id, at };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Token' })(q.Ref(q.Tokens(), q.Var('id'))).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.token.expireAt';
         const online = { name: BiotaFunctionName('TokenExpireAt'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -192,7 +192,7 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       expireIn(delay) {
         // alias
         const inputs = { id, delay };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(
@@ -203,7 +203,7 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.token.expireIn';
         const online = { name: BiotaFunctionName('TokenExpireIn'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -211,14 +211,14 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       expireNow() {
         // alias
         const inputs = { id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Token' })(q.Ref(q.Tokens(), q.Var('id'))).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.token.expireNow';
         const online = { name: BiotaFunctionName('TokenExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -226,14 +226,14 @@ export const token: FactoryContext<FactoryToken> = function (context): FactoryTo
       restore() {
         // alias
         const inputs = { id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Token' })(q.Ref(q.Tokens(), q.Var('id'))).validity.restore()),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.collection.restore';
         const online = { name: BiotaFunctionName('TokenRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

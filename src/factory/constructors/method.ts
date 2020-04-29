@@ -26,7 +26,8 @@ export function MethodQuery(query: Expr, result: Expr, action: Expr = null) {
 type OnlineBuilderNextOptions = { context?: FactoryContextDefinition; inputs?: object };
 type OnlineBuilderNext = (options: OnlineBuilderNextOptions) => Expr;
 export function OnlineBuilder(definition: FaunaUDFunctionOptions) {
-  const meta = definition.data?.meta || {};
+  const { meta = {}, ...data } = definition?.data || {};
+  // console.log('meta', meta, definition);
 
   const onlineNext: OnlineBuilderNext = (options): Expr => {
     const { context, inputs } = options;
@@ -36,7 +37,7 @@ export function OnlineBuilder(definition: FaunaUDFunctionOptions) {
         inputs: Object.keys(inputs || {}),
         meta,
       },
-      CallFunction(definition, context, inputs),
+      CallFunction({ ...definition, data }, context, inputs),
     );
   };
   return onlineNext;

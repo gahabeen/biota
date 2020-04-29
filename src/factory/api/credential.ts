@@ -20,21 +20,21 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
     return {
       get() {
         const inputs = { ref };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Get(q.Var('ref')),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.credential.get';
         const online = { name: BiotaFunctionName('CredentialGet'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       insert(password) {
         const inputs = { instance, password };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Create(q.Credentials(), { instance: q.Var('instance'), password: q.Var('password') }),
@@ -43,14 +43,14 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.credential.insert';
         const online = { name: BiotaFunctionName('CredentialInsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       update(currentPassword, password) {
         const inputs = { ref, instance, currentPassword, password };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Update(q.Var('ref'), {
@@ -63,14 +63,14 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.credential.insert';
         const online = { name: BiotaFunctionName('CredentialUpdate'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       replace(password) {
         const inputs = { ref, instance, password };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Replace(q.Var('ref'), { instance: q.Var('instance'), password: q.Var('password') }),
@@ -79,14 +79,14 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.credential.replace';
         const online = { name: BiotaFunctionName('CredentialReplace'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       repsert(password) {
         const inputs = { ref, password };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.If(
@@ -97,14 +97,14 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.credential.repsert';
         const online = { name: BiotaFunctionName('CredentialRepsert'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       forget() {
         const inputs = { ref };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             action: action(q.Var('ctx'))().log('forget', q.Var('ref')),
@@ -113,14 +113,14 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.credential.forget';
         const online = { name: BiotaFunctionName('CredentialRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       drop() {
         const inputs = { ref };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.If(q.Exists(q.Var('ref')), credentialApi(q.Var('ref')).forget(), {}),
@@ -128,7 +128,7 @@ export const credential: FactoryContext<FactoryCredential> = function (context):
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.credential.drop';
         const online = { name: BiotaFunctionName('CredentialClean'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

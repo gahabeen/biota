@@ -8,6 +8,7 @@ import { FrameworkUDFunctionsApi } from '~/types/framework/framework.udfunctions
 import { FaunaUDFunctionOptions } from '~/types/fauna';
 
 export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (this: Biota, options) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
   const tasks = [];
   const loadedUDFs = new Set();
@@ -37,9 +38,8 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
       };
 
       if (stepContent instanceof Expr) {
-        const { definition, subsequentFunctionsToCall, data } = UDFunctionFromMethod(stepContent);
-        const { meta } = (data as any) || {};
-        const { addToRoles } = meta || {};
+        const { definition, dependencies, meta } = UDFunctionFromMethod(stepContent);
+        const { addToRoles } = (meta as any) || {};
         if (definition && definition.name) {
           if (!loadedUDFs.has(definition.name)) {
             if (
@@ -47,7 +47,7 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
               (onlyNames.length > 0 && onlyNames.includes(definition.name)) ||
               (onlyNames.length === 0 && ((onlyNecessary && definition.role) || !onlyNecessary))
             ) {
-              subsequentFunctionsToCall.map(addDependency);
+              dependencies.map(addDependency);
               markDependencyAsLoaded(definition.name);
               loadedUDFs.add(definition.name);
               if (Array.isArray(addToRoles)) {

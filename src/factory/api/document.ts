@@ -11,7 +11,6 @@ import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryDocument } from '~/types/factory/factory.document';
 import { Pagination } from '../constructors/pagination';
 import { DocumentRef } from './constructors';
-import { PassportUser } from '../constructors/identity';
 
 // tslint:disable-next-line: only-arrow-functions
 export const document: FactoryContext<FactoryDocument> = function (context, options): FactoryDocument {
@@ -29,7 +28,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
     return {
       history(pagination = {}) {
         const inputs = { collection, id, pagination };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -37,25 +36,25 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const test = { action: 'history_read', inputs: [q.Ref(q.Collection(collection), id)] };
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.history`;
         const online = { name: BiotaFunctionName(`${prefix}History`), role: null };
-        return MethodDispatch({ context, inputs, query })(offline, online);
+        return MethodDispatch({ context, inputs, query, test })(offline, online);
       },
       snapshot(at = null) {
         const inputs = { collection, id, at };
-        // ----
+        // ↓↓↓↓
         const validation = {
           refExists: refExists(q.Var('collection'), q.Var('id')),
           check: q.If(q.Not(q.Exists(q.Var('ref'))), ThrowError(q.Var('ctx'), "Reference doesn't exists", { ref: q.Var('ref') }), true),
         };
-        // ----
+        // ↓↓↓↓
         const common = {
           ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
         };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             ...common,
@@ -64,20 +63,20 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const test = { action: 'read', inputs: q.Let(common, [q.Var('ref')]) };
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.snapshot`;
         const online = { name: BiotaFunctionName(`${prefix}Snapshot`), role: null };
         return MethodDispatch({ context, inputs, query, test })(offline, online);
       },
       get() {
         const inputs = { collection, id };
-        // ----
+        // ↓↓↓↓
         const common = {
           ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
         };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             ...common,
@@ -87,9 +86,9 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const test = { action: 'read', inputs: q.Let(common, [q.Var('ref')]) };
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.get`;
         const online = { name: BiotaFunctionName(`${prefix}Get`), role: null };
         return MethodDispatch({ context, inputs, query, test })(offline, online);
@@ -101,11 +100,11 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           ref: q.If(q.Not(q.IsNull(q.Var('id'))), q.Ref(q.Collection(q.Var('collection')), q.Var('id')), q.Collection(q.Var('collection'))),
           annotated: ResultData(document(q.Var('ctx'))(q.Var('collection'), q.Var('id')).annotate('insert', q.Var('data'))),
         };
-        // ----
+        // ↓↓↓↓
         const log = {
           action: action(q.Var('ctx'))().log('insert', DocumentRef(q.Var('doc'))),
         };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             ...common,
@@ -115,12 +114,12 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const test = {
           action: 'create',
           inputs: q.Let(common, [{ data: q.Var('annotated') }]),
         };
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.insert`;
         const online = { name: BiotaFunctionName(`${prefix}Insert`), role: null };
         return MethodDispatch({ context, inputs, query, test })(offline, online);
@@ -131,11 +130,11 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         const common = {
           annotated: ResultData(document(q.Var('ctx'))().annotate('update', q.Var('data'))),
         };
-        // ----
+        // ↓↓↓↓
         const log = {
           action: action(q.Var('ctx'))().log('update', DocumentRef(q.Var('doc'))),
         };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -146,19 +145,19 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const test = {
           action: 'write',
           inputs: q.Let(common, [{ data: q.Var('annotated') }]),
         };
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.update`;
         const online = { name: BiotaFunctionName(`${prefix}Update`), role: null };
         return MethodDispatch({ context, inputs, query, test })(offline, online);
       },
       upsert(data) {
         const inputs = { collection, id, data };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -171,7 +170,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.upsert`;
         const online = { name: BiotaFunctionName(`${prefix}Upsert`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -193,11 +192,11 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             ),
           ),
         };
-        // ----
+        // ↓↓↓↓
         const log = {
           action: action(q.Var('ctx'))().log('replace', DocumentRef(q.Var('doc'))),
         };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -208,19 +207,19 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const test = {
           action: 'write',
           inputs: q.Let(common, [{ data: q.Var('annotated') }]),
         };
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.replace`;
         const online = { name: BiotaFunctionName(`${prefix}Replace`), role: null };
         return MethodDispatch({ context, inputs, query, test })(offline, online);
       },
       repsert(data) {
         const inputs = { collection, id, data };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
@@ -234,7 +233,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.repsert`;
         const online = { name: BiotaFunctionName(`${prefix}Repsert`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -242,7 +241,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       delete() {
         // alias
         const inputs = { collection, id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -250,7 +249,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.delete`;
         const online = { name: BiotaFunctionName(`${prefix}Delete`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -258,7 +257,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       restore() {
         // alias
         const inputs = { collection, id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -266,7 +265,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.restore`;
         const online = { name: BiotaFunctionName(`${prefix}Restore`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -277,11 +276,11 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         const common = {
           ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
         };
-        // ----
+        // ↓↓↓↓
         const log = {
           action: action(q.Var('ctx'))().log('forget', q.Var('ref')),
         };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             ...common,
@@ -294,23 +293,23 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const test = {
           action: 'delete',
           inputs: q.Let(common, [q.Var('ref')]),
         };
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.forget`;
         const online = { name: BiotaFunctionName(`${prefix}Restore`), role: null };
         return MethodDispatch({ context, inputs, query, test })(offline, online);
       },
       remember() {
         const inputs = { collection, id };
-        // ----
+        // ↓↓↓↓
         const log = {
           action: action(q.Var('ctx'))().log('remember', q.Var('ref')),
         };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             ref: q.Ref(q.Collection(q.Var('collection')), q.Var('id')),
@@ -332,14 +331,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           q.Var('doc'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.remember`;
         const online = { name: BiotaFunctionName(`${prefix}Remember`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       drop() {
         const inputs = { collection, id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -352,7 +351,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.drop`;
         const online = { name: BiotaFunctionName(`${prefix}Clean`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -360,7 +359,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       expireAt(at) {
         // alias
         const inputs = { collection, id, at };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -368,7 +367,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.expireAt`;
         const online = { name: BiotaFunctionName(`${prefix}ExpireAt`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -376,7 +375,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       expireIn(delay) {
         // alias
         const inputs = { collection, id, delay };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -388,7 +387,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.expireIn`;
         const online = { name: BiotaFunctionName(`${prefix}ExpireIn`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -396,7 +395,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       expireNow() {
         // alias
         const inputs = { collection, id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -404,7 +403,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.expireNow`;
         const online = { name: BiotaFunctionName(`${prefix}ExpireNow`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -413,7 +412,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
         public: {
           set() {
             const inputs = { collection, id };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -432,14 +431,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               q.Var('doc'),
               q.Var('action'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = `factory.${prefix.toLowerCase()}.membership.public.set`;
             const online = { name: BiotaFunctionName(`${prefix}MembershipPublicSet`), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           remove() {
             const inputs = { collection, id };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -458,7 +457,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               q.Var('doc'),
               q.Var('action'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = `factory.${prefix.toLowerCase()}.membership.public.remove`;
             const online = { name: BiotaFunctionName(`${prefix}MembershipPublicRemove`), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
@@ -469,7 +468,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           return {
             distinct() {
               const inputs = { collection, id, roleRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -481,14 +480,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 },
                 q.Var('doc'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.role.distinct`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipRoleDistinct`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             difference() {
               const inputs = { collection, id, roleRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -499,14 +498,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 },
                 q.Var('doc'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.role.difference`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipRoleDifference`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             set() {
               const inputs = { collection, id, roleRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -527,14 +526,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 q.Var('doc'),
                 q.Var('action'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.role.set`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipRoleSet`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             remove() {
               const inputs = { collection, id, roleRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -555,7 +554,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 q.Var('doc'),
                 q.Var('action'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.role.remove`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipRoleRemove`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
@@ -566,7 +565,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           // tslint:disable-next-line: no-shadowed-variable
           set(user) {
             const inputs = { collection, id, user };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -587,14 +586,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               q.Var('doc'),
               q.Var('action'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = `factory.${prefix.toLowerCase()}.membership.owner.set`;
             const online = { name: BiotaFunctionName(`${prefix}MembershipOwnerSet`), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           remove() {
             const inputs = { collection, id };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -613,7 +612,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
               q.Var('doc'),
               q.Var('action'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = `factory.${prefix.toLowerCase()}.membership.owner.remove`;
             const online = { name: BiotaFunctionName(`${prefix}MembershipOwnerRemove`), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
@@ -624,7 +623,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           return {
             distinct() {
               const inputs = { collection, id, assigneeRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -637,14 +636,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 },
                 q.Var('doc'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.assignee.distinct`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeDistinct`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             difference() {
               const inputs = { collection, id, assigneeRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -655,14 +654,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 },
                 q.Var('doc'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.assignee.difference`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeDifference`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             set() {
               const inputs = { collection, id, assigneeRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -683,14 +682,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 q.Var('doc'),
                 q.Var('action'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.assignee.set`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeSet`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
             },
             remove() {
               const inputs = { collection, id, assigneeRef };
-              // ----
+              // ↓↓↓↓
               const query = MethodQuery(
                 {
                   refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -711,7 +710,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
                 q.Var('doc'),
                 q.Var('action'),
               );
-              // ----
+              // ↓↓↓↓
               const offline = `factory.${prefix.toLowerCase()}.membership.assignee.remove`;
               const online = { name: BiotaFunctionName(`${prefix}MembershipAssigneeRemove`), role: null };
               return MethodDispatch({ context, inputs, query })(offline, online);
@@ -722,7 +721,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       validity: {
         delete() {
           const inputs = { collection, id };
-          // ----
+          // ↓↓↓↓
           const query = MethodQuery(
             {
               refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -741,14 +740,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             q.Var('doc'),
             q.Var('action'),
           );
-          // ----
+          // ↓↓↓↓
           const offline = `factory.${prefix.toLowerCase()}.validity.delete`;
           const online = { name: BiotaFunctionName(`${prefix}ValidityDelete`), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
         expire(at) {
           const inputs = { collection, id, at };
-          // ----
+          // ↓↓↓↓
           const query = MethodQuery(
             {
               refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -769,14 +768,14 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             q.Var('doc'),
             q.Var('action'),
           );
-          // ----
+          // ↓↓↓↓
           const offline = `factory.${prefix.toLowerCase()}.validity.expire`;
           const online = { name: BiotaFunctionName(`${prefix}ValidityExpire`), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
         },
         restore() {
           const inputs = { collection, id };
-          // ----
+          // ↓↓↓↓
           const query = MethodQuery(
             {
               refExists: refExists(q.Var('collection'), q.Var('id')),
@@ -808,7 +807,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
             q.Var('doc'),
             q.Var('action'),
           );
-          // ----
+          // ↓↓↓↓
           const offline = `factory.${prefix.toLowerCase()}.validity.restore`;
           const online = { name: BiotaFunctionName(`${prefix}ValidityRestore`), role: null };
           return MethodDispatch({ context, inputs, query })(offline, online);
@@ -816,7 +815,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
       },
       annotate(actionName = null, data = {}) {
         const inputs = { actionName, data };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.If(
@@ -858,7 +857,7 @@ export const document: FactoryContext<FactoryDocument> = function (context, opti
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.${prefix.toLowerCase()}.annotate`;
         const online = { name: BiotaFunctionName('DocumentAnnotate'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

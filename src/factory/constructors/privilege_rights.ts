@@ -42,7 +42,7 @@ export function PrivilegeRights(
         has_identity: q.HasIdentity(),
         is_session_identity: q.If(
           q.Var('has_identity'),
-          q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
+          q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('sessions')),
           false,
         ),
         session: q.If(q.Var('is_session_identity'), q.Identity(), null),

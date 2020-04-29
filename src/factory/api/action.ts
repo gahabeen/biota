@@ -14,7 +14,7 @@ export const action: FactoryContext<FactoryAction> = function (context): Factory
       ...document(context, { prefix: 'Action' })(BiotaCollectionName('actions'), id),
       log(name = null, ref = null) {
         const inputs = { name, ref };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.If(
@@ -40,7 +40,7 @@ export const action: FactoryContext<FactoryAction> = function (context): Factory
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.action.insert';
         const online = { name: BiotaFunctionName('ActionLog'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

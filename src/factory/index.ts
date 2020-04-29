@@ -2,6 +2,11 @@ import * as ql from './api/ql';
 import * as foundation from './api/foundation';
 import * as constructors from './api/constructors';
 
+import * as proxy from './api/proxy';
+
+import { util } from './api/util';
+import { validator } from './api/validator';
+
 import { action } from './api/action';
 import { collection } from './api/collection';
 import { collections } from './api/collections';
@@ -26,35 +31,9 @@ import { users } from './api/users';
 import { session } from './api/session';
 import { sessions } from './api/sessions';
 
-export const factory = {
-  ql,
-  foundation,
-  constructors,
-  action,
-  collection,
-  collections,
-  credential,
-  credentials,
-  database,
-  databases,
-  document,
-  documents,
-  index,
-  indexes,
-  key,
-  keys,
-  role,
-  roles,
-  token,
-  tokens,
-  udfunction,
-  udfunctions,
-  user,
-  users,
-  session,
-};
-
 export const factoryApi = {
+  util,
+  validator,
   action,
   collection,
   collections,
@@ -78,4 +57,12 @@ export const factoryApi = {
   users,
   session,
   sessions,
+  proxy,
+};
+
+export const factory = {
+  ql,
+  foundation,
+  constructors,
+  ...factoryApi,
 };

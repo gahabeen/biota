@@ -1,1 +1,1 @@
-export * from '~/factory/api/ql/stringSplit';
+export * from '~/factory/api/ql/StringSplit';

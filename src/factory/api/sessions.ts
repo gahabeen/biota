@@ -17,7 +17,7 @@ export const sessions: FactoryContext<FactorySessionsApi> = function (context): 
       const query = MethodQuery(
         {
           docs: q.Map(
-            q.Paginate(q.Documents(q.Collection(BiotaCollectionName('user_sessions'))), Pagination(q.Var('pagination'))),
+            q.Paginate(q.Documents(q.Collection(BiotaCollectionName('sessions'))), Pagination(q.Var('pagination'))),
             q.Lambda('x', q.Get(q.Var('x'))),
           ),
         },

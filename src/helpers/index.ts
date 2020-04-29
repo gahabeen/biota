@@ -28,7 +28,7 @@ export function stringPath(p: string | string[]) {
   }
 }
 
-export function path(p: string | string[], autoprefixing: boolean = true) {
+export function path(p: string | string[], autoprefixing = true) {
   let pathArray = [];
   if (Array.isArray(p)) {
     pathArray = p.map((a) => `${a}`);

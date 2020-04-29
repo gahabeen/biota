@@ -170,14 +170,14 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       restore() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.restore()),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.collection.restore';
         const online = { name: BiotaFunctionName('CollectionRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -221,14 +221,14 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       expireAt(at) {
         // alias
         const inputs = { name, at };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.document.expireAt';
         const online = { name: BiotaFunctionName('CollectionExpireAt'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -236,7 +236,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       expireIn(delay) {
         // alias
         const inputs = { name, delay };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(
@@ -247,7 +247,7 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.document.expireIn';
         const online = { name: BiotaFunctionName('CollectionExpireIn'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -255,14 +255,14 @@ export const collection: FactoryContext<FactoryCollection> = function (context):
       expireNow() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Collection' })(q.Collection(q.Var('name'))).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.document.expireNow';
         const online = { name: BiotaFunctionName('CollectionExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

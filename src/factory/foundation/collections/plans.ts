@@ -1,7 +1,7 @@
 import { Collection, BiotaCollectionName } from '~/factory/constructors/collection';
 
-export const actions = Collection({
-  name: BiotaCollectionName('actions'),
+export const plans = Collection({
+  name: BiotaCollectionName('plans'),
   history_days: null,
   ttl_days: null,
 });

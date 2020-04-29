@@ -32,7 +32,7 @@ export const user: FaunaRoleOptions = Role({
   name: BiotaRoleName('user'),
   membership: [
     {
-      resource: q.Collection(BiotaCollectionName('user_sessions')),
+      resource: q.Collection(BiotaCollectionName('sessions')),
       predicate: q.Query(
         q.Lambda(
           'ref',
@@ -57,14 +57,6 @@ export const user: FaunaRoleOptions = Role({
     },
   ],
   privileges: [
-    /**
-     * Indexes
-     */
-
-    /**
-     * Collections
-     */
-
     CustomPrivilege({
       resource: q.Collection(BiotaCollectionName('actions')),
       actions: {
@@ -94,25 +86,11 @@ export const user: FaunaRoleOptions = Role({
     }),
 
     Privilege({
-      resource: q.Collection(BiotaCollectionName('user_sessions')),
+      resource: q.Collection(BiotaCollectionName('sessions')),
       rights: {
         get: ['self', 'owner', 'assignee'],
         update: ['self', 'owner', 'assignee'],
       },
     }),
-
-    Privilege({
-      resource: q.Function(BiotaFunctionName('SessionPassport')),
-      actions: { call: true },
-    }),
-
-    /**
-     * Functions
-     */
-
-    // CustomPrivilege({
-    //   resource: q.Function(BiotaFunctionName('SearchQuery')),
-    //   actions: { call: true },
-    // }),
   ],
 });

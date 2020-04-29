@@ -15,14 +15,14 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
     return {
       get() {
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Get(q.Database(q.Var('name'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.database.get';
         const online = { name: BiotaFunctionName('DatabaseGet'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -181,14 +181,14 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       expireAt(at) {
         // alias
         const inputs = { name, at };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.expire(q.Var('at'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.database.expireAt';
         const online = { name: BiotaFunctionName('DatabaseExpireAt'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -196,7 +196,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       expireIn(delay) {
         // alias
         const inputs = { name, delay };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(
@@ -207,7 +207,7 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.database.expireIn';
         const online = { name: BiotaFunctionName('DatabaseExpireIn'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -215,14 +215,14 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       expireNow() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.expire(q.Now())),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.database.expireNow';
         const online = { name: BiotaFunctionName('DatabaseExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -230,14 +230,14 @@ export const database: FactoryContext<FactoryDatabase> = function (context): Fac
       restore() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: ResultData(document(q.Var('ctx'), { prefix: 'Database' })(q.Database(q.Var('name'))).validity.restore()),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.database.restore';
         const online = { name: BiotaFunctionName('DatabaseRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

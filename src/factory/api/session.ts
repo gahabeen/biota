@@ -16,16 +16,16 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
   // tslint:disable-next-line: only-arrow-functions
   return (id = null) => {
     return {
-      ...document(context, { prefix: 'Session' })(BiotaCollectionName('user_sessions'), id),
+      ...document(context, { prefix: 'Session' })(BiotaCollectionName('sessions'), id),
       passport() {
         const inputs = {};
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             has_identity: q.HasIdentity(),
             is_session_identity: q.If(
               q.Var('has_identity'),
-              q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('user_sessions')),
+              q.Equals(q.Select(['collection', 'id'], q.Identity(), null), BiotaCollectionName('sessions')),
               false,
             ),
             session: q.If(q.Var('is_session_identity'), q.Identity(), null),
@@ -36,21 +36,21 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
             user: q.Var('user'),
           },
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.session.passport';
         const online = {
           name: BiotaFunctionName('SessionPassport'),
           role: q.Role(BiotaRoleName('system')),
-          // data: { meta: { addToRoles: [BiotaRoleName('system')] } },
+          data: { meta: { addToRoles: [BiotaRoleName('user'), BiotaRoleName('public')] } },
         };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       identity() {
         const inputs = { id };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
-            session: q.Ref(q.Collection(BiotaCollectionName('user_sessions')), q.Var('id')),
+            session: q.Ref(q.Collection(BiotaCollectionName('sessions')), q.Var('id')),
             user: q.Select(['data', '_membership', 'owner'], q.Get(q.Var('session')), null),
           },
           {
@@ -58,7 +58,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
             user: q.Var('user'),
           },
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.session.identity';
         const online = {
           name: BiotaFunctionName('SessionIdentity'),
@@ -69,7 +69,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
       },
       start(expireIn, user = ContextProp(q.Var('ctx'), 'identity')) {
         const inputs = { expireIn, user };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Let(
@@ -99,7 +99,7 @@ export const session: FactoryContext<FactorySession> = function (context): Facto
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.session.start';
         const online = { name: BiotaFunctionName('SessionStart'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

@@ -15,14 +15,14 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
     return {
       get() {
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.Get(q.Role(q.Var('name'))),
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.role.get';
         const online = { name: BiotaFunctionName('RoleGet'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -194,7 +194,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       },
       remember() {
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: document(q.Var('ctx'), { prefix: 'Role' })(q.Role(q.Var('name'))).remember(),
@@ -202,7 +202,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = `factory.role.remember`;
         const online = { name: BiotaFunctionName(`RoleRemember`), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -643,7 +643,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       expireAt(at) {
         // alias
         const inputs = { name, at };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Var('at')),
@@ -651,7 +651,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.role.expireAt';
         const online = { name: BiotaFunctionName('RoleExpireAt'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -659,7 +659,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       expireIn(delay) {
         // alias
         const inputs = { name, delay };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(
@@ -669,7 +669,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.role.expireIn';
         const online = { name: BiotaFunctionName('RoleExpireIn'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -677,7 +677,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       expireNow() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.expire(q.Now()),
@@ -685,7 +685,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.role.expireNow';
         const online = { name: BiotaFunctionName('RoleExpireNow'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -693,7 +693,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
       restore() {
         // alias
         const inputs = { name };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: document(q.Var('ctx'))(q.Role(q.Var('name'))).validity.restore(),
@@ -701,7 +701,7 @@ export const role: FactoryContext<FactoryRole> = function (context): FactoryRole
           ResultData(q.Var('doc')),
           ResultAction(q.Var('doc')),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.collection.restore';
         const online = { name: BiotaFunctionName('RoleRestore'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);

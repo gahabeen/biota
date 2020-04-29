@@ -26,7 +26,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
       ...document(context, { prefix: 'User' })(BiotaCollectionName('users'), id),
       login(email = null, password = null, expireIn = null) {
         const inputs = { email, password, expireIn };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             userRef: ResultData(users(q.Var('ctx')).getByAuthEmail(q.Var('email'))),
@@ -43,14 +43,18 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
           q.Var('session'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.user.login';
-        const online = { name: BiotaFunctionName('UserLogin'), role: q.Role(BiotaRoleName('system')) };
+        const online = {
+          name: BiotaFunctionName('UserLogin'),
+          role: q.Role(BiotaRoleName('system')),
+          data: { meta: { addToRoles: [BiotaRoleName('public')] } },
+        };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       logout(everywhere = null) {
         const inputs = { everywhere };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.If(
@@ -62,7 +66,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
                     logging_out: q.Map(
                       q.Paginate(
                         ResultData(
-                          indexes(q.Var('ctx')).searchQuery(q.Collection(BiotaCollectionName('user_sessions')), {
+                          indexes(q.Var('ctx')).searchQuery(q.Collection(BiotaCollectionName('sessions')), {
                             '_membership.owner': ContextProp(q.Var('ctx'), 'identity'),
                           }),
                         ),
@@ -87,14 +91,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.user.logout';
         const online = { name: BiotaFunctionName('UserLogout'), role: null };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       changePassword(currentPassword = null, password = null) {
         const inputs = { currentPassword, password };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             doc: q.If(
@@ -107,7 +111,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
           },
           q.Var('doc'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.user.changePassword';
         const online = { name: BiotaFunctionName('UserChangePassword'), role: q.Role(BiotaRoleName('system')) };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -117,7 +121,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
        */
       loginWithAuthAccount(account = null, expireIn = null) {
         const inputs = { account, expireIn };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             accountValid: q.If(
@@ -135,14 +139,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
           },
           q.Var('session'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.user.loginWithAuthAccount';
         const online = { name: BiotaFunctionName('UserLoginWithAuthAccount'), role: q.Role(BiotaRoleName('system')) };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       register(email = null, password = null, data = {}, expireIn = null) {
         const inputs = { email, password, data, expireIn };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             userRef: ResultRef(user(q.Var('ctx'))().insert(q.Var('data'))),
@@ -161,9 +165,13 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
           q.Var('session'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.user.register';
-        const online = { name: BiotaFunctionName('UserRegister'), role: q.Role(BiotaRoleName('system')) };
+        const online = {
+          name: BiotaFunctionName('UserRegister'),
+          role: q.Role(BiotaRoleName('system')),
+          data: { meta: { addToRoles: [BiotaRoleName('public')] } },
+        };
         return MethodDispatch({ context, inputs, query })(offline, online);
       },
       /**
@@ -171,7 +179,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
        */
       registerWithAuthAccount(account = null, expireIn = null) {
         const inputs = { account, expireIn };
-        // ----
+        // ↓↓↓↓
         const query = MethodQuery(
           {
             userRef: q.Select('ref', ResultData(user(q.Var('ctx'))(q.Collection(BiotaCollectionName('users'))).insert({})), null),
@@ -188,7 +196,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
           q.Var('session'),
           q.Var('action'),
         );
-        // ----
+        // ↓↓↓↓
         const offline = 'factory.user.registerWithAuthAccount';
         const online = { name: BiotaFunctionName('UserRegisterWithAuthAccount'), role: q.Role(BiotaRoleName('system')) };
         return MethodDispatch({ context, inputs, query })(offline, online);
@@ -197,7 +205,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         email: {
           set(email = null) {
             const inputs = { id, email };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 doc: q.If(
@@ -214,14 +222,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               },
               q.Var('doc'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = 'factory.user.auth.email.set';
             const online = { name: BiotaFunctionName('UserAuthEmailSet'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           remove() {
             const inputs = { id };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 doc: ResultData(
@@ -234,7 +242,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               },
               q.Var('doc'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = 'factory.user.auth.email.remove';
             const online = { name: BiotaFunctionName('UserAuthEmailRemove'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
@@ -243,7 +251,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
         account: {
           distinct(account = null) {
             const inputs = { id, account };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 provider: q.Select('provider', q.Var('account'), null),
@@ -280,14 +288,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               },
               q.Var('new_accounts'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = 'factory.user.auth.accounts.distinct';
             const online = { name: BiotaFunctionName('UserAuthAccountsDistinct'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           difference(provider = null, accountId = null) {
             const inputs = { id, provider, accountId };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 current_accounts: q.Select(
@@ -310,14 +318,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               },
               q.Var('filtered_accounts'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = 'factory.user.auth.accounts.difference';
             const online = { name: BiotaFunctionName('UserAuthAccountsDifference'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           set(account = null) {
             const inputs = { id, account };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 doc: ResultData(
@@ -330,14 +338,14 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               },
               q.Var('doc'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = 'factory.user.auth.accounts.set';
             const online = { name: BiotaFunctionName('UserAuthAccountsSet'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);
           },
           remove(provider = null, accountId = null) {
             const inputs = { id, provider, accountId };
-            // ----
+            // ↓↓↓↓
             const query = MethodQuery(
               {
                 doc: ResultData(
@@ -350,7 +358,7 @@ export const user: FactoryContext<FactoryUser> = function (context): FactoryUser
               },
               q.Var('doc'),
             );
-            // ----
+            // ↓↓↓↓
             const offline = 'factory.user.auth.accounts.remove';
             const online = { name: BiotaFunctionName('UserAuthAccountsRemove'), role: null };
             return MethodDispatch({ context, inputs, query })(offline, online);

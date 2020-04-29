@@ -1,5 +1,4 @@
 import { Biota } from '~/biota';
-import { documents } from '~/factory/api/documents';
 import { execute } from '~/tools/tasks';
 import { FactoryDocuments } from '~/types/factory/factory.documents';
 import { FrameworkDocumentsApi } from '~/types/framework/framework.documents';
@@ -12,7 +11,7 @@ export const activity: FactoryDocuments<FrameworkDocumentsApi['activity']> = fun
       [
         {
           name: `Activity for documents in collection [${collectionName}]`,
-          task() {
+          async task() {
             return {};
             // return self.query(documents(self.context)(collectionName).activity(pagination));
           },

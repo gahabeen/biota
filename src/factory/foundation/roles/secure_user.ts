@@ -13,7 +13,7 @@ export const system: FaunaRoleOptions = {
   ],
   privileges: [
     Privilege({
-      resource: q.Collection(BiotaCollectionName('user_sessions')),
+      resource: q.Collection(BiotaCollectionName('sessions')),
       rights: {
         insert: ['owner'],
       },
