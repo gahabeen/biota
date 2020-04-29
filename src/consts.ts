@@ -38,6 +38,9 @@ export const OAUTH2 = {
 export const PATTERNS = {
   TRIM_LEFT: /^\s+/,
   TRIM_RIGHT: /\s+$/,
+  ALPHA: /^[a-zA-Z]+$/,
+  ALPHANUM: /^[a-zA-Z0-9]+$/,
+  ALPHADASH: /^[a-zA-Z0-9_-]+$/,
   EMAIL: /^\S+@\S+\.\S+$/,
   EMAIL_PRECISE: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   MAC: /^((([a-f0-9][a-f0-9]+[-]){5}|([a-f0-9][a-f0-9]+[:]){5})([a-f0-9][a-f0-9])$)|(^([a-f0-9][a-f0-9][a-f0-9][a-f0-9]+[.]){2}([a-f0-9][a-f0-9][a-f0-9][a-f0-9]))$/i,
@@ -47,7 +50,8 @@ export const VALIDATORS_MESSAGES = {
   required: "The '{field}' field is required.",
 
   string: "The '{field}' field must be a string.",
-  stringEmpty: "The '{field}' field must not be empty.",
+  stringEmpty: "The '{field}' field must be empty.",
+  stringNotEmpty: "The '{field}' field must not be empty.",
   stringMin: "The '{field}' field length must be greater than or equal to {expected} characters long.",
   stringMax: "The '{field}' field length must be less than or equal to {expected} characters long.",
   stringLength: "The '{field}' field length must be {expected} characters long.",
