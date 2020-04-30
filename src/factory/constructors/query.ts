@@ -22,5 +22,5 @@ export function ParseQuery(input: Expr) {
 }
 
 export function RunExpr(expr: Expr, inputs: any[]) {
-  return q.Select(0, q.Map(inputs, expr));
+  return q.Select(0, q.Map([inputs], expr));
 }

@@ -1,12 +1,12 @@
 import { Expr, query as q } from 'faunadb';
-import { VALIDATORS_MESSAGES, FALSE_EXPR } from '~/consts';
+import { TYPE_ERRORS_MESSAGES, FALSE_EXPR } from '~/consts';
 import { IsFalse } from '../api/ql/IsFalse';
 import { ResultData } from './result';
 
-export function ValidatorErrors(state: Expr, errors: Expr[]) {
+export function TypeErrors(state: Expr, errors: Expr[]) {
   return q.Let(
     {
-      templates: VALIDATORS_MESSAGES,
+      templates: TYPE_ERRORS_MESSAGES,
       state,
     },
     q.Reduce(
@@ -66,7 +66,8 @@ export function ValidatorErrors(state: Expr, errors: Expr[]) {
   );
 }
 
-export function ValidatorCompose(value: Expr, options: Expr, state: Expr) {
+// Resolve list of results
+export function TypeResolve(value: Expr, options: Expr, state: Expr) {
   return (...queries: ((...args: any[]) => Expr)[]) => {
     return q.Let(
       [
@@ -84,12 +85,10 @@ export function ValidatorCompose(value: Expr, options: Expr, state: Expr) {
           list.push({
             result: q.If(
               q.Not(q.Select(['state', 'stop'], q.Var('composition'), false)),
-              ResultData(
-                query(
-                  q.Select('value', q.Var('composition'), null),
-                  q.Select('options', q.Var('composition'), {}),
-                  q.Select('state', q.Var('composition'), {}),
-                ),
+              query(
+                q.Select('value', q.Var('composition'), null),
+                q.Select('options', q.Var('composition'), {}),
+                q.Select('state', q.Var('composition'), {}),
               ),
               { stop: true },
             ),

@@ -46,12 +46,12 @@ export const PATTERNS = {
   MAC: /^((([a-f0-9][a-f0-9]+[-]){5}|([a-f0-9][a-f0-9]+[:]){5})([a-f0-9][a-f0-9])$)|(^([a-f0-9][a-f0-9][a-f0-9][a-f0-9]+[.]){2}([a-f0-9][a-f0-9][a-f0-9][a-f0-9]))$/i,
 };
 
-export const VALIDATORS_MESSAGES = {
+export const TYPE_ERRORS_MESSAGES = {
   required: "The '{field}' field is required.",
 
   string: "The '{field}' field must be a string.",
   stringEmpty: "The '{field}' field must be empty.",
-  stringNotEmpty: "The '{field}' field must not be empty.",
+  stringNonEmpty: "The '{field}' field must be non-empty.",
   stringMin: "The '{field}' field length must be greater than or equal to {expected} characters long.",
   stringMax: "The '{field}' field length must be less than or equal to {expected} characters long.",
   stringLength: "The '{field}' field length must be {expected} characters long.",
@@ -67,13 +67,14 @@ export const VALIDATORS_MESSAGES = {
   numberMin: "The '{field}' field must be greater than or equal to {expected}.",
   numberMax: "The '{field}' field must be less than or equal to {expected}.",
   numberEqual: "The '{field}' field must be equal to {expected}.",
-  numberNotEqual: "The '{field}' field can't be equal to {expected}.",
+  numberNonEqual: "The '{field}' field can't be equal to {expected}.",
   numberInteger: "The '{field}' field must be an integer.",
   numberPositive: "The '{field}' field must be a positive number.",
   numberNegative: "The '{field}' field must be a negative number.",
 
   array: "The '{field}' field must be an array.",
-  arrayEmpty: "The '{field}' field must not be an empty array.",
+  arrayEmpty: "The '{field}' field must be an empty array.",
+  arrayNonEmpty: "The '{field}' field must be a non-empty array.",
   arrayMin: "The '{field}' field must contain at least {expected} items.",
   arrayMax: "The '{field}' field must contain less than or equal to {expected} items.",
   arrayLength: "The '{field}' field must contain {expected} items.",

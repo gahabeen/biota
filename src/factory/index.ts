@@ -5,7 +5,7 @@ import * as constructors from './api/constructors';
 import * as proxy from './api/proxy';
 
 import { util } from './api/util';
-import { validator } from './api/validator';
+import { type } from './api/type';
 
 import { action } from './api/action';
 import { collection } from './api/collection';
@@ -33,7 +33,7 @@ import { sessions } from './api/sessions';
 
 export const factoryApi = {
   util,
-  validator,
+  type,
   action,
   collection,
   collections,
