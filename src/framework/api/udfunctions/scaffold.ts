@@ -18,7 +18,7 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
     [BiotaRoleName('system')]: new Set(),
   };
 
-  const { onlyNecessary, onlyNames = [] } = options || {};
+  const { onlyNecessary, onlyNames = [], onlyNamePatterns = [] } = options || {};
 
   const loadStep = (step: any) => {
     if (typeof step === 'function') {
@@ -44,8 +44,10 @@ export const scaffold: FrameworkUDFunctionsApi['scaffold'] = async function (thi
           if (!loadedUDFs.has(definition.name)) {
             if (
               dependenciesUDFs.has(definition.name) ||
+              onlyNamePatterns.some((pattern) => pattern.test(definition.name)) ||
               (onlyNames.length > 0 && onlyNames.includes(definition.name)) ||
-              (onlyNames.length === 0 && ((onlyNecessary && definition.role) || !onlyNecessary))
+              (onlyNames.length === 0 &&
+                ((onlyNecessary && definition.role) || (!onlyNecessary && onlyNames.length === 0 && onlyNamePatterns.length === 0)))
             ) {
               dependencies.map(addDependency);
               markDependencyAsLoaded(definition.name);

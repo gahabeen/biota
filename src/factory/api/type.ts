@@ -3,12 +3,14 @@ import { PATTERNS, FALSE_EXPR } from '~/consts';
 import { MethodDispatch, MethodQuery } from '~/factory/constructors/method';
 import { FactoryContext } from '~/types/factory/factory.context';
 import { FactoryTypeApi } from '~/types/factory/factory.type';
-import { TypeResolve, TypeErrors } from '../constructors/type';
+import { TypeResolver, TypeErrors, TypeArrayResolver } from '../constructors/type';
 import { BiotaFunctionName } from './constructors';
 import { ArrayContains } from './ql/ArrayContains';
 import { CanConvertToString } from './ql/CanConvertToString';
 import { Switch } from './ql/Switch';
 import { ResultData } from '../constructors/result';
+import { SafeCall } from './ql/SafeCall';
+import { TypeOf } from './ql/TypeOf';
 
 // tslint:disable-next-line: only-arrow-functions
 export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryTypeApi {
@@ -20,16 +22,40 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
       const query = MethodQuery(
         {
           type: q.Select('type', q.Var('schema'), null),
-          newState: q.Merge(q.Var('state'), { field: q.If(q.IsNull(q.Select('field', q.Var('state'), null)), 'root', q.Var('field')) }),
+          // ab: q.Abort(q.Format('%@', { type: q.Var('type') })),
+          newState: q.Merge(q.Var('state'), {
+            field: q.If(q.IsNull(q.Select('field', q.Var('state'), null)), '$root', q.Select('field', q.Var('state'))),
+          }),
           result: Switch(
             q.Var('type'),
             {
-              any: ResultData(type(q.Var('ctx')).any.validate(q.Var('instance'), q.Var('schema'), q.Var('newState'))),
-              string: ResultData(type(q.Var('ctx')).string.validate(q.Var('instance'), q.Var('schema'), q.Var('newState'))),
-              array: ResultData(type(q.Var('ctx')).array.validate(q.Var('instance'), q.Var('schema'), q.Var('newState'))),
+              // any: ResultData(type(q.Var('ctx')).any.validate(q.Var('instance'), q.Var('schema'), q.Var('state'))),
+              any: ResultData(
+                SafeCall(BiotaFunctionName('TypeAnyValidate'), q.Var('ctx'), {
+                  value: q.Var('instance'),
+                  options: q.Var('schema'),
+                  state: q.Var('newState'),
+                }),
+              ),
+              // string: ResultData(type(q.Var('ctx')).string.validate(q.Var('instance'), q.Var('schema'), q.Var('state'))),
+              string: ResultData(
+                SafeCall(BiotaFunctionName('TypeStringValidate'), q.Var('ctx'), {
+                  value: q.Var('instance'),
+                  options: q.Var('schema'),
+                  state: q.Var('newState'),
+                }),
+              ),
+              // array: ResultData(type(q.Var('ctx')).array.validate(q.Var('instance'), q.Var('schema'), q.Var('state'))),
+              array: ResultData(
+                SafeCall(BiotaFunctionName('TypeArrayValidate'), q.Var('ctx'), {
+                  value: q.Var('instance'),
+                  options: q.Var('schema'),
+                  state: q.Var('newState'),
+                }),
+              ),
             },
             {
-              value: q.Var('value'),
+              value: q.Var('instance'),
               valid: true,
               sanitized: false,
               errors: [],
@@ -49,7 +75,7 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
       validate(value, options, state) {
         const inputs = { value, options, state };
         // ↓↓↓↓
-        const query = MethodQuery({}, TypeResolve(q.Var('value'), q.Var('options'), q.Var('state'))(type(q.Var('ctx')).any.type));
+        const query = MethodQuery({}, TypeResolver(q.Var('value'), q.Var('options'), q.Var('state'))(type(q.Var('ctx')).any.type));
         // ↓↓↓↓
         const offline = 'factory.type.any.validate';
         const online = {
@@ -84,31 +110,27 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
         // ↓↓↓↓
         const query = MethodQuery(
           {},
-          TypeResolve(
-            q.Var('value'),
-            q.Var('options'),
-            q.Var('state'),
-          )(
-            // type(q.Var('ctx')).string.convert,
+          TypeResolver(q.Var('value'), q.Var('options'), q.Var('state'))(
+            type(q.Var('ctx')).string.convert,
             type(q.Var('ctx')).string.type,
-            // type(q.Var('ctx')).string.trim,
-            // type(q.Var('ctx')).string.trimStart,
-            // type(q.Var('ctx')).string.trimEnd,
-            // type(q.Var('ctx')).string.padStart,
-            // type(q.Var('ctx')).string.padEnd,
-            // type(q.Var('ctx')).string.lowercase,
-            // type(q.Var('ctx')).string.uppercase,
-            // type(q.Var('ctx')).string.empty,
-            // type(q.Var('ctx')).string.min,
-            // type(q.Var('ctx')).string.max,
-            // type(q.Var('ctx')).string.length,
-            // type(q.Var('ctx')).string.pattern,
-            // type(q.Var('ctx')).string.contains,
-            // type(q.Var('ctx')).string.enum,
-            // type(q.Var('ctx')).string.numeric,
-            // type(q.Var('ctx')).string.alpha,
-            // type(q.Var('ctx')).string.alphanum,
-            // type(q.Var('ctx')).string.alphadash,
+            type(q.Var('ctx')).string.trim,
+            type(q.Var('ctx')).string.trimStart,
+            type(q.Var('ctx')).string.trimEnd,
+            type(q.Var('ctx')).string.padStart,
+            type(q.Var('ctx')).string.padEnd,
+            type(q.Var('ctx')).string.lowercase,
+            type(q.Var('ctx')).string.uppercase,
+            type(q.Var('ctx')).string.empty,
+            type(q.Var('ctx')).string.min,
+            type(q.Var('ctx')).string.max,
+            type(q.Var('ctx')).string.length,
+            type(q.Var('ctx')).string.pattern,
+            type(q.Var('ctx')).string.contains,
+            type(q.Var('ctx')).string.enum,
+            type(q.Var('ctx')).string.numeric,
+            type(q.Var('ctx')).string.alpha,
+            type(q.Var('ctx')).string.alphanum,
+            type(q.Var('ctx')).string.alphadash,
           ),
         );
         // ↓↓↓↓
@@ -123,7 +145,6 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
         // ↓↓↓↓
         const query = MethodQuery(
           {
-            abort: q.Abort(q.Format('%@', { value, options, state })),
             isString: q.IsString(q.Var('value')),
           },
           {
@@ -135,7 +156,8 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
               {
                 wrong: q.Not(q.Var('isString')),
                 type: 'string',
-                actual: q.Var('value'),
+                actual: TypeOf(q.Var('value')),
+                expected: 'string',
               },
             ]),
           },
@@ -741,7 +763,10 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
       validate(value, options, state) {
         const inputs = { value, options, state };
         // ↓↓↓↓
-        const query = MethodQuery({}, TypeResolve(q.Var('value'), q.Var('options'), q.Var('state'))(type(q.Var('ctx')).array.type));
+        const query = MethodQuery(
+          {},
+          TypeResolver(q.Var('value'), q.Var('options'), q.Var('state'))(type(q.Var('ctx')).array.type, type(q.Var('ctx')).array.items),
+        );
         // ↓↓↓↓
         const offline = 'factory.type.array.validate';
         const online = {
@@ -765,6 +790,8 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
               {
                 wrong: q.Not(q.Var('isArray')),
                 type: 'array',
+                actual: TypeOf(q.Var('value')),
+                expected: 'array',
               },
             ]),
           },
@@ -1006,22 +1033,27 @@ export const type: FactoryContext<FactoryTypeApi> = function (context): FactoryT
             items: q.Select('items', q.Var('options'), null),
             isValidItems: q.IsObject(q.Var('items')),
             // ↓
-            valid: q.If(
+            result: q.If(
               q.And(q.Var('hasItems'), q.Var('isValidItems')),
-              TypeResolve(q.Var('value'), q.Var('items'), q.Var('state'))(type(q.Var('ctx')).validate),
-              true,
+              TypeArrayResolver(q.Var('value'), q.Var('items'), q.Var('state'))(type(q.Var('ctx')).validate),
+              { valid: true },
             ),
+            valid: q.Select('valid', q.Var('result'), false),
+            errors: q.Select('errors', q.Var('result'), []),
           },
           {
             value: q.Var('value'),
             valid: q.Var('valid'),
             sanitized: false,
-            errors: TypeErrors(q.Var('state'), [
-              {
-                wrong: q.Not(q.Var('valid')),
-                type: 'arrayItems',
-              },
-            ]),
+            errors: q.Append(
+              TypeErrors(q.Var('state'), [
+                {
+                  wrong: q.Not(q.Var('valid')),
+                  type: 'arrayItems',
+                },
+              ]),
+              q.Var('errors'),
+            ),
           },
         );
         // ↓↓↓↓

@@ -5,6 +5,7 @@ import { FactoryUDFunctionsApi } from '~/types/factory/factory.udfunctions';
 export interface FrameworkUDFunctionsOptions {
   onlyNecessary?: boolean;
   onlyNames?: string[];
+  onlyNamePatterns?: RegExp[];
 }
 
 export interface FrameworkUDFunctionsApi {

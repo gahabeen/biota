@@ -19,7 +19,7 @@ export function TypeErrors(state: Expr, errors: Expr[]) {
               type: q.Select('type', q.Var('error'), ''),
               expected: q.Select('expected', q.Var('error'), FALSE_EXPR),
               actual: q.Select('actual', q.Var('error'), FALSE_EXPR),
-              field: q.Select('field', q.Var('state'), '*unknown*'),
+              field: q.Select('field', q.Var('state'), '_unknown_'),
               filledMessage: q.Let(
                 [
                   { msg: q.Select(q.Var('type'), q.Var('templates'), '') },

@@ -37,7 +37,7 @@ export async function query(this: Biota, fqlQuery: Fauna.Expr) {
 
         if (error.code === 'transaction aborted') {
           const errorArray = error.description.split('%||%').map((i) => (i && i.includes('%%%') ? i.split('%%%') : i));
-          const trace = errorArray[1].map((i) => {
+          const trace = (errorArray[1] || []).map((i) => {
             if (i.includes('%|%')) {
               const splitted = i.split('%|%');
               try {
