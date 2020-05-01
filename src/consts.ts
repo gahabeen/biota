@@ -35,9 +35,38 @@ export const OAUTH2 = {
   },
 };
 
+export const Types = {
+  array: 'array',
+  boolean: 'boolean',
+  bytes: 'bytes',
+  collection: 'collection',
+  credentials: 'credentials',
+  database: 'database',
+  date: 'date',
+  doc: 'doc',
+  function: 'function',
+  index: 'index',
+  integer: 'integer',
+  double: 'double',
+  key: 'key',
+  lambda: 'lambda',
+  null: 'null',
+  number: 'number',
+  object: 'object',
+  ref: 'ref',
+  role: 'role',
+  set: 'set',
+  string: 'string',
+  timestamp: 'timestamp',
+  token: 'token',
+  // ID: 'ID',
+};
+
 export const PATTERNS = {
+  DATE: /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/,
   TRIM_LEFT: /^\s+/,
   TRIM_RIGHT: /\s+$/,
+  SOME_NUM: /\d*/,
   ALPHA: /^[a-zA-Z]+$/,
   ALPHANUM: /^[a-zA-Z0-9]+$/,
   ALPHADASH: /^[a-zA-Z0-9_-]+$/,
@@ -104,7 +133,9 @@ export const TYPE_ERRORS_MESSAGES = {
   mac: "The '{field}' field must be a valid MAC address.",
 
   object: "The '{field}' must be an Object.",
-  objectStrict: "The object '{field}' contains forbidden keys: '{actual}'.",
+  objectForbiddenKey: "The object '{field}' contains a forbidden key: '{actual}'.",
+  objectMissingKey: "The object '{field}' has a missing key: '{actual}'.",
+  objectProperties: 'The object has no valid properties.',
 
   url: "The '{field}' field must be a valid URL.",
 
