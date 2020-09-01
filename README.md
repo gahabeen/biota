@@ -1,3 +1,10 @@
+# Biota has been living for a while in a new dedicated Organization over there: https://github.com/biotajs
+# Developement is on hold before I find some time to make it available to the world :)  
+Gabin.
+
+----
+
+
 <h1 align="center">biota</h1>
 <p align="center">A simple database framework to start your next project in 30s with FaunaDB</p>
 
